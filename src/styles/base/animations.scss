@@ -1,0 +1,17 @@
+// 淡入淡出
+.fade-enter-active,.fade-leave-active{
+  transition: opacity 0.3s linear;
+}
+
+.fade-enter,.fade-leve-to{
+  opacity: 0;
+}
+
+// 翻页动画
+.slider-enter-active,.slider-leave-active{
+  transition: all 0.3s linear;
+}
+
+.slider-enter,.slider-leave-to{
+  transform: translate3d(100%,0,0);
+}
