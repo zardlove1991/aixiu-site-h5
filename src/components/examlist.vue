@@ -10,7 +10,7 @@
       <div class="exam-list" v-if='listType === 1'>
         <!--  未考列表 -->
         <template v-if='status === 2'>
-          <div class="unexam-item"  v-for="(item,index) in unexamList" :key='index'>
+          <div class="unexam-item"  v-for="(item,index) in unexamList" :key='index' @click.stop="tounExamDetail(item)">
                <div class="exam-item-main">
                    <div :class="['exam-title', { 'exam-colse': item.statusMapping == 'colsed' }]">{{item.title}}</div>
                    <div class="exam-date" v-if="item.end_time">截止日期：{{item.end_time}}</div>
@@ -82,7 +82,8 @@ export default {
     ...mapGetters('examlist', [
       'examList', 'unexamList',
       'examOnlineList'
-    ])
+    ]),
+    ...mapGetters('examonline', ['isFinishedExmanationState'])
   },
   created () {
     this._initExamList()
@@ -111,11 +112,39 @@ export default {
       // 调用党建的通用判断是否需要显示重新考试
       return PARTY.detectionRestart(item)
     },
+    tounExamDetail (item) {
+      let examId = item.examination_id
+      // 设置下当前考试的题目类型
+      this.setExamlistType('examnation')
+      // 保存一个当前的点击的考试数据
+      this.setCurrentExamInfo(item)
+      // 发送开始考试的接口 PS:考试已结束就不需要发送开始考试接口
+      let isFinshedExam = this.isFinishedExmanationState
+      // 处理考试状态 未开始->考试准备页面  进行中和已结束->试题列表页面
+      if (!isFinshedExam && item.person_status === 0) { // 只有考试还未作答的的时候才会去考试准备页面
+        this.setExamId(examId) // 设置下当前的试卷ID
+        this.$router.push({ path: '/examPrepare', query: { dynamicTitle: '党员考试' } }) // 去往考试准备页面
+      } else {
+        // 添加一个query查询参数对象
+        let maxAnswerId = item.answer_max_question_id
+        let queryParams = { showType: 'examnation', title: item.title, dynamicTitle: '党员考试' }
+        if (maxAnswerId) queryParams.subjectId = maxAnswerId
+        this.$router.push({
+          path: `/onlineExamList/${examId}`,
+          query: queryParams
+        })
+      }
+    },
     ...mapActions('examlist', {
       initExamList: 'GET_EXAM_LIST'
     }),
     ...mapMutations('examlist', {
       setExamListPageNum: 'SET_CURRENTEXAM_PAGE'
+    }),
+    ...mapMutations('examonline', {
+      setExamlistType: 'SET_EXAMLIST_TYPE',
+      setCurrentExamInfo: 'SET_CURRENT_EXAMNATION_INFO',
+      setExamId: 'SET_EXAMNATION_ID'
     })
   }
 }

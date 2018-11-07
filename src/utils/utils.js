@@ -37,3 +37,42 @@ export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false)
     .replace('mm', _format(min))
     .replace('ss', _format(sec))
 }
+
+/*
+ * 判断嵌入平台
+ * */
+export const getPlat = () => {
+  let userAgent = navigator.userAgent.toLowerCase()
+  if (/micromessenger/.test(userAgent)) {
+    return 'wechat'
+  } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
+    return 'smartcity'
+  } else if (/dingdone/.test(userAgent)) {
+    return 'dingdone'
+  } else if (/kdtunion/.test(userAgent)) {
+    return 'dingdone'
+  } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
+    return 'dingding'
+  }
+  return 'browser'
+}
+/*
+* 动态set head title
+* */
+export const setBrowserTitle = (title) => {
+  let plat = getPlat()
+  document.title = title
+  if (plat === 'dingding' || plat === 'dingdone') {
+    let i = document.createElement('iframe')
+    i.src = '/static/browser.js'
+    i.style.display = 'none'
+    i.onload = function () {
+      setTimeout(function () {
+        i.remove()
+      }, 2)
+    }
+    document.body.appendChild(i)
+  } else {
+    document.title = title
+  }
+}
