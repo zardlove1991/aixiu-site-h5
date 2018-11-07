@@ -8,9 +8,9 @@ const instance = axios.create({
 
 // 请求前添加的过滤器
 instance.interceptors.request.use((config) => {
-  config.headers['HTTP-X-H5-VERSION'] = globalConfig['HTTP-X-H5-VERSION']
-  config.headers['X-CLIENT-VERSION'] = globalConfig['X-CLIENT-VERSION']
-  config.headers['X-DEVICE-ID'] = globalConfig['X-DEVICE-ID']
+  config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
+  config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
+  config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
   return config
 }, error => Promise.reject(error))
@@ -56,7 +56,6 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return Promise.reject(rej)
 })
-
 
 const getUrl = (url, config = {}, api = 'API') => {
   if (!url) {
