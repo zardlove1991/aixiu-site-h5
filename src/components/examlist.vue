@@ -1,59 +1,66 @@
 <template lang="html">
-  <!--包裹当前的所有数据-->
-  <div class="examtype-list-wrap">
-    <!--考试列表-->
-    <div class="exam-list" v-if='isShowExamList'>
-      <!--  未考列表 -->
-      <template v-if='status === 2'>
-        <div class="unexam-item"  v-for="(item,index) in unexamList" :key='index'>
-             <div class="exam-item-main">
-                 <div :class="['exam-title', { 'exam-colse': item.statusMapping == 'colsed' }]">{{item.title}}</div>
-                 <div class="exam-date" v-if="item.end_time">截止日期：{{item.end_time}}</div>
-                 <div :class="['exam-person-num',{'exam-person-num-pd':item.end_time}]">{{item.submit_num}}人参加</div>
-             </div>
-             <div :class="['exam-item-status',{ 'exam-colse': item.statusMapping.key == 'colsed' }]">{{item.statusMapping.name}}</div>
-        </div>
-      </template>
-      <!-- 已考列表 -->
-      <template v-if="status === 1">
-        <div class="exam-item" v-for="(item,index) in examList" :key='index'>
-          <div class="exam-item-main">
-              <div class="exam-title no-title-padding">{{item.title}}</div>
-              <div class="exam-date sub-exam-date" v-if="item.submit_times">提交日期：{{item.submit_times}}</div>
+  <mt-loadmore :top-method="loadTop"
+               :bottom-method="loadBottom"
+               :auto-fill="false"
+               ref="loadmore"
+  >
+    <!--包裹当前的所有数据-->
+    <div class="examtype-list-wrap">
+      <!--考试列表-->
+      <div class="exam-list" v-if='listType === 1'>
+        <!--  未考列表 -->
+        <template v-if='status === 2'>
+          <div class="unexam-item"  v-for="(item,index) in unexamList" :key='index'>
+               <div class="exam-item-main">
+                   <div :class="['exam-title', { 'exam-colse': item.statusMapping == 'colsed' }]">{{item.title}}</div>
+                   <div class="exam-date" v-if="item.end_time">截止日期：{{item.end_time}}</div>
+                   <div :class="['exam-person-num',{'exam-person-num-pd':item.end_time}]">{{item.submit_num}}人参加</div>
+               </div>
+               <div :class="['exam-item-status',{ 'exam-colse': item.statusMapping.key == 'colsed' }]">{{item.statusMapping.name}}</div>
           </div>
-          <div class="exam-item-grade" :class="{'fail': detectionScore(item) }">
-            <span class="tip" v-show="detectionScore(item)">重新考试</span>
-            <span class="score">{{item.answer_score}}分</span>
+        </template>
+        <!-- 已考列表 -->
+        <template v-if="status === 1">
+          <div class="exam-item" v-for="(item,index) in examList" :key='index'>
+            <div class="exam-item-main">
+                <div class="exam-title no-title-padding">{{item.title}}</div>
+                <div class="exam-date sub-exam-date" v-if="item.submit_times">提交日期：{{item.submit_times}}</div>
+            </div>
+            <div class="exam-item-grade" :class="{'fail': detectionScore(item) }">
+              <span class="tip" v-show="detectionScore(item)">重新考试</span>
+              <span class="score">{{item.answer_score}}分</span>
+            </div>
           </div>
-        </div>
-      </template>
+        </template>
+      </div>
+      <!--在线测评列表-->
+      <div class="online-exam-list" v-if="listType === 2">
+          <!--试题循环列表项-->
+          <div class="online-exam-item" v-for="(item,index) in examOnlineList" :key='index'>
+            <h3 class="title">{{item.title}}</h3>
+            <!--提示包裹-->
+            <div class="tip-wrap">
+              <!--未完成的提示-->
+              <p class="unfinsh-tip" v-if="!item.isAllDone">
+                <span class="total">共{{item.question_num}}道题</span>
+                <span class="answer-num">已做{{item.answer_question_num}}道</span>
+              </p>
+              <!--已完成的提示-->
+              <p v-else class="finsh-tip">已完成</p>
+            </div>
+            <!--进度条展示-->
+            <mt-progress v-show="item.answer_question_num" :value="item.progress" :bar-height="2"></mt-progress>
+          </div>
+      </div>
+      <!--空占位-->
+      <empty-data v-if="!currentExamList.length"></empty-data>
+
     </div>
-    <!--在线测评列表-->
-    <div class="online-exam-list" v-if="isShowOnlineExamlist">
-        <!--试题循环列表项-->
-        <div class="online-exam-item" v-for="(item,index) in examOnlineList" :key='index'>
-          <h3 class="title">{{item.title}}</h3>
-          <!--提示包裹-->
-          <div class="tip-wrap">
-            <!--未完成的提示-->
-            <p class="unfinsh-tip" v-if="!item.isAllDone">
-              <span class="total">共{{item.question_num}}道题</span>
-              <span class="answer-num">已做{{item.answer_question_num}}道</span>
-            </p>
-            <!--已完成的提示-->
-            <p v-else class="finsh-tip">已完成</p>
-          </div>
-          <!--进度条展示-->
-          <mt-progress v-show="item.answer_question_num" :value="item.progress" :bar-height="2"></mt-progress>
-        </div>
-    </div>
-    <!--空占位-->
-    <empty-data v-if="!isShowExamList && !isShowOnlineExamlist"></empty-data>
-  </div>
+  </mt-loadmore>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import { PARTY } from '@/common/currency'
 import EmptyData from '@/components/base/empty-data'
 
@@ -71,23 +78,11 @@ export default {
   },
   components: { EmptyData },
   computed: {
+    ...mapState('examlist', ['currentExamList']),
     ...mapGetters('examlist', [
       'examList', 'unexamList',
       'examOnlineList'
-    ]),
-    isShowExamList () {
-      let examList = this.examList
-      let unexamList = this.unexamList
-      let listType = this.listType
-
-      return (listType === 1 && (examList.length || unexamList.length))
-    },
-    isShowOnlineExamlist () {
-      let onlineExamList = this.examOnlineList
-      let listType = this.listType
-
-      return (listType === 2 && onlineExamList.length)
-    }
+    ])
   },
   created () {
     this._initExamList()
@@ -103,12 +98,24 @@ export default {
       // 开始初始化列表
       this.initExamList({ status, type })
     },
+    async loadTop () {
+      this.setExamListPageNum(1)
+      await this._initExamList()
+      this.$refs.loadmore.onTopLoaded()
+    },
+    async loadBottom () {
+      await this._initExamList()
+      this.$refs.loadmore.onBottomLoaded()
+    },
     detectionScore (item) {
       // 调用党建的通用判断是否需要显示重新考试
       return PARTY.detectionRestart(item)
     },
     ...mapActions('examlist', {
       initExamList: 'GET_EXAM_LIST'
+    }),
+    ...mapMutations('examlist', {
+      setExamListPageNum: 'SET_CURRENTEXAM_PAGE'
     })
   }
 }

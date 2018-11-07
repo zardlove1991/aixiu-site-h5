@@ -1,6 +1,6 @@
 <template>
   <div class="empty-data">
-    <img v-if="img" :src="icon || defaultIcon"></img>
+    <img v-if="img" :src="icon || defaultIcon" />
     <div>{{text || '暂无数据'}}</div>
   </div>
 </template>

@@ -63,10 +63,15 @@ const getters = {
 
 const mutations = {
   [SET_EXAM_LIST] (state, list) {
-    state.currentExamList = list
+    let currentExamPage = state.currentExamPage
+    let originExamList = state.currentExamList
+    // 这边判定当不是第一页的时候才进行拼接数据
+    if (list.length && currentExamPage !== 1) state.currentExamList = originExamList.concat(list)
+    else state.currentExamList = list
   },
-  [SET_CURRENTEXAM_PAGE] (state) {
-    state.currentExamPage++
+  [SET_CURRENTEXAM_PAGE] (state, pageNum) {
+    if (pageNum) state.currentExamPage = pageNum
+    else state.currentExamPage++
   },
   [SET_EXAMLIST_TYPE] (state, type) {
     state.examListType = type
@@ -78,27 +83,31 @@ const mutations = {
 
 const actions = {
   [GET_EXAM_LIST] ({state, commit}, {status, type}) {
-    let params = Object.assign({}, {
-      page: state.currentExamPage,
-      count: 20,
-      type
-    })
-    // 只有考试的时候才加上status参数
-    if (type === 1 && status) params['status'] = status
+    return new Promise((resolve, reject) => {
+      let params = Object.assign({}, {
+        page: state.currentExamPage,
+        count: 20,
+        type
+      })
+      // 只有考试的时候才加上status参数
+      if (type === 1 && status) params['status'] = status
 
-    Indicator.open({ spinnerType: 'fading-circle' })
-    API.getExamlist({ params }).then(res => {
-      let list = res.data
-      if (list && list.length) {
-        commit(SET_EXAM_LIST, list)
-        commit(SET_CURRENTEXAM_PAGE)
-        commit(SET_EXAMLIST_TYPE, type)
-        commit(SET_EXAMLIST_STATUS, status)
-      }
-      Indicator.close()
-    }).catch(err => {
-      Indicator.close()
-      Toast(err.error_message)
+      Indicator.open({ spinnerType: 'fading-circle' })
+      API.getExamlist({ params }).then(res => {
+        let list = res.data
+        if (list && list.length) {
+          commit(SET_EXAM_LIST, list)
+          commit(SET_CURRENTEXAM_PAGE)
+          commit(SET_EXAMLIST_TYPE, type)
+          commit(SET_EXAMLIST_STATUS, status)
+        }
+        Indicator.close()
+        resolve()
+      }).catch(err => {
+        Indicator.close()
+        Toast(err.error_message)
+        reject(err)
+      })
     })
   }
 }
