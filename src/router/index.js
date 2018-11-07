@@ -19,7 +19,23 @@ export default new Router({
     {
       path: '/examPrepare',
       name: 'examPrepare',
-      component: getComponent('examPrepareInfo')
+      component: getComponent('examPrepareInfo'),
+      props: (route) => ({
+        examFlag: route.query.examFlag // 针对特殊开始考试的标志 partyjoin:入党考试 其它的时候不用传
+      })
+    },
+    {
+      path: '/onlineExamList/:id',
+      name: 'onlineExamList',
+      component: getComponent('onlineExamList'),
+      props: (route) => ({
+        id: route.params.id, // 传入需要请求当前试卷的ID
+        title: route.query.title, // 当前考试的试卷的标题
+        showType: route.query.showType, // 当前渲染的类型 测评:testing 考试:examnation 错题集:errorlist
+        optionType: route.query.optionType, // 当前跳转的行为标识 正常渲染:normal (默认) 重新答题:reanswer
+        subjectId: route.query.subjectId, // 当前是否有直接跳转的题目序号ID (试卷数据中有个answer_max_question_id 为了继续答题使用)
+        subjectIndex: route.query.subjectIndex // 当前是否有直接跳转的题目序号信息
+      })
     }
   ]
 })

@@ -1,10 +1,11 @@
 import API from '@/api/module/examination'
-import { Toast, Indicator } from 'mint-ui'
+import { Toast, Indicator, MessageBox } from 'mint-ui'
 import { PARTY } from '@/common/currency'
 
 export default {
   namespaced: true,
   state: {
+    submitExamLoading: false, // 考试提交的状态
     examinationId: null, //  存放考卷的ID
     examListType: '', // 当前渲染的试题类型 考试、测评
     examListOptionType: 'normal', // 当前进入是试题列表的操作标识
@@ -38,6 +39,9 @@ export default {
     }
   },
   mutations: {
+    SET_SUBMIT_EXAMSTATUS (state, status) {
+      state.submitExamLoading = status
+    },
     SET_ERRORLIST_COLLECTION (state, data) {
       state.errorlistCollection = data
     },
@@ -324,6 +328,61 @@ export default {
       // 判断是否是重新答题
       if (flag === 'reanswer') requestParams.params.restart = 1
       API.startExam(requestParams)
+    },
+    // 提交试卷
+    SUBMIT_EXAM_LIST ({ state, commit, dispatch }, params) {
+      return new Promise((resolve, reject) => {
+        // 设置提交试卷的状态
+        commit('SET_SUBMIT_EXAMSTATUS', true)
+        let submitExam = () => {
+          API.submitExam({query: {id: params.examId}}).then(res => {
+            if (res && res.success) {
+              commit('SET_SUBMIT_EXAMSTATUS', false)
+              resolve({params})
+            } else {
+              commit('SET_SUBMIT_EXAMSTATUS', false)
+              Toast(res.error_message || '交卷失败')
+            }
+          }).catch(err => {
+            commit('SET_SUBMIT_EXAMSTATUS', false)
+            Toast(err.error_message || '交卷失败')
+          })
+        }
+        API.getExamDetail({query: {id: params.examId}}).then(res => {
+          if (res.question_num !== '') {
+            if (res.question_num > res.answer_question_num) {
+              // 配置对话框属性
+              let confim = {
+                title: '温馨提示',
+                message: `您还有${res.question_num - res.answer_question_num}题未做，确认交卷吗？`,
+                confirmButtonText: '确认交卷',
+                confirmButtonClass: 'confim-button',
+                showCancelButton: true,
+                cancelButtonClass: 'cancel-button',
+                cancelButtonText: '继续答题'
+              }
+              // 调用对话框
+              MessageBox.confirm('', confim).then(action => {
+                // 关闭提醒状态
+                commit('SET_SUBMIT_EXAMSTATUS', false)
+                if (action === 'confirm') {
+                  submitExam()
+                } else {
+                  reject(new Error('取消交卷'))
+                }
+              }).catch(err => {
+                // 关闭提醒状态
+                commit('SET_SUBMIT_EXAMSTATUS', false)
+                if (err === 'cancel') {
+                  reject(new Error('取消交卷'))
+                }
+              })
+            } else {
+              submitExam()
+            }
+          }
+        })
+      })
     }
   }
 }
