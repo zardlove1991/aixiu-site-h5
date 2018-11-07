@@ -47,12 +47,15 @@
           <mt-progress v-show="item.answer_question_num" :value="item.progress" :bar-height="2"></mt-progress>
         </div>
     </div>
+    <!--空占位-->
+    <empty-data v-if="!isShowExamList && !isShowOnlineExamlist"></empty-data>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { PARTY } from '@/common/currency'
+import EmptyData from '@/components/base/empty-data'
 
 export default {
   name: 'examlist',
@@ -66,6 +69,7 @@ export default {
       default: -1
     }
   },
+  components: { EmptyData },
   computed: {
     ...mapGetters('examlist', [
       'examList', 'unexamList',
