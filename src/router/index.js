@@ -58,6 +58,14 @@ export default new Router({
         subjectId: route.query.subjectId, // 当前是否有直接跳转的题目序号ID (试卷数据中有个answer_max_question_id 为了继续答题使用)
         subjectIndex: route.query.subjectIndex // 当前是否有直接跳转的题目序号信息
       })
+    },
+    {
+      path: '/errorlist',
+      name: 'errorlist',
+      component: getComponent('errorList'),
+      meta: {
+        title: '我的错题'
+      }
     }
   ]
 })

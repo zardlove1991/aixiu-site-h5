@@ -2,7 +2,7 @@
   <div class="online-exam-listwrap">
     <!--头部包裹提示-->
     <div class="title-wrap" @click.stop='showSubjectsOverview'>
-      <h4 class="title text-overflow">{{title}}</h4>
+      <h4 class="title">{{title}}</h4>
       <div class="arrow" :class="{active:isShowSubjectOverview}"></div>
     </div>
     <!--试题列表渲染区域-->
@@ -184,6 +184,7 @@ export default {
     .title{
       margin-right: px2rem(10px);
       max-width: px2rem(400px);
+      @include txt-overflow(100%);
     }
     .arrow{
       position: relative;
