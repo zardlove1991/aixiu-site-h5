@@ -25,6 +25,11 @@ export default new Router({
       })
     },
     {
+      path: '/examgrade',
+      name: 'examgrade',
+      component: getComponent('examgrade')
+    },
+    {
       path: '/onlineExamList/:id',
       name: 'onlineExamList',
       component: getComponent('onlineExamList'),

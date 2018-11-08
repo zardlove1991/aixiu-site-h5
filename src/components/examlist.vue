@@ -21,7 +21,7 @@
         </template>
         <!-- 已考列表 -->
         <template v-if="status === 1">
-          <div class="exam-item" v-for="(item,index) in examList" :key='index'>
+          <div class="exam-item" v-for="(item,index) in examList" :key='index'  @click.stop="toExamGrade(item)">
             <div class="exam-item-main">
                 <div class="exam-title no-title-padding">{{item.title}}</div>
                 <div class="exam-date sub-exam-date" v-if="item.submit_times">提交日期：{{item.submit_times}}</div>
@@ -36,7 +36,7 @@
       <!--在线测评列表-->
       <div class="online-exam-list" v-if="listType === 2">
           <!--试题循环列表项-->
-          <div class="online-exam-item" v-for="(item,index) in examOnlineList" :key='index'>
+          <div class="online-exam-item" v-for="(item,index) in examOnlineList" :key='index' @click.stop='jumpToSubjects(item)'>
             <h3 class="title">{{item.title}}</h3>
             <!--提示包裹-->
             <div class="tip-wrap">
@@ -134,6 +134,34 @@ export default {
           query: queryParams
         })
       }
+    },
+    toExamGrade (item) {
+      let examId = item.examination_id
+      let isRestart = this.detectionScore(item)
+      // 判断是否开启重新答题操作 是->考试准备页面 否->答题卡页面
+      if (isRestart) {
+        this.setExamId(examId) // 设置下当前的试卷ID
+        this.$router.push({ path: '/examPrepare', query: { dynamicTitle: '党员考试' } }) // 去往考试准备页面
+      } else {
+        // 保存一个当前的点击的考试数据
+        this.setCurrentExamInfo(item)
+        this.$router.push({name: 'examgrade', query: {examination_id: item.examination_id}})
+      }
+    },
+    jumpToSubjects (subject) {
+      let examId = subject.examination_id
+      // 保存一个当前的点击的测评数据
+      this.setCurrentExamInfo(subject)
+      // 发送开始考试的接口
+      this.startExamnation({examId})
+      // 组织查询参数
+      let answerMaxId = subject.answer_max_question_id
+      let queryParams = { title: subject.title, showType: 'testing', dynamicTitle: '在线测评' }
+      if (answerMaxId) queryParams.subjectId = answerMaxId
+      this.$router.push({
+        path: `/onlineExamList/${examId}`,
+        query: queryParams
+      })
     },
     ...mapActions('examlist', {
       initExamList: 'GET_EXAM_LIST'

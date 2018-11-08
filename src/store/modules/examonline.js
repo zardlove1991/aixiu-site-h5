@@ -5,6 +5,8 @@ import { PARTY } from '@/common/currency'
 export default {
   namespaced: true,
   state: {
+    answerCardInfo: {}, // 答题卡信息
+    answerList: {}, // 答题列表数据
     submitExamLoading: false, // 考试提交的状态
     examinationId: null, //  存放考卷的ID
     examListType: '', // 当前渲染的试题类型 考试、测评
@@ -111,6 +113,12 @@ export default {
         str.push(String.fromCharCode(i))
       }
       state.examOptionsSelectFlag = str
+    },
+    SET_ANSWERCARD_INFO (state, data) {
+      state.answerCardInfo = data
+    },
+    SET_ANSWER_LIST (state, result) {
+      state.answerList = result
     }
   },
   actions: {
@@ -381,6 +389,21 @@ export default {
               submitExam()
             }
           }
+        })
+      })
+    },
+    // 获取答题列表
+    GET_ANSWER_LIST ({ commit, dispatch }, params) {
+      return new Promise((resolve, reject) => {
+        let examId = params.id
+        API.getRecord({query: {id: examId}}).then(resanswer => {
+          // 设置数据
+          commit('SET_ANSWERCARD_INFO', resanswer)
+          commit('SET_ANSWER_LIST', resanswer)
+          // 返回回调
+          resolve()
+        }).catch(err => {
+          reject(err.error_message)
         })
       })
     }
