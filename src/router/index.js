@@ -14,7 +14,10 @@ export default new Router({
       props: (route) => ({
         status: Number(route.query.status), // 只有在考试的时候 1:代表已考 2:代表未考
         listType: Number(route.query.listType) // 当前列表类型 1:代表考试 2:代表测评
-      })
+      }),
+      meta: {
+        title: '试题列表'
+      }
     },
     {
       path: '/examPrepare',
@@ -27,7 +30,21 @@ export default new Router({
     {
       path: '/examgrade',
       name: 'examgrade',
-      component: getComponent('examgrade')
+      component: getComponent('examgrade'),
+      meta: {
+        title: '答题卡'
+      }
+    },
+    {
+      path: '/onlineExamgrade',
+      name: 'onlineExamgrade',
+      component: getComponent('onlineExamgrade'),
+      meta: {
+        title: '答题卡'
+      },
+      props: (route) => ({
+        status: route.query.asheetStatus
+      })
     },
     {
       path: '/onlineExamList/:id',
