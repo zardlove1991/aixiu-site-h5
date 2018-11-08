@@ -8,9 +8,9 @@
     <!--试题列表渲染区域-->
     <div class="subject-list-wrap">
       <!--普通试题列表渲染 带选项-->
-      <!-- <list-render v-if="newExamOnlineSubjects && newExamOnlineSubjects.length" :list="newExamOnlineSubjects" :subject-index="nowCurSubjectIndex" :show-overview.sync="isShowSubjectOverview"></list-render> -->
+      <list-render v-if="newExamOnlineSubjects && newExamOnlineSubjects.length" :list="newExamOnlineSubjects" :subject-index="nowCurSubjectIndex" :show-overview.sync="isShowSubjectOverview"></list-render>
       <!--试题列表为空的时候占位-->
-      <!-- <empty-place v-else-if="newExamOnlineSubjects && !newExamOnlineSubjects.length"></empty-place> -->
+      <empty-place v-else-if="newExamOnlineSubjects && !newExamOnlineSubjects.length"></empty-place>
       <!--考试倒计时-->
       <div :class="{'show':isShowSubmitBtn && nowCountTime}" class="exam-countdown">{{nowCountTime}}</div>
       <!--考试交卷按钮-->
@@ -30,8 +30,8 @@
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import { MessageBox } from 'mint-ui'
-import submitExam from '@/components/base/submitExam'
-// import listRender from './base/listRender'
+import submitExam from './base/submitExam'
+import listRender from './base/listRender'
 import emptyPlace from './base/empty-data'
 
 export default {
@@ -39,7 +39,7 @@ export default {
   // id:试卷ID title:试卷标题 subjectIndex:跳转的试题索引 subjectId:当前继续作答的试题ID optionType:当前跳转的行为标识
   props: ['id', 'title', 'showType', 'optionType', 'subjectIndex', 'subjectId'],
   components: {
-    // listRender,
+    listRender,
     emptyPlace,
     submitExam
   },

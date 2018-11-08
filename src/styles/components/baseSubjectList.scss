@@ -1,0 +1,49 @@
+@import '@/styles/index.scss';
+$answerError:#DF3031;
+$answerSuccess:#19B55F;
+
+.base-subject-list-wrap{
+  width: 100%;
+  height: 100%;
+  .subject-item-wrap{
+    .subject-extra-wrap{
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      overflow: hidden;
+      .checkbox-select{
+        width: px2rem(600px);
+        height: px2rem(80px);
+        line-height: px2rem(80px);
+        text-align: center;
+        border-radius: px2rem(10px);
+        font-size: px2rem(34px);
+        color: $white;
+        border:none;
+        background-image: linear-gradient(to right, #FF6C00, #E71E1F);
+      }
+    }
+    .subject-item-placeholder{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      .place-img{
+        width: px2rem(115px);
+        height: px2rem(115px);
+        background-repeat: no-repeat;
+        background-position: center;
+        @include img-retina('~@/assets/party/Tips@2x.png', '~@/assets/party/Tips@3x.png', 100%, 100%);
+        margin-bottom: px2rem(40px);
+      }
+      .place-tip{
+        font-size: px2rem(30px);
+        color: $textConfig;
+      }
+    }
+  }
+}
+
+@import './common.scss';

@@ -1,0 +1,223 @@
+@import '@/styles/index.scss';
+$customFromBg:#FFB517;
+$bottomNavHover:#DF3031;
+
+.list-render-wrap{
+  width: 100%;
+  height:calc( 100vh - 40px);
+  overflow: auto;
+  -webkit-overflow-scrolling:touch;
+  .list-render-swiper-wrap,.list-render-overview-wrap{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100% ;
+  }
+  .list-render-swiper-wrap{
+    position: relative;
+    .nav-wrap{
+      position: fixed;
+      top:px2rem(80px);
+      left:0;
+      display: flex;
+      width: 100%;
+      min-height: px2rem(70px);
+      background-color: $white;
+      border-bottom:px2rem(1px) solid $statusGray;
+      box-sizing: border-box;
+      z-index: 99;
+      .prev,.next{
+        display: flex;
+        align-items: center;
+        width:px2rem(70px);
+        min-height: px2rem(70px);
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .prev{
+        justify-content: flex-end;
+        @include img-retina('~@/assets/party/Last2x.png', '~@/assets/party/Last3x.png', px2rem(30px),px2rem(24px));
+      }
+      .middle{
+        flex:1;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: px2rem(30px);
+        color: $textTitle;
+      }
+      .next{
+        @include img-retina('~@/assets/party/next2x.png', '~@/assets/party/next3x.png', px2rem(30px),px2rem(24px));
+      }
+    }
+    .subject-list-wrap{
+      flex:1;
+      position: relative;
+      .subject-list-transition-height{
+        height: 100%;
+        padding:px2rem(70px) 0 px2rem(100px);
+        &.disabled-submit{
+          padding-bottom:px2rem(20px);
+        }
+      }
+      .subject-list-transition-wrap{
+        width: 100%;
+        height: 100%;
+      }
+      .subject-bottom-nav-wrap{
+        display: flex;
+        position: fixed;
+        left:0;
+        bottom: 0;
+        width:100%;
+        height: px2rem(100px);
+        border-top:px2rem(1px) solid #dbdbdb;
+        background-color: $white;
+        box-sizing: border-box;
+        .bottom-menu-item{
+          position: relative;
+          flex:1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          .sprean-line{
+            position: absolute;
+            right:0;
+            top:50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: px2rem(38px);
+            background-color: $borderColor;
+          }
+          .bg-answercard,.bg-showanswer,.bg-favor{
+            display: flex;
+            align-items: center;
+            line-height: 1;
+            background-repeat: no-repeat;
+            background-position:0 center;
+            padding:px2rem(2px) 0 0 px2rem(47px);
+            font-size: px2rem(28px);
+            color: $textTitle;
+            .loading{
+              margin-left:px2rem(5px);
+            }
+            &.active{
+              color: $bottomNavHover;
+            }
+          }
+          .bg-answercard{
+            @include img-retina('~@/assets/party/navbottom/Answer_nor@2x.png', '~@/assets/party/navbottom/Answer_nor@3x.png',px2rem(30px),px2rem(30px));
+            &.active{
+              @include img-retina('~@/assets/party/navbottom/Answer_hover@2x.png', '~@/assets/party/navbottom/Answer_hover@3x.png',px2rem(30px),px2rem(30px));
+            }
+          }
+          .bg-showanswer{
+            @include img-retina('~@/assets/party/navbottom/See_nor@2x.png', '~@/assets/party/navbottom/See_nor@3x.png',px2rem(30px),px2rem(30px));
+            &.active{
+              @include img-retina('~@/assets/party/navbottom/See_hover@2x.png', '~@/assets/party/navbottom/See_hover@3x.png',px2rem(30px),px2rem(30px));
+            }
+          }
+          .bg-favor{
+            @include img-retina('~@/assets/party/navbottom/star_nor@2x.png', '~@/assets/party/navbottom/star_nor@3x.png',px2rem(30px),px2rem(30px));
+            &.active{
+              @include img-retina('~@/assets/party/navbottom/star_hover@2x.png', '~@/assets/party/navbottom/star_hover@3x.png',px2rem(30px),px2rem(30px));
+            }
+          }
+          &:last-child{
+            .bg-answercard,.bg-showanswer,.bg-favor{
+              border-right:none;
+            }
+            .sprean-line{
+              width:0;
+            }
+          }
+        }
+      }
+    }
+  }
+  .list-render-overview-wrap{
+    z-index: 1;
+    .subject-list-overview{
+      flex:1;
+      background-color: $white;
+      .subject-item-wrap{
+        width: 100%;
+        box-sizing: border-box;
+        padding: px2rem(24px) px2rem(30px);
+        margin: 0;
+        border-bottom:px2rem(1px) solid $borderColor;
+        .subject-title-wrap{
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          margin: 0;
+          .title-info-wrap{
+            width: 100%;
+            .type{
+              font-size: px2rem(20px);
+              color: $textContent;
+              line-height: 1;
+              padding:px2rem(8px);
+              background-color: $borderColor;
+              border-radius: px2rem(4px);
+              margin-right: px2rem(10px);
+            }
+            .tip{
+              position: relative;
+              top:px2rem(2px);
+              font-size: px2rem(34px);
+              color: $textTitle;
+              line-height: px2rem(54px);
+              margin-right: px2rem(20px);
+            }
+            .score{
+                font-size: px2rem(32px);
+                color: $textConfig;
+            }
+          }
+        }
+      }
+    }
+  }
+  .grid-overview-wrap{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: calc( 100% - 35px);
+    background-color: $white;
+    margin-top:px2rem(70px);
+    padding-top: px2rem(32px);
+    box-sizing: border-box;
+    border-top:px2rem(1px) solid $borderColor;
+    z-index: 20;
+    overflow: auto;
+  }
+}
+
+/* 滑动动画样式 */
+.move-prev-enter-active {
+  animation: move-out .25s linear reverse;
+}
+.move-prev-leave-active {
+  animation: move-in .25s linear reverse;
+}
+
+.move-next-enter-active {
+  animation: move-in .25s linear;
+}
+.move-next-leave-active {
+  animation: move-out .25s linear;
+}
+
+@keyframes move-in {
+  0% { transform: translateX(100%) translateZ(0); }
+  100% { transform: translateX(0) translateZ(0);}
+}
+
+@keyframes move-out {
+  0% { transform: translateX(0) translateZ(0); }
+  100% { transform: translateX(-100%) translateZ(0);}
+}
