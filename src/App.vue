@@ -11,12 +11,3 @@ export default {
   name: 'App'
 }
 </script>
-
-<style lang="scss">
-#app{
-  .btn-wrap{
-    display: flex;
-    justify-content: space-around;
-  }
-}
-</style>
