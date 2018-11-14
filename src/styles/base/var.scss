@@ -1,3 +1,6 @@
+@import '../theme/default_old.scss'; // 引入默认的颜色配色(之前的)
+@import '../theme/default.scss'; // 引入默认的颜色配色
+
 // 响应式背景
 @mixin img-retina($file-1x, $file-2x, $width-1x, $height-1x) {
   background-image: url("#{$file-1x}");
@@ -80,4 +83,66 @@
   white-space:nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+// 更改背景颜色
+@mixin bg-color($colorName) {
+  $bgColorMaps: (
+    default: (
+      bgColor: $bgColor,
+      themeColor: $themeColor
+    )
+  );
+
+  @each $key,$list in $bgColorMaps {
+    @each $varName,$val in $list {
+      @if $colorName == $varName {
+        [data-theme= #{$key}] & {
+          background: $val;
+        }
+      }
+    }
+  }
+}
+
+// 更改背景颜色
+@mixin font-color($fontName) {
+  $colorMaps: (
+    default: (
+      bgColor: $bgColor,
+      titleColor: $titleColor,
+      themeColor: $themeColor
+    )
+  );
+
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $fontName == $varName {
+        [data-theme= #{$key}] & {
+          color: $val;
+        }
+      }
+    }
+  }
+}
+
+// 更改背景颜色
+@mixin border($width,$style,$color) {
+  $colorMaps: (
+    default: (
+      themeColor: $themeColor
+    )
+  );
+
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $color == $varName {
+        [data-theme= #{$key}] & {
+          border-width: $width;
+          border-color: $val;
+          border-style: $style;
+        }
+      }
+    }
+  }
 }

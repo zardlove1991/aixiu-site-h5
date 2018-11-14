@@ -76,3 +76,22 @@ export const setBrowserTitle = (title) => {
     document.title = title
   }
 }
+
+export const getUrlParam = (key) => {
+  if (typeof key === 'undefined') {
+    let param = {}
+    location.search.replace(/([^=?&]*)=([^&]*)/g, (item, key, value) => {
+      param[decodeURIComponent(key)] = decodeURIComponent(value)
+    })
+    return param
+  }
+  let pattern = new RegExp('(^|&)' + key + '=([^&]*)(&|$)')
+  let match = window.location.search.substr(1).match(pattern)
+  return match !== null ? decodeURIComponent(match[2]) : null
+}
+
+export const setPlatCssInclude = () => {
+  let urlParams = getUrlParam()
+  let plat = urlParams.plat ? urlParams.plat : 'default'
+  window.document.documentElement.setAttribute('data-theme', plat)
+}

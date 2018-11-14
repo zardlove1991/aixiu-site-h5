@@ -4,11 +4,14 @@ import 'mint-ui/lib/style.css'
 import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 import { PARTY } from '@/common/currency'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
+//判定当前是否有平台参数
+setPlatCssInclude()
+
 // 添加路由的钩子函数
 router.afterEach(route => {
   // dynamicTitle 动态标题（某个内容跳转）

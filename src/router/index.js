@@ -66,6 +66,11 @@ export default new Router({
       meta: {
         title: '我的错题'
       }
+    },
+    {
+      path: '/depencelist',
+      name: 'depencelist',
+      component: getComponent('depence-list')
     }
   ]
 })

@@ -1,13 +1,16 @@
 @import './base/reset.scss'; // 引入重置css样式
 @import './base/var.scss'; // 引入mixin和函数
 @import './base/animations.scss'; // 引入公共动画
-@import './theme/default.scss'; // 引入默认的颜色配色
 
 body{
-  background-color:$bgColor;
+  @include bg_color('bgColor');
 }
 img{
   width:100%;
   height:100%;
   object-fit: cover;
+}
+
+.box-shadow{
+  box-shadow: 0 0 px2rem(30px) rgba(0,0,0,0.1);
 }
