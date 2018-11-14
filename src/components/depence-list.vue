@@ -15,6 +15,19 @@
             <div class="select-desc">{{item.desc}}</div>
           </div>
         </div>
+        <!--答案解析-->
+        <div class="answerinfo-wrap" v-if="false">
+          <div class="correct-answer">答案: D</div>
+          <div class="answer-analysis">
+            <h4 class="title">解析</h4>
+            <p class="content">依照《考工记》都城设计礼制--左祖右社,午门之前分设太庙和社稷坛。显示了族权和神权对皇权的供卫</p>
+            <div class="exam-types">
+              <span class="tip">考点</span>
+              <span class="type" v-for="(item,index) in types" :key="index">{{item}}</span>
+            </div>
+            <p class="percent">正确率: 75%</p>
+          </div>
+        </div>
       </div>
     </div>
     <!--底部跳转按钮-->
@@ -38,6 +51,7 @@ export default {
         { key: 'C', desc: '族权对黄泉和神权的依赖'},
         { key: 'D', desc: '族权对黄泉和神权的依赖'}
       ],
+      types: ['艺术鉴赏', '文化历史', '古建筑'],
       currentIndex: -1
     }
   },
@@ -106,6 +120,61 @@ export default {
               @include font-color('bgColor');
               @include bg-color('themeColor');
             }
+          }
+        }
+      }
+      .answerinfo-wrap{
+        width: 100%;
+        padding-top: px2rem(79px);
+        .correct-answer{
+          display: flex;
+          align-items: center;
+          width: 100%;
+          height: px2rem(100px);
+          padding-left: px2rem(30px);
+          box-sizing: border-box;
+          @include font-dpr(15px);
+          @include font-color('titleColor');
+          @include border('bottom',1px,solid,'lineColor');
+        }
+        .answer-analysis{
+          width: 100%;
+          padding: 0 px2rem(61px) 0 px2rem(30px);
+          box-sizing: border-box;
+          .title{
+            margin: px2rem(26px) 0;
+            @include font-dpr(16px);
+            @include font-color('titleColor');
+          }
+          .content{
+            line-height: px2rem(44px);
+            @include font-dpr(16px);
+            @include font-color('titleColor');
+          }
+          .exam-types{
+            display: flex;
+            align-items: center;
+            margin: px2rem(44px) 0;
+            .tip{
+              margin-right: px2rem(19px);
+              @include font-dpr(13px);
+              @include font-color('tipColor');
+            }
+            .type{
+              padding: px2rem(9px) px2rem(12px);
+              border-radius: px2rem(4px);
+              margin-right: px2rem(19px);
+              line-height: 1;
+              @include border('all',1px,solid,'themeColor');
+              @include font-dpr(12px);
+              @include font-color('themeColor');
+            }
+          }
+          .percent{
+            line-height: 1;
+            padding-bottom: px2rem(61px);
+            @include font-dpr(13px);
+            @include font-color('tipColor');
           }
         }
       }
