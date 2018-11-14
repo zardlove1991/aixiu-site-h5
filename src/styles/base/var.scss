@@ -90,7 +90,9 @@
   $bgColorMaps: (
     default: (
       bgColor: $bgColor,
-      themeColor: $themeColor
+      themeColor: $themeColor,
+      borderColor: $borderColor,
+      lineColor: $lineColor
     )
   );
 
@@ -111,7 +113,10 @@
     default: (
       bgColor: $bgColor,
       titleColor: $titleColor,
-      themeColor: $themeColor
+      themeColor: $themeColor,
+      themeFadeColor: $themeFadeColor,
+      tipColor:$tipColor,
+      descColor:$descColor
     )
   );
 
@@ -127,20 +132,52 @@
 }
 
 // 更改背景颜色
-@mixin border($width,$style,$color) {
+@mixin border($direction,$width,$style,$color) {
   $colorMaps: (
     default: (
-      themeColor: $themeColor
+      themeColor: $themeColor,
+      themeFadeColor: $themeFadeColor,
+      lineColor: $lineColor
     )
   );
 
   @each $key,$list in $colorMaps {
     @each $varName,$val in $list {
       @if $color == $varName {
-        [data-theme= #{$key}] & {
-          border-width: $width;
-          border-color: $val;
-          border-style: $style;
+        @if $direction == 'all' {
+          [data-theme= #{$key}] & {
+            border-width: $width;
+            border-color: $val;
+            border-style: $style;
+          }
+        }
+        @else if $direction == 'top' {
+          [data-theme= #{$key}] & {
+            border-top-width: $width;
+            border-top-color: $val;
+            border-top-style: $style;
+          }
+        }
+        @else if $direction == 'left' {
+          [data-theme= #{$key}] & {
+            border-left-width: $width;
+            border-left-color: $val;
+            border-left-style: $style;
+          }
+        }
+        @else if $direction == 'right' {
+          [data-theme= #{$key}] & {
+            border-right-width: $width;
+            border-right-color: $val;
+            border-right-style: $style;
+          }
+        }
+        @else if $direction == 'bottom' {
+          [data-theme= #{$key}] & {
+            border-bottom-width: $width;
+            border-bottom-color: $val;
+            border-bottom-style: $style;
+          }
         }
       }
     }
