@@ -92,7 +92,11 @@
       bgColor: $bgColor,
       themeColor: $themeColor,
       borderColor: $borderColor,
-      lineColor: $lineColor
+      lineColor: $lineColor,
+      errorColor: $errorColor,
+      activeColor: $activeColor,
+      bgGrayColor: $bgGrayColor,
+      tipColor:$tipColor
     )
   );
 
@@ -116,7 +120,9 @@
       themeColor: $themeColor,
       themeFadeColor: $themeFadeColor,
       tipColor:$tipColor,
-      descColor:$descColor
+      descColor:$descColor,
+      errorColor: $errorColor,
+      disabledColor: $disabledColor
     )
   );
 
@@ -137,7 +143,10 @@
     default: (
       themeColor: $themeColor,
       themeFadeColor: $themeFadeColor,
-      lineColor: $lineColor
+      lineColor: $lineColor,
+      errorColor: $errorColor,
+      activeColor: $activeColor,
+      borderGray: $borderGray
     )
   );
 

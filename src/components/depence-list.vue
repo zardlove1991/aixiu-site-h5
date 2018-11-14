@@ -1,7 +1,8 @@
 <template lang="html">
   <div class="denpncelist-wrap">
     <!--头部组件-->
-    <exam-header></exam-header>
+    <!-- <exam-header></exam-header> -->
+    <subject-header></subject-header>
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap">
@@ -40,6 +41,7 @@
 
 <script>
 import ExamHeader from "./base/exam-header"
+import SubjectHeader from "./base/subject-header"
 
 export default {
   name: 'depence-list',
@@ -56,7 +58,8 @@ export default {
     }
   },
   components: {
-    ExamHeader
+    ExamHeader,
+    SubjectHeader
   },
   methods: {
     selectOption (index) {
@@ -88,6 +91,7 @@ export default {
         padding: px2rem(54px) 0 px2rem(16px) px2rem(32px);
         box-sizing: border-box;
         line-height: 1;
+        @include font-dpr(16px);
         .score{
           font-weight: normal;
           margin-left: px2rem(10px);

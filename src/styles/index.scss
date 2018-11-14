@@ -14,3 +14,9 @@ img{
 .box-shadow{
   box-shadow: 0 0 px2rem(30px) rgba(0,0,0,0.1);
 }
+
+// 去除所有滚动条显示
+::-webkit-scrollbar {
+  width: 0 !important ;
+  height: 0 !important;
+}
