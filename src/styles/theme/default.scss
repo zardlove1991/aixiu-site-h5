@@ -10,8 +10,24 @@ $descColor: #999;
 $errorColor: #FF564D;
 $activeColor: #FFAB26;
 $disabledColor: #AFAFAF;
-
 // 边框颜色
 $borderColor: #dbdbdb;
 $lineColor: #ebebeb;
 $borderGray: #ccc;
+
+// 颜色map
+$defaultColorMap: (
+  bgGrayColor: $bgGrayColor,
+  bgColor: $bgColor,
+  themeColor: $themeColor,
+  themeFadeColor: $themeFadeColor,
+  titleColor: $titleColor,
+  descColor: $descColor,
+  tipColor:$tipColor,
+  errorColor: $errorColor,
+  activeColor: $activeColor,
+  disabledColor: $disabledColor,
+  borderColor: $borderColor,
+  lineColor: $lineColor,
+  borderGray: $borderGray
+)

@@ -87,20 +87,11 @@
 
 // 更改背景颜色
 @mixin bg-color($colorName) {
-  $bgColorMaps: (
-    default: (
-      bgColor: $bgColor,
-      themeColor: $themeColor,
-      borderColor: $borderColor,
-      lineColor: $lineColor,
-      errorColor: $errorColor,
-      activeColor: $activeColor,
-      bgGrayColor: $bgGrayColor,
-      tipColor:$tipColor
-    )
+  $colorMaps: (
+    default: $defaultColorMap
   );
 
-  @each $key,$list in $bgColorMaps {
+  @each $key,$list in $colorMaps {
     @each $varName,$val in $list {
       @if $colorName == $varName {
         [data-theme= #{$key}] & {
@@ -114,16 +105,7 @@
 // 更改背景颜色
 @mixin font-color($fontName) {
   $colorMaps: (
-    default: (
-      bgColor: $bgColor,
-      titleColor: $titleColor,
-      themeColor: $themeColor,
-      themeFadeColor: $themeFadeColor,
-      tipColor:$tipColor,
-      descColor:$descColor,
-      errorColor: $errorColor,
-      disabledColor: $disabledColor
-    )
+    default: $defaultColorMap
   );
 
   @each $key,$list in $colorMaps {
@@ -140,14 +122,7 @@
 // 更改背景颜色
 @mixin border($direction,$width,$style,$color) {
   $colorMaps: (
-    default: (
-      themeColor: $themeColor,
-      themeFadeColor: $themeFadeColor,
-      lineColor: $lineColor,
-      errorColor: $errorColor,
-      activeColor: $activeColor,
-      borderGray: $borderGray
-    )
+    default: $defaultColorMap
   );
 
   @each $key,$list in $colorMaps {

@@ -7,7 +7,7 @@
     <!--缩略按钮-->
     <div class="thumb-btn">
       <div class="line-wrap">
-        <span class="line" v-for="(item,index) in 3"></span>
+        <span class="line" v-for="(item,index) in 3" :key="index"></span>
       </div>
     </div>
   </div>

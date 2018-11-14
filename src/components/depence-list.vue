@@ -40,18 +40,18 @@
 </template>
 
 <script>
-import ExamHeader from "./base/exam-header"
-import SubjectHeader from "./base/subject-header"
+import ExamHeader from './base/exam-header'
+import SubjectHeader from './base/subject-header'
 
 export default {
   name: 'depence-list',
   data () {
     return {
       selects: [
-        { key: 'A', desc: '族权对皇权和神权的依赖'},
-        { key: 'B', desc: '神权对皇权和神权的依赖'},
-        { key: 'C', desc: '族权对黄泉和神权的依赖'},
-        { key: 'D', desc: '族权对黄泉和神权的依赖'}
+        { key: 'A', desc: '族权对皇权和神权的依赖' },
+        { key: 'B', desc: '神权对皇权和神权的依赖' },
+        { key: 'C', desc: '族权对黄泉和神权的依赖' },
+        { key: 'D', desc: '族权对黄泉和神权的依赖' }
       ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
       currentIndex: -1

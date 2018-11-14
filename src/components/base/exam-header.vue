@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: "exam-header"
+  name: 'exam-header'
 }
 </script>
 

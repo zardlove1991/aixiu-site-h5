@@ -9,7 +9,7 @@ import { PARTY } from '@/common/currency'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
-//判定当前是否有平台参数
+// 判定当前是否有平台参数
 setPlatCssInclude()
 
 // 添加路由的钩子函数
