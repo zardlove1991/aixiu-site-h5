@@ -65,13 +65,9 @@ export default {
         this.subjectEmptyItems = detalItemNum
       })
     },
-    close () {
-      this.$emit('close')
-    },
     jumpSubject (key) {
       let selectIndex = this.list.findIndex(item => item.key === key)
       this.$emit('select', selectIndex)
-      this.close()
     }
   }
 }
@@ -85,6 +81,9 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-bottom: px2rem(36px);
+    &:last-child{
+      margin-bottom: 0;
+    }
     .item,.place-item{
       text-align: center;
       line-height: px2rem(100px);

@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="denpncelist-wrap">
     <!--头部组件-->
-    <!-- <exam-header></exam-header> -->
-    <subject-header></subject-header>
+    <exam-header :list="subjectList"></exam-header>
+    <!-- <subject-header :list="subjectList"></subject-header> -->
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap">
@@ -54,14 +54,28 @@ export default {
         { key: 'D', desc: '族权对黄泉和神权的依赖' }
       ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
-      currentIndex: -1
+      currentIndex: -1,
+      subjectList: []
     }
   },
   components: {
     ExamHeader,
     SubjectHeader
   },
+  created () {
+    this._mockData()
+  },
   methods: {
+    _mockData () {
+      let list = []
+      for (let i = 0; i < 24; i++) {
+        list.push({
+          key: `key_${i}`,
+          val: i + 1
+        })
+      }
+      this.subjectList = list
+    },
     selectOption (index) {
       this.currentIndex = index
     }

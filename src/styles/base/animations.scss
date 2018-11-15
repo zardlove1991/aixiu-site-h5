@@ -16,11 +16,20 @@
   transform: translate3d(100%,0,0);
 }
 
-// 展开
+// 下展开
 .down-enter-active,.down-leave-active{
   transition: all 0.2s ease;
 }
 
 .down-enter,.down-leave-to{
   transform: translate3d(0,-100%,0);
+}
+
+// 展开
+.up-enter-active,.up-leave-active{
+  transition: all 0.2s ease;
+}
+
+.up-enter,.up-leave-to{
+  transform: translate3d(0,100%,0);
 }

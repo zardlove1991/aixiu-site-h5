@@ -1,8 +1,8 @@
 <template lang="html">
-  <div class="subject-header-wrap">
+  <div class="subject-header-wrap" v-if="list.length">
     <!--试题概览数据-->
     <div class="subject-item-wrap" ref="subjectItemWrap">
-      <div class="item success" ref="subjectItem" :class="{active: currentActiveIndex == index}"  v-for="(item,index) in subjectList" :key="index">{{item.val}}</div>
+      <div class="item success" ref="subjectItem" :class="{active: currentActiveIndex == index}"  v-for="(item,index) in list" :key="index">{{item.val}}</div>
     </div>
     <!--缩略按钮-->
     <div class="thumb-btn" @click.stop="toggleSubjectList">
@@ -19,7 +19,7 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-wrap" :list="subjectList" @close="toggleSubjectList" @select="selectSubject"></subject-list>
+        <subject-list class="list-wrap" :list="list" @close="toggleSubjectList" @select="selectSubject"></subject-list>
       </div>
     </transition>
   </div>
@@ -30,30 +30,22 @@ import SubjectList from './subject-list'
 
 export default {
   name: 'subject-header',
+  props: {
+    list: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
       isShowSubjectList: false,
-      currentActiveIndex: 0,
-      subjectList: []
+      currentActiveIndex: 0
     }
   },
   components: {
     SubjectList
   },
-  created () {
-    this._mockData()
-  },
   methods: {
-    _mockData () {
-      let list = []
-      for (let i = 0; i < 24; i++) {
-        list.push({
-          key: `key_${i}`,
-          val: i + 1
-        })
-      }
-      this.subjectList = list
-    },
     getItemClass (index) {
       let i = index % 4
       let cls = 'success'
