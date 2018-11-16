@@ -17,6 +17,8 @@
           </div>
           <!--音频播放-->
           <my-audio v-if="item.audioUrl" class="my-audio" :src="item.audioUrl"></my-audio>
+          <!--视频播放-->
+          <my-video v-if="item.videoUrl" class="my-video" :src="item.videoUrl"></my-video>
         </div>
         <!--答案解析-->
         <div class="answerinfo-wrap" v-if="false">
@@ -32,11 +34,11 @@
           </div>
         </div>
       </div>
-    </div>
-    <!--底部跳转按钮-->
-    <div class="btn-wrap">
-      <div class="prev">上一题</div>
-      <div class="next">下一题</div>
+      <!--底部跳转按钮-->
+      <div class="btn-wrap">
+        <div class="prev">上一题</div>
+        <div class="next">下一题</div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +47,7 @@
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
+import MyVideo from './depence/video'
 
 export default {
   name: 'depence-list',
@@ -63,11 +66,13 @@ export default {
         },
         {
           key: 'C',
-          desc: '族权对黄泉和神权的依赖'
+          desc: '族权对黄泉和神权的依赖',
+          videoUrl: 'http://ddapp-1253562005.picgz.myqcloud.com/dd_generic/2018/11/16/10/iAoOOFQG7x/project/15423369731083.mp4'
         },
         {
           key: 'D',
-          desc: '族权对黄泉和神权的依赖'
+          desc: '族权对黄泉和神权的依赖',
+          videoUrl: 'http://ddapp-1253562005.picgz.myqcloud.com/dd_generic/2018/11/16/10/iAoOOFQG7x/project/15423369731083.mp4'
         }
       ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
@@ -78,7 +83,8 @@ export default {
   components: {
     ExamHeader,
     SubjectHeader,
-    MyAudio
+    MyAudio,
+    MyVideo
   },
   created () {
     this._mockData()
@@ -110,9 +116,12 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  padding-bottom: px2rem(90px);
   .list-wrap{
+    position: relative;
     width: 100%;
+    min-height: calc(100% - 50px);
+    padding-bottom: px2rem(170px);
+    box-sizing: border-box;
     .list-item-wrap{
       width: 100%;
       @include font-dpr(16px);
@@ -158,7 +167,7 @@ export default {
             }
           }
         }
-        .my-audio{
+        .my-audio,.my-video{
           margin-top: px2rem(39px);
         }
       }
@@ -218,31 +227,31 @@ export default {
         }
       }
     }
-  }
-  .btn-wrap{
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: px2rem(10px);
-    display: flex;
-    justify-content: space-around;
-    .prev,.next{
+    .btn-wrap{
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: px2rem(10px);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      width: px2rem(330px);
-      height: px2rem(80px);
-      border-radius: px2rem(40px);
-      @include font-dpr(16px);
-    }
-    .prev{
-      @include font-color('themeColor');
-      @include border('all',1px,solid,'themeColor');
-    }
-    .next{
-      @include font-color('bgColor');
-      @include bg-color('themeColor');
-      @include border('all',1px,solid,'themeColor');
+      justify-content: space-around;
+      .prev,.next{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: px2rem(330px);
+        height: px2rem(80px);
+        border-radius: px2rem(40px);
+        @include font-dpr(16px);
+      }
+      .prev{
+        @include font-color('themeColor');
+        @include border('all',1px,solid,'themeColor');
+      }
+      .next{
+        @include font-color('bgColor');
+        @include bg-color('themeColor');
+        @include border('all',1px,solid,'themeColor');
+      }
     }
   }
 }
