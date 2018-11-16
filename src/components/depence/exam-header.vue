@@ -13,9 +13,9 @@
         </div>
       </div>
       <!--进度条展示-->
-      <div class="progress-bar-wrap">
-        <div class="progress"></div>
-        <div class="progress-btn" @click.stop="toggetSubjectList">1/26</div>
+      <div class="progress-bar-wrap" ref="headerProgressBar">
+        <div class="progress" ref="headerProgress"></div>
+        <div class="progress-btn" @click.stop="toggetSubjectList" ref="headerProgressBtn">{{currentTip}}</div>
       </div>
     </div>
     <!--答题情况展示-->
@@ -34,6 +34,10 @@
 
 <script>
 import SubjectList from './subject-list'
+import { prefixStyle } from '@/utils/utils'
+
+const PROGRESS_BTN_W = 38
+const TRANSFORM = prefixStyle('transform')
 
 export default {
   name: 'exam-header',
@@ -45,7 +49,27 @@ export default {
   },
   data () {
     return {
-      isShowSubjectList: false
+      isShowSubjectList: false,
+      currentIndex: 0
+    }
+  },
+  computed: {
+    currentTip () {
+      let currentIndex = (this.currentIndex === 0 ? 1 : this.currentIndex)
+      let list = this.list
+      return `${currentIndex}/${list.length}`
+    },
+    percent () {
+      return this.currentIndex / this.list.length
+    }
+  },
+  watch: {
+    percent (newVal) {
+      if (newVal) {
+        let maxOffsetW = this.$refs.headerProgressBar.clientWidth - PROGRESS_BTN_W
+        let offsetWidth = maxOffsetW * newVal
+        this._offset(offsetWidth)
+      }
     }
   },
   components: {
@@ -54,6 +78,12 @@ export default {
   methods: {
     toggetSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
+    },
+    _offset (offsetWidth) {
+      let headerProgressBtnEl = this.$refs.headerProgressBtn
+      let headerProgressEl = this.$refs.headerProgress
+      headerProgressEl.style.width = `${offsetWidth}px`
+      headerProgressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`
     }
   }
 }
@@ -122,15 +152,14 @@ export default {
         position: absolute;
         top: 0;
         left:0;
-        width: px2rem(50px);
+        width: 0;
         height: px2rem(4px);
         @include bg-color('themeColor');
       }
       .progress-btn{
         position: absolute;
-        top: 0;
-        left: px2rem(50px);
-        transform: translateY(-50%);
+        top: px2rem(-15px);
+        left: 0;
         width: px2rem(72px);
         height: px2rem(30px);
         text-align: center;
