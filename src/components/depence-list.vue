@@ -15,6 +15,8 @@
             <div class="select-tip" :class="{active: currentIndex === index}">{{item.key}}</div>
             <div class="select-desc">{{item.desc}}</div>
           </div>
+          <!--音频播放-->
+          <my-audio v-if="item.audioUrl" class="my-audio" :src="item.audioUrl"></my-audio>
         </div>
         <!--答案解析-->
         <div class="answerinfo-wrap" v-if="false">
@@ -40,18 +42,33 @@
 </template>
 
 <script>
-import ExamHeader from './base/exam-header'
-import SubjectHeader from './base/subject-header'
+import ExamHeader from './depence/exam-header'
+import SubjectHeader from './depence/subject-header'
+import MyAudio from './depence/audio'
 
 export default {
   name: 'depence-list',
   data () {
     return {
       selects: [
-        { key: 'A', desc: '族权对皇权和神权的依赖' },
-        { key: 'B', desc: '神权对皇权和神权的依赖' },
-        { key: 'C', desc: '族权对黄泉和神权的依赖' },
-        { key: 'D', desc: '族权对黄泉和神权的依赖' }
+        {
+          key: 'A',
+          desc: '族权对皇权和神权的依赖',
+          audioUrl: 'http://tm3dfds.yusi.tv/uuauth/UUAuth/wymp3/2017/4/30/929283_2017430173232_6263_173519_2605948.mp3'
+        },
+        {
+          key: 'B',
+          desc: '神权对皇权和神权的依赖',
+          audioUrl: 'http://tm3dfds.yusi.tv/uuauth/UUAuth/wymp3/2017/4/30/929283_2017430173232_6263_173519_2605948.mp3'
+        },
+        {
+          key: 'C',
+          desc: '族权对黄泉和神权的依赖'
+        },
+        {
+          key: 'D',
+          desc: '族权对黄泉和神权的依赖'
+        }
       ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
       currentIndex: -1,
@@ -60,7 +77,8 @@ export default {
   },
   components: {
     ExamHeader,
-    SubjectHeader
+    SubjectHeader,
+    MyAudio
   },
   created () {
     this._mockData()
@@ -139,6 +157,9 @@ export default {
               @include bg-color('themeColor');
             }
           }
+        }
+        .my-audio{
+          margin-top: px2rem(39px);
         }
       }
       .answerinfo-wrap{

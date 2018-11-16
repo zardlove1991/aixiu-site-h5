@@ -38,6 +38,14 @@ export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false)
     .replace('ss', _format(sec))
 }
 
+/* 秒数转换成时间 */
+export const formatTimeBySec = (sec, joinTip = ':') => {
+  let minute = Math.floor(sec / 60)
+  let second = Math.floor(sec % 60)
+  let timeArr = [minute, second].map(val => (val < 10 ? `0${val}` : val))
+  return timeArr.join(joinTip)
+}
+
 /*
  * 判断嵌入平台
  * */
@@ -94,4 +102,36 @@ export const setPlatCssInclude = () => {
   let urlParams = getUrlParam()
   let plat = urlParams.plat ? urlParams.plat : 'default'
   window.document.documentElement.setAttribute('data-theme', plat)
+}
+
+// 创建一个自动根据浏览器来添加CSS前缀
+let elementStyle = document.createElement('div').style
+let vender = (() => {
+  let transformNames = {
+    webkit: 'webkitTransform',
+    Moz: 'MozTransform',
+    O: 'OTransform',
+    ms: 'msTransform',
+    standard: 'transform'
+  }
+
+  for (let key in transformNames) {
+    let keyVal = transformNames[key]
+
+    if (elementStyle[keyVal] !== undefined) {
+      return key
+    }
+  }
+
+  return false
+})()
+
+export function prefixStyle (style) {
+  console.log('** 浏览器CSS厂商标识 **', vender)
+  if (!vender) return false
+  if (vender === 'standard') return style
+  // 拼接浏览器厂商标识和style的标签首字母大写
+  let styleKey = vender + style.charAt(0).toUpperCase() + style.substr(1)
+  console.log('**厂商标识的CSS标签**', styleKey)
+  return styleKey
 }
