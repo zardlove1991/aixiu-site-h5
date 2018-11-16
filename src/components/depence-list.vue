@@ -1,43 +1,59 @@
 <template lang="html">
-  <div class="denpncelist-wrap">
+  <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <exam-header :list="subjectList"></exam-header>
+    <exam-header :list="examList"></exam-header>
     <!-- <subject-header :list="subjectList"></subject-header> -->
     <!--主体试题渲染-->
     <div class="list-wrap">
-      <div class="list-item-wrap">
-        <h3 class="subject-type">单选题<span class="score">(5分)</span></h3>
-        <p class="subject-title">1. 中国古老建筑紫金城午门之前的太庙和社稷坛显示了（）</p>
-        <!--每个选择项-->
-        <div class="subject-select-wrap" v-for="(item,index) in selects" :key='index'>
-          <!--每个选择项描述-->
-          <div class="select-tip-wrap" @click.stop="selectOption(index)">
-            <div class="select-tip" :class="{active: currentIndex === index}">{{item.key}}</div>
-            <div class="select-desc">{{item.desc}}</div>
+      <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
+        <template v-if="index == currentIndex">
+          <h3 class="subject-type">
+            <span>{{item.typeTip}}</span>
+            <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
+          </h3>
+          <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
+          <!--题干的每题数据-->
+          <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
+            <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+            <!--音频播放-->
+            <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
+            <!--视频播放-->
+            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
           </div>
-          <!--音频播放-->
-          <my-audio v-if="item.audioUrl" class="my-audio" :src="item.audioUrl"></my-audio>
-          <!--视频播放-->
-          <my-video v-if="item.videoUrl" class="my-video" :src="item.videoUrl"></my-video>
-        </div>
-        <!--答案解析-->
-        <div class="answerinfo-wrap" v-if="false">
-          <div class="correct-answer">答案: D</div>
-          <div class="answer-analysis">
-            <h4 class="title">解析</h4>
-            <p class="content">依照《考工记》都城设计礼制--左祖右社,午门之前分设太庙和社稷坛。显示了族权和神权对皇权的供卫</p>
-            <div class="exam-types">
-              <span class="tip">考点</span>
-              <span class="type" v-for="(item,index) in types" :key="index">{{item}}</span>
+          <!--每个选择项-->
+          <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
+            <!--每个选择项描述-->
+            <div class="select-tip-wrap" @click.stop="selectOption(optIndex)">
+              <div class="select-tip" :class="{active: optItem.selectIndex === optIndex}">{{optItem.selectTip}}</div>
+              <div class="select-desc">{{optItem.name}}</div>
             </div>
-            <p class="percent">正确率: 75%</p>
+            <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
+              <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+              <!--音频播放-->
+              <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
+              <!--视频播放-->
+              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
+            </div>
           </div>
-        </div>
+          <!--答案解析-->
+          <div class="answerinfo-wrap" v-if="false">
+            <div class="correct-answer">答案: D</div>
+            <div class="answer-analysis">
+              <h4 class="title">解析</h4>
+              <p class="content">依照《考工记》都城设计礼制--左祖右社,午门之前分设太庙和社稷坛。显示了族权和神权对皇权的供卫</p>
+              <div class="exam-types">
+                <span class="tip">考点</span>
+                <span class="type" v-for="(item,index) in types" :key="index">{{item}}</span>
+              </div>
+              <p class="percent">正确率: 75%</p>
+            </div>
+          </div>
+        </template>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div class="prev">上一题</div>
-        <div class="next">下一题</div>
+        <div class="prev" @click.stop="currentIndex--">上一题</div>
+        <div class="next" @click.stop="currentIndex++">下一题</div>
       </div>
     </div>
     <!--试题中断弹窗-->
@@ -57,6 +73,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
@@ -65,34 +82,15 @@ import MyModel from './depence/model'
 
 export default {
   name: 'depence-list',
+  props: {
+    id: String
+  },
   data () {
     return {
-      selects: [
-        {
-          key: 'A',
-          desc: '族权对皇权和神权的依赖',
-          audioUrl: 'http://tm3dfds.yusi.tv/uuauth/UUAuth/wymp3/2017/4/30/929283_2017430173232_6263_173519_2605948.mp3'
-        },
-        {
-          key: 'B',
-          desc: '神权对皇权和神权的依赖',
-          audioUrl: 'http://tm3dfds.yusi.tv/uuauth/UUAuth/wymp3/2017/4/30/929283_2017430173232_6263_173519_2605948.mp3'
-        },
-        {
-          key: 'C',
-          desc: '族权对黄泉和神权的依赖',
-          videoUrl: 'http://ddapp-1253562005.picgz.myqcloud.com/dd_generic/2018/11/16/10/iAoOOFQG7x/project/15423369731083.mp4'
-        },
-        {
-          key: 'D',
-          desc: '族权对黄泉和神权的依赖',
-          videoUrl: 'http://ddapp-1253562005.picgz.myqcloud.com/dd_generic/2018/11/16/10/iAoOOFQG7x/project/15423369731083.mp4'
-        }
-      ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
-      currentIndex: -1,
+      currentIndex: 0,
       subjectList: [],
-      isShowSuspendModel: true
+      isShowSuspendModel: false
     }
   },
   components: {
@@ -102,19 +100,16 @@ export default {
     MyVideo,
     MyModel
   },
+  computed: {
+    ...mapGetters('depence', ['examList'])
+  },
   created () {
-    this._mockData()
+    this.initList()
   },
   methods: {
-    _mockData () {
-      let list = []
-      for (let i = 0; i < 24; i++) {
-        list.push({
-          key: `key_${i}`,
-          val: i + 1
-        })
-      }
-      this.subjectList = list
+    async initList () {
+      let examId = this.id || 10001
+      await this.getExamList({ id: examId })
     },
     selectOption (index) {
       this.currentIndex = index
@@ -124,7 +119,10 @@ export default {
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
-    }
+    },
+    ...mapActions('depence', {
+      getExamList: 'GET_EXAMLIST'
+    })
   }
 }
 </script>
@@ -166,6 +164,19 @@ export default {
         padding:px2rem(39px) px2rem(43px) 0 px2rem(30px);
         box-sizing: border-box;
       }
+      .media-wrap{
+        padding:0 px2rem(43px) 0 px2rem(30px);
+        box-sizing: border-box;
+        text-align: center;
+        .my-audio,.my-video,.my-img{
+          margin-top: px2rem(39px);
+        }
+        .my-img{
+          width: 100%;
+          height: px2rem(300px);
+          object-fit: cover;
+        }
+      }
       .subject-select-wrap{
         padding:px2rem(40px) px2rem(43px) 0 px2rem(30px);
         box-sizing: border-box;
@@ -189,8 +200,8 @@ export default {
             }
           }
         }
-        .my-audio,.my-video{
-          margin-top: px2rem(39px);
+        .media-wrap{
+          padding: 0;
         }
       }
       .answerinfo-wrap{

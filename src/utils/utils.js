@@ -126,6 +126,7 @@ let vender = (() => {
   return false
 })()
 
+/* 添加style前缀 */
 export function prefixStyle (style) {
   console.log('** 浏览器CSS厂商标识 **', vender)
   if (!vender) return false
@@ -134,4 +135,10 @@ export function prefixStyle (style) {
   let styleKey = vender + style.charAt(0).toUpperCase() + style.substr(1)
   console.log('**厂商标识的CSS标签**', styleKey)
   return styleKey
+}
+
+/* 获得当前英文字母编号 */
+export function getEnglishChar (num) {
+  let baseCode = 65 + num
+  return String.fromCharCode(baseCode)
 }

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import MintUi from 'mint-ui'
+import vuePicturePreview from 'vue-picture-preview'
 import 'mint-ui/lib/style.css'
 import App from './App'
 import router from '@/router/index'
@@ -9,6 +10,7 @@ import { PARTY } from '@/common/currency'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
+Vue.use(vuePicturePreview)
 // 判定当前是否有平台参数
 setPlatCssInclude()
 

@@ -1,8 +1,8 @@
 <template lang="html">
   <!--底部列表-->
   <div class="list-wrap" v-if="list.length">
-    <div class="row-wrap" v-for="(row,index) in rows" :key='index' ref="subjectRow">
-      <div class="item success" v-for="item in row" :key="item.key" @click.stop="jumpSubject(item.key)">{{item.val}}</div>
+    <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
+      <div class="item success" v-for="(item,index) in row" :key="item.key">{{showSubjectIndex(rowIndex,index)}}</div>
       <!--空占位-->
       <template v-if="row.length < limitCols && subjectEmptyItems">
         <div class="place-item"  v-for="(emptyItem,emptyIndex) in subjectEmptyItems" :key="emptyIndex"></div>
@@ -56,8 +56,9 @@ export default {
   methods: {
     getEmptyItem () {
       this.$nextTick(() => {
-        let prevRowIndex = this.rows.length - 2
-        let curRowIndex = this.rows.length - 1
+        let rows = this.rows.length
+        let prevRowIndex = rows < 2 ? rows -1 : rows - 2
+        let curRowIndex = rows - 1
         let prevRowEl = this.$refs.subjectRow[prevRowIndex]
         let curRowEl = this.$refs.subjectRow[curRowIndex]
         let detalItemNum = prevRowEl.children.length - curRowEl.children.length
@@ -65,9 +66,10 @@ export default {
         this.subjectEmptyItems = detalItemNum
       })
     },
-    jumpSubject (key) {
-      let selectIndex = this.list.findIndex(item => item.key === key)
-      this.$emit('select', selectIndex)
+    showSubjectIndex (rowIndex, colIndex) {
+      let baseIndex = rowIndex * 5
+      let curIndex =  baseIndex + (colIndex + 1)
+      return curIndex
     }
   }
 }

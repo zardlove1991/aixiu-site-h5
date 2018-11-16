@@ -1,5 +1,4 @@
-export const PARTY = {
-  navBarTitle: '智慧党建',
+const METHODS = {
   detectionRestart (item) {
     let passScore = item.pass_score
     let answerScore = item.answer_score
@@ -7,7 +6,7 @@ export const PARTY = {
     // 只有在开启的时候才行
     return restart === 1 && (passScore && (answerScore < passScore))
   },
-  getTypeTip (type) {
+  getSubjetType (type) {
     let typeTip = null
     // 判断当前的题目类型
     if (type === 'input') typeTip = '填空题'
@@ -16,4 +15,14 @@ export const PARTY = {
     else if (type === 'judge') typeTip = '判断题'
     return typeTip
   }
+}
+
+export const PARTY = {
+  navBarTitle: '智慧党建',
+  detectionRestart: METHODS.detectionRestart,
+  getTypeTip: METHODS.getSubjetType
+}
+
+export const DEPENCE = {
+  getSubjetType: METHODS.getSubjetType
 }

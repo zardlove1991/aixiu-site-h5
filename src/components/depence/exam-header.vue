@@ -82,7 +82,7 @@ export default {
   },
   computed: {
     currentTip () {
-      let currentIndex = (this.currentIndex === 0 ? 1 : this.currentIndex)
+      let currentIndex = this.currentIndex
       let list = this.list
       return `${currentIndex}/${list.length}`
     },

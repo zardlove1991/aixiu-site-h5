@@ -70,7 +70,10 @@ export default new Router({
     {
       path: '/depencelist',
       name: 'depencelist',
-      component: getComponent('depence-list')
+      component: getComponent('depence-list'),
+      props: (route) => ({
+        id: route.params.id // 传入需要请求当前试卷的ID
+      })
     }
   ]
 })
