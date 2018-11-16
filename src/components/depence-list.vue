@@ -40,6 +40,19 @@
         <div class="next">下一题</div>
       </div>
     </div>
+    <!--试题中断弹窗-->
+    <my-model :show="isShowSuspendModel"
+              doneText="重新考试"
+              cancelText="放弃并交卷"
+              @confirm="confirmSuspendModel"
+              @cancel="toggleSuspendModel"
+    >
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">Ops，考试中断了</div>
+        <div class="desc">考试题数：30题，考试时间：90分钟</div>
+      </div>
+    </my-model>
   </div>
 </template>
 
@@ -48,6 +61,7 @@ import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
 import MyVideo from './depence/video'
+import MyModel from './depence/model'
 
 export default {
   name: 'depence-list',
@@ -77,14 +91,16 @@ export default {
       ],
       types: ['艺术鉴赏', '文化历史', '古建筑'],
       currentIndex: -1,
-      subjectList: []
+      subjectList: [],
+      isShowSuspendModel: true
     }
   },
   components: {
     ExamHeader,
     SubjectHeader,
     MyAudio,
-    MyVideo
+    MyVideo,
+    MyModel
   },
   created () {
     this._mockData()
@@ -102,6 +118,12 @@ export default {
     },
     selectOption (index) {
       this.currentIndex = index
+    },
+    confirmSuspendModel () {
+      this.toggleSuspendModel()
+    },
+    toggleSuspendModel () {
+      this.isShowSuspendModel = !this.isShowSuspendModel
     }
   }
 }
@@ -252,6 +274,32 @@ export default {
         @include bg-color('themeColor');
         @include border('all',1px,solid,'themeColor');
       }
+    }
+  }
+  .suspend-model{
+    padding:px2rem(49px) px2rem(51px) px2rem(41px);
+    box-sizing: border-box;
+    .tip-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      font-weight: bold;
+      padding: px2rem(30px) 0;
+      text-align: center;
+      @include font-dpr(16px);
+      @include font-color('titleColor');
+    }
+    .desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
     }
   }
 }

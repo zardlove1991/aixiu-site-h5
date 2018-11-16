@@ -7,9 +7,9 @@
           <div class="time">01:00:02</div>
         </div>
         <div class="right-wrap">
-          <div class="giveup-btn">放弃考试</div>
+          <div class="giveup-btn" @click.stop="toggleGiveUpModel">弃考</div>
           <div class="line"></div>
-          <div class="submit-btn">交卷</div>
+          <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div>
         </div>
       </div>
       <!--进度条展示-->
@@ -19,7 +19,7 @@
       </div>
     </div>
     <!--答题情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
+    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList" @touchmove.prevent="">
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->
@@ -29,11 +29,32 @@
         </div>
       </transition>
     </div>
+    <!--弃考的弹窗-->
+    <my-model :show="isShowGiveupModel" @confirm="confirmGiveupModel" @cancel="toggleGiveUpModel">
+      <div class="giveup-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">只有<i class="strong">一次考试机会</i>,确定放弃吗?</div>
+        <div class="desc">(如放弃，则以本次考试结果为最终结果)</div>
+      </div>
+    </my-model>
+    <!--交卷的弹窗-->
+    <my-model :show="isShowSubmitModel"
+              doneText="确认交卷"
+              cancelText="继续答题"
+              @confirm="confirmSubmitModel"
+              @cancel="toggleSubmitModel"
+    >
+      <div class="submit-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="desc">您还有21道题未做,确认交卷吗?</div>
+      </div>
+    </my-model>
   </div>
 </template>
 
 <script>
 import SubjectList from './subject-list'
+import MyModel from './model'
 import { prefixStyle } from '@/utils/utils'
 
 const PROGRESS_BTN_W = 38
@@ -50,8 +71,14 @@ export default {
   data () {
     return {
       isShowSubjectList: false,
-      currentIndex: 0
+      currentIndex: 0,
+      isShowGiveupModel: false,
+      isShowSubmitModel: false
     }
+  },
+  components: {
+    SubjectList,
+    MyModel
   },
   computed: {
     currentTip () {
@@ -72,12 +99,21 @@ export default {
       }
     }
   },
-  components: {
-    SubjectList
-  },
   methods: {
     toggetSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
+    },
+    confirmGiveupModel () {
+      this.toggleGiveUpModel()
+    },
+    toggleGiveUpModel () {
+      this.isShowGiveupModel = !this.isShowGiveupModel
+    },
+    confirmSubmitModel () {
+      this.toggleSubmitModel()
+    },
+    toggleSubmitModel () {
+      this.isShowSubmitModel = !this.isShowSubmitModel
     },
     _offset (offsetWidth) {
       let headerProgressBtnEl = this.$refs.headerProgressBtn
@@ -127,7 +163,7 @@ export default {
         .giveup-btn{
           padding-right: px2rem(23px);
           @include font-dpr(13px);
-          @include font-color('descColor');
+          @include font-color('tipColor');
         }
         .line{
           width: px2rem(2px);
@@ -199,6 +235,52 @@ export default {
         box-sizing: border-box;
         @include bg-color('bgColor');
       }
+    }
+  }
+  .giveup-model{
+    padding: px2rem(44px) px2rem(64px) px2rem(60px) px2rem(73px);
+    box-sizing: border-box;
+    .tip-bg{
+      width: px2rem(94px);
+      height: px2rem(94px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/horn@2x.png","~@/assets/common/horn@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      padding: px2rem(30px) 0;
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+      .strong{
+        @include font-color('titleColor');
+        font-style: normal;
+      }
+    }
+    .desc{
+      @include font-dpr(12px);
+      @include font-color('descColor');
+    }
+  }
+  .submit-model{
+    padding: px2rem(61px) px2rem(77px) px2rem(49px);
+    box-sizing: border-box;
+    .tip-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/book@2x.png","~@/assets/common/book@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .desc{
+      line-height: 1;
+      padding-top: px2rem(30px);
+      @include font-dpr(14px);
+      @include font-color('tipColor');
     }
   }
 }
