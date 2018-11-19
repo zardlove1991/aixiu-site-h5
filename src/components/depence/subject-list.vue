@@ -57,18 +57,18 @@ export default {
     getEmptyItem () {
       this.$nextTick(() => {
         let rows = this.rows.length
-        let prevRowIndex = rows < 2 ? rows -1 : rows - 2
+        let prevRowIndex = rows < 2 ? rows - 1 : rows - 2
         let curRowIndex = rows - 1
         let prevRowEl = this.$refs.subjectRow[prevRowIndex]
         let curRowEl = this.$refs.subjectRow[curRowIndex]
         let detalItemNum = prevRowEl.children.length - curRowEl.children.length
-        // console.log('列表空白填充个数', detalItemNum)
+        console.log('列表空白填充个数', detalItemNum)
         this.subjectEmptyItems = detalItemNum
       })
     },
     showSubjectIndex (rowIndex, colIndex) {
       let baseIndex = rowIndex * 5
-      let curIndex =  baseIndex + (colIndex + 1)
+      let curIndex = baseIndex + (colIndex + 1)
       return curIndex
     }
   }

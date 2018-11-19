@@ -68,11 +68,12 @@ export default new Router({
       }
     },
     {
-      path: '/depencelist',
+      path: '/depencelist/:id',
       name: 'depencelist',
       component: getComponent('depence-list'),
       props: (route) => ({
-        id: route.params.id // 传入需要请求当前试卷的ID
+        id: route.params.id, // 传入需要请求当前试卷的ID
+        rtp: route.query.rtp // 试卷渲染的类型 考试:exam 解析:analysis
       })
     }
   ]

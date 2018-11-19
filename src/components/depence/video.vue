@@ -4,7 +4,10 @@
     <video ref="video" class="video" :src="src"
       x5-video-player-type="h5" :controls="isShowControl"
       webkit-playsinline="true" playsinline="true"
-    >该浏览器不支持video属性</video>
+    >
+      <source :src="src" type="video/mp4">
+      该浏览器不支持video属性
+    </video>
     <!--视频遮罩层-->
     <div class="thumb-wrap" v-show="!isShowControl">
       <div class="play-btn" @click.stop='playVideo'></div>

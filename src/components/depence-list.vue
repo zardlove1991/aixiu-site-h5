@@ -6,7 +6,7 @@
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
-        <template v-if="index == currentIndex">
+        <template v-if="index == currentSubjectIndex">
           <h3 class="subject-type">
             <span>{{item.typeTip}}</span>
             <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
@@ -23,7 +23,7 @@
           <!--每个选择项-->
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
             <!--每个选择项描述-->
-            <div class="select-tip-wrap" @click.stop="selectOption(optIndex)">
+            <div class="select-tip-wrap">
               <div class="select-tip" :class="{active: optItem.selectIndex === optIndex}">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
@@ -36,24 +36,25 @@
             </div>
           </div>
           <!--答案解析-->
-          <div class="answerinfo-wrap" v-if="false">
-            <div class="correct-answer">答案: D</div>
+          <div class="answerinfo-wrap" v-if="renderType === 'analysis'">
+            <div class="correct-answer">答案: {{item.correntTip}}</div>
             <div class="answer-analysis">
               <h4 class="title">解析</h4>
-              <p class="content">依照《考工记》都城设计礼制--左祖右社,午门之前分设太庙和社稷坛。显示了族权和神权对皇权的供卫</p>
-              <div class="exam-types">
+              <p class="content" v-html="item.analysis"></p>
+              <!--目前还没有类别和正确率 暂时隐藏-->
+              <div class="exam-types" v-show="false">
                 <span class="tip">考点</span>
                 <span class="type" v-for="(item,index) in types" :key="index">{{item}}</span>
               </div>
-              <p class="percent">正确率: 75%</p>
+              <p class="percent" v-show="false">正确率: 75%</p>
             </div>
           </div>
         </template>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div class="prev" @click.stop="currentIndex--">上一题</div>
-        <div class="next" @click.stop="currentIndex++">下一题</div>
+        <div class="prev" @click.stop="changeSubjectIndex('sub')">上一题</div>
+        <div class="next" @click.stop="changeSubjectIndex('add')">下一题</div>
       </div>
     </div>
     <!--试题中断弹窗-->
@@ -83,12 +84,12 @@ import MyModel from './depence/model'
 export default {
   name: 'depence-list',
   props: {
-    id: String
+    id: String,
+    rtp: String
   },
   data () {
     return {
       types: ['艺术鉴赏', '文化历史', '古建筑'],
-      currentIndex: 0,
       subjectList: [],
       isShowSuspendModel: false
     }
@@ -101,18 +102,19 @@ export default {
     MyModel
   },
   computed: {
-    ...mapGetters('depence', ['examList'])
+    ...mapGetters('depence', ['examList', 'renderType', 'currentSubjectIndex'])
   },
   created () {
     this.initList()
   },
   methods: {
     async initList () {
-      let examId = this.id || 10001
-      await this.getExamList({ id: examId })
-    },
-    selectOption (index) {
-      this.currentIndex = index
+      let examId = this.id
+      let rtp = this.rtp
+      await this.getExamList({
+        id: examId,
+        renderType: rtp
+      })
     },
     confirmSuspendModel () {
       this.toggleSuspendModel()
@@ -121,7 +123,8 @@ export default {
       this.isShowSuspendModel = !this.isShowSuspendModel
     },
     ...mapActions('depence', {
-      getExamList: 'GET_EXAMLIST'
+      getExamList: 'GET_EXAMLIST',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
     })
   }
 }
