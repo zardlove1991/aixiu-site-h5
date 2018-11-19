@@ -2,7 +2,13 @@
   <!--底部列表-->
   <div class="list-wrap" v-if="list.length">
     <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
-      <div class="item success" v-for="(item,index) in row" :key="item.key">{{showSubjectIndex(rowIndex,index)}}</div>
+      <div class="item normal"
+           :class="[{ disabled: haveDone(item) }, setActiveClass(index)]"
+           @click.stop= "selectSubject(item)"
+           v-for="(item,index) in row" :key="item.key"
+      >
+        {{showSubjectIndex(rowIndex,index)}}
+      </div>
       <!--空占位-->
       <template v-if="row.length < limitCols && subjectEmptyItems">
         <div class="place-item"  v-for="(emptyItem,emptyIndex) in subjectEmptyItems" :key="emptyIndex"></div>
@@ -12,12 +18,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'subject-list',
   props: {
     list: {
       type: Array,
       default: () => []
+    },
+    curIndex: {
+      type: Number,
+      default: 0
     }
   },
   data () {
@@ -27,6 +39,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('depence', ['renderType']),
     rows () {
       // 建立一个mock的数据
       let limitCols = this.limitCols
@@ -70,6 +83,21 @@ export default {
       let baseIndex = rowIndex * 5
       let curIndex = baseIndex + (colIndex + 1)
       return curIndex
+    },
+    setActiveClass (index) {
+      let renderType = this.renderType
+      let curAcitve = this.curIndex === index
+      if (!curAcitve) return ''
+      return `${renderType}Active`
+    },
+    selectSubject (subject) {
+      let list = this.list
+      let subjectIndex = list.findIndex(item => item.id === subject.id)
+      this.$emit('select', { subject, index: subjectIndex })
+    },
+    haveDone (subject) {
+      let isDid = subject.options.some(item => item.active)
+      return !isDid
     }
   }
 }
@@ -93,6 +121,11 @@ export default {
       height: px2rem(100px);
       border-radius: 50%;
       @include font-dpr(16px);
+      &.normal{
+        @include bg-color('bgColor');
+        @include font-color('titleColor');
+        @include border('all',1px,solid,'tipColor');
+      }
       &.success{
         @include bg-color('bgColor');
         @include font-color('themeColor');
@@ -108,10 +141,15 @@ export default {
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
       }
-      &.active{
+      &.analysisActive{
         @include bg-color('activeColor');
         @include font-color('bgColor');
         @include border('all',1px,solid,'activeColor');
+      }
+      &.examActive{
+        @include bg-color('themeColor');
+        @include font-color('bgColor');
+        @include border('all',1px,solid,'themeColor');
       }
     }
   }

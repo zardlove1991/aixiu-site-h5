@@ -4,7 +4,7 @@
       <!--主体内容展示-->
       <div class="header-content">
         <div class="left-wrap">
-          <div class="time">01:00:02</div>
+          <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
         </div>
         <div class="right-wrap">
           <div class="giveup-btn" @click.stop="toggleGiveUpModel">弃考</div>
@@ -25,7 +25,7 @@
           <!--头部标题-->
           <div class="title">答题情况</div>
           <!--答题列表-->
-          <subject-list class="list-wrap" :list='list'></subject-list>
+          <subject-list class="list-wrap" :list='list' :curIndex="curIndex" @select="dealSelectSubject"></subject-list>
         </div>
       </transition>
     </div>
@@ -55,7 +55,7 @@
 <script>
 import SubjectList from './subject-list'
 import MyModel from './model'
-import { prefixStyle } from '@/utils/utils'
+import { prefixStyle, formatTimeBySec } from '@/utils/utils'
 
 const PROGRESS_BTN_W = 38
 const TRANSFORM = prefixStyle('transform')
@@ -66,14 +66,18 @@ export default {
     list: {
       type: Array,
       default: () => []
+    },
+    curIndex: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
       isShowSubjectList: false,
-      currentIndex: 0,
       isShowGiveupModel: false,
-      isShowSubmitModel: false
+      isShowSubmitModel: false,
+      timeTip: null
     }
   },
   components: {
@@ -81,6 +85,9 @@ export default {
     MyModel
   },
   computed: {
+    currentIndex () {
+      return this.curIndex + 1
+    },
     currentTip () {
       let currentIndex = this.currentIndex
       let list = this.list
@@ -92,14 +99,29 @@ export default {
   },
   watch: {
     percent (newVal) {
-      if (newVal) {
-        let maxOffsetW = this.$refs.headerProgressBar.clientWidth - PROGRESS_BTN_W
-        let offsetWidth = maxOffsetW * newVal
-        this._offset(offsetWidth)
-      }
+      if (newVal) this._moveProgressBtn()
     }
   },
+  mounted () {
+    this.initCountTime()
+    this._moveProgressBtn()
+  },
   methods: {
+    initCountTime () {
+      this.duration = this.list[0].remain_time || 10
+      let timeFun = () => {
+        if (this.duration < 0) {
+          clearInterval(this.timer)
+          this.$emit('timeup') // 发送考试时间到的事件
+          return
+        }
+        this.timeTip = formatTimeBySec(this.duration, true)
+        this.duration--
+      }
+      // 执行倒计时
+      timeFun()
+      // this.timer = setInterval(timeFun, 1000)
+    },
     toggetSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
     },
@@ -114,6 +136,15 @@ export default {
     },
     toggleSubmitModel () {
       this.isShowSubmitModel = !this.isShowSubmitModel
+    },
+    dealSelectSubject (params) {
+      this.toggetSubjectList()
+      this.$emit('select', params)
+    },
+    _moveProgressBtn () {
+      let maxOffsetW = this.$refs.headerProgressBar.clientWidth - PROGRESS_BTN_W
+      let offsetWidth = maxOffsetW * this.percent
+      this._offset(offsetWidth)
     },
     _offset (offsetWidth) {
       let headerProgressBtnEl = this.$refs.headerProgressBtn
@@ -201,6 +232,7 @@ export default {
         text-align: center;
         line-height: px2rem(30px);
         border-radius: px2rem(15px);
+        z-index: 1;
         @include bg-color('bgColor');
         @include font-dpr(10px);
         @include font-color('themeFadeColor');

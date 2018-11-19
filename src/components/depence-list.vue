@@ -1,12 +1,12 @@
 <template lang="html">
   <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <exam-header :list="examList"></exam-header>
+    <exam-header :list="examList" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
     <!-- <subject-header :list="subjectList"></subject-header> -->
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
-        <template v-if="index == currentSubjectIndex">
+        <template v-if="index === currentSubjectIndex">
           <h3 class="subject-type">
             <span>{{item.typeTip}}</span>
             <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
@@ -23,8 +23,8 @@
           <!--每个选择项-->
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
             <!--每个选择项描述-->
-            <div class="select-tip-wrap">
-              <div class="select-tip" :class="{active: optItem.selectIndex === optIndex}">{{optItem.selectTip}}</div>
+            <div class="select-tip-wrap" @click.stop="selectAnswer(optIndex)">
+              <div class="select-tip" :class="{active: optItem.active}">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
@@ -102,7 +102,10 @@ export default {
     MyModel
   },
   computed: {
-    ...mapGetters('depence', ['examList', 'renderType', 'currentSubjectIndex'])
+    ...mapGetters('depence', [
+      'examList', 'renderType', 'currentSubjectIndex',
+      'currentSubjectInfo'
+    ])
   },
   created () {
     this.initList()
@@ -111,10 +114,13 @@ export default {
     async initList () {
       let examId = this.id
       let rtp = this.rtp
+      // 获取试卷列表
       await this.getExamList({
         id: examId,
         renderType: rtp
       })
+      // 获取试卷详情
+      await this.getExamDetail({ id: examId })
     },
     confirmSuspendModel () {
       this.toggleSuspendModel()
@@ -122,9 +128,17 @@ export default {
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
     },
+    selectAnswer (selectIndex) {
+      this.addSelectActiveFlag(selectIndex)
+    },
+    dealExamHeaderSelect ({subject, index}) {
+      this.changeSubjectIndex(index)
+    },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
-      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
+      getExamDetail: 'GET_EXAM_DETAIL',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
+      addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG'
     })
   }
 }

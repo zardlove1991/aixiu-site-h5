@@ -7,6 +7,7 @@ const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
   examId: null, // 试卷Id
   examList: [], // 试卷列表
+  examInfo: null, // 试卷信息
   currentSubjectIndex: 0 // 当前题目索引
 }
 
@@ -19,7 +20,6 @@ const getters = {
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)
-        optItem.selectIndex = -1
         // 判断是否是正确的选项
         if (optItem.is_true) item.correntTip = optItem.selectTip
       })
@@ -27,20 +27,15 @@ const getters = {
 
     return list
   },
-  examId (state) {
-    return state.examId
-  },
-  renderType (state) {
-    return state.renderType
-  },
-  currentSubjectIndex (state) {
-    return state.currentSubjectIndex
-  },
   currentSubjectInfo (state) {
     let list = state.examList
     let index = state.currentSubjectIndex
     return list[index]
-  }
+  },
+  examInfo: state => state.examInfo,
+  examId: state => state.examId,
+  renderType: state => state.renderType,
+  currentSubjectIndex: state => state.currentSubjectIndex
 }
 
 const mutations = {
@@ -52,6 +47,9 @@ const mutations = {
   },
   SET_EXAMLIST (state, payload) {
     state.examList = payload
+  },
+  SET_EXAM_DETAIL (state, payload) {
+    state.examInfo = payload
   },
   SET_CURRENT_SUBJECT_INDEX (state, payload) {
     state.currentSubjectIndex = payload
@@ -91,18 +89,63 @@ const actions = {
       })
     })
   },
+  GET_EXAM_DETAIL ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { id } = payload
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
+      API.getExamDetail({ query: { id } }).then(res => {
+        let info = res
+        commit('SET_EXAM_DETAIL', info)
+        // 结束
+        Indicator.close()
+        resolve()
+      }).catch(err => {
+        Toast(err.error_message || '获取试卷详情出错')
+        // 结束
+        Indicator.close()
+        reject(err)
+      })
+    })
+  },
   CHANGE_CURRENT_SUBJECT_INDEX ({state, commit}, payload) {
     let index = state.currentSubjectIndex
     let list = state.examList
-    // 判断什么操作
-    if (payload === 'add') index++
-    else if (payload === 'sub') index--
-    // 判断界限
-    if (index < 0 || index > list.length - 1) {
-      Toast('已经没有题目了~')
-      return
+    // 判断什么操作 加减 还是 直接赋值
+    if (typeof payload === 'string') {
+      if (payload === 'add') index++
+      else if (payload === 'sub') index--
+      // 判断界限
+      if (index < 0 || index > list.length - 1) {
+        Toast('已经没有题目了~')
+        return
+      }
+    } else if (typeof payload === 'number') {
+      index = payload
     }
     commit('SET_CURRENT_SUBJECT_INDEX', index)
+  },
+  ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
+    let index = state.currentSubjectIndex
+    let selectIndex = payload
+    let examList = state.examList
+    let subjectInfo = examList[index]
+    // 处理当前选中的类型
+    if (['judge', 'radio'].includes(subjectInfo.type)) {
+      subjectInfo.options.map((item, index) => {
+        if (index === selectIndex) item.active = true
+        else item.active = false
+        return item
+      })
+    } else if (subjectInfo.type === 'checkbox') {
+      subjectInfo.options.map((item, index) => {
+        if (index === selectIndex) item.active = !item.active
+        return item
+      })
+    }
+    examList.splice(index, 1, subjectInfo)
+    // 更新试题列表
+    commit('SET_EXAMLIST', examList)
   }
 }
 

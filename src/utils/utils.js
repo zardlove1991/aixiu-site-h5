@@ -39,10 +39,12 @@ export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false)
 }
 
 /* 秒数转换成时间 */
-export const formatTimeBySec = (sec, joinTip = ':') => {
-  let minute = Math.floor(sec / 60)
-  let second = Math.floor(sec % 60)
-  let timeArr = [minute, second].map(val => (val < 10 ? `0${val}` : val))
+export const formatTimeBySec = (sec, isShowHour = false, joinTip = ':') => {
+  let hour = Math.floor(sec / 3600)
+  let minute = Math.floor(sec % 3600 / 60)
+  let second = Math.floor(sec % 3600 % 60)
+  let timeArr = [hour, minute, second].map(val => (val < 10 ? `0${val}` : val))
+  if (!isShowHour) timeArr.shift()
   return timeArr.join(joinTip)
 }
 
