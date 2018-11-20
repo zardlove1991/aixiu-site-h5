@@ -92,9 +92,13 @@ const actions = {
       Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamDetailsList({ params }).then(res => {
         let list = res.data
-        commit('SET_EXAMID', id)
-        commit('SET_RENDER_TYPE', renderType)
-        commit('SET_EXAMLIST', list)
+        if (list && list.length) {
+          commit('SET_EXAMID', id)
+          commit('SET_RENDER_TYPE', renderType)
+          commit('SET_EXAMLIST', list)
+        } else {
+          throw new Error(res)
+        }
         // 结束
         Indicator.close()
         resolve()
