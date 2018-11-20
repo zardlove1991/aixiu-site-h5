@@ -108,7 +108,8 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'examListRoute', 'examId'
+      'currentSubjectInfo', 'examListRoute', 'examId',
+      'examInfo'
     ]),
     totalExamTime () {
       let sec = this.currentSubjectInfo.remain_time
@@ -123,18 +124,20 @@ export default {
       let examId = this.id
       let rtp = this.rtp
       let token = this.token
-      // 设置初始化路由地址
-      this.setExamRouterInfo(this.$route)
-      // 设置授权的token
-      if (token) this.setToken(token)
       try {
+        // 设置初始化路由地址
+        this.setExamRouterInfo(this.$route)
+        // 设置授权的token
+        if (token) this.setToken(token)
+        // 获取试卷详情
+        await this.getExamDetail({ id: examId })
         // 获取试卷列表
         await this.getExamList({
           id: examId,
           renderType: rtp
         })
-        // 获取试卷详情
-        await this.getExamDetail({ id: examId })
+        // 检查是否存在中断考试的情况
+        this.checkAnswerMaxQuestionId()
       } catch (err) {
         console.log(err)
       }
@@ -178,6 +181,17 @@ export default {
       if (!answers || !answers.length || !answers.includes(optItem.id)) return ''
       let isExsit = correctInfo.some(item => item.id === optItem.id)
       return isExsit ? 'active' : 'error'
+    },
+    checkAnswerMaxQuestionId () {
+      let examInfo = this.examInfo
+      let answerMaxQuestionId = examInfo.answer_max_question_id
+      let renderType = this.renderType
+      // 拿到当前答题的索引当前答题的索引
+      if (renderType === 'exam' && answerMaxQuestionId) {
+        let list = this.examList
+        let index = list.findIndex(item => item.id === answerMaxQuestionId)
+        if (index >= 0) this.changeSubjectIndex(index)
+      }
     },
     ...mapMutations('depence', {
       setToken: 'SET_TOKEN',
