@@ -87,7 +87,7 @@ export default {
     MyModel
   },
   computed: {
-    ...mapGetters('depence', ['token', 'examId']),
+    ...mapGetters('depence', ['token', 'examId', 'redirectUrl']),
     currentIndex () {
       return this.curIndex + 1
     },
@@ -147,10 +147,7 @@ export default {
         // 保存并提交试卷
         await this.saveAnswerRecords()
         // 跳转去答题卡页面
-        DEPENCE.goWxAnswerCardPage({
-          id: this.examId,
-          token: this.token
-        })
+        DEPENCE.goWxAnswerCardPage(this.redirectUrl)
       } catch (err) {
         console.log(err)
       }
@@ -164,10 +161,7 @@ export default {
         // 保存并提交试卷
         await this.saveAnswerRecords()
         // 跳转去答题卡页面
-        DEPENCE.goWxAnswerCardPage({
-          id: this.examId,
-          token: this.token
-        })
+        DEPENCE.goWxAnswerCardPage(this.redirectUrl)
       } catch (err) {
         console.log(err)
       }

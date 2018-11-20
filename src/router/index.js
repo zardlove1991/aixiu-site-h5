@@ -74,7 +74,8 @@ export default new Router({
       props: (route) => ({
         id: route.params.id, // 传入需要请求当前试卷的ID
         rtp: route.query.rtp, // 试卷渲染的类型 考试:exam 解析:analysis
-        token: route.query.token // 当前授权的token信息
+        token: route.query.token, // 当前授权的token信息
+        redirect: route.query.redirect // 小程序传入的重定向地址
       })
     }
   ]

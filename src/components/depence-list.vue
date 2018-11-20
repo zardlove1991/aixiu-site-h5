@@ -90,7 +90,8 @@ export default {
   props: {
     id: String,
     rtp: String,
-    token: String
+    token: String,
+    redirect: String
   },
   data () {
     return {
@@ -108,7 +109,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'examListRoute', 'examId',
+      'currentSubjectInfo', 'redirectUrl', 'examId',
       'examInfo'
     ]),
     totalExamTime () {
@@ -126,7 +127,7 @@ export default {
       let token = this.token
       try {
         // 设置初始化路由地址
-        this.setExamRouterInfo(this.$route)
+        this.setRedirectUrl(this.redirect)
         // 设置授权的token
         if (token) this.setToken(token)
         // 获取试卷详情
@@ -157,10 +158,7 @@ export default {
       // 提交试卷
       try {
         await this.saveAnswerRecords()
-        DEPENCE.goWxAnswerCardPage({
-          id: this.examId,
-          token: this.token
-        })
+        DEPENCE.goWxAnswerCardPage()
       } catch (err) {
         console.log(err)
       }
@@ -195,7 +193,7 @@ export default {
     },
     ...mapMutations('depence', {
       setToken: 'SET_TOKEN',
-      setExamRouterInfo: 'SET_EXAMLIST_ROUTERINFO'
+      setRedirectUrl: 'SET_REDIRECT_URL'
     }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',

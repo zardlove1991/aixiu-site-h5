@@ -7,7 +7,7 @@ const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
   examId: null, // 试卷Id
   examList: [], // 试卷列表
-  examListRoute: null, // 当前初始化试卷列表的路由信息
+  redirectUrl: null, // 去往小程序的重定向地址
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
   token: null // 当前授权的token有参数传递
@@ -62,8 +62,8 @@ const mutations = {
   SET_EXAMLIST (state, payload) {
     state.examList = payload
   },
-  SET_EXAMLIST_ROUTERINFO (state, payload) {
-    state.examListRoute = payload
+  SET_REDIRECT_URL (state, payload) {
+    state.redirectUrl = payload
   },
   SET_EXAM_DETAIL (state, payload) {
     state.examInfo = payload

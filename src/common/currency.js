@@ -26,10 +26,8 @@ export const PARTY = {
 }
 
 export const DEPENCE = {
-  wxAnswerCardPath: '/client/callback/authorize/result/{exam_id}?token={token}',
   getSubjetType: METHODS.getSubjetType,
-  goWxAnswerCardPage ({id, token}) {
-    let url = this.wxAnswerCardPath.replace('{exam_id}', id).replace('{token}', token)
+  goWxAnswerCardPage (url) {
     wx.miniProgram.redirectTo({ url })
   }
 }
