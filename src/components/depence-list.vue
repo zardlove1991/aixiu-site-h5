@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <exam-header :list="examList" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
-    <!-- <subject-header :list="subjectList"></subject-header> -->
+    <exam-header v-if="renderType === 'exam'" :list="examList" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
+    <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
@@ -24,7 +24,7 @@
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
             <!--每个选择项描述-->
             <div class="select-tip-wrap" @click.stop="selectAnswer(optIndex)">
-              <div class="select-tip" :class="{active: optItem.active}">{{optItem.selectTip}}</div>
+              <div class="select-tip" :class="[{active: optItem.active}, addClass(item, optItem)]">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
@@ -37,7 +37,10 @@
           </div>
           <!--答案解析-->
           <div class="answerinfo-wrap" v-if="renderType === 'analysis'">
-            <div class="correct-answer">答案: {{item.correntTip}}</div>
+            <div class="correct-answer">
+              <span>答案:</span>
+              <span v-for="info in item.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
+            </div>
             <div class="answer-analysis">
               <h4 class="title">解析</h4>
               <p class="content" v-html="item.analysis"></p>
@@ -62,19 +65,20 @@
               doneText="重新考试"
               cancelText="放弃并交卷"
               @confirm="confirmSuspendModel"
-              @cancel="toggleSuspendModel"
+              @cancel="cancelSuspendModel"
     >
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：30题，考试时间：90分钟</div>
+        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{totalExamTime}}分钟</div>
       </div>
     </my-model>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
@@ -85,12 +89,12 @@ export default {
   name: 'depence-list',
   props: {
     id: String,
-    rtp: String
+    rtp: String,
+    token: String
   },
   data () {
     return {
       types: ['艺术鉴赏', '文化历史', '古建筑'],
-      subjectList: [],
       isShowSuspendModel: false
     }
   },
@@ -104,8 +108,12 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo'
-    ])
+      'currentSubjectInfo', 'examListRoute', 'examId'
+    ]),
+    totalExamTime () {
+      let sec = this.currentSubjectInfo.remain_time
+      return Math.floor(sec % 3600 / 60)
+    }
   },
   created () {
     this.initList()
@@ -114,16 +122,45 @@ export default {
     async initList () {
       let examId = this.id
       let rtp = this.rtp
-      // 获取试卷列表
-      await this.getExamList({
-        id: examId,
-        renderType: rtp
-      })
-      // 获取试卷详情
-      await this.getExamDetail({ id: examId })
+      let token = this.token
+      // 设置初始化路由地址
+      this.setExamRouterInfo(this.$route)
+      // 设置授权的token
+      if (token) this.setToken(token)
+      try {
+        // 获取试卷列表
+        await this.getExamList({
+          id: examId,
+          renderType: rtp
+        })
+        // 获取试卷详情
+        await this.getExamDetail({ id: examId })
+      } catch (err) {
+        console.log(err)
+      }
     },
-    confirmSuspendModel () {
+    async confirmSuspendModel () {
       this.toggleSuspendModel()
+      // 重新加载考试页面
+      try {
+        await this.startExam()
+        this.$router.go(0)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async cancelSuspendModel () {
+      this.toggleSuspendModel()
+      // 提交试卷
+      try {
+        await this.saveAnswerRecords()
+        DEPENCE.goWxAnswerCardPage({
+          id: this.examId,
+          token: this.token
+        })
+      } catch (err) {
+        console.log(err)
+      }
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
@@ -134,11 +171,25 @@ export default {
     dealExamHeaderSelect ({subject, index}) {
       this.changeSubjectIndex(index)
     },
+    addClass (subject, optItem) {
+      let correctInfo = subject.correntInfo
+      let answers = subject.answer
+      // 没有回答的和当前选项不包含在回答的数据中
+      if (!answers || !answers.length || !answers.includes(optItem.id)) return ''
+      let isExsit = correctInfo.some(item => item.id === optItem.id)
+      return isExsit ? 'active' : 'error'
+    },
+    ...mapMutations('depence', {
+      setToken: 'SET_TOKEN',
+      setExamRouterInfo: 'SET_EXAMLIST_ROUTERINFO'
+    }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       getExamDetail: 'GET_EXAM_DETAIL',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
-      addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG'
+      addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
+      startExam: 'START_EXAM'
     })
   }
 }
@@ -214,6 +265,10 @@ export default {
             &.active{
               @include font-color('bgColor');
               @include bg-color('themeColor');
+            }
+            &.error{
+              @include font-color('bgColor');
+              @include bg-color('errorColor');
             }
           }
         }

@@ -1,3 +1,5 @@
+import wx from 'weixin-js-sdk'
+
 const METHODS = {
   detectionRestart (item) {
     let passScore = item.pass_score
@@ -24,5 +26,10 @@ export const PARTY = {
 }
 
 export const DEPENCE = {
-  getSubjetType: METHODS.getSubjetType
+  wxAnswerCardPath: '/client/callback/authorize/result/{exam_id}?token={token}',
+  getSubjetType: METHODS.getSubjetType,
+  goWxAnswerCardPage ({id, token}) {
+    let url = this.wxAnswerCardPath.replace('{exam_id}', id).replace('{token}', token)
+    wx.miniProgram.redirectTo({ url })
+  }
 }

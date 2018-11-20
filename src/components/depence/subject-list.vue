@@ -2,10 +2,10 @@
   <!--底部列表-->
   <div class="list-wrap" v-if="list.length">
     <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
-      <div class="item normal"
-           :class="[{ disabled: haveDone(item) }, setActiveClass(index)]"
+      <div v-for="(item,index) in row" :key="item.key"
+           class="item normal"
+           :class="[{ disabled: haveDone(item) }, setActiveClass(index), addClass(item)]"
            @click.stop= "selectSubject(item)"
-           v-for="(item,index) in row" :key="item.key"
       >
         {{showSubjectIndex(rowIndex,index)}}
       </div>
@@ -75,7 +75,6 @@ export default {
         let prevRowEl = this.$refs.subjectRow[prevRowIndex]
         let curRowEl = this.$refs.subjectRow[curRowIndex]
         let detalItemNum = prevRowEl.children.length - curRowEl.children.length
-        console.log('列表空白填充个数', detalItemNum)
         this.subjectEmptyItems = detalItemNum
       })
     },
@@ -84,20 +83,30 @@ export default {
       let curIndex = baseIndex + (colIndex + 1)
       return curIndex
     },
+    selectSubject (subject) {
+      let list = this.list
+      let subjectIndex = list.findIndex(item => item.id === subject.id)
+      this.$emit('select', { subject, index: subjectIndex })
+    },
     setActiveClass (index) {
       let renderType = this.renderType
       let curAcitve = this.curIndex === index
       if (!curAcitve) return ''
       return `${renderType}Active`
     },
-    selectSubject (subject) {
-      let list = this.list
-      let subjectIndex = list.findIndex(item => item.id === subject.id)
-      this.$emit('select', { subject, index: subjectIndex })
-    },
     haveDone (subject) {
       let isDid = subject.options.some(item => item.active)
       return !isDid
+    },
+    addClass (subject) {
+      let correntInfo = subject.correntInfo
+      let answers = subject.answer
+      let className = ''
+      if (answers.length) {
+        let isAllMatch = correntInfo.every(item => answers.includes(item.id))
+        isAllMatch ? className = 'success' : className = 'error'
+      }
+      return className
     }
   }
 }
@@ -126,6 +135,11 @@ export default {
         @include font-color('titleColor');
         @include border('all',1px,solid,'tipColor');
       }
+      &.disabled{
+        @include bg-color('bgGrayColor');
+        @include font-color('disabledColor');
+        @include border('all',1px,solid,'borderGray');
+      }
       &.success{
         @include bg-color('bgColor');
         @include font-color('themeColor');
@@ -135,11 +149,6 @@ export default {
         @include bg-color('bgColor');
         @include font-color('errorColor');
         @include border('all',1px,solid,'errorColor');
-      }
-      &.disabled{
-        @include bg-color('bgGrayColor');
-        @include font-color('disabledColor');
-        @include border('all',1px,solid,'borderGray');
       }
       &.analysisActive{
         @include bg-color('activeColor');

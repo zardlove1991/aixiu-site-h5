@@ -46,13 +46,15 @@
     >
       <div class="submit-model" slot="content">
         <div class="tip-bg"></div>
-        <div class="desc">您还有21道题未做,确认交卷吗?</div>
+        <div class="desc">您还有{{unDoSubjectLength}}道题未做,确认交卷吗?</div>
       </div>
     </my-model>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 import SubjectList from './subject-list'
 import MyModel from './model'
 import { prefixStyle, formatTimeBySec } from '@/utils/utils'
@@ -85,6 +87,7 @@ export default {
     MyModel
   },
   computed: {
+    ...mapGetters('depence', ['token', 'examId']),
     currentIndex () {
       return this.curIndex + 1
     },
@@ -95,6 +98,15 @@ export default {
     },
     percent () {
       return this.currentIndex / this.list.length
+    },
+    unDoSubjectLength () {
+      let list = this.list
+      let count = 0
+      list.forEach(subject => {
+        let isDid = subject.options.some(item => item.active)
+        if (isDid) count++
+      })
+      return (list.length - count)
     }
   },
   watch: {
@@ -108,7 +120,7 @@ export default {
   },
   methods: {
     initCountTime () {
-      this.duration = this.list[0].remain_time || 10
+      this.duration = this.list[0].remain_time
       let timeFun = () => {
         if (this.duration < 0) {
           clearInterval(this.timer)
@@ -119,20 +131,47 @@ export default {
         this.duration--
       }
       // 执行倒计时
-      timeFun()
-      // this.timer = setInterval(timeFun, 1000)
+      if (this.duration !== 0) {
+        this.timer = setInterval(timeFun, 1000)
+        timeFun()
+      } else {
+        this.timeTip = '不限时间'
+      }
+
     },
     toggetSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
     },
-    confirmGiveupModel () {
+    async confirmGiveupModel () {
       this.toggleGiveUpModel()
+      try {
+        // 保存并提交试卷
+        await this.saveAnswerRecords()
+        // 跳转去答题卡页面
+        DEPENCE.goWxAnswerCardPage({
+          id: this.examId,
+          token: this.token
+        })
+      } catch (err) {
+        console.log(err)
+      }
     },
     toggleGiveUpModel () {
       this.isShowGiveupModel = !this.isShowGiveupModel
     },
-    confirmSubmitModel () {
+    async confirmSubmitModel () {
       this.toggleSubmitModel()
+      try {
+        // 保存并提交试卷
+        await this.saveAnswerRecords()
+        // 跳转去答题卡页面
+        DEPENCE.goWxAnswerCardPage({
+          id: this.examId,
+          token: this.token
+        })
+      } catch (err) {
+        console.log(err)
+      }
     },
     toggleSubmitModel () {
       this.isShowSubmitModel = !this.isShowSubmitModel
@@ -151,7 +190,10 @@ export default {
       let headerProgressEl = this.$refs.headerProgress
       headerProgressEl.style.width = `${offsetWidth}px`
       headerProgressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`
-    }
+    },
+    ...mapActions('depence', {
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS'
+    })
   }
 }
 </script>

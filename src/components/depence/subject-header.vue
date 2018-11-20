@@ -2,7 +2,13 @@
   <div class="subject-header-wrap" v-if="list.length">
     <!--试题概览数据-->
     <div class="subject-item-wrap" ref="subjectItemWrap">
-      <div class="item success" ref="subjectItem" :class="{active: currentActiveIndex == index}"  v-for="(item,index) in list" :key="index">{{item.val}}</div>
+      <div class="item" ref="subjectItem"
+           :class="[{active: curIndex == index}, addClass(item)]"
+           v-for="(item,index) in list" :key="index"
+           @click.stop="changeSubjectIndex(index)"
+      >
+        {{index+1}}
+      </div>
     </div>
     <!--缩略按钮-->
     <div class="thumb-btn" @click.stop="toggleSubjectList">
@@ -19,13 +25,14 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-wrap" :list="list" @close="toggleSubjectList" @select="selectSubject"></subject-list>
+        <subject-list class="list-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
       </div>
     </transition>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import SubjectList from './subject-list'
 
 export default {
@@ -34,35 +41,49 @@ export default {
     list: {
       type: Array,
       default: () => []
+    },
+    curIndex: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
-      isShowSubjectList: false,
-      currentActiveIndex: 0
+      isShowSubjectList: false
     }
   },
   components: {
     SubjectList
   },
   methods: {
-    getItemClass (index) {
-      let i = index % 4
-      let cls = 'success'
-      if (i === 1) cls = 'error'
-      else if (i === 2) cls = 'disabled'
-      if (i === 3) cls = 'active'
-      return cls
-    },
     toggleSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
     },
-    selectSubject (index) {
+    selectSubject ({subject, index}) {
       let subjectScrollEl = this.$refs.subjectItemWrap
       let subjectItem = this.$refs.subjectItem[index]
-      this.currentActiveIndex = index
       subjectScrollEl.scrollTo(subjectItem.offsetLeft - 15, 0)
-    }
+      // 更改当前索引数据
+      this.toggleSubjectList()
+      setTimeout(() => {
+        this.changeSubjectIndex(index)
+      }, 20)
+    },
+    addClass (subject) {
+      let correntInfo = subject.correntInfo
+      let answers = subject.answer
+      let className = ''
+      if (!answers.length) {
+        className = 'disabled'
+      } else {
+        let isAllMatch = correntInfo.every(item => answers.includes(item.id))
+        isAllMatch ? className = 'success' : className = 'error'
+      }
+      return className
+    },
+    ...mapActions('depence', {
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
+    })
   }
 }
 </script>
