@@ -28,6 +28,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['EXAMAPI']
       break
     }
+    case 'API41': {
+      host = globalConfig['API41']
+      break
+    }
     default: {
       host = globalConfig['API']
     }

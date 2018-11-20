@@ -1,20 +1,36 @@
 import { createAPI } from '@/api'
 
-const API_FLAG = 'EXAMAPI'
+const API_FLAG = 'API41'
+// 带GUID
+// let configUrl = {
+//   getExamlist: 'client/{guid}/examination', // 考试列表
+//   getRecord: 'client/{guid}/examination/{id}/card', // 考试列表
+//   getExamDetailsList: 'client/{guid}/examination/questions',
+//   getErrorList: 'client/{guid}/examination/mistakes', // 获得错题列表
+//   getErrorCollection: 'client/{guid}/examination/mistakes/examination', // 获得错题列表集合
+//   submitExam: 'client/{guid}/examination/{id}/end',
+//   startExam: 'client/{guid}/examination/{id}/start',
+//   saveSubjectRecord: 'client/{guid}/examination/{id}/record', // 保存答题记录
+//   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
+//   getExamDetail: 'client/{guid}/examination/{id}',
+//   getSubjectFavorInfo: 'client/{guid}/examination/collection/is', // 获得题目的收藏信息
+//   setSubjectFavorInfo: 'client/{guid}/examination/collection' // 设置题目的收藏
+// }
 
+// 不带GUID
 let configUrl = {
-  getExamlist: 'client/{guid}/examination', // 考试列表
-  getRecord: 'client/{guid}/examination/{id}/card', // 考试列表
-  getExamDetailsList: 'client/{guid}/examination/questions',
-  getErrorList: 'client/{guid}/examination/mistakes', // 获得错题列表
-  getErrorCollection: 'client/{guid}/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/{guid}/examination/{id}/end',
-  startExam: 'client/{guid}/examination/{id}/start',
-  saveSubjectRecord: 'client/{guid}/examination/{id}/record', // 保存答题记录
+  getExamlist: 'client/examination', // 考试列表
+  getRecord: 'client/examination/{id}/card', // 考试列表
+  getExamDetailsList: 'client/examination/questions',
+  getErrorList: 'client/examination/mistakes', // 获得错题列表
+  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
+  submitExam: 'client/examination/{id}/end',
+  startExam: 'client/examination/{id}/start',
+  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
-  getExamDetail: 'client/{guid}/examination/{id}',
-  getSubjectFavorInfo: 'client/{guid}/examination/collection/is', // 获得题目的收藏信息
-  setSubjectFavorInfo: 'client/{guid}/examination/collection' // 设置题目的收藏
+  getExamDetail: 'client/examination/{id}',
+  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
+  setSubjectFavorInfo: 'client/examination/collection' // 设置题目的收藏
 }
 
 export default {
