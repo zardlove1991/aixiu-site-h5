@@ -4,7 +4,7 @@
     <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
       <div v-for="(item,index) in row" :key="item.key"
            class="item normal"
-           :class="[{ disabled: haveDone(item) }, setActiveClass(index), addClass(item)]"
+           :class="[{ disabled: haveDone(item) }, setActiveClass(item), addClass(item)]"
            @click.stop= "selectSubject(item)"
       >
         {{showSubjectIndex(rowIndex,index)}}
@@ -96,9 +96,10 @@ export default {
       let subjectIndex = list.findIndex(item => item.id === subject.id)
       this.$emit('select', { subject, index: subjectIndex })
     },
-    setActiveClass (index) {
+    setActiveClass (subject) {
       let renderType = this.renderType
-      let curAcitve = this.curIndex === index
+      let subjectIndex = this.list.findIndex(item => item.id === subject.id)
+      let curAcitve = this.curIndex === subjectIndex
       if (!curAcitve) return ''
       return `${renderType}Active`
     },
