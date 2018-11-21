@@ -77,6 +77,11 @@ export default new Router({
         token: route.query.token, // 当前授权的token信息
         redirect: route.query.redirect // 小程序传入的重定向地址
       })
+    },
+    {
+      path: '/depencecard',
+      name: 'depencecard',
+      component: getComponent('depence-card')
     }
   ]
 })

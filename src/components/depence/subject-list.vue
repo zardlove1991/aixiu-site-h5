@@ -104,7 +104,14 @@ export default {
       return `${renderType}Active`
     },
     haveDone (subject) {
-      let isDid = subject.options.some(item => item.active)
+      let isDid = true
+      let answers = subject.answer
+      if (answers && answers.length) {
+        isDid = true
+      } else {
+        isDid = subject.options.some(item => item.active)
+      }
+
       return !isDid
     },
     addClass (subject) {
