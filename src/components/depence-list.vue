@@ -130,6 +130,8 @@ export default {
         this.setRedirectUrl(this.redirect)
         // 设置授权的token
         if (token) this.setToken(token)
+        // 调用考试考试接口
+        if (this.rtp === 'exam') await this.startExam({ id: examId })
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
         // 获取试卷列表
@@ -147,7 +149,7 @@ export default {
       this.toggleSuspendModel()
       // 重新加载考试页面
       try {
-        await this.startExam()
+        await this.startExam({ restart: true })
         this.$router.go(0)
       } catch (err) {
         console.log(err)

@@ -75,6 +75,14 @@ export default {
         let prevRowEl = this.$refs.subjectRow[prevRowIndex]
         let curRowEl = this.$refs.subjectRow[curRowIndex]
         let detalItemNum = prevRowEl.children.length - curRowEl.children.length
+        // 填充当第一行数 PS:当题目只有一行的时候
+        let curRowChildLength = curRowEl.children.length
+        if (detalItemNum === 0 && curRowChildLength < 5) {
+          const ITEM_W = 66
+          let emptyNum = Math.floor(Math.floor(curRowEl.clientWidth - ITEM_W * curRowChildLength) / ITEM_W)
+          if (emptyNum > 0) detalItemNum = emptyNum
+        }
+        console.log('当前填充的个数为', detalItemNum)
         this.subjectEmptyItems = detalItemNum
       })
     },
