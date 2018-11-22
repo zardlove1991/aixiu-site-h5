@@ -150,7 +150,7 @@ export default {
       } catch (err) {
         console.log(err)
         // 如果开始考试出错就直接去答题卡页面
-        if (err.error_message.includes('试卷')) {
+        if (err.status && err.status === 422) {
           this.$router.replace({
             path: `/depencecard/${examId}`,
             query: {redirect: this.redirect}
