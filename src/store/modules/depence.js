@@ -179,7 +179,7 @@ const actions = {
           throw new Error({error_message: '开始考试出错'})
         }
       }).catch(err => {
-        Toast(err.error_message)
+        Toast(err.error_message || '开始考试出错')
         // 结束
         Indicator.close()
         reject(err)
