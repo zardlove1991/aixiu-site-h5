@@ -120,6 +120,13 @@ export default {
       return Math.floor(sec % 3600 / 60)
     }
   },
+  watch: {
+    currentSubjectIndex (newIndex, oldIndex) {
+      let subject = this.examList[oldIndex]
+      // 检查多选考试的提交
+      this.checkCheckboxRecord(subject)
+    }
+  },
   created () {
     this.initList()
   },
@@ -130,7 +137,7 @@ export default {
       let token = this.token
       try {
         // 设置初始化路由地址
-        this.setRedirectUrl(this.redirect)
+        this.setRedirectParams(this.redirect)
         // 设置授权的token
         if (token) this.setToken(token)
         // 调用考试考试接口
@@ -170,10 +177,12 @@ export default {
     },
     async cancelSuspendModel () {
       let examId = this.id
+      let subject = this.currentSubjectInfo
       this.toggleSuspendModel()
       // 提交试卷
       try {
-        await this.saveAnswerRecords()
+        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
           path: `/depencecard/${examId}`,
@@ -186,8 +195,17 @@ export default {
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
     },
-    selectAnswer (selectIndex) {
-      this.addSelectActiveFlag(selectIndex)
+    async selectAnswer (selectIndex) {
+      let subject = this.currentSubjectInfo
+      try {
+        await this.addSelectActiveFlag(selectIndex)
+        // 保存答题记录 这边不处理多选 多选checkboxrecord提交
+        if (subject.type !== 'checkbox') {
+          await this.saveAnswerRecord(subject)
+        }
+      } catch (err) {
+        console.log(err)
+      }
     },
     dealExamHeaderSelect ({subject, index}) {
       this.changeSubjectIndex(index)
@@ -195,6 +213,7 @@ export default {
     addClass (subject, optItem) {
       let correctInfo = subject.correntInfo
       let answers = subject.answer
+      if (!correctInfo.length) return ''
       // 没有回答的和当前选项不包含在回答的数据中
       if (!answers || !answers.length || !answers.includes(optItem.id)) return ''
       let isExsit = correctInfo.some(item => item.id === optItem.id)
@@ -213,15 +232,17 @@ export default {
     },
     ...mapMutations('depence', {
       setToken: 'SET_TOKEN',
-      setRedirectUrl: 'SET_REDIRECT_URL'
+      setRedirectParams: 'SET_REDIRECT_PARAMS'
     }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       getExamDetail: 'GET_EXAM_DETAIL',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
       addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG',
-      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
-      startExam: 'START_EXAM'
+      saveAnswerRecord: 'SAVE_ANSWER_RECORD',
+      startExam: 'START_EXAM',
+      endExam: 'END_EXAM',
+      checkCheckboxRecord: 'CHECK_CHECKBOX_RECORD'
     })
   }
 }

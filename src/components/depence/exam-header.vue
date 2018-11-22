@@ -86,7 +86,10 @@ export default {
     MyModel
   },
   computed: {
-    ...mapGetters('depence', ['token', 'examId', 'redirectUrl']),
+    ...mapGetters('depence', [
+      'token', 'examId', 'redirectUrl',
+      'currentSubjectInfo'
+    ]),
     currentIndex () {
       return this.curIndex + 1
     },
@@ -141,10 +144,11 @@ export default {
       this.isShowSubjectList = !this.isShowSubjectList
     },
     async confirmGiveupModel () {
+      let subject = this.currentSubjectInfo
       this.toggleGiveUpModel()
       try {
-        // 保存并提交试卷
-        await this.saveAnswerRecords()
+        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
@@ -158,10 +162,11 @@ export default {
       this.isShowGiveupModel = !this.isShowGiveupModel
     },
     async confirmSubmitModel () {
+      let subject = this.currentSubjectInfo
       this.toggleSubmitModel()
       try {
-        // 保存并提交试卷
-        await this.saveAnswerRecords()
+        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
@@ -190,7 +195,8 @@ export default {
       headerProgressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`
     },
     ...mapActions('depence', {
-      saveAnswerRecords: 'SAVE_ANSWER_RECORDS'
+      endExam: 'END_EXAM',
+      checkCheckboxRecord: 'CHECK_CHECKBOX_RECORD'
     })
   }
 }
@@ -272,7 +278,7 @@ export default {
         text-align: center;
         line-height: px2rem(30px);
         border-radius: px2rem(15px);
-        z-index: 1;
+        z-index: 10;
         @include bg-color('bgColor');
         @include font-dpr(10px);
         @include font-color('themeFadeColor');

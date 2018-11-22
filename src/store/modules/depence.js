@@ -7,7 +7,7 @@ const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
   examId: null, // 试卷Id
   examList: [], // 试卷列表
-  redirectUrl: null, // 去往小程序的重定向地址
+  redirectParams: null, // 去往小程序的重定向地址
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
   token: null, // 当前授权的token有参数传递
@@ -20,6 +20,8 @@ const getters = {
 
     list.map((item, index) => {
       item.typeTip = DEPENCE.getSubjetType(item.type)
+      // 处理当前answer字段为数字类型
+      if (item.answer) item.answer = item.answer.map(id => Number(id))
       // 添加一个正确信息选项的对象
       item.correntInfo = []
       // 处理下选项数据
@@ -44,7 +46,7 @@ const getters = {
   },
   examInfo: state => state.examInfo,
   examId: state => state.examId,
-  redirectUrl: state => state.redirectUrl,
+  redirectParams: state => state.redirectParams,
   token: state => state.token,
   examListRoute: state => state.examListRoute,
   renderType: state => state.renderType,
@@ -68,8 +70,8 @@ const mutations = {
   SET_EXAMLIST (state, payload) {
     state.examList = payload
   },
-  SET_REDIRECT_URL (state, payload) {
-    state.redirectUrl = payload
+  SET_REDIRECT_PARAMS (state, payload) {
+    state.redirectParams = payload
   },
   SET_EXAM_DETAIL (state, payload) {
     state.examInfo = payload
@@ -119,18 +121,11 @@ const actions = {
   GET_EXAM_DETAIL ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let { id } = payload
-      // 开始请求数据
-      Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamDetail({ query: { id } }).then(res => {
         let info = res
         commit('SET_EXAM_DETAIL', info)
-        // 结束
-        Indicator.close()
         resolve()
       }).catch(err => {
-        Toast(err.error_message || '获取试卷详情出错')
-        // 结束
-        Indicator.close()
         reject(err)
       })
     })
@@ -166,20 +161,35 @@ const actions = {
       // 添加重新开始考试的接口
       if (payload.restart) params.restart = 1
       // 开始请求数据
-      Indicator.open({ spinnerType: 'fading-circle' })
       API.startExam({
         query: { id },
         params
       }).then(res => {
-        // 结束
-        Indicator.close()
         if (res.success === 1) {
           resolve()
         } else {
           throw new Error({error_message: '开始考试出错'})
         }
       }).catch(err => {
-        Toast(err.error_message || '开始考试出错')
+        reject(err)
+      })
+    })
+  },
+  END_EXAM ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let id = state.examId || payload.id
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
+      API.submitExam({ query: { id } }).then(res => {
+        // 结束
+        Indicator.close()
+        if (res.success === 1) {
+          resolve()
+        } else {
+          throw new Error({error_message: '结束考试出错'})
+        }
+      }).catch(err => {
+        Toast(err.error_message || '结束考试出错')
         // 结束
         Indicator.close()
         reject(err)
@@ -199,9 +209,16 @@ const actions = {
           question_id: subject.id,
           options_id: []
         }
+        let answers = subject.answer // 是否存放已有的选项ID
+        if (answers && answers.length) tempObj.options_id = answers
+
         subject.options.forEach(item => {
-          if (item.active) tempObj.options_id.push(item.id)
+          let optionArr = tempObj.options_id
+          if (item.active && !optionArr.includes(item.id)) {
+            optionArr.push(item.id)
+          }
         })
+
         let optionsLength = tempObj.options_id.length
         // 判断是否只有一个选项
         if (optionsLength === 1) tempObj.options_id = Number(tempObj.options_id.join(''))
@@ -225,6 +242,44 @@ const actions = {
         Toast(err.error_message || '提交试卷信息出错，请重试')
         // 结束
         Indicator.close()
+        reject(err)
+      })
+    })
+  },
+  SAVE_ANSWER_RECORD ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let id = state.examId
+      let renderType = state.renderType
+      let subject = payload
+      if (renderType === 'analysis') {
+        reject(new Error({error_message: '当前为解析不需要保存答题记录'}))
+        return
+      }
+      // 提交的参数
+      let data = {
+        question_id: subject.id,
+        options_id: null
+      }
+      // 筛选当前选中的数据
+      let optionsArr = []
+      subject.options.forEach(item => {
+        if (item.active) optionsArr.push(item.id)
+      })
+      if (optionsArr.length === 1) optionsArr = optionsArr.join('')
+      data.options_id = optionsArr
+      // 判断是否有选项 没有直接return
+      if (!data.options_id || !data.options_id.length) return
+
+      API.saveSubjectRecord({
+        query: { id },
+        data
+      }).then(res => {
+        if (res.success === 1) {
+          resolve()
+        } else {
+          throw new Error('保存答题记录出错')
+        }
+      }).catch(err => {
         reject(err)
       })
     })
@@ -270,6 +325,16 @@ const actions = {
     examList.splice(index, 1, subjectInfo)
     // 更新试题列表
     commit('SET_EXAMLIST', examList)
+  },
+  CHECK_CHECKBOX_RECORD ({state, commit, dispatch}, payload) {
+    let subject = payload
+    let renderType = state.renderType
+    let subjectType = subject.type
+    // 只有考试的采取记录多选的提交
+    if (subjectType === 'checkbox' && renderType === 'exam') {
+      // 触发保存答题记录操作
+      return dispatch('SAVE_ANSWER_RECORD', subject)
+    }
   }
 }
 

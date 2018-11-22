@@ -27,7 +27,10 @@ export const PARTY = {
 
 export const DEPENCE = {
   getSubjetType: METHODS.getSubjetType,
-  goWxAnswerCardPage (url) {
-    wx.miniProgram.redirectTo({ url })
+  goWxAppPage (url) {
+    wx.miniProgram.navigateTo({ url })
+  },
+  backWxAppPage (num) {
+    wx.miniProgram.navigateBack({ delta: num })
   }
 }

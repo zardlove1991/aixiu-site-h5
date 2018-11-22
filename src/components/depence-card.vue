@@ -68,10 +68,10 @@ export default {
   methods: {
     async initInfo () {
       let examId = this.id
-      let redirectUrl = this.redirect
+      let redirectParams = this.redirect
       try {
         // 设置重定向地址
-        if (redirectUrl) this.setRedirectUrl(redirectUrl)
+        if (redirectParams) this.setRedirectParams(redirectParams)
         // 请求试卷和答题卡信息
         await this.getExamDetail({id: examId})
         await this.getAnswerCardInfo({id: examId})
@@ -99,11 +99,11 @@ export default {
       })
     },
     jumpWxApp () {
-      let url = this.redirect
-      DEPENCE.goWxAnswerCardPage(url)
+      let params = this.redirect
+      DEPENCE.backWxAppPage(params)
     },
     ...mapMutations('depence', {
-      setRedirectUrl: 'SET_REDIRECT_URL'
+      setRedirectParams: 'SET_REDIRECT_PARAMS'
     }),
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',

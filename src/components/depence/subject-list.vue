@@ -118,7 +118,7 @@ export default {
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
-      if (answers.length) {
+      if (answers.length && correntInfo.length) {
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
         isAllMatch ? className = 'success' : className = 'error'
       }
