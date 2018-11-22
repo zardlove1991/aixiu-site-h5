@@ -20,8 +20,6 @@ const getters = {
 
     list.map((item, index) => {
       item.typeTip = DEPENCE.getSubjetType(item.type)
-      // 处理当前answer字段为数字类型
-      if (item.answer) item.answer = item.answer.map(id => Number(id))
       // 添加一个正确信息选项的对象
       item.correntInfo = []
       // 处理下选项数据
