@@ -75,13 +75,18 @@ export default new Router({
         id: route.params.id, // 传入需要请求当前试卷的ID
         rtp: route.query.rtp, // 试卷渲染的类型 考试:exam 解析:analysis
         token: route.query.token, // 当前授权的token信息
+        restart: route.query.restart, // 是否需要重新开始考试 需要:need 不需要:none
         redirect: route.query.redirect // 小程序传入的重定向地址
       })
     },
     {
-      path: '/depencecard',
+      path: '/depencecard/:id',
       name: 'depencecard',
-      component: getComponent('depence-card')
+      component: getComponent('depence-card'),
+      props: (route) => ({
+        id: route.params.id, // 传入需要请求当前试卷的ID
+        redirect: route.query.redirect // 小程序传入的重定向地址
+      })
     }
   ]
 })

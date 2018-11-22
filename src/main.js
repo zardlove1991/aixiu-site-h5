@@ -24,7 +24,7 @@ router.afterEach(route => {
 })
 
 /* eslint-disable no-new */
-new Vue({
+window.$vue = new Vue({
   el: '#app',
   router,
   store,

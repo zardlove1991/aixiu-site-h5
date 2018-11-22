@@ -78,7 +78,6 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { DEPENCE } from '@/common/currency'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
@@ -91,7 +90,11 @@ export default {
     id: String,
     rtp: String,
     token: String,
-    redirect: String
+    redirect: String,
+    restart: {
+      type: String,
+      default: 'none'
+    }
   },
   data () {
     return {
@@ -131,7 +134,10 @@ export default {
         // 设置授权的token
         if (token) this.setToken(token)
         // 调用考试考试接口
-        if (this.rtp === 'exam') await this.startExam({ id: examId })
+        if (this.rtp === 'exam') {
+          let isRestart = this.restart === 'need'
+          await this.startExam({ id: examId, restart: isRestart })
+        }
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
         // 获取试卷列表
@@ -143,6 +149,13 @@ export default {
         this.checkAnswerMaxQuestionId()
       } catch (err) {
         console.log(err)
+        // 如果开始考试出错就直接去答题卡页面
+        if (err.error_message.includes('试卷')) {
+          this.$router.replace({
+            path: `/depencecard/${examId}`,
+            query: {redirect: this.redirect}
+          })
+        }
       }
     },
     async confirmSuspendModel () {
@@ -156,11 +169,16 @@ export default {
       }
     },
     async cancelSuspendModel () {
+      let examId = this.id
       this.toggleSuspendModel()
       // 提交试卷
       try {
         await this.saveAnswerRecords()
-        DEPENCE.goWxAnswerCardPage()
+        // 跳转去往答题卡页面
+        this.$router.replace({
+          path: `/depencecard/${examId}`,
+          query: {redirect: this.redirect}
+        })
       } catch (err) {
         console.log(err)
       }

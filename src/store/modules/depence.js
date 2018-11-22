@@ -10,7 +10,8 @@ const state = {
   redirectUrl: null, // 去往小程序的重定向地址
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
-  token: null // 当前授权的token有参数传递
+  token: null, // 当前授权的token有参数传递
+  answerCardInfo: null // 答题卡当前的信息
 }
 
 const getters = {
@@ -43,15 +44,20 @@ const getters = {
   },
   examInfo: state => state.examInfo,
   examId: state => state.examId,
+  redirectUrl: state => state.redirectUrl,
   token: state => state.token,
   examListRoute: state => state.examListRoute,
   renderType: state => state.renderType,
-  currentSubjectIndex: state => state.currentSubjectIndex
+  currentSubjectIndex: state => state.currentSubjectIndex,
+  answerCardInfo: state => state.answerCardInfo
 }
 
 const mutations = {
   SET_RENDER_TYPE (state, payload = 'exam') {
     state.renderType = payload
+  },
+  SET_ANSWERCARD_INFO (state, payload) {
+    state.answerCardInfo = payload
   },
   SET_EXAMID (state, payload) {
     state.examId = payload
@@ -129,6 +135,30 @@ const actions = {
       })
     })
   },
+  GET_ANSWERCARD_INFO ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { id } = payload
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
+      API.getRecord({ query: { id } }).then(res => {
+        // 结束
+        Indicator.close()
+        let info = res
+        // 判断是否有错误
+        if (!info.error_code) {
+          commit('SET_ANSWERCARD_INFO', info)
+          resolve()
+        } else {
+          throw new Error(info.error_message)
+        }
+      }).catch(err => {
+        Toast(err.error_message || '获取答题卡信息出错')
+        // 结束
+        Indicator.close()
+        reject(err)
+      })
+    })
+  },
   START_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId || payload.id
@@ -149,7 +179,7 @@ const actions = {
           throw new Error({error_message: '开始考试出错'})
         }
       }).catch(err => {
-        Toast(err.error_message || '获取试卷详情出错')
+        Toast(err.error_message)
         // 结束
         Indicator.close()
         reject(err)

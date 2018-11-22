@@ -1,13 +1,13 @@
 <template lang="html">
-  <div class="depence-card-wrap">
+  <div class="depence-card-wrap" v-if="answerCardInfo">
     <!--头部-->
     <div class="card-header-wrap">
-      <h4 class="title">影视鉴赏设计的基础课程</h4>
+      <h4 class="title">{{answerCardInfo.title}}</h4>
       <!--进度条包裹-->
       <div class="circle-wrap">
         <my-circle :radius= 'circleRadiu' :percent='circlePercent'>
           <div class="score-wrap">
-            <span class="score">98</span>
+            <span class="score">{{answerCardInfo.score}}</span>
             <span class="tip">分</span>
           </div>
         </my-circle>
@@ -17,36 +17,98 @@
     </div>
     <!--内容-->
     <div class="answer-info-wrap">
-      <div class="right-wrap">
-        <div class="logo"></div>
-        <span class="tip-title">共30题</span>
-      </div>
       <div class="left-wrap">
         <div class="logo"></div>
-        <span class="tip-title">答错2题</span>
+        <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
+      </div>
+      <div class="right-wrap">
+        <div class="logo"></div>
+        <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
       </div>
     </div>
     <!--考试按钮-->
-    <div class="rexam-btn">重新考试</div>
-    <div class="exam-overview">查看考试情况</div>
+    <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
+    <div class="exam-overview" @click.stop="jumpToExamAnalysis">查看考试情况</div>
     <!--悬浮按钮-->
-    <div class="float-btn"></div>
+    <div class="float-btn" @click.stop="jumpWxApp"></div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 import MyCircle from '@/components/depence/circle'
 
 export default {
   name: 'depence-card',
+  props: {
+    id: String,
+    redirect: String
+  },
   data () {
     return {
-      circleRadiu: 128,
-      circlePercent: 0.3
+      circleRadiu: 128
+    }
+  },
+  computed: {
+    ...mapGetters('depence', ['answerCardInfo', 'examInfo']),
+    circlePercent () {
+      let answerCardInfo = this.answerCardInfo
+      let totalScore = answerCardInfo.total_score || 0
+      let score = answerCardInfo.score
+      return score ? Math.floor(score / totalScore) : 0
     }
   },
   components: {
     MyCircle
+  },
+  created () {
+    this.initInfo()
+  },
+  methods: {
+    async initInfo () {
+      let examId = this.id
+      let redirectUrl = this.redirect
+      try {
+        // 设置重定向地址
+        if (redirectUrl) this.setRedirectUrl(redirectUrl)
+        // 请求试卷和答题卡信息
+        await this.getExamDetail({id: examId})
+        await this.getAnswerCardInfo({id: examId})
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    startReExam () {
+      let examId = this.id
+      // 去往查看考试概况页面
+      this.$router.replace({
+        path: `/depencelist/${examId}`,
+        query: {
+          rtp: 'exam',
+          restart: 'need'
+        }
+      })
+    },
+    jumpToExamAnalysis () {
+      let examId = this.id
+      // 去往查看考试概况页面
+      this.$router.replace({
+        path: `/depencelist/${examId}`,
+        query: { rtp: 'analysis' }
+      })
+    },
+    jumpWxApp () {
+      let url = this.redirect
+      DEPENCE.goWxAnswerCardPage(url)
+    },
+    ...mapMutations('depence', {
+      setRedirectUrl: 'SET_REDIRECT_URL'
+    }),
+    ...mapActions('depence', {
+      getExamDetail: 'GET_EXAM_DETAIL',
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO'
+    })
   }
 }
 </script>

@@ -54,7 +54,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { DEPENCE } from '@/common/currency'
 import SubjectList from './subject-list'
 import MyModel from './model'
 import { prefixStyle, formatTimeBySec } from '@/utils/utils'
@@ -147,7 +146,10 @@ export default {
         // 保存并提交试卷
         await this.saveAnswerRecords()
         // 跳转去答题卡页面
-        DEPENCE.goWxAnswerCardPage(this.redirectUrl)
+        this.$router.replace({
+          path: `/depencecard/${this.examId}`,
+          query: {redirect: this.redirectUrl}
+        })
       } catch (err) {
         console.log(err)
       }
@@ -161,7 +163,10 @@ export default {
         // 保存并提交试卷
         await this.saveAnswerRecords()
         // 跳转去答题卡页面
-        DEPENCE.goWxAnswerCardPage(this.redirectUrl)
+        this.$router.replace({
+          path: `/depencecard/${this.examId}`,
+          query: {redirect: this.redirectUrl}
+        })
       } catch (err) {
         console.log(err)
       }
