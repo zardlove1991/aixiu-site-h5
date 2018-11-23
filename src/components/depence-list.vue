@@ -78,7 +78,6 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { setBrowserTitle } from '@/utils/utils'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
@@ -92,6 +91,8 @@ export default {
     rtp: String,
     token: String,
     redirect: String,
+    title: String,
+    delta: String,
     restart: {
       type: String,
       default: 'none'
@@ -125,16 +126,22 @@ export default {
     }
   },
   created () {
+    this.initReirectParams()
     this.initList()
   },
   methods: {
+    initReirectParams () {
+      let title = this.title
+      let redirect = this.redirect
+      let delta = this.delta
+      let params = { title, redirect, delta }
+      this.setRedirectParams(params)
+    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
       let token = this.token
       try {
-        // 设置初始化路由地址
-        this.setRedirectParams(this.redirect)
         // 设置授权的token
         if (token) this.setToken(token)
         // 调用考试考试接口
@@ -144,8 +151,6 @@ export default {
         }
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
-        // 设置动态标题
-        setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
         await this.getExamList({
           id: examId,

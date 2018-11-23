@@ -7,10 +7,9 @@ const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
   examId: null, // 试卷Id
   examList: [], // 试卷列表
-  redirectParams: null, // 去往小程序的重定向地址
+  redirectParams: null, // 小程序和H5中的传参
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
-  token: null, // 当前授权的token有参数传递
   answerCardInfo: null // 答题卡当前的信息
 }
 
@@ -45,7 +44,6 @@ const getters = {
   examInfo: state => state.examInfo,
   examId: state => state.examId,
   redirectParams: state => state.redirectParams,
-  token: state => state.token,
   examListRoute: state => state.examListRoute,
   renderType: state => state.renderType,
   currentSubjectIndex: state => state.currentSubjectIndex,
@@ -61,9 +59,6 @@ const mutations = {
   },
   SET_EXAMID (state, payload) {
     state.examId = payload
-  },
-  SET_TOKEN (state, payload) {
-    state.token = payload
   },
   SET_EXAMLIST (state, payload) {
     state.examList = payload

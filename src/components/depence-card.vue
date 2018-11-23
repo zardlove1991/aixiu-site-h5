@@ -43,7 +43,9 @@ export default {
   name: 'depence-card',
   props: {
     id: String,
-    redirect: String
+    redirect: String,
+    title: String,
+    delta: String
   },
   data () {
     return {
@@ -51,7 +53,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['answerCardInfo', 'examInfo']),
+    ...mapGetters('depence', [
+      'answerCardInfo', 'examInfo',
+      'redirectParams'
+    ]),
     circlePercent () {
       let answerCardInfo = this.answerCardInfo
       let totalScore = answerCardInfo.total_score || 0
@@ -63,15 +68,20 @@ export default {
     MyCircle
   },
   created () {
+    this.initReirectParams()
     this.initInfo()
   },
   methods: {
+    initReirectParams () {
+      let title = this.title
+      let redirect = this.redirect
+      let delta = this.delta
+      let params = { title, redirect, delta }
+      this.setRedirectParams(params)
+    },
     async initInfo () {
       let examId = this.id
-      let redirectParams = this.redirect
       try {
-        // 设置重定向地址
-        if (redirectParams) this.setRedirectParams(redirectParams)
         // 请求试卷和答题卡信息
         await this.getExamDetail({id: examId})
         await this.getAnswerCardInfo({id: examId})
@@ -104,13 +114,13 @@ export default {
     },
     jumpPage () {
       // 接收的参数 暂时不处理
-      let url = this.redirect
-      if (!url) {
+      let params = this.redirectParams
+      if (params.delta) {
         // 通过postmessage通知小程序的webview
-        DEPENCE.wxPostMessage()
-      } else {
+        DEPENCE.backWxAppPage(params.delta)
+      } else if (params.redirect) {
         // 网页就直接跳转
-        window.location.href = url
+        window.location.href = params.redirect
       }
     },
     ...mapMutations('depence', {
