@@ -104,6 +104,8 @@ export default {
     overflow: scroll;
     -webkit-overflow-scrolling:touch;
     font-size: 0;
+    margin:0;
+    padding:0;
     .item{
       display: inline-block;
       text-align: center;

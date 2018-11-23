@@ -24,7 +24,7 @@
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
             <!--每个选择项描述-->
             <div class="select-tip-wrap" @click.stop="selectAnswer(optIndex)">
-              <div class="select-tip" :class="[{active: optItem.active}, addClass(item, optItem)]">{{optItem.selectTip}}</div>
+              <div class="select-tip" :class="[{active: setActiveClass(item, optItem)}, addClass(item, optItem)]">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
@@ -209,6 +209,16 @@ export default {
     },
     dealExamHeaderSelect ({subject, index}) {
       this.changeSubjectIndex(index)
+    },
+    setActiveClass (subject, optItem) {
+      let isAddCls = false
+      let answers = subject.answer
+      if (optItem.active) {
+        isAddCls = true
+      } else if (answers && answers.length) {
+        isAddCls = answers.includes(optItem.id)
+      }
+      return isAddCls
     },
     addClass (subject, optItem) {
       let correctInfo = subject.correntInfo
