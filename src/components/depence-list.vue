@@ -113,7 +113,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'redirectUrl', 'examId',
+      'currentSubjectInfo', 'redirectParams', 'examId',
       'examInfo'
     ])
   },

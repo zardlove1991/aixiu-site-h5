@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'token', 'examId', 'redirectUrl',
+      'token', 'examId', 'redirectParams',
       'currentSubjectInfo'
     ]),
     currentIndex () {
@@ -152,7 +152,7 @@ export default {
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
-          query: {redirect: this.redirectUrl}
+          query: {redirect: this.redirectParams}
         })
       } catch (err) {
         console.log(err)
@@ -170,7 +170,7 @@ export default {
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
-          query: {redirect: this.redirectUrl}
+          query: {redirect: this.redirectParams}
         })
       } catch (err) {
         console.log(err)
