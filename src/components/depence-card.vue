@@ -56,7 +56,7 @@ export default {
       let answerCardInfo = this.answerCardInfo
       let totalScore = answerCardInfo.total_score || 0
       let score = answerCardInfo.score
-      return score ? Math.floor(score / totalScore) : 0
+      return score ? score / totalScore : 0
     }
   },
   components: {
@@ -81,6 +81,8 @@ export default {
     },
     startReExam () {
       let examId = this.id
+      // 设置当前试题索引
+      this.changeSubjectIndex(0)
       // 去往查看考试概况页面
       this.$router.replace({
         path: `/depencelist/${examId}`,
@@ -92,6 +94,8 @@ export default {
     },
     jumpToExamAnalysis () {
       let examId = this.id
+      // 设置当前试题索引
+      this.changeSubjectIndex(0)
       // 去往查看考试概况页面
       this.$router.replace({
         path: `/depencelist/${examId}`,
@@ -107,7 +111,8 @@ export default {
     }),
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
-      getAnswerCardInfo: 'GET_ANSWERCARD_INFO'
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
     })
   }
 }

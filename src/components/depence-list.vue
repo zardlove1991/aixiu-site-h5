@@ -38,7 +38,7 @@
           <!--答案解析-->
           <div class="answerinfo-wrap" v-if="renderType === 'analysis'">
             <div class="correct-answer">
-              <span>答案:</span>
+              <span>正确答案:</span>
               <span v-for="info in item.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
             </div>
             <div class="answer-analysis">
@@ -70,7 +70,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{totalExamTime}}分钟</div>
+        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{examInfo.limit_time}}分钟</div>
       </div>
     </my-model>
   </div>
@@ -114,11 +114,7 @@ export default {
       'examList', 'renderType', 'currentSubjectIndex',
       'currentSubjectInfo', 'redirectUrl', 'examId',
       'examInfo'
-    ]),
-    totalExamTime () {
-      let sec = this.currentSubjectInfo.remain_time
-      return Math.floor(sec % 3600 / 60)
-    }
+    ])
   },
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {

@@ -263,7 +263,7 @@ const actions = {
       subject.options.forEach(item => {
         if (item.active) optionsArr.push(item.id)
       })
-      if (optionsArr.length === 1) optionsArr = optionsArr.join('')
+      if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
       data.options_id = optionsArr
       // 判断是否有选项 没有直接return
       if (!data.options_id || !data.options_id.length) return
