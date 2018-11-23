@@ -30,7 +30,7 @@
     <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
     <div class="exam-overview" @click.stop="jumpToExamAnalysis">查看考试情况</div>
     <!--悬浮按钮-->
-    <div class="float-btn" @click.stop="jumpWxApp"></div>
+    <div class="float-btn" @click.stop="jumpPage"></div>
   </div>
 </template>
 
@@ -102,11 +102,16 @@ export default {
         query: { rtp: 'analysis' }
       })
     },
-    jumpWxApp () {
+    jumpPage () {
       // 接收的参数 暂时不处理
-      // let params = this.redirect
-      // 通过postmessage通知小程序的webview
-      DEPENCE.wxPostMessage()
+      let url = this.redirect
+      if (!url) {
+        // 通过postmessage通知小程序的webview
+        DEPENCE.wxPostMessage()
+      } else {
+        // 网页就直接跳转
+        window.location.href = url
+      }
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'
