@@ -6,7 +6,6 @@ import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
 import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
-import { PARTY } from '@/common/currency'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
@@ -18,7 +17,7 @@ setPlatCssInclude()
 router.afterEach(route => {
   // dynamicTitle 动态标题（某个内容跳转）
   let query = router.history.current.query
-  let routerTitle = query && query.dynamicTitle ? query.dynamicTitle : (route.meta.title || PARTY.navBarTitle)
+  let routerTitle = query && query.dynamicTitle ? query.dynamicTitle : route.meta.title
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
 })

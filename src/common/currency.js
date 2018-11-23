@@ -32,5 +32,8 @@ export const DEPENCE = {
   },
   backWxAppPage (num) {
     wx.miniProgram.navigateBack({ delta: num })
+  },
+  wxPostMessage (msg = 'back') {
+    wx.miniProgram.postMessage({ flag: msg })
   }
 }

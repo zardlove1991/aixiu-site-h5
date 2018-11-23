@@ -103,8 +103,10 @@ export default {
       })
     },
     jumpWxApp () {
-      let params = this.redirect
-      DEPENCE.backWxAppPage(params)
+      // 接收的参数 暂时不处理
+      // let params = this.redirect
+      // 通过postmessage通知小程序的webview
+      DEPENCE.wxPostMessage()
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'

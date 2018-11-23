@@ -78,6 +78,7 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { setBrowserTitle } from '@/utils/utils'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import MyAudio from './depence/audio'
@@ -143,6 +144,8 @@ export default {
         }
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
+        // 设置动态标题
+        setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
         await this.getExamList({
           id: examId,
