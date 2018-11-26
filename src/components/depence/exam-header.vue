@@ -38,7 +38,7 @@
       </div>
     </my-model>
     <!--交卷的弹窗-->
-    <my-model :show="isShowSubmitModel"
+    <my-model :show="isShowSubmitModel || showSubmitModel"
               doneText="确认交卷"
               cancelText="继续答题"
               @confirm="confirmSubmitModel"
@@ -71,6 +71,10 @@ export default {
     curIndex: {
       type: Number,
       default: 0
+    },
+    showSubmitModel: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -133,7 +137,7 @@ export default {
         this.duration--
       }
       // 执行倒计时
-      if (this.duration !== 0) {
+      if (this.duration) {
         this.timer = setInterval(timeFun, 1000)
         timeFun()
       } else {
@@ -185,7 +189,12 @@ export default {
       }
     },
     toggleSubmitModel () {
-      this.isShowSubmitModel = !this.isShowSubmitModel
+      if (this.showSubmitModel) {
+        // 临时一个双向同步
+        this.$emit('update:showSubmitModel', false)
+      } else {
+        this.isShowSubmitModel = !this.isShowSubmitModel
+      }
     },
     dealSelectSubject (params) {
       this.toggetSubjectList()

@@ -1,3 +1,5 @@
+import base64 from '@/lib/base64'
+import utf8 from '@/lib/utf8'
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -147,10 +149,10 @@ export function getEnglishChar (num) {
 
 /* 采用base64加密字符串 */
 export function encodeBase64 (str) {
-  return str ? btoa(encodeURIComponent(str)) : ''
+  return str ? base64.encode(utf8.encode(str)) : ''
 }
 
 /* 采用base64解密字符串 */
 export function decodeBase64 (str) {
-  return str ? decodeURIComponent(atob(str)) : ''
+  return str ? utf8.decode(base64.decode(decodeURIComponent(str))) : ''
 }

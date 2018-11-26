@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <exam-header v-if="renderType === 'exam'" :list="examList" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
+    <exam-header v-if="renderType === 'exam'" :list="examList" :showSubmitModel.sync="isShowSubmitModel" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
     <div class="list-wrap">
@@ -108,7 +108,8 @@ export default {
   data () {
     return {
       types: ['艺术鉴赏', '文化历史', '古建筑'],
-      isShowSuspendModel: false
+      isShowSuspendModel: false,
+      isShowSubmitModel: false
     }
   },
   components: {
@@ -215,24 +216,6 @@ export default {
         console.log(err)
       }
     },
-    async submitExam () {
-      let examId = this.id
-      let subject = this.currentSubjectInfo
-      try {
-        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
-        await this.endExam() // 提交试卷
-        // 跳转去往答题卡页面
-        this.$router.replace({
-          path: `/depencecard/${examId}`,
-          query: {
-            redirect: this.redirect,
-            delta: this.delta
-          }
-        })
-      } catch (err) {
-        console.log(err)
-      }
-    },
     async selectAnswer (selectIndex) {
       let subject = this.currentSubjectInfo
       try {
@@ -244,6 +227,9 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    submitExam () {
+      this.isShowSubmitModel = true
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
