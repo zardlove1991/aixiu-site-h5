@@ -18,12 +18,12 @@
         <div class="progress-btn" @click.stop="toggetSubjectList" ref="headerProgressBtn">{{currentTip}}</div>
       </div>
     </div>
-    <!--答题情况展示-->
+    <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList" @touchmove.prevent="">
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->
-          <div class="title">答题情况</div>
+          <div class="title">题号</div>
           <!--答题列表-->
           <subject-list class="list-wrap" :list='list' :curIndex="curIndex" @select="dealSelectSubject"></subject-list>
         </div>
