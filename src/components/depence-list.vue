@@ -21,9 +21,9 @@
             <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
           </div>
           <!--每个选择项-->
-          <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex'>
+          <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
             <!--每个选择项描述-->
-            <div class="select-tip-wrap" @click.stop="selectAnswer(optIndex)">
+            <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
               <div class="select-tip" :class="[{active: setActiveClass(item, optItem)}, addClass(item, optItem)]">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
@@ -233,9 +233,6 @@ export default {
         console.log(err)
       }
     },
-    toggleSuspendModel () {
-      this.isShowSuspendModel = !this.isShowSuspendModel
-    },
     async selectAnswer (selectIndex) {
       let subject = this.currentSubjectInfo
       try {
@@ -247,6 +244,19 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    toggleSuspendModel () {
+      this.isShowSuspendModel = !this.isShowSuspendModel
+    },
+    selectTouchStart (selectIndex) {
+      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
+      selectEl.style.backgroundColor = '#f9f9f9'
+    },
+    selectTouchEnd (selectIndex) {
+      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
+      selectEl.style.backgroundColor = ''
+      // 调用选择答案
+      this.selectAnswer(selectIndex)
     },
     dealExamHeaderSelect ({subject, index}) {
       this.changeSubjectIndex(index)
@@ -350,11 +360,13 @@ export default {
         }
       }
       .subject-select-wrap{
-        padding:px2rem(40px) px2rem(43px) 0 px2rem(30px);
+        margin-top: px2rem(40px);
+        padding:0 px2rem(43px) 0 px2rem(30px);
         box-sizing: border-box;
         .select-tip-wrap{
           display: flex;
           align-items: center;
+          box-sizing: border-box;
           .select-tip{
             display: flex;
             justify-content: center;
@@ -374,6 +386,9 @@ export default {
               @include font-color('bgColor');
               @include bg-color('errorColor');
             }
+          }
+          .select-desc{
+            max-width: 90%;
           }
         }
         .media-wrap{
