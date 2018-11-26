@@ -39,7 +39,13 @@
           <div class="answerinfo-wrap" v-if="renderType === 'analysis'">
             <div class="correct-answer">
               <span>正确答案:</span>
+              <span v-show="!item.correntInfo.length">&nbsp;未指定</span>
               <span v-for="info in item.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
+            </div>
+            <div class="my-answer">
+              <span>您的回答:</span>
+              <span v-show="!item.answersInfo.length">&nbsp;未选择</span>
+              <span v-for="info in item.answersInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
             </div>
             <div class="answer-analysis">
               <h4 class="title">解析</h4>
@@ -56,8 +62,9 @@
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div class="prev" @click.stop="changeSubjectIndex('sub')">上一题</div>
-        <div class="next" @click.stop="changeSubjectIndex('add')">下一题</div>
+        <div class="prev" v-show="currentSubjectIndex !== 0" @click.stop="changeSubjectIndex('sub')">上一题</div>
+        <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
+        <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
       </div>
     </div>
     <!--试题中断弹窗-->
@@ -116,7 +123,13 @@ export default {
       'examList', 'renderType', 'currentSubjectIndex',
       'currentSubjectInfo', 'redirectParams', 'examId',
       'examInfo'
-    ])
+    ]),
+    isShowSubmitBtn () {
+      let currentSubjectIndex = this.currentSubjectIndex
+      let examList = this.examList
+      let renderType = this.renderType
+      return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
+    }
   },
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {
@@ -164,7 +177,10 @@ export default {
         if (err.status && err.status === 422) {
           this.$router.replace({
             path: `/depencecard/${examId}`,
-            query: {redirect: this.redirect}
+            query: {
+              redirect: this.redirect,
+              delta: this.delta
+            }
           })
         }
       }
@@ -190,7 +206,28 @@ export default {
         // 跳转去往答题卡页面
         this.$router.replace({
           path: `/depencecard/${examId}`,
-          query: {redirect: this.redirect}
+          query: {
+            redirect: this.redirect,
+            delta: this.delta
+          }
+        })
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async submitExam () {
+      let examId = this.id
+      let subject = this.currentSubjectInfo
+      try {
+        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.endExam() // 提交试卷
+        // 跳转去往答题卡页面
+        this.$router.replace({
+          path: `/depencecard/${examId}`,
+          query: {
+            redirect: this.redirect,
+            delta: this.delta
+          }
         })
       } catch (err) {
         console.log(err)
@@ -346,15 +383,17 @@ export default {
       .answerinfo-wrap{
         width: 100%;
         padding-top: px2rem(79px);
-        .correct-answer{
+        .correct-answer,.my-answer{
           display: flex;
           align-items: center;
           width: 100%;
-          height: px2rem(100px);
+          height: px2rem(55px);
           padding-left: px2rem(30px);
           box-sizing: border-box;
           @include font-dpr(15px);
           @include font-color('titleColor');
+        }
+        .my-answer{
           @include border('bottom',1px,solid,'lineColor');
         }
         .answer-analysis{

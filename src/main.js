@@ -5,7 +5,7 @@ import 'mint-ui/lib/style.css'
 import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
-import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
+import { setBrowserTitle, setPlatCssInclude, decodeBase64 } from '@/utils/utils'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
@@ -17,7 +17,8 @@ setPlatCssInclude()
 router.afterEach(route => {
   // dynamicTitle 动态标题（某个内容跳转）
   let query = router.history.current.query
-  let routerTitle = query && query.title ? query.title : route.meta.title
+  let decodeTitle = query && query.delta && query.title ? decodeBase64(query.title) : query.title
+  let routerTitle = query && query.title ? decodeTitle : route.meta.title
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
 })

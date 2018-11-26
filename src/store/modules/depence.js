@@ -21,15 +21,21 @@ const getters = {
       item.typeTip = DEPENCE.getSubjetType(item.type)
       // 添加一个正确信息选项的对象
       item.correntInfo = []
+      item.answersInfo = []
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)
+        // 声明一个临时对象
+        let correctObj = {}
+        correctObj.tip = optItem.selectTip
+        correctObj.id = optItem.id
         // 判断是否是正确的选项
         if (optItem.is_true) {
-          let correctObj = {}
-          correctObj.tip = optItem.selectTip
-          correctObj.id = optItem.id
           item.correntInfo.push(correctObj)
+        }
+        // 判断是否有答题信息
+        if (item.answer && item.answer.includes(optItem.id)) {
+          item.answersInfo.push(correctObj)
         }
       })
     })
@@ -273,6 +279,7 @@ const actions = {
           throw new Error('保存答题记录出错')
         }
       }).catch(err => {
+        Toast(err.error_message || err)
         reject(err)
       })
     })

@@ -145,6 +145,7 @@ export default {
     },
     async confirmGiveupModel () {
       let subject = this.currentSubjectInfo
+      let redirectParams = this.redirectParams
       this.toggleGiveUpModel()
       try {
         await this.checkCheckboxRecord(subject) // 检查多选考试的提交
@@ -152,7 +153,10 @@ export default {
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
-          query: {redirect: this.redirectParams}
+          query: {
+            redirect: redirectParams.redirect,
+            delta: redirectParams.delta
+          }
         })
       } catch (err) {
         console.log(err)
@@ -163,6 +167,7 @@ export default {
     },
     async confirmSubmitModel () {
       let subject = this.currentSubjectInfo
+      let redirectParams = this.redirectParams
       this.toggleSubmitModel()
       try {
         await this.checkCheckboxRecord(subject) // 检查多选考试的提交
@@ -170,7 +175,10 @@ export default {
         // 跳转去答题卡页面
         this.$router.replace({
           path: `/depencecard/${this.examId}`,
-          query: {redirect: this.redirectParams}
+          query: {
+            redirect: redirectParams.redirect,
+            delta: redirectParams.delta
+          }
         })
       } catch (err) {
         console.log(err)

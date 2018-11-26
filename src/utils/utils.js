@@ -144,3 +144,13 @@ export function getEnglishChar (num) {
   let baseCode = 65 + num
   return String.fromCharCode(baseCode)
 }
+
+/* 采用base64加密字符串 */
+export function encodeBase64 (str) {
+  return str ? btoa(encodeURIComponent(str)) : ''
+}
+
+/* 采用base64解密字符串 */
+export function decodeBase64 (str) {
+  return str ? decodeURIComponent(atob(str)) : ''
+}

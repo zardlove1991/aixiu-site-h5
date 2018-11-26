@@ -73,10 +73,11 @@ export default {
   },
   methods: {
     initReirectParams () {
+      let redirectParams = this.redirectParams || {}
       let title = this.title
       let redirect = this.redirect
       let delta = this.delta
-      let params = { title, redirect, delta }
+      let params = Object.assign({ title, redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
     async initInfo () {
@@ -91,6 +92,7 @@ export default {
     },
     startReExam () {
       let examId = this.id
+      let redirectParams = this.redirectParams
       // 设置当前试题索引
       this.changeSubjectIndex(0)
       // 去往查看考试概况页面
@@ -98,18 +100,27 @@ export default {
         path: `/depencelist/${examId}`,
         query: {
           rtp: 'exam',
-          restart: 'need'
+          restart: 'need',
+          redirect: redirectParams.redirect,
+          title: redirectParams.title,
+          delta: redirectParams.delta
         }
       })
     },
     jumpToExamAnalysis () {
       let examId = this.id
+      let redirectParams = this.redirectParams
       // 设置当前试题索引
       this.changeSubjectIndex(0)
       // 去往查看考试概况页面
       this.$router.replace({
         path: `/depencelist/${examId}`,
-        query: { rtp: 'analysis' }
+        query: {
+          rtp: 'analysis',
+          redirect: redirectParams.redirect,
+          title: redirectParams.title,
+          delta: redirectParams.delta
+        }
       })
     },
     jumpPage () {
