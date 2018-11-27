@@ -120,11 +120,15 @@ const actions = {
   GET_EXAM_DETAIL ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let { id } = payload
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamDetail({ query: { id } }).then(res => {
+        Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
         resolve()
       }).catch(err => {
+        Indicator.close() // 结束
         reject(err)
       })
     })

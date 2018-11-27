@@ -1,36 +1,47 @@
 <template lang="html">
-  <div class="depence-card-wrap" v-if="answerCardInfo">
-    <!--头部-->
-    <div class="card-header-wrap">
-      <h4 class="title">{{answerCardInfo.title}}</h4>
-      <!--进度条包裹-->
-      <div class="circle-wrap">
-        <my-circle :radius= 'circleRadiu' :percent='circlePercent'>
-          <div class="score-wrap">
-            <span class="score">{{answerCardInfo.score}}</span>
-            <span class="tip">分</span>
-          </div>
-        </my-circle>
+  <div class="depence-grade-wrap">
+    <!--答题卡页面包裹-->
+    <div class="depence-card-wrap" v-if="answerCardInfo && !isShowOpsPage">
+      <!--头部-->
+      <div class="card-header-wrap">
+        <h4 class="title">{{answerCardInfo.title}}</h4>
+        <!--进度条包裹-->
+        <div class="circle-wrap">
+          <my-circle :radius= 'circleRadiu' :percent='circlePercent'>
+            <div class="score-wrap">
+              <span class="score">{{answerCardInfo.score}}</span>
+              <span class="tip">分</span>
+            </div>
+          </my-circle>
+        </div>
+        <!--波浪图形-->
+        <div class="wave"></div>
       </div>
-      <!--波浪图形-->
-      <div class="wave"></div>
+      <!--内容-->
+      <div class="answer-info-wrap">
+        <div class="left-wrap">
+          <div class="logo"></div>
+          <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
+        </div>
+        <div class="right-wrap">
+          <div class="logo"></div>
+          <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
+        </div>
+      </div>
+      <!--考试按钮-->
+      <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
+      <div class="exam-overview" @click.stop="jumpToExamAnalysis">查看考试情况</div>
+      <!--悬浮按钮-->
+      <div class="float-btn" @click.stop="jumpPage"></div>
     </div>
-    <!--内容-->
-    <div class="answer-info-wrap">
-      <div class="left-wrap">
-        <div class="logo"></div>
-        <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
-      </div>
-      <div class="right-wrap">
-        <div class="logo"></div>
-        <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
-      </div>
+    <!--Ops 考试中断页面-->
+    <div class="depence-ops-wrap" v-else-if="answerCardInfo && isShowOpsPage">
+      <div class="tip-bg"></div>
+      <h4 class="tip-title">Ops,考试中断了</h4>
+      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
+      <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
+      <div class="giveup-btn">放弃并交卷</div>
     </div>
-    <!--考试按钮-->
-    <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
-    <div class="exam-overview" @click.stop="jumpToExamAnalysis">查看考试情况</div>
-    <!--悬浮按钮-->
-    <div class="float-btn" @click.stop="jumpPage"></div>
   </div>
 </template>
 
@@ -62,6 +73,11 @@ export default {
       let totalScore = answerCardInfo.total_score || 0
       let score = answerCardInfo.score
       return score ? score / totalScore : 0
+    },
+    isShowOpsPage () {
+      let examInfo = this.examInfo
+      // 判断当前用户考试是否在进行中
+      return (examInfo && examInfo.person_status === 2)
     }
   },
   components: {
@@ -86,6 +102,16 @@ export default {
         // 请求试卷和答题卡信息
         await this.getExamDetail({id: examId})
         await this.getAnswerCardInfo({id: examId})
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async giveupSumitExam () {
+      // 提交试卷
+      try {
+        await this.endExam()
+        // 重新载入答题卡页面
+        this.$router.go(0)
       } catch (err) {
         console.log(err)
       }
@@ -140,7 +166,8 @@ export default {
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
-      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
+      endExam: 'END_EXAM'
     })
   }
 }
@@ -149,124 +176,177 @@ export default {
 <style lang="scss">
 @import "@/styles/index.scss";
 
-.depence-card-wrap{
-  width: 100%;
-  height: 100vh;
-  .card-header-wrap{
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.depence-grade-wrap{
+  .depence-card-wrap{
     width: 100%;
-    height: px2rem(620px);
-    @include bg-color('themeColor');
-    .title{
-      padding: px2rem(52px) 0 px2rem(89px) 0;
-      line-height: 1;
-      @include font-dpr(15px);
-      @include font-color('bgColor');
-    }
-    .circle-wrap{
+    height: 100vh;
+    .card-header-wrap{
       position: relative;
-      width: px2rem(255px);
-      height: px2rem(255px);
-      .score-wrap{
-        position: absolute;
-        left: 50%;
-        top:50%;
-        transform: translate3d(-50%,-50%,0);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      height: px2rem(620px);
+      @include bg-color('themeColor');
+      .title{
+        padding: px2rem(52px) 0 px2rem(89px) 0;
+        line-height: 1;
+        @include font-dpr(15px);
         @include font-color('bgColor');
-        .score{
-          line-height: 1;
-          @include font-dpr(40px);
+      }
+      .circle-wrap{
+        position: relative;
+        width: px2rem(255px);
+        height: px2rem(255px);
+        .score-wrap{
+          position: absolute;
+          left: 50%;
+          top:50%;
+          transform: translate3d(-50%,-50%,0);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          @include font-color('bgColor');
+          .score{
+            line-height: 1;
+            @include font-dpr(40px);
+          }
+          .tip{
+            position: relative;
+            top: px2rem(10px);
+            line-height: 1;
+            @include font-dpr(14px);
+          }
         }
-        .tip{
-          position: relative;
-          top: px2rem(10px);
+      }
+      .wave{
+        position: absolute;
+        bottom:0;
+        width: 100%;
+        height: px2rem(110px);
+        @include img-retina('~@/assets/common/bo@2x.png', '~@/assets/common/bo@3x.png', 100%, 100%);
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+    }
+    .answer-info-wrap{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: px2rem(68px) px2rem(138px);
+      box-sizing: border-box;
+      .left-wrap,.right-wrap{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .logo{
+          width: px2rem(70px);
+          height: px2rem(70px);
+          margin-bottom: px2rem(27px);
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        .tip-title{
           line-height: 1;
-          @include font-dpr(14px);
+          @include font-dpr(16px);
+          @include font-color('titleColor');
+        }
+      }
+      .left-wrap{
+        .logo{
+          @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
+        }
+      }
+      .right-wrap{
+        .logo{
+          @include img-retina('~@/assets/common/Wrong@2x.png', '~@/assets/common/Wrong@3x.png', 100%, 100%);
         }
       }
     }
-    .wave{
+    .rexam-btn{
       position: absolute;
-      bottom:0;
-      width: 100%;
-      height: px2rem(110px);
-      @include img-retina('~@/assets/common/bo@2x.png', '~@/assets/common/bo@3x.png', 100%, 100%);
+      left: 50%;
+      bottom: px2rem(116px);
+      transform: translateX(-50%);
+      width: px2rem(420px);
+      height: px2rem(80px);
+      text-align: center;
+      line-height: px2rem(80px);
+      border-radius: px2rem(40px);
+      @include border('all', 1px, solid, 'activeColor')
+      @include font-dpr(16px);
+      @include font-color('activeColor');
+    }
+    .exam-overview{
+      position: absolute;
+      left: 50%;
+      bottom: px2rem(44px);
+      transform: translateX(-50%);
+      @include font-dpr(13px);
+      @include font-color('descColor');
+    }
+    .float-btn{
+      position: fixed;
+      right: px2rem(40px);
+      bottom: px2rem(226px);
+      width: px2rem(90px);
+      height: px2rem(90px);
+      @include img-retina('~@/assets/common/curriculum@2x.png', '~@/assets/common/curriculum@3x.png', 100%, 100%);
       background-position: center;
       background-repeat: no-repeat;
     }
   }
-  .answer-info-wrap{
+  .depence-ops-wrap{
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     width: 100%;
-    padding: px2rem(68px) px2rem(138px);
-    box-sizing: border-box;
-    .left-wrap,.right-wrap{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      .logo{
-        width: px2rem(70px);
-        height: px2rem(70px);
-        margin-bottom: px2rem(27px);
-        background-position: center;
-        background-repeat: no-repeat;
-      }
-      .tip-title{
-        line-height: 1;
-        @include font-dpr(16px);
-        @include font-color('titleColor');
-      }
+    height: 100vh;
+    @include bg-color('bgColor');
+    overflow: hidden;
+    .tip-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-top: px2rem(199px);
     }
-    .left-wrap{
-      .logo{
-        @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
-      }
+    .tip-title,.tip-desc{
+      line-height: 1;
     }
-    .right-wrap{
-      .logo{
-        @include img-retina('~@/assets/common/Wrong@2x.png', '~@/assets/common/Wrong@3x.png', 100%, 100%);
-      }
+    .tip-title{
+      font-weight: bold;
+      padding: px2rem(30px) 0;
+      text-align: center;
+      @include font-dpr(16px);
+      @include font-color('titleColor');
     }
-  }
-  .rexam-btn{
-    position: absolute;
-    left: 50%;
-    bottom: px2rem(116px);
-    transform: translateX(-50%);
-    width: px2rem(420px);
-    height: px2rem(80px);
-    text-align: center;
-    line-height: px2rem(80px);
-    border-radius: px2rem(40px);
-    @include border('all', 1px, solid, 'activeColor')
-    @include font-dpr(16px);
-    @include font-color('activeColor');
-  }
-  .exam-overview{
-    position: absolute;
-    left: 50%;
-    bottom: px2rem(44px);
-    transform: translateX(-50%);
-    @include font-dpr(13px);
-    @include font-color('descColor');
-  }
-  .float-btn{
-    position: fixed;
-    right: px2rem(40px);
-    bottom: px2rem(226px);
-    width: px2rem(90px);
-    height: px2rem(90px);
-    @include img-retina('~@/assets/common/curriculum@2x.png', '~@/assets/common/curriculum@3x.png', 100%, 100%);
-    background-position: center;
-    background-repeat: no-repeat;
+    .tip-desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .reexam-btn,.giveup-btn{
+      width: px2rem(330px);
+      height: px2rem(80px);
+      border-radius: px2rem(40px);
+      text-align: center;
+      line-height: px2rem(80px);
+      @include font-dpr(16px);
+    }
+    .reexam-btn{
+      margin:px2rem(99px) 0 px2rem(30px);
+      @include bg-color('bgColor');
+      @include font-color('themeColor');
+      @include border('all',1px,solid,'themeColor');
+    }
+    .giveup-btn{
+      @include bg-color('themeColor');
+      @include font-color('bgColor');
+      @include border('all',1px,solid,'themeColor');
+    }
   }
 }
+
 </style>

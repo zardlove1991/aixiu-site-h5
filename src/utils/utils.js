@@ -149,7 +149,7 @@ export function getEnglishChar (num) {
 
 /* 采用base64加密字符串 */
 export function encodeBase64 (str) {
-  return str ? base64.encode(utf8.encode(str)) : ''
+  return str ? encodeURIComponent(base64.encode(utf8.encode(str))) : ''
 }
 
 /* 采用base64解密字符串 */

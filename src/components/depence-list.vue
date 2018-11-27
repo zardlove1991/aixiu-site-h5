@@ -67,6 +67,11 @@
         <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
       </div>
     </div>
+    <!--跳转成绩单页面-->
+    <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
+      <div class="bg"></div>
+      <div class="tip">成绩单</div>
+    </div>
     <!--试题中断弹窗-->
     <my-model :show="isShowSuspendModel"
               doneText="重新考试"
@@ -145,10 +150,11 @@ export default {
   },
   methods: {
     initReirectParams () {
+      let redirectParams = this.redirectParams || {}
       let title = this.title
       let redirect = this.redirect
       let delta = this.delta
-      let params = { title, redirect, delta }
+      let params = Object.assign({ title, redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
     async initList () {
@@ -174,13 +180,14 @@ export default {
         this.checkAnswerMaxQuestionId()
       } catch (err) {
         console.log(err)
+        let redirectParams = this.redirectParams
         // 如果开始考试出错就直接去答题卡页面
         if (err.status && err.status === 422) {
           this.$router.replace({
             path: `/depencecard/${examId}`,
             query: {
-              redirect: this.redirect,
-              delta: this.delta
+              redirect: redirectParams.redirect,
+              delta: redirectParams.delta
             }
           })
         }
@@ -199,6 +206,7 @@ export default {
     async cancelSuspendModel () {
       let examId = this.id
       let subject = this.currentSubjectInfo
+      let redirectParams = this.redirectParams
       this.toggleSuspendModel()
       // 提交试卷
       try {
@@ -208,8 +216,8 @@ export default {
         this.$router.replace({
           path: `/depencecard/${examId}`,
           query: {
-            redirect: this.redirect,
-            delta: this.delta
+            redirect: redirectParams.redirect,
+            delta: redirectParams.delta
           }
         })
       } catch (err) {
@@ -227,6 +235,17 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    jumpToGradePage () {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      this.$router.replace({
+        path: `/depencecard/${examId}`,
+        query: {
+          redirect: redirectParams.redirect,
+          delta: redirectParams.delta
+        }
+      })
     },
     submitExam () {
       this.isShowSubmitModel = true
@@ -464,6 +483,31 @@ export default {
         @include bg-color('themeColor');
         @include border('all',1px,solid,'themeColor');
       }
+    }
+  }
+  .grade-tip-wrap{
+    display: flex;
+    align-items: center;
+    position: fixed;
+    right: 0;
+    bottom: px2rem(90px);
+    width: px2rem(199px);
+    height: px2rem(70px);
+    border-radius: px2rem(35px) 0 0 px2rem(35px);
+    box-shadow: 0 0 px2rem(35px) rgba(201, 201, 201, 0.3);
+    @include bg-color('bgColor');
+    z-index: 10;
+    .bg{
+      width: px2rem(36px);
+      height: px2rem(36px);
+      @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+      margin: 0 px2rem(16px) 0 px2rem(37px);
+    }
+    .tip{
+      @include font-dpr(14px);
+      @include font-color('activeColor')
     }
   }
   .suspend-model{
