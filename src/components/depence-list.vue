@@ -500,7 +500,7 @@ export default {
     .bg{
       width: px2rem(36px);
       height: px2rem(36px);
-      @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
+      @include img-retina('~@/assets/common/icon@2x.png', '~@/assets/common/icon@3x.png', 100%, 100%);
       background-repeat: no-repeat;
       background-position: center;
       margin: 0 px2rem(16px) 0 px2rem(37px);
