@@ -169,9 +169,10 @@ export default {
     currentSubjectIndex (newIndex, oldIndex) {
       let renderType = this.renderType
       let subject = this.examList[oldIndex]
-      let isAnswerd = subject.options.some(item => item.active)
+      let isActive = subject.options.some(item => item.active)
+      let isAnswerd = subject.answer && subject.answer.length
       // 判断是当前考试题目未答显示提醒
-      if (renderType === 'exam' && !isAnswerd) this.showOpsModel()
+      if (renderType === 'exam' && !isActive && !isAnswerd) this.showOpsModel()
       // 检查多选考试的提交
       this.checkCheckboxRecord(subject)
     }
