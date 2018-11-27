@@ -5,6 +5,7 @@
       <circle class="progress-background" r="50" cx="50" cy="50" fill="transparent" />
       <!--当前进度条展示-->
       <circle class="progress-bar" r="50" cx="50" cy="50" fill="transparent"
+        stroke-linecap="round"
         :stroke-dasharray="circleDeg"
         :stroke-dashoffset="dashOffset"
       />
