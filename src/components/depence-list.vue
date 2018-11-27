@@ -1,16 +1,22 @@
 <template lang="html">
   <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <exam-header v-if="renderType === 'exam'" :list="examList" :showSubmitModel.sync="isShowSubmitModel" :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect" @timeup="toggleSuspendModel"></exam-header>
+    <exam-header v-if="renderType === 'exam'" :list="examList" :showSubmitModel.sync="isShowSubmitModel" :curIndex="currentSubjectIndex" @timeup="toggleSuspendModel"></exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
     <div class="list-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
         <template v-if="index === currentSubjectIndex">
-          <h3 class="subject-type">
-            <span>{{item.typeTip}}</span>
-            <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
-          </h3>
+          <div class="subject-type-wrap">
+            <h3 class="subject-type">
+              <span>{{item.typeTip}}</span>
+              <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
+            </h3>
+            <div class="subject-tip-wrap" @click.stop="toggetSubjectList">
+              <div class="tip-img"></div>
+              <div class="tip-count">{{`${index+1}/${examList.length}`}}</div>
+            </div>
+          </div>
           <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
           <!--题干的每题数据-->
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
@@ -72,6 +78,17 @@
       <div class="bg"></div>
       <div class="tip">成绩单</div>
     </div>
+    <!--题号情况展示-->
+    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList" @touchmove.prevent="">
+      <transition name="up" mode="out-in">
+        <div class="info-wrap"  v-show="isShowSubjectList">
+          <!--头部标题-->
+          <div class="title">题号</div>
+          <!--答题列表-->
+          <subject-list class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+        </div>
+      </transition>
+    </div>
     <!--试题中断弹窗-->
     <my-model :show="isShowSuspendModel"
               doneText="重新考试"
@@ -92,6 +109,7 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
+import SubjectList from './depence/subject-list'
 import MyAudio from './depence/audio'
 import MyVideo from './depence/video'
 import MyModel from './depence/model'
@@ -114,12 +132,14 @@ export default {
     return {
       types: ['艺术鉴赏', '文化历史', '古建筑'],
       isShowSuspendModel: false,
-      isShowSubmitModel: false
+      isShowSubmitModel: false,
+      isShowSubjectList: false
     }
   },
   components: {
     ExamHeader,
     SubjectHeader,
+    SubjectList,
     MyAudio,
     MyVideo,
     MyModel
@@ -253,6 +273,9 @@ export default {
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
     },
+    toggetSubjectList () {
+      this.isShowSubjectList = !this.isShowSubjectList
+    },
     selectTouchStart (selectIndex) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
       selectEl.style.backgroundColor = '#f9f9f9'
@@ -264,6 +287,7 @@ export default {
       this.selectAnswer(selectIndex)
     },
     dealExamHeaderSelect ({subject, index}) {
+      this.toggetSubjectList()
       this.changeSubjectIndex(index)
     },
     setActiveClass (subject, optItem) {
@@ -333,17 +357,36 @@ export default {
       width: 100%;
       @include font-dpr(16px);
       @include font-color('titleColor');
-      .subject-type{
+      .subject-type-wrap{
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: px2rem(54px) 0 px2rem(16px) px2rem(32px);
+        padding: px2rem(54px) px2rem(43px) px2rem(16px) px2rem(32px);
         box-sizing: border-box;
-        line-height: 1;
-        @include font-dpr(16px);
-        .score{
-          font-weight: normal;
-          margin-left: px2rem(10px);
-          @include font-dpr(14px);
+        .subject-type{
+          line-height: 1;
+          @include font-dpr(16px);
+          .score{
+            font-weight: normal;
+            margin-left: px2rem(10px);
+            @include font-dpr(14px);
+          }
+        }
+        .subject-tip-wrap{
+          display: flex;
+          align-items: center;
+          .tip-img{
+            width: px2rem(30px);
+            height: px2rem(30px);
+            @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-right: px2rem(11px);
+          }
+          .tip-count{
+            @include font-dpr(13px);
+            @include font-color('tipColor')
+          }
         }
       }
       .subject-title{
@@ -508,6 +551,35 @@ export default {
     .tip{
       @include font-dpr(14px);
       @include font-color('activeColor')
+    }
+  }
+  .answer-list-info{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    background: rgba(0,0,0,0.5);
+    .info-wrap{
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      .title{
+        padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
+        box-sizing: border-box;
+        border-radius: px2rem(10px) px2rem(10px) 0 0;
+        @include bg-color('bgColor');
+        @include font-dpr(15px);
+        @include font-color('tipColor');
+        @include border('bottom',1px,solid,'lineColor');
+      }
+      .list-wrap{
+        padding: px2rem(36px) px2rem(41px) px2rem(26px);
+        box-sizing: border-box;
+        @include bg-color('bgColor');
+      }
     }
   }
   .suspend-model{

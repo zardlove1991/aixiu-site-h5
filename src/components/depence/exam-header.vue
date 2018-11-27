@@ -15,19 +15,7 @@
       <!--进度条展示-->
       <div class="progress-bar-wrap" ref="headerProgressBar">
         <div class="progress" ref="headerProgress"></div>
-        <div class="progress-btn" @click.stop="toggetSubjectList" ref="headerProgressBtn">{{currentTip}}</div>
       </div>
-    </div>
-    <!--题号情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList" @touchmove.prevent="">
-      <transition name="up" mode="out-in">
-        <div class="info-wrap"  v-show="isShowSubjectList">
-          <!--头部标题-->
-          <div class="title">题号</div>
-          <!--答题列表-->
-          <subject-list class="list-wrap" :list='list' :curIndex="curIndex" @select="dealSelectSubject"></subject-list>
-        </div>
-      </transition>
     </div>
     <!--弃考的弹窗-->
     <my-model :show="isShowGiveupModel" @confirm="confirmGiveupModel" @cancel="toggleGiveUpModel">
@@ -54,12 +42,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import SubjectList from './subject-list'
 import MyModel from './model'
-import { prefixStyle, formatTimeBySec } from '@/utils/utils'
-
-const PROGRESS_BTN_W = 38
-const TRANSFORM = prefixStyle('transform')
+import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   name: 'exam-header',
@@ -86,7 +70,6 @@ export default {
     }
   },
   components: {
-    SubjectList,
     MyModel
   },
   computed: {
@@ -96,11 +79,6 @@ export default {
     ]),
     currentIndex () {
       return this.curIndex + 1
-    },
-    currentTip () {
-      let currentIndex = this.currentIndex
-      let list = this.list
-      return `${currentIndex}/${list.length}`
     },
     percent () {
       return this.currentIndex / this.list.length
@@ -144,9 +122,6 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    toggetSubjectList () {
-      this.isShowSubjectList = !this.isShowSubjectList
-    },
     async confirmGiveupModel () {
       let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
@@ -165,9 +140,6 @@ export default {
       } catch (err) {
         console.log(err)
       }
-    },
-    toggleGiveUpModel () {
-      this.isShowGiveupModel = !this.isShowGiveupModel
     },
     async confirmSubmitModel () {
       let subject = this.currentSubjectInfo
@@ -188,6 +160,9 @@ export default {
         console.log(err)
       }
     },
+    toggleGiveUpModel () {
+      this.isShowGiveupModel = !this.isShowGiveupModel
+    },
     toggleSubmitModel () {
       if (this.showSubmitModel) {
         // 临时一个双向同步
@@ -196,20 +171,14 @@ export default {
         this.isShowSubmitModel = !this.isShowSubmitModel
       }
     },
-    dealSelectSubject (params) {
-      this.toggetSubjectList()
-      this.$emit('select', params)
-    },
     _moveProgressBtn () {
-      let maxOffsetW = this.$refs.headerProgressBar.clientWidth - PROGRESS_BTN_W
+      let maxOffsetW = this.$refs.headerProgressBar.clientWidth
       let offsetWidth = maxOffsetW * this.percent
       this._offset(offsetWidth)
     },
     _offset (offsetWidth) {
-      let headerProgressBtnEl = this.$refs.headerProgressBtn
       let headerProgressEl = this.$refs.headerProgress
       headerProgressEl.style.width = `${offsetWidth}px`
-      headerProgressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`
     },
     ...mapActions('depence', {
       endExam: 'END_EXAM',
@@ -285,50 +254,6 @@ export default {
         width: 0;
         height: px2rem(4px);
         @include bg-color('themeColor');
-      }
-      .progress-btn{
-        position: absolute;
-        top: px2rem(-15px);
-        left: 0;
-        width: px2rem(72px);
-        height: px2rem(30px);
-        text-align: center;
-        line-height: px2rem(30px);
-        border-radius: px2rem(15px);
-        z-index: 10;
-        @include bg-color('bgColor');
-        @include font-dpr(10px);
-        @include font-color('themeFadeColor');
-        @include border('all',1px,solid,'themeFadeColor');
-      }
-    }
-  }
-  .answer-list-info{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
-    background: rgba(0,0,0,0.5);
-    .info-wrap{
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      .title{
-        padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
-        box-sizing: border-box;
-        border-radius: px2rem(10px) px2rem(10px) 0 0;
-        @include bg-color('bgColor');
-        @include font-dpr(15px);
-        @include font-color('tipColor');
-        @include border('bottom',1px,solid,'lineColor');
-      }
-      .list-wrap{
-        padding: px2rem(36px) px2rem(41px) px2rem(26px);
-        box-sizing: border-box;
-        @include bg-color('bgColor');
       }
     }
   }
