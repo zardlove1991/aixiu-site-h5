@@ -12,7 +12,7 @@
               <span>{{item.typeTip}}</span>
               <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
             </h3>
-            <div class="subject-tip-wrap" @click.stop="toggetSubjectList">
+            <div v-show="renderType === 'exam'" class="subject-tip-wrap" @click.stop="toggetSubjectList">
               <div class="tip-img"></div>
               <div class="tip-count">{{`${index+1}/${examList.length}`}}</div>
             </div>
@@ -102,6 +102,13 @@
         <div class="desc">考试题数：{{examList.length}}题，考试时间：{{examInfo.limit_time}}分钟</div>
       </div>
     </my-model>
+    <!--当前未做答题目弹窗-->
+    <transition name="fade" mode="out-in">
+      <div class="answer-ops-model" v-show="isShowOpsModel">
+        <div class="ops-bg"></div>
+        <div class="ops-tip">跳过本题,可稍后作答</div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -133,7 +140,8 @@ export default {
       types: ['艺术鉴赏', '文化历史', '古建筑'],
       isShowSuspendModel: false,
       isShowSubmitModel: false,
-      isShowSubjectList: false
+      isShowSubjectList: false,
+      isShowOpsModel: false
     }
   },
   components: {
@@ -159,7 +167,11 @@ export default {
   },
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {
+      let renderType = this.renderType
       let subject = this.examList[oldIndex]
+      let isAnswerd = subject.options.some(item => item.active)
+      // 判断是当前考试题目未答显示提醒
+      if (renderType === 'exam' && !isAnswerd) this.showOpsModel()
       // 检查多选考试的提交
       this.checkCheckboxRecord(subject)
     }
@@ -275,6 +287,12 @@ export default {
     },
     toggetSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
+    },
+    showOpsModel () {
+      this.isShowOpsModel = true
+      setTimeout(() => {
+        this.isShowOpsModel = false
+      }, 350)
     },
     selectTouchStart (selectIndex) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
@@ -533,7 +551,7 @@ export default {
     align-items: center;
     position: fixed;
     right: 0;
-    bottom: px2rem(90px);
+    bottom: px2rem(120px);
     width: px2rem(199px);
     height: px2rem(70px);
     border-radius: px2rem(35px) 0 0 px2rem(35px);
@@ -606,6 +624,34 @@ export default {
     .desc{
       @include font-dpr(14px);
       @include font-color('tipColor');
+    }
+  }
+  .answer-ops-model{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%, 0);
+    width: px2rem(360px);
+    height: px2rem(160px);
+    box-shadow: 0 0 px2rem(30px) rgba(184, 184, 184, 0.3);
+    border-radius: px2rem(8px);
+    text-align: center;
+    @include bg-color('bgColor');
+    .ops-bg{
+      position: absolute;
+      left:50%;
+      top:0;
+      width: px2rem(136px);
+      height: px2rem(124px);
+      transform: translate3d(-50%,-40%,0);
+      @include img-retina('~@/assets/common/lamp@2x.png','~@/assets/common/lamp@3x.png', 100%,100%);
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .ops-tip{
+      padding-top: px2rem(92px);
+      @include font-dpr(14px);
+      @include font-color('activeColor');
     }
   }
 }
