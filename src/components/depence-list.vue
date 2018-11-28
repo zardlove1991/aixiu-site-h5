@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="denpncelist-wrap" v-if="examList.length">
+  <div class="denpncelist-wrap" :class="{hide: isShowModelThumb}" v-if="examList.length">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'" :list="examList" :showSubmitModel.sync="isShowSubmitModel" :curIndex="currentSubjectIndex" @timeup="toggleSuspendModel"></exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
@@ -158,7 +158,7 @@ export default {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
       'currentSubjectInfo', 'redirectParams', 'examId',
-      'examInfo'
+      'examInfo', 'isShowModelThumb'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -338,6 +338,9 @@ export default {
 .denpncelist-wrap{
   width: 100%;
   height: 100vh;
+  &.hide{
+    overflow: hidden;
+  }
   .list-wrap{
     position: relative;
     width: 100%;

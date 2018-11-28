@@ -10,7 +10,8 @@ const state = {
   redirectParams: null, // 小程序和H5中的传参
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
-  answerCardInfo: null // 答题卡当前的信息
+  answerCardInfo: null, // 答题卡当前的信息
+  isShowModelThumb: false // 判断界面是否有弹窗展示
 }
 
 const getters = {
@@ -53,7 +54,8 @@ const getters = {
   examListRoute: state => state.examListRoute,
   renderType: state => state.renderType,
   currentSubjectIndex: state => state.currentSubjectIndex,
-  answerCardInfo: state => state.answerCardInfo
+  answerCardInfo: state => state.answerCardInfo,
+  isShowModelThumb: state => state.isShowModelThumb
 }
 
 const mutations = {
@@ -62,6 +64,9 @@ const mutations = {
   },
   SET_ANSWERCARD_INFO (state, payload) {
     state.answerCardInfo = payload
+  },
+  SET_MODEL_THUMB_STATE (state, payload) {
+    state.isShowModelThumb = payload
   },
   SET_EXAMID (state, payload) {
     state.examId = payload
