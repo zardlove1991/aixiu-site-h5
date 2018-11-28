@@ -73,7 +73,7 @@ export default {
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
-      if (!answers.length) {
+      if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))

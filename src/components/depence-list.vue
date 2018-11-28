@@ -30,7 +30,7 @@
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
             <!--每个选择项描述-->
             <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
-              <div class="select-tip" :class="[{active: setActiveClass(item, optItem)}, addClass(item, optItem)]">{{optItem.selectTip}}</div>
+              <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
@@ -114,6 +114,7 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
+import mixins from '@/common/mixins'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import SubjectList from './depence/subject-list'
@@ -123,6 +124,7 @@ import MyModel from './depence/model'
 
 export default {
   name: 'depence-list',
+  mixins: [mixins],
   props: {
     id: String,
     rtp: String,
@@ -194,6 +196,7 @@ export default {
       let examId = this.id
       let rtp = this.rtp
       let token = this.token
+      let redirectParams = this.redirectParams
       try {
         // 设置授权的token
         if (token) this.setToken(token)
@@ -213,17 +216,7 @@ export default {
         this.checkAnswerMaxQuestionId()
       } catch (err) {
         console.log(err)
-        let redirectParams = this.redirectParams
-        // 如果开始考试出错就直接去答题卡页面
-        if (err.status && err.status === 422) {
-          this.$router.replace({
-            path: `/depencecard/${examId}`,
-            query: {
-              redirect: redirectParams.redirect,
-              delta: redirectParams.delta
-            }
-          })
-        }
+        this.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async confirmSuspendModel () {
@@ -255,6 +248,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
+        this.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async selectAnswer (selectIndex) {
@@ -309,25 +303,6 @@ export default {
       this.toggetSubjectList()
       this.changeSubjectIndex(index)
     },
-    setActiveClass (subject, optItem) {
-      let isAddCls = false
-      let answers = subject.answer
-      if (optItem.active) {
-        isAddCls = true
-      } else if (answers && answers.length) {
-        isAddCls = answers.includes(optItem.id)
-      }
-      return isAddCls
-    },
-    addClass (subject, optItem) {
-      let correctInfo = subject.correntInfo
-      let answers = subject.answer
-      if (!correctInfo.length) return ''
-      // 没有回答的和当前选项不包含在回答的数据中
-      if (!answers || !answers.length || !answers.includes(optItem.id)) return ''
-      let isExsit = correctInfo.some(item => item.id === optItem.id)
-      return isExsit ? 'active' : 'error'
-    },
     checkAnswerMaxQuestionId () {
       let examInfo = this.examInfo
       let answerMaxQuestionId = examInfo.answer_max_question_id
@@ -361,11 +336,8 @@ export default {
 @import "@/styles/index.scss";
 
 .denpncelist-wrap{
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100vh;
   .list-wrap{
     position: relative;
     width: 100%;

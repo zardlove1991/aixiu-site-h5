@@ -43,10 +43,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import MyModel from './model'
+import mixins from '@/common/mixins'
 import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   name: 'exam-header',
+  mixins: [mixins],
   props: {
     list: {
       type: Array,
@@ -125,13 +127,14 @@ export default {
     async confirmGiveupModel () {
       let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
+      let examId = this.examId
       this.toggleGiveUpModel()
       try {
         await this.checkCheckboxRecord(subject) // 检查多选考试的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
-          path: `/depencecard/${this.examId}`,
+          path: `/depencecard/${examId}`,
           query: {
             redirect: redirectParams.redirect,
             delta: redirectParams.delta
@@ -139,9 +142,11 @@ export default {
         })
       } catch (err) {
         console.log(err)
+        this.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async confirmSubmitModel () {
+      let examId = this.examId
       let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
       this.toggleSubmitModel()
@@ -150,7 +155,7 @@ export default {
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
-          path: `/depencecard/${this.examId}`,
+          path: `/depencecard/${examId}`,
           query: {
             redirect: redirectParams.redirect,
             delta: redirectParams.delta
@@ -158,6 +163,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
+        this.dealErrorType({ examId, redirectParams }, err)
       }
     },
     toggleGiveUpModel () {

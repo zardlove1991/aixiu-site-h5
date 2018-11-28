@@ -16,7 +16,6 @@ const state = {
 const getters = {
   examList (state) {
     let list = state.examList
-
     list.map((item, index) => {
       item.typeTip = DEPENCE.getSubjetType(item.type)
       // 添加一个正确信息选项的对象
@@ -34,12 +33,13 @@ const getters = {
           item.correntInfo.push(correctObj)
         }
         // 判断是否有答题信息
-        if (item.answer && item.answer.includes(optItem.id)) {
+        let answers = item.answer
+        if (answers && answers.includes(optItem.id)) {
+          // 添加回答的参数
           item.answersInfo.push(correctObj)
         }
       })
     })
-
     return list
   },
   currentSubjectInfo (state) {
@@ -102,6 +102,21 @@ const actions = {
         if (list && list.length) {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
+          // 添加初始化active的状态
+          list.forEach((subject, index) => {
+            subject.options.forEach((item, itemIdx) => {
+              let answers = subject.answer
+              if (answers && answers.includes(item.id)) {
+                // 判断是否是解析状态展示
+                if (renderType === 'analysis') {
+                  if (item.is_true) item.active = true
+                  else item.error = true
+                } else {
+                  item.active = true
+                }
+              }
+            })
+          })
           commit('SET_EXAMLIST', list)
         } else {
           throw new Error(res)
