@@ -17,8 +17,7 @@ setPlatCssInclude()
 router.afterEach(route => {
   // dynamicTitle 动态标题（某个内容跳转）
   let query = router.history.current.query
-  let decodeTitle = query && query.delta && query.title ? decodeBase64(query.title) : query.title
-  let routerTitle = query && query.title ? decodeTitle : route.meta.title
+  let routerTitle = query && query.title ? query.title : route.meta.title
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
 })

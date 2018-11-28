@@ -114,6 +114,7 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { setBrowserTitle } from '@/utils/utils'
 import mixins from '@/common/mixins'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
@@ -130,7 +131,6 @@ export default {
     rtp: String,
     token: String,
     redirect: String,
-    title: String,
     delta: String,
     restart: {
       type: String,
@@ -186,10 +186,9 @@ export default {
   methods: {
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
-      let title = this.title
       let redirect = this.redirect
       let delta = this.delta
-      let params = Object.assign({ title, redirect, delta }, redirectParams)
+      let params = Object.assign({ redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
     async initList () {
@@ -207,6 +206,8 @@ export default {
         }
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
+        // 设置标题
+        setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
         await this.getExamList({
           id: examId,

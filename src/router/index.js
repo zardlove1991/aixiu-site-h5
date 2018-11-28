@@ -76,7 +76,6 @@ export default new Router({
         rtp: route.query.rtp, // 试卷渲染的类型 考试:exam 解析:analysis
         restart: route.query.restart, // 是否需要重新开始考试 需要:need 不需要:none
         redirect: route.query.redirect, // 小程序传入的重定向地址
-        title: route.query.title, // 当前试卷的title
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
@@ -90,7 +89,6 @@ export default new Router({
       props: (route) => ({
         id: route.params.id, // 传入需要请求当前试卷的ID
         redirect: route.query.redirect, // 小程序传入的重定向地址
-        title: route.query.title, // 当前试卷的title
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {

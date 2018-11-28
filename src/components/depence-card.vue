@@ -55,7 +55,6 @@ export default {
   props: {
     id: String,
     redirect: String,
-    title: String,
     delta: String
   },
   data () {
@@ -90,10 +89,9 @@ export default {
   methods: {
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
-      let title = this.title
       let redirect = this.redirect
       let delta = this.delta
-      let params = Object.assign({ title, redirect, delta }, redirectParams)
+      let params = Object.assign({ redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
     async initInfo () {
@@ -128,7 +126,6 @@ export default {
           rtp: 'exam',
           restart: 'need',
           redirect: redirectParams.redirect,
-          title: redirectParams.title,
           delta: redirectParams.delta
         }
       })
@@ -144,7 +141,6 @@ export default {
         query: {
           rtp: 'analysis',
           redirect: redirectParams.redirect,
-          title: redirectParams.title,
           delta: redirectParams.delta
         }
       })
