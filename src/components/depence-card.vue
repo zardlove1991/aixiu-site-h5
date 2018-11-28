@@ -59,7 +59,8 @@ export default {
   },
   data () {
     return {
-      circleRadiu: 128
+      circleRadiu: 128,
+      isShowOpsPage: false
     }
   },
   computed: {
@@ -72,11 +73,6 @@ export default {
       let totalScore = answerCardInfo.total_score || 0
       let score = answerCardInfo.score
       return score ? score / totalScore : 0
-    },
-    isShowOpsPage () {
-      let examInfo = this.examInfo
-      // 判断当前用户考试是否在进行中
-      return (examInfo && examInfo.person_status === 2)
     }
   },
   components: {
@@ -100,6 +96,9 @@ export default {
         // 请求试卷和答题卡信息
         await this.getExamDetail({id: examId})
         await this.getAnswerCardInfo({id: examId})
+        // 判断当前用户考试是否在进行中
+        let examInfo = this.examInfo
+        if (examInfo.person_status === 2) this.isShowOpsPage = true
       } catch (err) {
         console.log(err)
       }
