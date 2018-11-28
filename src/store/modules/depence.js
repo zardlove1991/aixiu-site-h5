@@ -291,7 +291,10 @@ const actions = {
       if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
       data.options_id = optionsArr
       // 判断是否有选项 没有直接return
-      if (!data.options_id || !data.options_id.length) return
+      if (!data.options_id || !data.options_id.length) {
+        resolve()
+        return
+      }
 
       API.saveSubjectRecord({
         query: { id },

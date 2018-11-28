@@ -21,7 +21,7 @@
     <my-model :show="isShowGiveupModel" @confirm="confirmGiveupModel" @cancel="toggleGiveUpModel">
       <div class="giveup-model" slot="content">
         <div class="tip-bg"></div>
-        <div class="tip">只有<i class="strong">一次考试机会</i>,确定放弃吗?</div>
+        <div class="tip">确定要放弃答题吗？</div>
         <div class="desc">(如放弃，则以本次考试结果为最终结果)</div>
       </div>
     </my-model>
@@ -278,6 +278,7 @@ export default {
       line-height: 1;
     }
     .tip{
+      text-align: center;
       padding: px2rem(30px) 0;
       @include font-dpr(14px);
       @include font-color('tipColor');

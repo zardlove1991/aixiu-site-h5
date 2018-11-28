@@ -5,7 +5,7 @@ import 'mint-ui/lib/style.css'
 import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
-import { setBrowserTitle, setPlatCssInclude, decodeBase64 } from '@/utils/utils'
+import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)
