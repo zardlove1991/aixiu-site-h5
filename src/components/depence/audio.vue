@@ -58,7 +58,20 @@ export default {
   watch: {
     playing (state) {
       let audio = this.audio
-      return state ? audio.play() : audio.pause()
+      // 通过状态判定播放
+      if (state) {
+        // 解决在小程序中的兼容性
+        let WeixinJSBridge = window.WeixinJSBridge
+        if (typeof WeixinJSBridge === 'object' && typeof WeixinJSBridge.invoke === 'function') {
+          // IOS
+          WeixinJSBridge.invoke('getNetworkType', {}, (res) => audio.play())
+        } else {
+          // Android
+          audio.play()
+        }
+      } else {
+        audio.pause()
+      }
     },
     percent (newVal) {
       // 调用进度条
