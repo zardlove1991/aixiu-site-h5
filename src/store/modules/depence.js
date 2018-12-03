@@ -1,7 +1,7 @@
 import API from '@/api/module/examination'
 import { Toast, Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
-import { getEnglishChar } from '@/utils/utils'
+import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -22,9 +22,13 @@ const getters = {
       // 添加一个正确信息选项的对象
       item.correntInfo = []
       item.answersInfo = []
+      // 处理下annex对象数据的兼容性
+      item.annex = dealAnnexObject(item.annex)
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)
+        // 处理下annex对象数据的兼容性
+        optItem.annex = dealAnnexObject(optItem.annex)
         // 声明一个临时对象
         let correctObj = {}
         correctObj.tip = optItem.selectTip

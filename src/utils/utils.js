@@ -156,3 +156,29 @@ export function encodeBase64 (str) {
 export function decodeBase64 (str) {
   return str ? utf8.decode(base64.decode(decodeURIComponent(str))) : ''
 }
+
+/* 当前试题的annex中的video字段对象的处理 */
+export function dealAnnexObject (annex) {
+  let mediaObject = {...annex}
+  let dealKey = 'video'
+  for (let key in mediaObject) {
+    let data = mediaObject[key]
+    // 兼容为字符串数据
+    if (typeof data === 'string') data = [data]
+    // 排除key不同、没有数据
+    if (key === dealKey && data.length) {
+      // 处理对象的兼容
+      data = data.map(item => {
+        let newItem = item
+        if (typeof newItem === 'object' && newItem.content) {
+          newItem = newItem.content.url
+        }
+        return newItem
+      })
+    }
+    // 赋值
+    mediaObject[key] = data
+  }
+
+  return mediaObject
+}
