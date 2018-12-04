@@ -1,6 +1,6 @@
 import { createAPI } from '@/api'
 
-const API_FLAG = 'API41'
+const API_FLAG = 'EXAMAPI'
 // 带GUID
 // let configUrl = {
 //   getExamlist: 'client/{guid}/examination', // 考试列表
