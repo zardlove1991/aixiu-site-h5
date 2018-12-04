@@ -173,8 +173,11 @@ export default {
       let subject = this.examList[oldIndex]
       let isActive = subject.options.some(item => item.active)
       let isAnswerd = subject.answer && subject.answer.length
-      // 判断是当前考试题目未答显示提醒
-      if (renderType === 'exam' && !isActive && !isAnswerd) this.showOpsModel()
+      let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
+      // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
+      if (renderType === 'exam' && !isActive && !isAnswerd && !isPrevIndex) {
+        this.showOpsModel()
+      }
       // 检查多选考试的提交
       this.checkCheckboxRecord(subject)
     }

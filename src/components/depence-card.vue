@@ -40,7 +40,7 @@
       <h4 class="tip-title">Ops,考试中断了</h4>
       <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
-      <div class="giveup-btn">放弃并交卷</div>
+      <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
   </div>
 </template>
@@ -104,9 +104,10 @@ export default {
       }
     },
     async giveupSumitExam () {
+      let examId = this.id
       // 提交试卷
       try {
-        await this.endExam()
+        await this.endExam({id: examId})
         // 重新载入答题卡页面
         this.$router.go(0)
       } catch (err) {
