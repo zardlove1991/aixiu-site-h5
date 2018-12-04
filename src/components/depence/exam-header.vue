@@ -26,7 +26,7 @@
       </div>
     </my-model>
     <!--交卷的弹窗-->
-    <my-model :show="isShowSubmitModel || showSubmitModel"
+    <my-model :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
               doneText="确认交卷"
               cancelText="继续答题"
               @confirm="confirmSubmitModel"
@@ -35,6 +35,18 @@
       <div class="submit-model" slot="content">
         <div class="tip-bg"></div>
         <div class="desc">您还有{{unDoSubjectLength}}道题未做,确认交卷吗?</div>
+      </div>
+    </my-model>
+    <!--去人交卷的-->
+    <my-model :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
+              doneText="我在想想"
+              cancelText="确认交卷"
+              @confirm="toggleSubmitModel"
+              @cancel="confirmSubmitModel"
+    >
+      <div class="submit-success-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="desc">试题已做完，确认交卷吗？</div>
       </div>
     </my-model>
   </div>
@@ -292,7 +304,7 @@ export default {
       @include font-color('descColor');
     }
   }
-  .submit-model{
+  .submit-model,.submit-success-model{
     padding: px2rem(61px) px2rem(77px) px2rem(49px);
     box-sizing: border-box;
     .tip-bg{
@@ -308,6 +320,14 @@ export default {
       padding-top: px2rem(30px);
       @include font-dpr(14px);
       @include font-color('tipColor');
+    }
+  }
+  .submit-success-model{
+    .tip-bg{
+      @include img-retina("~@/assets/common/icon_success@2x.png","~@/assets/common/icon_success@3x.png", 100%, 100%);
+    }
+    .desc{
+      text-align: center;
     }
   }
 }
