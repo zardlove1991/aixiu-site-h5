@@ -94,6 +94,17 @@ export default new Router({
       meta: {
         title: '成绩单'
       }
+    },
+    {
+      path: '/depencestart/:id',
+      name: 'depencestart',
+      component: getComponent('depence-start'),
+      props: (route) => ({
+        id: route.params.id // 传入需要请求当前试卷的ID
+      }),
+      meta: {
+        title: '加载中...'
+      }
     }
   ]
 })

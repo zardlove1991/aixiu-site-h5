@@ -6,6 +6,7 @@ $themeFadeColor:#4DD996;
 // 其它背景颜色
 $audioBg: #f5f5f5;
 $audioProgressBar: #d9d9d9;
+$tipBgColor: #f4f4f4;
 // 文字颜色
 $titleColor: #333;
 $tipColor: #666;
@@ -27,6 +28,7 @@ $defaultColorMap: (
   titleColor: $titleColor,
   descColor: $descColor,
   tipColor:$tipColor,
+  tipBgColor:$tipBgColor,
   errorColor: $errorColor,
   activeColor: $activeColor,
   disabledColor: $disabledColor,
