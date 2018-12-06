@@ -19,12 +19,6 @@ const METHODS = {
   }
 }
 
-export const PARTY = {
-  navBarTitle: '智慧党建',
-  detectionRestart: METHODS.detectionRestart,
-  getTypeTip: METHODS.getSubjetType
-}
-
 export const DEPENCE = {
   getSubjetType: METHODS.getSubjetType,
   goWxAppPage (url) {
