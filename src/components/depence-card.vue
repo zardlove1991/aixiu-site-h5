@@ -19,7 +19,7 @@
       </div>
       <!--内容-->
       <div class="answer-info-wrap">
-        <div class="left-wrap">
+        <div class="left-wrap" @click.stop="jumpToExamAnalysis">
           <div class="logo"></div>
           <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
         </div>
@@ -30,7 +30,7 @@
       </div>
       <!--考试按钮-->
       <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
-      <div class="exam-overview" @click.stop="jumpToExamAnalysis">查看考试情况</div>
+      <div class="exam-overview" @click.stop="toggleExamInfo">查看考试情况</div>
       <!--悬浮按钮-->
       <div class="float-btn" @click.stop="jumpPage"></div>
     </div>
@@ -42,6 +42,27 @@
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
+    <!--考试情况model-->
+    <my-model :show="isShowExamInfo"
+              :show-btn="false"
+              @cancel="toggleExamInfo"
+    >
+      <div class="exam-model-wrap" slot="content">
+        <h3 class="title">考试情况</h3>
+        <div class="time-wrap">
+          <span class="use-time">用时: 33分钟</span>
+          <span class="submit-time">交卷时间: 2018-09-10 17:55</span>
+        </div>
+        <!--知识点展示-->
+        <div class="knowledge-wrap" v-for="(item,index) in 2" :key="index">
+          <div class="tip-wrap">
+            <i class="circle"></i>
+            <span class="tip">素描知识点</span>
+          </div>
+          <div class="desc-wrap">共32题，答对30题，正确率89%</div>
+        </div>
+      </div>
+    </my-model>
   </div>
 </template>
 
@@ -49,6 +70,7 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import MyCircle from '@/components/depence/circle'
+import MyModel from './depence/model'
 
 export default {
   name: 'depence-card',
@@ -60,7 +82,8 @@ export default {
   data () {
     return {
       circleRadiu: 128,
-      isShowOpsPage: false
+      isShowOpsPage: false,
+      isShowExamInfo: false
     }
   },
   computed: {
@@ -76,7 +99,8 @@ export default {
     }
   },
   components: {
-    MyCircle
+    MyCircle,
+    MyModel
   },
   created () {
     this.initReirectParams()
@@ -113,6 +137,9 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    toggleExamInfo () {
+      this.isShowExamInfo = !this.isShowExamInfo
     },
     startReExam () {
       let examId = this.id
@@ -341,6 +368,59 @@ export default {
       @include bg-color('themeColor');
       @include font-color('bgColor');
       @include border('all',1px,solid,'themeColor');
+    }
+  }
+  .exam-model-wrap{
+    padding: 0 px2rem(66px) px2rem(32px);
+    .title{
+      width: 100%;
+      padding: px2rem(66px) 0 px2rem(54px);
+      line-height: 1;
+      text-align: center;
+      @include font-dpr(19px);
+      @include font-color('titleColor');
+    }
+    .time-wrap{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding:0 0 px2rem(40px) px2rem(24px);
+      box-sizing: border-box;;
+      @include font-dpr(12px);
+      @include font-color('tipColor')
+      .use-time,.submit-time{
+        line-height: 1;
+      }
+      .use-time{
+        margin-bottom: px2rem(16px);
+      }
+    }
+    .knowledge-wrap{
+      width: 100%;
+      padding-bottom: px2rem(40px);
+      .tip-wrap{
+        display: flex;
+        align-items: center;
+        margin-bottom: px2rem(21px);
+        .circle{
+          width: px2rem(10px);
+          height: px2rem(10px);
+          border-radius: 50%;
+          margin-right: px2rem(14px);
+          @include bg-color('themeColor');
+        }
+        .tip{
+          line-height: 1;
+          @include font-dpr(15px);
+          @include font-color('titleColor');
+        }
+      }
+      .desc-wrap{
+        line-height: 1;
+        padding-left: px2rem(24px);
+        @include font-dpr(13px);
+        @include font-color('tipColor');
+      }
     }
   }
 }

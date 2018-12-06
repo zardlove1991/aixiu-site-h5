@@ -1,11 +1,11 @@
 <template lang="html">
-  <div class="model-wrap" @touchmove.prevent="" v-if="show">
+  <div class="model-wrap" @touchmove.prevent="" v-if="show" @click.stop='cancel'>
     <!--弹窗模块-->
     <div class="model-content">
       <!--主体内容-->
       <slot name="content"></slot>
       <!--底部按钮-->
-      <div class="btn-wrap">
+      <div class="btn-wrap" v-show="showBtn">
         <div class="confirm" @click.stop="confirm">{{doneText}}</div>
         <div class="cancel" @click.stop="cancel">{{cancelText}}</div>
       </div>
@@ -22,6 +22,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    showBtn: {
+      type: Boolean,
+      default: true
     },
     doneText: {
       type: String,

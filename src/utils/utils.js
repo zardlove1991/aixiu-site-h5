@@ -104,8 +104,8 @@ export const getUrlParam = (key) => {
 
 export const setPlatCssInclude = () => {
   let urlParams = getUrlParam()
-  let plat = urlParams.plat ? urlParams.plat : 'default'
-  window.document.documentElement.setAttribute('data-theme', plat)
+  let theme = urlParams.theme ? urlParams.theme : 'default'
+  window.document.documentElement.setAttribute('data-theme', theme)
 }
 
 // 创建一个自动根据浏览器来添加CSS前缀
