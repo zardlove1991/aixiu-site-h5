@@ -57,7 +57,7 @@
               <h4 class="title">解析</h4>
               <p class="content" v-html="item.analysis"></p>
               <!--目前还没有类别和正确率 暂时隐藏-->
-              <div class="exam-types" v-show="item.point">
+              <div class="exam-types" v-show="item.point && item.point.length">
                 <span class="tip">考点</span>
                 <span class="type" v-for="item in item.point" :key="item.id">{{item.name}}</span>
               </div>
