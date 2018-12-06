@@ -57,11 +57,11 @@
               <h4 class="title">解析</h4>
               <p class="content" v-html="item.analysis"></p>
               <!--目前还没有类别和正确率 暂时隐藏-->
-              <div class="exam-types" v-show="false">
+              <div class="exam-types" v-show="item.point">
                 <span class="tip">考点</span>
-                <span class="type" v-for="(item,index) in types" :key="index">{{item}}</span>
+                <span class="type" v-for="(item,index) in item.point" :key="item.id">{{item.name}}</span>
               </div>
-              <p class="percent" v-show="false">正确率: 75%</p>
+              <p class="percent" v-show="item.correct_percent">{{`正确率: ${Math.round(item.correct_percent)}%`}}</p>
             </div>
           </div>
         </template>
@@ -129,12 +129,15 @@ export default {
   props: {
     id: String,
     rtp: String,
-    token: String,
     redirect: String,
     delta: String,
     restart: {
       type: String,
       default: 'none'
+    },
+    listType: {
+      type: String,
+      default: 'list'
     }
   },
   data () {
@@ -197,11 +200,9 @@ export default {
     async initList () {
       let examId = this.id
       let rtp = this.rtp
-      let token = this.token
+      let listType = this.listType
       let redirectParams = this.redirectParams
       try {
-        // 设置授权的token
-        if (token) this.setToken(token)
         // 调用考试考试接口
         if (this.rtp === 'exam') {
           let isRestart = this.restart === 'need'
@@ -214,7 +215,8 @@ export default {
         // 获取试卷列表
         await this.getExamList({
           id: examId,
-          renderType: rtp
+          renderType: rtp,
+          listType
         })
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
@@ -319,7 +321,6 @@ export default {
       }
     },
     ...mapMutations('depence', {
-      setToken: 'SET_TOKEN',
       setRedirectParams: 'SET_REDIRECT_PARAMS'
     }),
     ...mapActions('depence', {
@@ -468,13 +469,14 @@ export default {
           }
           .content{
             line-height: px2rem(44px);
+            margin-bottom: px2rem(44px);
             @include font-dpr(16px);
             @include font-color('titleColor');
           }
           .exam-types{
             display: flex;
             align-items: center;
-            margin: px2rem(44px) 0;
+            margin-bottom: px2rem(44px);
             .tip{
               margin-right: px2rem(19px);
               @include font-dpr(13px);

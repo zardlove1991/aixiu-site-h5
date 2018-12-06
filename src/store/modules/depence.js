@@ -92,7 +92,7 @@ const mutations = {
 const actions = {
   GET_EXAMLIST ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
-      let { id, pageNum, renderType } = payload
+      let { id, pageNum, renderType, listType } = payload
 
       if (!id) {
         Toast('没有试题ID,请求出错')
@@ -104,9 +104,10 @@ const actions = {
         page: pageNum || 1,
         count: 100
       }
-      // 开始请求数据
+      // 开始请求数据 更具listType决定请求的方法
+      let reqMethodName = (listType === 'errorlist' ? 'getErrorList' : 'getExamDetailsList')
       Indicator.open({ spinnerType: 'fading-circle' })
-      API.getExamDetailsList({ params }).then(res => {
+      API[reqMethodName]({ params }).then(res => {
         let list = res.data
         if (list && list.length) {
           commit('SET_EXAMID', id)

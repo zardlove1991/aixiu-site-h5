@@ -19,11 +19,11 @@
       </div>
       <!--内容-->
       <div class="answer-info-wrap">
-        <div class="left-wrap" @click.stop="jumpToExamAnalysis">
+        <div class="left-wrap" @click.stop="jumpToExamAnalysis('list')">
           <div class="logo"></div>
           <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
         </div>
-        <div class="right-wrap">
+        <div class="right-wrap" @click.stop="jumpToExamAnalysis('errorlist')">
           <div class="logo"></div>
           <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
         </div>
@@ -47,20 +47,22 @@
               :show-btn="false"
               @cancel="toggleExamInfo"
     >
-      <div class="exam-model-wrap" slot="content">
+      <div class="exam-model-wrap" slot="content" v-if="answerCardInfo">
         <h3 class="title">考试情况</h3>
         <div class="time-wrap">
-          <span class="use-time">用时: 33分钟</span>
-          <span class="submit-time">交卷时间: 2018-09-10 17:55</span>
+          <span class="use-time">{{`用时: ${answerCardInfo.use_time}`}}</span>
+          <span class="submit-time">{{`交卷时间: ${answerCardInfo.submit_time || '暂无'}`}}</span>
         </div>
         <!--知识点展示-->
-        <div class="knowledge-wrap" v-for="(item,index) in 2" :key="index">
-          <div class="tip-wrap">
-            <i class="circle"></i>
-            <span class="tip">素描知识点</span>
+        <template v-if="answerCardInfo.point">
+          <div class="knowledge-wrap" v-for="(item,key) in answerCardInfo.point" :key="key">
+            <div class="tip-wrap">
+              <i class="circle"></i>
+              <span class="tip">{{key}}</span>
+            </div>
+            <div class="desc-wrap">{{`共${item.total_count}题，答对${item.right_count}题，正确率${Math.round(item.right_percent)}%`}}</div>
           </div>
-          <div class="desc-wrap">共32题，答对30题，正确率89%</div>
-        </div>
+        </template>
       </div>
     </my-model>
   </div>
@@ -157,7 +159,7 @@ export default {
         }
       })
     },
-    jumpToExamAnalysis () {
+    jumpToExamAnalysis (jumpType) {
       let examId = this.id
       let redirectParams = this.redirectParams
       // 设置当前试题索引
@@ -167,6 +169,7 @@ export default {
         path: `/depencelist/${examId}`,
         query: {
           rtp: 'analysis',
+          listType: jumpType,
           redirect: redirectParams.redirect,
           delta: redirectParams.delta
         }
