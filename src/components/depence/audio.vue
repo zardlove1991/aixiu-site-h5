@@ -179,7 +179,7 @@ export default {
       flex:1;
       position: relative;
       height: px2rem(2px);
-      margin: 0 px2rem(40px) 0 px2rem(17px);
+      margin: 0 px2rem(40px) 0 px2rem(20px);
       @include bg-color('audioProgressBar');
       .progress{
         position: absolute;

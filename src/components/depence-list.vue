@@ -59,7 +59,7 @@
               <!--目前还没有类别和正确率 暂时隐藏-->
               <div class="exam-types" v-show="item.point">
                 <span class="tip">考点</span>
-                <span class="type" v-for="(item,index) in item.point" :key="item.id">{{item.name}}</span>
+                <span class="type" v-for="item in item.point" :key="item.id">{{item.name}}</span>
               </div>
               <p class="percent" v-show="item.correct_percent">{{`正确率: ${Math.round(item.correct_percent)}%`}}</p>
             </div>
@@ -85,7 +85,9 @@
           <!--头部标题-->
           <div class="title">题号</div>
           <!--答题列表-->
-          <subject-list class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+          <div class="info-list-wrap">
+            <subject-list  class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+          </div>
         </div>
       </transition>
     </div>
@@ -293,7 +295,7 @@ export default {
       this.isShowOpsModel = true
       setTimeout(() => {
         this.isShowOpsModel = false
-      }, 350)
+      }, 520)
     },
     selectTouchStart (selectIndex) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
@@ -448,10 +450,8 @@ export default {
         .correct-answer,.my-answer{
           display: flex;
           align-items: center;
-          width: 100%;
-          height: px2rem(55px);
-          padding-left: px2rem(30px);
-          box-sizing: border-box;
+          padding: 0 0 px2rem(30px) px2rem(30px);
+          line-height: 1;
           @include font-dpr(15px);
           @include font-color('titleColor');
         }
@@ -502,7 +502,7 @@ export default {
       }
     }
     .btn-wrap{
-      position: absolute;
+      position: fixed;
       left: 0;
       right: 0;
       bottom: px2rem(10px);
@@ -518,6 +518,7 @@ export default {
         @include font-dpr(16px);
       }
       .prev{
+        @include bg-color('bgColor');
         @include font-color('themeColor');
         @include border('all',1px,solid,'themeColor');
       }
@@ -554,7 +555,7 @@ export default {
     }
   }
   .answer-list-info{
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -566,6 +567,7 @@ export default {
       left: 0;
       right: 0;
       bottom: 0;
+      height: px2rem(900px);
       .title{
         padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
         box-sizing: border-box;
@@ -575,10 +577,16 @@ export default {
         @include font-color('tipColor');
         @include border('bottom',1px,solid,'lineColor');
       }
-      .list-wrap{
-        padding: px2rem(36px) px2rem(41px) px2rem(26px);
+      .info-list-wrap{
+        width: 100%;
+        height: 100%;
         box-sizing: border-box;
-        @include bg-color('bgColor');
+        overflow: auto;
+        .list-wrap{
+          padding: px2rem(36px) px2rem(41px) px2rem(26px);
+          box-sizing: border-box;
+          @include bg-color('bgColor');
+        }
       }
     }
   }

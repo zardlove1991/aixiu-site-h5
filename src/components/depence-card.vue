@@ -314,10 +314,10 @@ export default {
     }
     .float-btn{
       position: fixed;
-      right: px2rem(40px);
+      right: px2rem(30px);
       bottom: px2rem(226px);
-      width: px2rem(90px);
-      height: px2rem(90px);
+      width: px2rem(100px);
+      height: px2rem(100px);
       @include img-retina('~@/assets/common/curriculum@2x.png', '~@/assets/common/curriculum@3x.png', 100%, 100%);
       background-position: center;
       background-repeat: no-repeat;
