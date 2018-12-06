@@ -105,7 +105,7 @@ const actions = {
         count: 100
       }
       // 开始请求数据 更具listType决定请求的方法
-      let reqMethodName = (listType === 'errorlist' ? 'getErrorList' : 'getExamDetailsList')
+      let reqMethodName = (listType === 'errorlist' ? 'getLatestErrorList' : 'getExamDetailsList')
       Indicator.open({ spinnerType: 'fading-circle' })
       API[reqMethodName]({ params }).then(res => {
         let list = res.data

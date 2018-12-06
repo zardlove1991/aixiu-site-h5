@@ -1,28 +1,13 @@
 import { createAPI } from '@/api'
 
 const API_FLAG = 'EXAMAPI'
-// 带GUID
-// let configUrl = {
-//   getExamlist: 'client/{guid}/examination', // 考试列表
-//   getRecord: 'client/{guid}/examination/{id}/card', // 考试列表
-//   getExamDetailsList: 'client/{guid}/examination/questions',
-//   getErrorList: 'client/{guid}/examination/mistakes', // 获得错题列表
-//   getErrorCollection: 'client/{guid}/examination/mistakes/examination', // 获得错题列表集合
-//   submitExam: 'client/{guid}/examination/{id}/end',
-//   startExam: 'client/{guid}/examination/{id}/start',
-//   saveSubjectRecord: 'client/{guid}/examination/{id}/record', // 保存答题记录
-//   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
-//   getExamDetail: 'client/{guid}/examination/{id}',
-//   getSubjectFavorInfo: 'client/{guid}/examination/collection/is', // 获得题目的收藏信息
-//   setSubjectFavorInfo: 'client/{guid}/examination/collection' // 设置题目的收藏
-// }
-
 // 不带GUID
 let configUrl = {
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
   getErrorList: 'client/examination/mistakes', // 获得错题列表
+  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
   getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
   submitExam: 'client/examination/{id}/end',
   startExam: 'client/examination/{id}/start',
@@ -42,6 +27,7 @@ export default {
   getRecord: config => createAPI(configUrl.getRecord, 'get', config, API_FLAG),
   getErrorCollection: config => createAPI(configUrl.getErrorCollection, 'get', config, API_FLAG),
   getErrorList: config => createAPI(configUrl.getErrorList, 'get', config, API_FLAG),
+  getLatestErrorList: config => createAPI(configUrl.getLatestErrorList, 'get', config, API_FLAG),
   getExamDetailsList: config => createAPI(configUrl.getExamDetailsList, 'get', config, API_FLAG),
   submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
