@@ -1,78 +1,79 @@
 <template lang="html">
-  <div class="depence-grade-wrap">
-    <!--答题卡页面包裹-->
-    <div class="depence-card-wrap" v-if="answerCardInfo && !isShowOpsPage">
-      <!--头部-->
-      <div class="card-header-wrap">
-        <h4 class="title">{{answerCardInfo.title}}</h4>
-        <!--进度条包裹-->
-        <div class="circle-wrap">
-          <my-circle :radius= 'circleRadiu' :percent='circlePercent'>
-            <div class="score-wrap">
+  <!--总体页面包裹-->
+  <div class="depence-new-card-wrap">
+    <div class="depence-card-wrap" v-if="examInfo && answerCardInfo">
+      <!--内容展示区域-->
+      <div class="grade-info-wrap">
+        <!--头部信息-->
+        <div class="header-info-wrap">
+          <div class="avater-bg">
+            <img class="avater" :src="examInfo.member_avatar || defaultAvaterUrl" />
+          </div>
+          <h4 class="name">{{examInfo.member_name}}</h4>
+        </div>
+        <!--主体信息-->
+        <div class="body-info-wrap">
+          <h3 class="title">{{examInfo.title}}</h3>
+          <div class="score-wrap">
+            <div class="text-wrap">
               <span class="score">{{answerCardInfo.score}}</span>
               <span class="tip">分</span>
             </div>
-          </my-circle>
+          </div>
+          <div class="exam-detail-wrap">
+            <div class="row">
+              <span class="title">试卷总分</span>
+              <span class="desc">{{`${answerCardInfo.total_score}分`}}</span>
+            </div>
+            <div class="row">
+              <span class="title">总题数目</span>
+              <span class="desc">{{`${examInfo.question_num}题`}}</span>
+            </div>
+            <div class="row">
+              <span class="title">回答正确</span>
+              <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
+            </div>
+            <div class="row">
+              <span class="title">考试用时</span>
+              <span class="desc">{{examTimeObj.examTime}}</span>
+            </div>
+            <div class="row">
+              <span class="title">交卷时间</span>
+              <span class="desc">{{examTimeObj.submitTime}}</span>
+            </div>
+          </div>
         </div>
-        <!--波浪图形-->
-        <div class="wave"></div>
       </div>
-      <!--内容-->
-      <div class="answer-info-wrap">
-        <div class="left-wrap" @click.stop="jumpToExamAnalysis('list')">
-          <div class="logo"></div>
-          <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
+      <!--底部按钮-->
+      <div class="grade-btn-wrap">
+        <div class="col-wrap back" @click.stop="jumpPage">
+          <div class="icon-bg"></div>
+          <span class="tip">返回</span>
         </div>
-        <div class="right-wrap" @click.stop="jumpToExamAnalysis('errorlist')">
-          <div class="logo"></div>
-          <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
+        <div class="col-wrap reset" @click.stop="startReExam">
+          <div class="icon-bg"></div>
+          <span class="tip">重新考试</span>
+        </div>
+        <div class="col-wrap analysis" @click.stop="jumpToExamAnalysis('list')">
+          <div class="icon-bg"></div>
+          <span class="tip">答案解析</span>
         </div>
       </div>
-      <!--考试按钮-->
-      <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
-      <div class="exam-overview" @click.stop="toggleExamInfo">查看考试情况</div>
-      <!--悬浮按钮-->
-      <div class="float-btn" @click.stop="jumpPage"></div>
     </div>
     <!--Ops 考试中断页面-->
-    <div class="depence-ops-wrap" v-else-if="answerCardInfo && isShowOpsPage">
+    <div class="depence-ops-wrap" v-if="answerCardInfo && isShowOpsPage">
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
       <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
-    <!--考试情况model-->
-    <my-model :show="isShowExamInfo"
-              :show-btn="false"
-              @cancel="toggleExamInfo"
-    >
-      <div class="exam-model-wrap" slot="content" v-if="answerCardInfo">
-        <h3 class="title">考试情况</h3>
-        <div class="time-wrap">
-          <span class="use-time">{{`用时: ${answerCardInfo.use_time}`}}</span>
-          <span class="submit-time">{{`交卷时间: ${answerCardInfo.submit_time || '暂无'}`}}</span>
-        </div>
-        <!--知识点展示-->
-        <template v-if="answerCardInfo.point">
-          <div class="knowledge-wrap" v-for="(item,key) in answerCardInfo.point" :key="key">
-            <div class="tip-wrap">
-              <i class="circle"></i>
-              <span class="tip">{{key}}</span>
-            </div>
-            <div class="desc-wrap">{{`共${item.total_count}题，答对${item.right_count}题，正确率${Math.round(item.right_percent)}%`}}</div>
-          </div>
-        </template>
-      </div>
-    </my-model>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
-import MyCircle from '@/components/depence/circle'
-import MyModel from './depence/model'
 
 export default {
   name: 'depence-card',
@@ -83,9 +84,8 @@ export default {
   },
   data () {
     return {
-      circleRadiu: 128,
-      isShowOpsPage: false,
-      isShowExamInfo: false
+      defaultAvaterUrl: require('@/assets/common/avater@3x.png'),
+      isShowOpsPage: false
     }
   },
   computed: {
@@ -93,16 +93,26 @@ export default {
       'answerCardInfo', 'examInfo',
       'redirectParams'
     ]),
-    circlePercent () {
+    examTimeObj () {
       let answerCardInfo = this.answerCardInfo
-      let totalScore = answerCardInfo.total_score || 0
-      let score = answerCardInfo.score
-      return score ? score / totalScore : 0
+      let examTimeStr = '暂无时间'
+      let submitTimeStr = '暂无时间'
+      if (answerCardInfo) {
+        // 处理考试时间
+        let examTimeArr = answerCardInfo.use_time.split("'")
+        let examTimeObj = { hour: examTimeArr[0], min: examTimeArr[1], sec: examTimeArr[2] }
+        examTimeStr = `${examTimeObj.min}分${examTimeObj.sec}秒`
+        // 处理提交时间
+        let submitTimeArr = answerCardInfo.submit_time.split(' ')
+        let submitDate = submitTimeArr[0].split('-').splice(1).join('/')
+        let submitTime = submitTimeArr[1]
+        submitTimeStr = `${submitDate} ${submitTime}`
+      }
+      return {
+        examTime: examTimeStr,
+        submitTime: submitTimeStr
+      }
     }
-  },
-  components: {
-    MyCircle,
-    MyModel
   },
   created () {
     this.initReirectParams()
@@ -139,9 +149,6 @@ export default {
       } catch (err) {
         console.log(err)
       }
-    },
-    toggleExamInfo () {
-      this.isShowExamInfo = !this.isShowExamInfo
     },
     startReExam () {
       let examId = this.id
@@ -202,125 +209,173 @@ export default {
 <style lang="scss">
 @import "@/styles/index.scss";
 
-.depence-grade-wrap{
+.depence-new-card-wrap{
+  position: relative;
+  width: 100%;
+  height: 100vh;
   .depence-card-wrap{
     width: 100%;
-    height: 100vh;
-    .card-header-wrap{
-      position: relative;
-      display: flex;
-      align-items: center;
-      flex-direction: column;
+    height: 100%;
+    padding: 0 px2rem(50px);
+    background: linear-gradient(225deg,rgba(144,139,238,1),rgba(71,130,239,1));
+    box-sizing: border-box;
+    overflow: hidden;
+    .grade-info-wrap{
       width: 100%;
-      height: px2rem(620px);
-      @include bg-color('themeColor');
-      .title{
-        padding: px2rem(52px) 0 px2rem(89px) 0;
-        line-height: 1;
-        @include font-dpr(15px);
-        @include font-color('bgColor');
-      }
-      .circle-wrap{
+      margin-top: px2rem(131px);
+      padding: 0 px2rem(30px);
+      box-sizing: border-box;
+      border-radius: px2rem(20px);
+      @include bg-color('bgColor');
+      .header-info-wrap{
         position: relative;
-        width: px2rem(255px);
-        height: px2rem(255px);
-        .score-wrap{
-          position: absolute;
-          left: 50%;
-          top:50%;
-          transform: translate3d(-50%,-50%,0);
+        width: 100%;
+        text-align: center;
+        padding: px2rem(120px) 0 px2rem(39px);
+        @include border('bottom',1px,dashed,'borderGray');
+        .avater-bg{
           display: flex;
-          justify-content: center;
           align-items: center;
-          @include font-color('bgColor');
-          .score{
-            line-height: 1;
-            @include font-dpr(40px);
+          justify-content: center;
+          position: absolute;
+          top: 0 ;
+          left: 50%;
+          transform: translate3d(-50%, -40%, 0);
+          width: px2rem(140px);
+          height: px2rem(140px);
+          padding: px2rem(8px);
+          box-shadow:0px 0px 22px 0px rgba(189,189,189,0.7);
+          border-radius: 50%;
+          box-sizing: border-box;
+          background-position: center;
+          background-repeat: no-repeat;
+          @include bg-color('bgColor');
+          .avater{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
           }
-          .tip{
-            position: relative;
-            top: px2rem(10px);
-            line-height: 1;
-            @include font-dpr(14px);
+        }
+        .name{
+          line-height: 1;
+          @include font-dpr(16px);
+          @include font-color('tipColor');
+        }
+      }
+      .body-info-wrap{
+        width: 100%;
+        padding: 0 px2rem(71px);
+        box-sizing: border-box;
+        .title{
+          width: 100%;
+          text-align: center;
+          font-weight: bold;
+          padding: px2rem(59px) 0;
+          line-height: px2rem(52px);
+          @include font-dpr(17px);
+          @include font-color('titleColor');
+        }
+        .score-wrap{
+          position: relative;
+          text-align: center;
+          padding-top: px2rem(159px);
+          .text-wrap{
+            position: absolute;
+            left: 50%;
+            top: px2rem(-16px);
+            transform: translateX(-50%);
+            .score{
+              line-height: 1;
+              @include font-dpr(60px);
+              @include font-color('titleColor');
+            }
+            .tip{
+              position: absolute;
+              bottom: px2rem(16px);
+              right: px2rem(-46px);
+              line-height: 1;
+              @include font-dpr(15px);
+              @include font-color('titleColor');
+            }
+          }
+        }
+        .exam-detail-wrap{
+          width: 100%;
+          padding: 0 px2rem(39px) px2rem(72px) px2rem(37px);
+          box-sizing: border-box;
+          overflow: hidden;
+          .row{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: px2rem(40px);
+            &:first-child{
+              margin-top: 0;
+            }
+            .title,.desc{
+              flex:1;
+              line-height: 1;
+              padding:0;
+              font-weight: normal;
+              @include font-dpr(13px);
+              @include font-color('tipColor');
+            }
+            .title{
+              text-align: left;
+            }
+            .desc{
+              text-align: right;
+            }
           }
         }
       }
-      .wave{
-        position: absolute;
-        bottom:0;
-        width: 100%;
-        height: px2rem(110px);
-        @include img-retina('~@/assets/common/bo@2x.png', '~@/assets/common/bo@3x.png', 100%, 100%);
-        background-position: center;
-        background-repeat: no-repeat;
-      }
     }
-    .answer-info-wrap{
+    .grade-btn-wrap{
+      position: absolute;
+      left: px2rem(97px);
+      right: px2rem(97px);
+      bottom: px2rem(68px);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 100%;
-      padding: px2rem(68px) px2rem(138px);
-      box-sizing: border-box;
-      .left-wrap,.right-wrap{
+      .col-wrap{
+        flex:0 0 px2rem(120px);
         display: flex;
         flex-direction: column;
         align-items: center;
-        .logo{
-          width: px2rem(70px);
-          height: px2rem(70px);
-          margin-bottom: px2rem(27px);
+        .icon-bg{
           background-position: center;
           background-repeat: no-repeat;
+          margin-bottom: px2rem(30px);
         }
-        .tip-title{
+        .tip{
           line-height: 1;
-          @include font-dpr(16px);
-          @include font-color('titleColor');
+          @include font-dpr(15px);
+          @include font-color('bgColor');
+        }
+        &.back{
+          .icon-bg{
+            width: px2rem(43px);
+            height: px2rem(43px);
+            @include img-retina('~@/assets/common/back@2x.png', '~@/assets/common/back@3x.png', 100%, 100%);
+          }
+        }
+        &.reset{
+          .icon-bg{
+            width: px2rem(43px);
+            height: px2rem(43px);
+            @include img-retina('~@/assets/common/reset@2x.png', '~@/assets/common/reset@3x.png', 100%, 100%);
+          }
+        }
+        &.analysis{
+          .icon-bg{
+            width: px2rem(43px);
+            height: px2rem(43px);
+            @include img-retina('~@/assets/common/analysis@2x.png', '~@/assets/common/analysis@3x.png', 100%, 100%);
+          }
         }
       }
-      .left-wrap{
-        .logo{
-          @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
-        }
-      }
-      .right-wrap{
-        .logo{
-          @include img-retina('~@/assets/common/Wrong@2x.png', '~@/assets/common/Wrong@3x.png', 100%, 100%);
-        }
-      }
-    }
-    .rexam-btn{
-      position: absolute;
-      left: 50%;
-      bottom: px2rem(116px);
-      transform: translateX(-50%);
-      width: px2rem(420px);
-      height: px2rem(80px);
-      text-align: center;
-      line-height: px2rem(80px);
-      border-radius: px2rem(40px);
-      @include border('all', 1px, solid, 'activeColor')
-      @include font-dpr(16px);
-      @include font-color('activeColor');
-    }
-    .exam-overview{
-      position: absolute;
-      left: 50%;
-      bottom: px2rem(44px);
-      transform: translateX(-50%);
-      @include font-dpr(13px);
-      @include font-color('descColor');
-    }
-    .float-btn{
-      position: fixed;
-      right: px2rem(30px);
-      bottom: px2rem(226px);
-      width: px2rem(100px);
-      height: px2rem(100px);
-      @include img-retina('~@/assets/common/curriculum@2x.png', '~@/assets/common/curriculum@3x.png', 100%, 100%);
-      background-position: center;
-      background-repeat: no-repeat;
     }
   }
   .depence-ops-wrap{
@@ -373,59 +428,5 @@ export default {
       @include border('all',1px,solid,'themeColor');
     }
   }
-  .exam-model-wrap{
-    padding: 0 px2rem(66px) px2rem(32px);
-    .title{
-      width: 100%;
-      padding: px2rem(66px) 0 px2rem(54px);
-      line-height: 1;
-      text-align: center;
-      @include font-dpr(19px);
-      @include font-color('titleColor');
-    }
-    .time-wrap{
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      padding:0 0 px2rem(40px) px2rem(24px);
-      box-sizing: border-box;;
-      @include font-dpr(12px);
-      @include font-color('tipColor')
-      .use-time,.submit-time{
-        line-height: 1;
-      }
-      .use-time{
-        margin-bottom: px2rem(16px);
-      }
-    }
-    .knowledge-wrap{
-      width: 100%;
-      padding-bottom: px2rem(40px);
-      .tip-wrap{
-        display: flex;
-        align-items: center;
-        margin-bottom: px2rem(21px);
-        .circle{
-          width: px2rem(10px);
-          height: px2rem(10px);
-          border-radius: 50%;
-          margin-right: px2rem(14px);
-          @include bg-color('themeColor');
-        }
-        .tip{
-          line-height: 1;
-          @include font-dpr(15px);
-          @include font-color('titleColor');
-        }
-      }
-      .desc-wrap{
-        line-height: 1;
-        padding-left: px2rem(24px);
-        @include font-dpr(13px);
-        @include font-color('tipColor');
-      }
-    }
-  }
 }
-
 </style>

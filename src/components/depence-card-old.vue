@@ -1,0 +1,431 @@
+<template lang="html">
+  <div class="depence-grade-wrap">
+    <!--答题卡页面包裹-->
+    <div class="depence-card-wrap" v-if="answerCardInfo && !isShowOpsPage">
+      <!--头部-->
+      <div class="card-header-wrap">
+        <h4 class="title">{{answerCardInfo.title}}</h4>
+        <!--进度条包裹-->
+        <div class="circle-wrap">
+          <my-circle :radius= 'circleRadiu' :percent='circlePercent'>
+            <div class="score-wrap">
+              <span class="score">{{answerCardInfo.score}}</span>
+              <span class="tip">分</span>
+            </div>
+          </my-circle>
+        </div>
+        <!--波浪图形-->
+        <div class="wave"></div>
+      </div>
+      <!--内容-->
+      <div class="answer-info-wrap">
+        <div class="left-wrap" @click.stop="jumpToExamAnalysis('list')">
+          <div class="logo"></div>
+          <span class="tip-title">共{{answerCardInfo.questions.length}}题</span>
+        </div>
+        <div class="right-wrap" @click.stop="jumpToExamAnalysis('errorlist')">
+          <div class="logo"></div>
+          <span class="tip-title">答错{{answerCardInfo.answer_num.wrong_answer_num}}题</span>
+        </div>
+      </div>
+      <!--考试按钮-->
+      <div class="rexam-btn" @click.stop="startReExam" v-show="examInfo.restart">重新考试</div>
+      <div class="exam-overview" @click.stop="toggleExamInfo">查看考试情况</div>
+      <!--悬浮按钮-->
+      <div class="float-btn" @click.stop="jumpPage"></div>
+    </div>
+    <!--Ops 考试中断页面-->
+    <div class="depence-ops-wrap" v-else-if="answerCardInfo && isShowOpsPage">
+      <div class="tip-bg"></div>
+      <h4 class="tip-title">Ops,考试中断了</h4>
+      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
+      <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
+      <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
+    </div>
+    <!--考试情况model-->
+    <my-model :show="isShowExamInfo"
+              :show-btn="false"
+              @cancel="toggleExamInfo"
+    >
+      <div class="exam-model-wrap" slot="content" v-if="answerCardInfo">
+        <h3 class="title">考试情况</h3>
+        <div class="time-wrap">
+          <span class="use-time">{{`用时: ${answerCardInfo.use_time}`}}</span>
+          <span class="submit-time">{{`交卷时间: ${answerCardInfo.submit_time || '暂无'}`}}</span>
+        </div>
+        <!--知识点展示-->
+        <template v-if="answerCardInfo.point">
+          <div class="knowledge-wrap" v-for="(item,key) in answerCardInfo.point" :key="key">
+            <div class="tip-wrap">
+              <i class="circle"></i>
+              <span class="tip">{{key}}</span>
+            </div>
+            <div class="desc-wrap">{{`共${item.total_count}题，答对${item.right_count}题，正确率${Math.round(item.right_percent)}%`}}</div>
+          </div>
+        </template>
+      </div>
+    </my-model>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
+import MyCircle from '@/components/depence/circle'
+import MyModel from './depence/model'
+
+export default {
+  name: 'depence-card-old',
+  props: {
+    id: String,
+    redirect: String,
+    delta: String
+  },
+  data () {
+    return {
+      circleRadiu: 128,
+      isShowOpsPage: false,
+      isShowExamInfo: false
+    }
+  },
+  computed: {
+    ...mapGetters('depence', [
+      'answerCardInfo', 'examInfo',
+      'redirectParams'
+    ]),
+    circlePercent () {
+      let answerCardInfo = this.answerCardInfo
+      let totalScore = answerCardInfo.total_score || 0
+      let score = answerCardInfo.score
+      return score ? score / totalScore : 0
+    }
+  },
+  components: {
+    MyCircle,
+    MyModel
+  },
+  created () {
+    this.initReirectParams()
+    this.initInfo()
+  },
+  methods: {
+    initReirectParams () {
+      let redirectParams = this.redirectParams || {}
+      let redirect = this.redirect
+      let delta = this.delta
+      let params = Object.assign({ redirect, delta }, redirectParams)
+      this.setRedirectParams(params)
+    },
+    async initInfo () {
+      let examId = this.id
+      try {
+        // 请求试卷和答题卡信息
+        await this.getExamDetail({id: examId})
+        await this.getAnswerCardInfo({id: examId})
+        // 判断当前用户考试是否在进行中
+        let examInfo = this.examInfo
+        if (examInfo.person_status === 2) this.isShowOpsPage = true
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async giveupSumitExam () {
+      let examId = this.id
+      // 提交试卷
+      try {
+        await this.endExam({id: examId})
+        // 重新载入答题卡页面
+        this.$router.go(0)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    toggleExamInfo () {
+      this.isShowExamInfo = !this.isShowExamInfo
+    },
+    startReExam () {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      // 设置当前试题索引
+      this.changeSubjectIndex(0)
+      // 去往查看考试概况页面
+      this.$router.replace({
+        path: `/depencelist/${examId}`,
+        query: {
+          rtp: 'exam',
+          restart: 'need',
+          redirect: redirectParams.redirect,
+          delta: redirectParams.delta
+        }
+      })
+    },
+    jumpToExamAnalysis (jumpType) {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      // 设置当前试题索引
+      this.changeSubjectIndex(0)
+      // 去往查看考试概况页面
+      this.$router.replace({
+        path: `/depencelist/${examId}`,
+        query: {
+          rtp: 'analysis',
+          listType: jumpType,
+          redirect: redirectParams.redirect,
+          delta: redirectParams.delta
+        }
+      })
+    },
+    jumpPage () {
+      // 接收的参数 暂时不处理
+      let params = this.redirectParams
+      if (params.delta) {
+        // 通过postmessage通知小程序的webview
+        DEPENCE.backWxAppPage(params.delta)
+      } else if (params.redirect) {
+        // 网页就直接跳转
+        window.location.href = params.redirect
+      }
+    },
+    ...mapMutations('depence', {
+      setRedirectParams: 'SET_REDIRECT_PARAMS'
+    }),
+    ...mapActions('depence', {
+      getExamDetail: 'GET_EXAM_DETAIL',
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
+      endExam: 'END_EXAM'
+    })
+  }
+}
+</script>
+
+<style lang="scss">
+@import "@/styles/index.scss";
+
+.depence-grade-wrap{
+  .depence-card-wrap{
+    width: 100%;
+    height: 100vh;
+    .card-header-wrap{
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      height: px2rem(620px);
+      @include bg-color('themeColor');
+      .title{
+        padding: px2rem(52px) 0 px2rem(89px) 0;
+        line-height: 1;
+        @include font-dpr(15px);
+        @include font-color('bgColor');
+      }
+      .circle-wrap{
+        position: relative;
+        width: px2rem(255px);
+        height: px2rem(255px);
+        .score-wrap{
+          position: absolute;
+          left: 50%;
+          top:50%;
+          transform: translate3d(-50%,-50%,0);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          @include font-color('bgColor');
+          .score{
+            line-height: 1;
+            @include font-dpr(40px);
+          }
+          .tip{
+            position: relative;
+            top: px2rem(10px);
+            line-height: 1;
+            @include font-dpr(14px);
+          }
+        }
+      }
+      .wave{
+        position: absolute;
+        bottom:0;
+        width: 100%;
+        height: px2rem(110px);
+        @include img-retina('~@/assets/common/bo@2x.png', '~@/assets/common/bo@3x.png', 100%, 100%);
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+    }
+    .answer-info-wrap{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: px2rem(68px) px2rem(138px);
+      box-sizing: border-box;
+      .left-wrap,.right-wrap{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .logo{
+          width: px2rem(70px);
+          height: px2rem(70px);
+          margin-bottom: px2rem(27px);
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        .tip-title{
+          line-height: 1;
+          @include font-dpr(16px);
+          @include font-color('titleColor');
+        }
+      }
+      .left-wrap{
+        .logo{
+          @include img-retina('~@/assets/common/topic@2x.png', '~@/assets/common/topic@3x.png', 100%, 100%);
+        }
+      }
+      .right-wrap{
+        .logo{
+          @include img-retina('~@/assets/common/Wrong@2x.png', '~@/assets/common/Wrong@3x.png', 100%, 100%);
+        }
+      }
+    }
+    .rexam-btn{
+      position: absolute;
+      left: 50%;
+      bottom: px2rem(116px);
+      transform: translateX(-50%);
+      width: px2rem(420px);
+      height: px2rem(80px);
+      text-align: center;
+      line-height: px2rem(80px);
+      border-radius: px2rem(40px);
+      @include border('all', 1px, solid, 'activeColor')
+      @include font-dpr(16px);
+      @include font-color('activeColor');
+    }
+    .exam-overview{
+      position: absolute;
+      left: 50%;
+      bottom: px2rem(44px);
+      transform: translateX(-50%);
+      @include font-dpr(13px);
+      @include font-color('descColor');
+    }
+    .float-btn{
+      position: fixed;
+      right: px2rem(30px);
+      bottom: px2rem(226px);
+      width: px2rem(100px);
+      height: px2rem(100px);
+      @include img-retina('~@/assets/common/curriculum@2x.png', '~@/assets/common/curriculum@3x.png', 100%, 100%);
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+  .depence-ops-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    @include bg-color('bgColor');
+    overflow: hidden;
+    .tip-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-top: px2rem(199px);
+    }
+    .tip-title,.tip-desc{
+      line-height: 1;
+    }
+    .tip-title{
+      font-weight: bold;
+      padding: px2rem(30px) 0;
+      text-align: center;
+      @include font-dpr(16px);
+      @include font-color('titleColor');
+    }
+    .tip-desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .reexam-btn,.giveup-btn{
+      width: px2rem(330px);
+      height: px2rem(80px);
+      border-radius: px2rem(40px);
+      text-align: center;
+      line-height: px2rem(80px);
+      @include font-dpr(16px);
+    }
+    .reexam-btn{
+      margin:px2rem(99px) 0 px2rem(30px);
+      @include bg-color('bgColor');
+      @include font-color('themeColor');
+      @include border('all',1px,solid,'themeColor');
+    }
+    .giveup-btn{
+      @include bg-color('themeColor');
+      @include font-color('bgColor');
+      @include border('all',1px,solid,'themeColor');
+    }
+  }
+  .exam-model-wrap{
+    padding: 0 px2rem(66px) px2rem(32px);
+    .title{
+      width: 100%;
+      padding: px2rem(66px) 0 px2rem(54px);
+      line-height: 1;
+      text-align: center;
+      @include font-dpr(19px);
+      @include font-color('titleColor');
+    }
+    .time-wrap{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding:0 0 px2rem(40px) px2rem(24px);
+      box-sizing: border-box;;
+      @include font-dpr(12px);
+      @include font-color('tipColor')
+      .use-time,.submit-time{
+        line-height: 1;
+      }
+      .use-time{
+        margin-bottom: px2rem(16px);
+      }
+    }
+    .knowledge-wrap{
+      width: 100%;
+      padding-bottom: px2rem(40px);
+      .tip-wrap{
+        display: flex;
+        align-items: center;
+        margin-bottom: px2rem(21px);
+        .circle{
+          width: px2rem(10px);
+          height: px2rem(10px);
+          border-radius: 50%;
+          margin-right: px2rem(14px);
+          @include bg-color('themeColor');
+        }
+        .tip{
+          line-height: 1;
+          @include font-dpr(15px);
+          @include font-color('titleColor');
+        }
+      }
+      .desc-wrap{
+        line-height: 1;
+        padding-left: px2rem(24px);
+        @include font-dpr(13px);
+        @include font-color('tipColor');
+      }
+    }
+  }
+}
+
+</style>
