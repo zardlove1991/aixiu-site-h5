@@ -28,6 +28,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['EXAMAPI']
       break
     }
+    case 'ONLINE_EXAM_API': {
+      host = globalConfig['ONLINE_EXAM_API']
+      break
+    }
     case 'API41': {
       host = globalConfig['API41']
       break
