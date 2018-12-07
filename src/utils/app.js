@@ -38,3 +38,21 @@ export const getAPIfix = (api) => {
   }
   return host
 }
+
+// 判断当前API使用的是什么平台
+export const getApiFlag = () => {
+  // API41: 'test_h5.ddapp.com' -> 默认
+  let localUrl = window.location.href
+  let flag = 'API41'
+  let platMap = {
+    API: 'mexam.hogecloud.com',
+    EXAMAPI: 'pre_h5.ddapp.com'
+  }
+
+  for (let key in platMap) {
+    if (!localUrl.includes(platMap[key])) continue
+    flag = key
+  }
+  console.log('当前请求的API的FLAG', localUrl, flag)
+  return flag
+}

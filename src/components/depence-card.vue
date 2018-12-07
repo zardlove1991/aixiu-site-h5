@@ -34,7 +34,7 @@
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
             <div class="row">
-              <span class="title">考试用时</span>
+              <span class="title">答题用时</span>
               <span class="desc">{{examTimeObj.examTime}}</span>
             </div>
             <div class="row">
@@ -97,7 +97,7 @@ export default {
       let answerCardInfo = this.answerCardInfo
       let examTimeStr = '暂无时间'
       let submitTimeStr = '暂无时间'
-      if (answerCardInfo) {
+      if (answerCardInfo && answerCardInfo.use_time && answerCardInfo.submit_time) {
         // 处理考试时间
         let examTimeArr = answerCardInfo.use_time.split("'")
         let examTimeObj = { hour: examTimeArr[0], min: examTimeArr[1], sec: examTimeArr[2] }
@@ -216,13 +216,13 @@ export default {
   .depence-card-wrap{
     width: 100%;
     height: 100%;
-    padding: 0 px2rem(50px);
+    padding: px2rem(131px) px2rem(50px) 0;
     background: linear-gradient(225deg,rgba(144,139,238,1),rgba(71,130,239,1));
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: scroll;
+    -webkit-overflow-scrolling:touch;
     .grade-info-wrap{
       width: 100%;
-      margin-top: px2rem(131px);
       padding: 0 px2rem(30px);
       box-sizing: border-box;
       border-radius: px2rem(20px);
@@ -302,7 +302,7 @@ export default {
         }
         .exam-detail-wrap{
           width: 100%;
-          padding: 0 px2rem(39px) px2rem(72px) px2rem(37px);
+          padding: 0 0 px2rem(72px);
           box-sizing: border-box;
           overflow: hidden;
           .row{
@@ -314,7 +314,6 @@ export default {
               margin-top: 0;
             }
             .title,.desc{
-              flex:1;
               line-height: 1;
               padding:0;
               font-weight: normal;
@@ -322,9 +321,11 @@ export default {
               @include font-color('tipColor');
             }
             .title{
+              flex: 0 0 px2rem(104px);
               text-align: left;
             }
             .desc{
+              flex:1;
               text-align: right;
             }
           }
@@ -332,10 +333,7 @@ export default {
       }
     }
     .grade-btn-wrap{
-      position: absolute;
-      left: px2rem(97px);
-      right: px2rem(97px);
-      bottom: px2rem(68px);
+      padding: px2rem(80px) px2rem(47px);
       display: flex;
       justify-content: space-between;
       align-items: center;

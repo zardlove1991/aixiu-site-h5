@@ -1,6 +1,7 @@
 import { createAPI } from '@/api'
+import { getApiFlag } from '@/utils/app'
 
-const API_FLAG = 'EXAMAPI'
+const API_FLAG = getApiFlag()
 // 不带GUID
 let configUrl = {
   getExamlist: 'client/examination', // 考试列表
