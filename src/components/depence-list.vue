@@ -61,7 +61,7 @@
                 <span class="tip">考点</span>
                 <span class="type" v-for="item in item.point" :key="item.id">{{item.name}}</span>
               </div>
-              <p class="percent" v-show="item.correct_percent">{{`正确率: ${Math.round(item.correct_percent)}%`}}</p>
+              <p class="percent">{{`正确率: ${item.correct_percent ? Math.round(item.correct_percent) : 0}%`}}</p>
             </div>
           </div>
         </template>
@@ -86,7 +86,7 @@
           <div class="title">题号</div>
           <!--答题列表-->
           <div class="info-list-wrap">
-            <subject-list  class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+            <subject-list v-if="isShowSubjectList" class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
           </div>
         </div>
       </transition>
@@ -505,9 +505,12 @@ export default {
       position: fixed;
       left: 0;
       right: 0;
-      bottom: px2rem(10px);
+      bottom: 0;
+      height: px2rem(100px);
       display: flex;
       justify-content: space-around;
+      align-items: center;
+      @include bg-color('bgColor');
       .prev,.next{
         display: flex;
         justify-content: center;
