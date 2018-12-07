@@ -45,7 +45,7 @@ export const getApiFlag = () => {
   let localUrl = window.location.href
   let flag = 'API41'
   let platMap = {
-    API: 'mexam.hogecloud.com',
+    ONLINE_EXAM_API: 'mexam.hogecloud.com',
     EXAMAPI: 'pre_h5.ddapp.com'
   }
 
