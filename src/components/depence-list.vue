@@ -420,6 +420,7 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
+            flex: 0 0 px2rem(54px);
             width: px2rem(54px);
             height: px2rem(54px);
             border-radius: 50%;

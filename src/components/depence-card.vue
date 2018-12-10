@@ -46,7 +46,9 @@
       </div>
       <!--底部按钮-->
       <div class="grade-btn-wrap">
-        <div class="col-wrap back" @click.stop="jumpPage">
+        <div class="col-wrap back"
+             v-show="isShowBackBtn"
+             @click.stop="jumpPage">
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
@@ -93,6 +95,12 @@ export default {
       'answerCardInfo', 'examInfo',
       'redirectParams'
     ]),
+    isShowBackBtn () {
+      let redirectParams = this.redirectParams
+      let directUrl = redirectParams.redirect
+      let deltaNum = redirectParams.delta
+      return (directUrl || deltaNum)
+    },
     examTimeObj () {
       let answerCardInfo = this.answerCardInfo
       let examTimeStr = '暂无时间'

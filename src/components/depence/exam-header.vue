@@ -39,7 +39,7 @@
     </my-model>
     <!--去人交卷的-->
     <my-model :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
-              doneText="我在想想"
+              doneText="我再想想"
               cancelText="确认交卷"
               @confirm="toggleSubmitModel"
               @cancel="confirmSubmitModel"
