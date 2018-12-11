@@ -1,6 +1,6 @@
 import axios from 'axios'
 import apiConfig from './config'
-import { getAppInfo, getAPIfix } from '@/utils/app'
+import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
 const instance = axios.create({
   timeout: apiConfig.timeout
@@ -18,15 +18,28 @@ instance.interceptors.request.use((config) => {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  if (data.error_code > 0) {
-    data.status = res.status
-    if (data.error_code === 403) {
-      return Promise.reject(data)
-    } else {
-      return Promise.reject(data)
+  const route = window.$vue.$route
+  // 判断是否当前是否过期
+  if (data.error && data.error === 'error-login') {
+    let query = route.query
+    let params = route.params
+    let nowUrl = decodeURIComponent(window.location.href)
+    let host = apiConfig.hostMap[getApiFlag()]
+    if (!query.plat) {
+      let url = `//${host}/client/authorize/start/${params.id}?to=${nowUrl}`
+      window.location.replace(url)
     }
+  } else {
+    if (data.error_code > 0) {
+      data.status = res.status
+      if (data.error_code === 403) {
+        return Promise.reject(data)
+      } else {
+        return Promise.reject(data)
+      }
+    }
+    return data.response || data.result || data
   }
-  return data.response || data.result || data
 }, (error) => {
   let rej = null
   let res = error.response

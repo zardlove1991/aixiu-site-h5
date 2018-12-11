@@ -10,5 +10,10 @@ export default {
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
   'X-DEVICE-ID': '000',
-  'host': 'https://h5party-pre.ddapp.com'
+  'host': 'https://h5party-pre.ddapp.com',
+  'hostMap': {
+    'API41': 'test_h5.ddapp.com',
+    'ONLINE_EXAM_API': 'mexam.hogecloud.com',
+    'EXAMAPI': 'pre_h5.ddapp.com'
+  }
 }

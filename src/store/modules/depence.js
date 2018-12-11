@@ -129,7 +129,7 @@ const actions = {
           })
           commit('SET_EXAMLIST', list)
         } else {
-          throw new Error(res)
+          throw new Error('初始化试题列表失败')
         }
         // 结束
         Indicator.close()

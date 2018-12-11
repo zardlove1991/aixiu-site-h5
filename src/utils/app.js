@@ -48,10 +48,7 @@ export const getApiFlag = () => {
   // API41: 'test_h5.ddapp.com' -> 默认
   let localUrl = window.location.href
   let flag = 'API41'
-  let platMap = {
-    ONLINE_EXAM_API: 'mexam.hogecloud.com',
-    EXAMAPI: 'pre_h5.ddapp.com'
-  }
+  let platMap = globalConfig.hostMap
 
   for (let key in platMap) {
     if (!localUrl.includes(platMap[key])) continue
