@@ -1,4 +1,8 @@
 @import '../theme/default.scss'; // 引入默认的颜色配色
+// 定义公共的主题颜色MAP
+$colorMaps: (
+  default: $defaultColorMap
+);
 
 // 响应式背景
 @mixin img-retina($file-1x, $file-2x, $width-1x, $height-1x) {
@@ -86,10 +90,6 @@
 
 // 更改背景颜色
 @mixin bg-color($colorName) {
-  $colorMaps: (
-    default: $defaultColorMap
-  );
-
   @each $key,$list in $colorMaps {
     @each $varName,$val in $list {
       @if $colorName == $varName {
@@ -103,10 +103,6 @@
 
 // 更改背景颜色
 @mixin font-color($fontName) {
-  $colorMaps: (
-    default: $defaultColorMap
-  );
-
   @each $key,$list in $colorMaps {
     @each $varName,$val in $list {
       @if $fontName == $varName {
@@ -120,10 +116,6 @@
 
 // 更改背景颜色
 @mixin border($direction,$width,$style,$color) {
-  $colorMaps: (
-    default: $defaultColorMap
-  );
-
   @each $key,$list in $colorMaps {
     @each $varName,$val in $list {
       @if $color == $varName {
