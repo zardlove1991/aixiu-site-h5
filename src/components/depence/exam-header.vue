@@ -88,8 +88,8 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'token', 'examId', 'redirectParams',
-      'currentSubjectInfo'
+      'examId', 'redirectParams',
+      'currentSubjectInfo', 'examInfo'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -118,6 +118,7 @@ export default {
   },
   methods: {
     initCountTime () {
+      let limitTime = this.examInfo.limit_time
       this.duration = this.list[0].remain_time
       let timeFun = () => {
         if (this.duration < 0) {
@@ -128,9 +129,11 @@ export default {
         this.timeTip = formatTimeBySec(this.duration, true)
         this.duration--
       }
-      // 执行倒计时
-      if (this.duration) {
-        this.timer = setInterval(timeFun, 1000)
+      // 执行倒计时 首先判断是否有考试时间
+      if (limitTime > 0) {
+        // 其次在判断剩余时间是否到期
+        if (this.duration > 0) this.timer = setInterval(timeFun, 1000)
+        // 执行处理函数
         timeFun()
       } else {
         this.timeTip = '不限时间'
