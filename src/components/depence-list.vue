@@ -101,7 +101,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{examInfo.limit_time}}分钟</div>
+        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{dealLimitTimeTip(examInfo.limit_time)}}分钟</div>
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->

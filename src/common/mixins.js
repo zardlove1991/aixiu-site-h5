@@ -14,6 +14,10 @@ export default {
           }
         })
       }
+    },
+    dealLimitTimeTip (time) {
+      let tip = time > 0 ? `${time}分钟` : '不限时'
+      return tip
     }
   }
 }

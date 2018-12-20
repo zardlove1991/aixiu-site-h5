@@ -1,7 +1,7 @@
 <template lang="html">
   <!--总体页面包裹-->
   <div class="depence-new-card-wrap">
-    <div class="depence-card-wrap" v-if="examInfo && answerCardInfo">
+    <div class="depence-card-wrap" v-if="examInfo && answerCardInfo && !isShowOpsPage">
       <!--内容展示区域-->
       <div class="grade-info-wrap">
         <!--头部信息-->
@@ -66,7 +66,7 @@
     <div class="depence-ops-wrap" v-if="answerCardInfo && isShowOpsPage">
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
-      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
+      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ dealLimitTimeTip(examInfo.limit_time) }}</p>
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
@@ -76,9 +76,11 @@
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
+import mixins from '@/common/mixins'
 
 export default {
   name: 'depence-card',
+  mixins: [mixins],
   props: {
     id: String,
     redirect: String,

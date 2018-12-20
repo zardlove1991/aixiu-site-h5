@@ -38,7 +38,7 @@
     <div class="depence-ops-wrap" v-else-if="answerCardInfo && isShowOpsPage">
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
-      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{examInfo.limit_time}}分钟</p>
+      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ dealLimitTimeTip(examInfo.limit_time) }}</p>
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
@@ -73,9 +73,11 @@ import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import MyCircle from '@/components/depence/circle'
 import MyModel from './depence/model'
+import mixins from '@/common/mixins'
 
 export default {
   name: 'depence-card-old',
+  mixins: [mixins],
   props: {
     id: String,
     redirect: String,

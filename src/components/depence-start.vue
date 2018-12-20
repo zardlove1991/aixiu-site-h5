@@ -21,7 +21,7 @@
           </div>
           <div class="row">
             <span class="title">考试时间</span>
-            <span class="desc">{{`${examInfo.limit_time}分钟`}}</span>
+            <span class="desc">{{ dealLimitTimeTip(examInfo.limit_time) }}</span>
           </div>
           <div class="row">
             <span class="title">考试难度</span>
@@ -50,8 +50,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
+import mixins from '@/common/mixins'
 
 export default {
+  mixins: [mixins],
   props: {
     id: String
   },
