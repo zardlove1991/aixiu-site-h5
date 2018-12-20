@@ -15,59 +15,69 @@ instance.interceptors.request.use((config) => {
   return config
 }, error => Promise.reject(error))
 
-// 请求后的过滤器
-instance.interceptors.response.use((res, xhr) => {
-  const data = res.data
+function dealError ({code, msg}) {
   const route = window.$vue.$route
-  let curErrorCode = data.error || data.error_code
-  let curErrorMsg = data.message || data.error_message
   let query = route.query
   let params = route.params
-  // 判断是否当前是否过期
-  if (curErrorCode === 'error-login') {
+
+  if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig.hostMap[getApiFlag()]
     if (!query.plat) {
       let url = `//${host}/client/authorize/start/${params.id}?to=${nowUrl}`
       window.location.replace(url)
     }
-  } else if (curErrorCode === 'invalid-source') {
+  } else if (code === 'invalid-source') {
     window.$vue.$router.replace({
       path: '/permission',
       query: {
-        errorMsg: curErrorMsg,
+        errorMsg: msg,
         redirect: query.redirect
       }
     })
-  } else {
-    if (data.error_code > 0) {
-      data.status = res.status
-      if (data.error_code === 403) {
-        return Promise.reject(data)
-      } else {
-        return Promise.reject(data)
-      }
-    }
-    return data.response || data.result || data
   }
+}
+
+// 请求后的过滤器
+instance.interceptors.response.use((res, xhr) => {
+  const data = res.data
+  let curErrorCode = data.error || data.error_code
+  let curErrorMsg = data.message || data.error_message
+  dealError({ code: curErrorCode, msg: curErrorMsg })
+  // 判断是否当前是否过期
+  if (data.error_code > 0) {
+    data.status = res.status
+    if (data.error_code === 403) {
+      return Promise.reject(data)
+    } else {
+      return Promise.reject(data)
+    }
+  }
+  return data.response || data.result || data
 }, (error) => {
   let rej = null
   let res = error.response
   console.log('error 接口请求错误信息', error)
   if (res) {
     console.log('error res', res)
-    let errorDataObj = error.response.data
-    if (errorDataObj && errorDataObj.error_code) {
-      rej = {
-        error_code: errorDataObj.error_code,
-        error_message: errorDataObj.error_message,
-        status: error.response.status
-      }
+    if (res.data) {
+      let curErrorCode = res.data.error || res.data.error_code
+      let curErrorMsg = res.data.message || res.data.error_message
+      dealError({ code: curErrorCode, msg: curErrorMsg })
     } else {
-      rej = {
-        error_code: error.response.data,
-        error_message: error.response.statusText,
-        status: error.response.status
+      let errorDataObj = error.response.data
+      if (errorDataObj && errorDataObj.error_code) {
+        rej = {
+          error_code: errorDataObj.error_code,
+          error_message: errorDataObj.error_message,
+          status: error.response.status
+        }
+      } else {
+        rej = {
+          error_code: error.response.data,
+          error_message: error.response.statusText,
+          status: error.response.status
+        }
       }
     }
   } else {
