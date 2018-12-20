@@ -5,7 +5,7 @@
       <span class="tip">暂无权限打开页面</span>
       <span class="tip">{{errorMsg}}</span>
     </div>
-    <div class="tip-btn" v-show="redirect" @click.stop="jumpPage">返回课程</div>
+    <div class="tip-btn" v-show="redirect" @click.stop="jumpPage">返回</div>
   </div>
 </template>
 

@@ -19,21 +19,23 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
   const route = window.$vue.$route
+  let curErrorCode = data.error || data.error_code
+  let curErrorMsg = data.message || data.error_message
   let query = route.query
   let params = route.params
   // 判断是否当前是否过期
-  if (data.error && data.error === 'error-login') {
+  if (curErrorCode === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig.hostMap[getApiFlag()]
     if (!query.plat) {
       let url = `//${host}/client/authorize/start/${params.id}?to=${nowUrl}`
       window.location.replace(url)
     }
-  } else if (data.error_code && data.error_code === 'invalid-source') {
+  } else if (curErrorCode === 'invalid-source') {
     window.$vue.$router.replace({
       path: '/permission',
       query: {
-        errorMsg: data.error_message,
+        errorMsg: curErrorMsg,
         redirect: query.redirect
       }
     })
