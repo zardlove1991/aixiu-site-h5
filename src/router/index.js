@@ -47,6 +47,18 @@ export default new Router({
       meta: {
         title: '加载中...'
       }
+    },
+    {
+      path: '/permission',
+      name: 'permission',
+      component: getComponent('permission'),
+      props: (route) => ({
+        errorMsg: route.query.errorMsg,
+        redirect: route.query.redirect
+      }),
+      meta: {
+        title: '温馨提示'
+      }
     }
   ]
 })

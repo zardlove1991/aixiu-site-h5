@@ -52,7 +52,7 @@
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam">
+        <div class="col-wrap reset" @click.stop="startReExam" v-if="examInfo.restart">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
