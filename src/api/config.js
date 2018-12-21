@@ -2,7 +2,7 @@ const protocol = window.location.protocol
 
 export default {
   'API': protocol + '//core-v3d.ddapp.com/api/',
-  'API41': protocol + '//exam.dev41.dingdone.com/api/',
+  'API41': protocol + '//sys.dev41.dingdone.com/api/',
   'PHPAPI': protocol + '//clientapi-v3d.ddapp.com/api/',
   'EXAMAPI': protocol + '//pre-exam.ddapp.com/api/',
   'ONLINE_EXAM_API': protocol + '//exam.ddapp.com/api/',

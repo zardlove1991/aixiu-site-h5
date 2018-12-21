@@ -22,9 +22,10 @@ function dealError ({code, msg}) {
 
   if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
-    let host = apiConfig.hostMap[getApiFlag()]
+    let host = apiConfig[getApiFlag()]
     if (!query.plat) {
-      let url = `//${host}/client/authorize/start/${params.id}?to=${nowUrl}`
+      let newHost = host.substring(0, host.indexOf('/api'))
+      let url = `${newHost}/client/authorize/start/${params.id}?to=${nowUrl}`
       window.location.replace(url)
     }
   } else if (code === 'invalid-source') {
