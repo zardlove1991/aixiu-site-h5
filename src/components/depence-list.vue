@@ -41,14 +41,62 @@
               <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
             </div>
           </div>
+          <!--问答题的表单-->
+          <div class="subject-essay-wrap" v-show="item.type==='essay'">
+            <h4 class="title-tip">问答</h4>
+            <!--表单编辑区域-->
+            <div class="from-wrap">
+              <textarea class="content"
+                placeholder="请输入答案"
+                rows="5" cols="42"
+                maxlength="300"
+              ></textarea>
+              <!--回答的内容信息-->
+              <p class="answer-content" v-show="false">“生”字用的好，以下是我的解说</p>
+              <!--上传的媒体展示区域-->
+              <div class="upload-media-wrap" v-show="false">
+                <div class="images-wrap">
+                  <div class="single-image-wrap" v-for="item in 3" :key="item">
+                    <img :src="demoImgUrl" preview-nav-enable="false" class="eassy-image" v-preview="demoImgUrl"/>
+                    <!--删除图标-->
+                    <div class="delete-icon"></div>
+                  </div>
+                </div>
+                <!--音频播放-->
+                <div class="eassy-audio-wrap">
+                  <my-audio class="eassy-audio" :src="demoAudioUrl"></my-audio>
+                  <!--删除图标-->
+                  <div class="delete-icon"></div>
+                </div>
+                <!--视频播放-->
+                <div class="eassy-video-wrap">
+                  <my-video class="eassy-video" :src="demoVideoUrl"></my-video>
+                  <!--删除图标-->
+                  <div class="delete-icon"></div>
+                </div>
+              </div>
+              <!--上传区域-->
+              <div class="upload-option-wrap" v-show="false">
+                <div class="upload-img">
+                  <i class="examfont icon-image"></i>
+                </div>
+                <div class="upload-audio">
+                  <i class="examfont icon-audio"></i>
+                </div>
+                <div class="upload-video">
+                  <i class="examfont icon-video"></i>
+                </div>
+              </div>
+            </div>
+          </div>
           <!--答案解析-->
           <div class="answerinfo-wrap" v-if="renderType === 'analysis'">
-            <div class="correct-answer">
+            <div class="correct-answer" v-show="item.type!=='essay'">
               <span>正确答案:</span>
               <span v-show="!item.correntInfo.length">&nbsp;未指定</span>
               <span v-for="info in item.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
             </div>
-            <div class="my-answer">
+            <div class="my-answer"  v-show="item.type!=='essay'">
               <span>您的回答:</span>
               <span v-show="!item.answersInfo.length">&nbsp;未选择</span>
               <span v-for="info in item.answersInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
@@ -115,6 +163,7 @@
 </template>
 
 <script>
+import MOCKDATA from '@/lib/mock'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
 import mixins from '@/common/mixins'
@@ -144,7 +193,7 @@ export default {
   },
   data () {
     return {
-      types: ['艺术鉴赏', '文化历史', '古建筑'],
+      ...MOCKDATA,
       isShowSuspendModel: false,
       isShowSubmitModel: false,
       isShowSubjectList: false,
@@ -340,313 +389,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/styles/index.scss";
-
-.denpncelist-wrap{
-  width: 100%;
-  height: 100vh;
-  &.hide{
-    overflow: hidden;
-  }
-  .list-wrap{
-    position: relative;
-    width: 100%;
-    min-height: calc(100% - 50px);
-    padding-bottom: px2rem(170px);
-    box-sizing: border-box;
-    .list-item-wrap{
-      width: 100%;
-      @include font-dpr(16px);
-      @include font-color('titleColor');
-      .subject-type-wrap{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: px2rem(54px) px2rem(43px) px2rem(16px) px2rem(32px);
-        box-sizing: border-box;
-        .subject-type{
-          line-height: 1;
-          @include font-dpr(16px);
-          .score{
-            font-weight: normal;
-            margin-left: px2rem(10px);
-            @include font-dpr(14px);
-          }
-        }
-        .subject-tip-wrap{
-          display: flex;
-          align-items: center;
-          .tip-img{
-            width: px2rem(30px);
-            height: px2rem(30px);
-            @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
-            background-repeat: no-repeat;
-            background-position: center;
-            margin-right: px2rem(11px);
-          }
-          .tip-count{
-            @include font-dpr(13px);
-            @include font-color('tipColor')
-          }
-        }
-      }
-      .subject-title{
-        @include font-dpr(16px);
-        padding:px2rem(39px) px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-      }
-      .media-wrap{
-        padding:0 px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-        text-align: center;
-        .my-audio,.my-video,.my-img{
-          margin-top: px2rem(39px);
-        }
-        .my-img{
-          width: 100%;
-          height: px2rem(300px);
-          object-fit: cover;
-        }
-      }
-      .subject-select-wrap{
-        margin-top: px2rem(40px);
-        padding:0 px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-        .select-tip-wrap{
-          display: flex;
-          align-items: center;
-          box-sizing: border-box;
-          .select-tip{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 0 0 px2rem(54px);
-            width: px2rem(54px);
-            height: px2rem(54px);
-            border-radius: 50%;
-            margin-right: px2rem(40px);
-            @include font-dpr(14px);
-            @include bg-color('bgColor');
-            @extend .box-shadow;
-            &.active{
-              @include font-color('bgColor');
-              @include bg-color('themeColor');
-            }
-            &.error{
-              @include font-color('bgColor');
-              @include bg-color('errorColor');
-            }
-          }
-          .select-desc{
-            max-width: 90%;
-          }
-        }
-        .media-wrap{
-          padding: 0;
-        }
-      }
-      .answerinfo-wrap{
-        width: 100%;
-        padding-top: px2rem(79px);
-        .correct-answer,.my-answer{
-          display: flex;
-          align-items: center;
-          padding: 0 0 px2rem(30px) px2rem(30px);
-          line-height: 1;
-          @include font-dpr(15px);
-          @include font-color('titleColor');
-        }
-        .my-answer{
-          @include border('bottom',1px,solid,'lineColor');
-        }
-        .answer-analysis{
-          width: 100%;
-          padding: 0 px2rem(61px) 0 px2rem(30px);
-          box-sizing: border-box;
-          .title{
-            margin: px2rem(26px) 0;
-            @include font-dpr(16px);
-            @include font-color('titleColor');
-          }
-          .content{
-            line-height: px2rem(44px);
-            margin-bottom: px2rem(44px);
-            @include font-dpr(16px);
-            @include font-color('titleColor');
-          }
-          .exam-types{
-            display: flex;
-            align-items: center;
-            margin-bottom: px2rem(44px);
-            .tip{
-              margin-right: px2rem(19px);
-              @include font-dpr(13px);
-              @include font-color('tipColor');
-            }
-            .type{
-              padding: px2rem(9px) px2rem(12px);
-              border-radius: px2rem(4px);
-              margin-right: px2rem(19px);
-              line-height: 1;
-              @include border('all',1px,solid,'themeColor');
-              @include font-dpr(12px);
-              @include font-color('themeColor');
-            }
-          }
-          .percent{
-            line-height: 1;
-            padding-bottom: px2rem(61px);
-            @include font-dpr(13px);
-            @include font-color('tipColor');
-          }
-        }
-      }
-    }
-    .btn-wrap{
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: px2rem(100px);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      @include bg-color('bgColor');
-      .prev,.next{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: px2rem(330px);
-        height: px2rem(80px);
-        border-radius: px2rem(40px);
-        @include font-dpr(16px);
-      }
-      .prev{
-        @include bg-color('bgColor');
-        @include font-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-      .next{
-        @include font-color('bgColor');
-        @include bg-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-    }
-  }
-  .grade-tip-wrap{
-    display: flex;
-    align-items: center;
-    position: fixed;
-    right: 0;
-    bottom: px2rem(120px);
-    width: px2rem(199px);
-    height: px2rem(70px);
-    border-radius: px2rem(35px) 0 0 px2rem(35px);
-    box-shadow: 0 0 px2rem(35px) rgba(201, 201, 201, 0.3);
-    @include bg-color('bgColor');
-    z-index: 10;
-    .bg{
-      width: px2rem(36px);
-      height: px2rem(36px);
-      @include img-retina('~@/assets/common/icon@2x.png', '~@/assets/common/icon@3x.png', 100%, 100%);
-      background-repeat: no-repeat;
-      background-position: center;
-      margin: 0 px2rem(16px) 0 px2rem(37px);
-    }
-    .tip{
-      @include font-dpr(14px);
-      @include font-color('activeColor')
-    }
-  }
-  .answer-list-info{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
-    background: rgba(0,0,0,0.5);
-    .info-wrap{
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: px2rem(900px);
-      .title{
-        padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
-        box-sizing: border-box;
-        border-radius: px2rem(10px) px2rem(10px) 0 0;
-        @include bg-color('bgColor');
-        @include font-dpr(15px);
-        @include font-color('tipColor');
-        @include border('bottom',1px,solid,'lineColor');
-      }
-      .info-list-wrap{
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        overflow: auto;
-        .list-wrap{
-          padding: px2rem(36px) px2rem(41px) px2rem(26px);
-          box-sizing: border-box;
-          @include bg-color('bgColor');
-        }
-      }
-    }
-  }
-  .suspend-model{
-    padding:px2rem(49px) px2rem(51px) px2rem(41px);
-    box-sizing: border-box;
-    .tip-bg{
-      width: px2rem(370px);
-      height: px2rem(224px);
-      margin:0  auto;
-      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    .tip,.desc{
-      line-height: 1;
-    }
-    .tip{
-      font-weight: bold;
-      padding: px2rem(30px) 0;
-      text-align: center;
-      @include font-dpr(16px);
-      @include font-color('titleColor');
-    }
-    .desc{
-      @include font-dpr(14px);
-      @include font-color('tipColor');
-    }
-  }
-  .answer-ops-model{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%,-50%, 0);
-    width: px2rem(360px);
-    height: px2rem(160px);
-    box-shadow: 0 0 px2rem(30px) rgba(184, 184, 184, 0.3);
-    border-radius: px2rem(8px);
-    text-align: center;
-    @include bg-color('bgColor');
-    .ops-bg{
-      position: absolute;
-      left:50%;
-      top:0;
-      width: px2rem(136px);
-      height: px2rem(124px);
-      transform: translate3d(-50%,-40%,0);
-      @include img-retina('~@/assets/common/lamp@2x.png','~@/assets/common/lamp@3x.png', 100%,100%);
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    .ops-tip{
-      padding-top: px2rem(92px);
-      @include font-dpr(14px);
-      @include font-color('activeColor');
-    }
-  }
-}
+@import "@/styles/components/depence-list.scss";
 </style>

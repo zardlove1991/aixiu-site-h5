@@ -55,7 +55,6 @@ const getters = {
   examInfo: state => state.examInfo,
   examId: state => state.examId,
   redirectParams: state => state.redirectParams,
-  examListRoute: state => state.examListRoute,
   renderType: state => state.renderType,
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,

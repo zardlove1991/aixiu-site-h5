@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import MintUi from 'mint-ui'
 import vuePicturePreview from 'vue-picture-preview'
-import 'mint-ui/lib/style.css'
 import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
 import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
+// 引入样式文件
+import 'mint-ui/lib/style.css'
+import '@/styles/iconfont/exam/iconfont.scss'
 
 Vue.config.productionTip = false
 Vue.use(MintUi)

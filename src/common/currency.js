@@ -15,6 +15,7 @@ const METHODS = {
     else if (type === 'radio') typeTip = '单选题'
     else if (type === 'checkbox') typeTip = '多选题'
     else if (type === 'judge') typeTip = '判断题'
+    else if (type === 'essay') typeTip = '问答题'
     return typeTip
   }
 }

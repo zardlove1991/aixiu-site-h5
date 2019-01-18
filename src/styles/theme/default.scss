@@ -11,12 +11,14 @@ $tipBgColor: #f4f4f4;
 $titleColor: #333;
 $tipColor: #666;
 $descColor: #999;
+$descColorOne: #808080;
 $errorColor: #FF564D;
 $activeColor: #FFAB26;
 $disabledColor: #AFAFAF;
 // 边框颜色
 $borderColor: #dbdbdb;
 $lineColor: #ebebeb;
+$lineColorOne: #e6e6e6;
 $borderGray: #ccc;
 
 // 颜色map
@@ -27,6 +29,7 @@ $defaultColorMap: (
   themeFadeColor: $themeFadeColor,
   titleColor: $titleColor,
   descColor: $descColor,
+  descColorOne: $descColorOne,
   tipColor:$tipColor,
   tipBgColor:$tipBgColor,
   errorColor: $errorColor,
@@ -34,6 +37,7 @@ $defaultColorMap: (
   disabledColor: $disabledColor,
   borderColor: $borderColor,
   lineColor: $lineColor,
+  lineColorOne: $lineColorOne,
   borderGray: $borderGray,
   audioBg: $audioBg,
   audioProgressBar: $audioProgressBar
