@@ -111,6 +111,15 @@
               </div>
               <p class="percent">{{`正确率: ${item.correct_percent ? Math.round(item.correct_percent) : 0}%`}}</p>
             </div>
+            <!--问答题的老师点评-->
+            <div class="essay-markinfo-wrap" v-show="item.type==='essay'">
+              <h4 class="title">点评</h4>
+              <div class="teacher-info">
+                <img :src="demoImgUrl" class="icon" />
+                <span class="name">宋老师</span>
+              </div>
+              <p class="markinfo">"生"字描绘不够贴切，要提提现出白云的动感</p>
+            </div>
           </div>
         </template>
       </div>

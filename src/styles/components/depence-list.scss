@@ -260,6 +260,44 @@
             @include font-color('tipColor');
           }
         }
+        .essay-markinfo-wrap{
+          width: 100%;
+          padding: 0 px2rem(61px) 0 px2rem(30px);
+          box-sizing: border-box;
+          @include border('top',px2rem(1px),solid, 'lineColor');
+          .title{
+            padding: px2rem(40px) 0  px2rem(30px);
+            line-height: 1;
+            @include font-dpr(16px);
+            @include font-color('titleColor');
+          }
+          .teacher-info{
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding-bottom: px2rem(30px);
+            .icon{
+              flex: 0 0 px2rem(70px);
+              width:px2rem(70px);
+              height: px2rem(70px);
+              margin-right: px2rem(18px);
+              border-radius: 50%;
+              object-fit: cover;
+            }
+            .name{
+              line-height: 1;
+              @include font-dpr(15px);
+              @include font-color('titleColor');
+              @include txt-overflow(400px);
+            }
+          }
+          .markinfo{
+            line-height: px2rem(44px);
+            word-wrap: break-word;
+            @include font-dpr(15px);
+            @include font-color('titleColor');
+          }
+        }
       }
     }
     .btn-wrap{

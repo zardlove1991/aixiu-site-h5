@@ -7,7 +7,9 @@
            v-for="(item,index) in list" :key="index"
            @click.stop="changeSubjectIndex(index)"
       >
-        {{index+1}}
+        <span>{{index+1}}</span>
+        <!--问答题的特殊标识-->
+        <div class="essay-tip" v-show="item.type=='essay'">问</div>
       </div>
     </div>
     <!--缩略按钮-->
@@ -92,6 +94,7 @@ export default {
 @import "@/styles/index.scss";
 
 .subject-header-wrap{
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -115,6 +118,18 @@ export default {
       border-radius: 50%;
       margin-left: px2rem(30px);
       @include font-dpr(14px);
+      .essay-tip{
+        position: absolute;
+        top: 0;
+        width: px2rem(34px);
+        height: px2rem(34px);
+        border-radius: 50%;
+        text-align: center;
+        line-height: px2rem(34px);
+        transform: translate3d(100%, 36%, 0);
+        @include font-dpr(12px);
+        @include bg-color('bgColor');
+      }
       &:last-child{
         margin-right: px2rem(30px);
       }
@@ -122,21 +137,33 @@ export default {
         @include bg-color('bgColor');
         @include font-color('themeColor');
         @include border('all',1px,solid,'themeColor');
+        .essay-tip{
+          @include font-color('themeColor');
+        }
       }
       &.error{
         @include bg-color('bgColor');
         @include font-color('errorColor');
         @include border('all',1px,solid,'errorColor');
+        .essay-tip{
+          @include font-color('errorColor');
+        }
       }
       &.disabled{
         @include bg-color('bgGrayColor');
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
+        .essay-tip{
+          @include font-color('disabledColor');
+        }
       }
       &.active{
         @include bg-color('activeColor');
         @include font-color('bgColor');
         @include border('all',1px,solid,'activeColor');
+        .essay-tip{
+          @include font-color('activeColor');
+        }
       }
     }
   }
