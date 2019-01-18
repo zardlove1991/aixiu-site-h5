@@ -47,6 +47,14 @@
             @include font-color('tipColor')
           }
         }
+        .essay-audio-score{
+          line-height: 1;
+          padding: px2rem(9px) px2rem(9px) px2rem(9px) px2rem(11px);
+          border-radius: px2rem(4px);
+          @include font-dpr(15px);
+          @include font-color('errorColor');
+          @include border('all', px2rem(1px), dashed,'lineColorTwo');
+        }
       }
       .subject-title{
         @include font-dpr(16px);

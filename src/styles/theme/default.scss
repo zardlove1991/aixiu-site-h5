@@ -19,6 +19,7 @@ $disabledColor: #AFAFAF;
 $borderColor: #dbdbdb;
 $lineColor: #ebebeb;
 $lineColorOne: #e6e6e6;
+$lineColorTwo: #F15C5B;
 $borderGray: #ccc;
 
 // 颜色map
@@ -37,6 +38,7 @@ $defaultColorMap: (
   disabledColor: $disabledColor,
   borderColor: $borderColor,
   lineColor: $lineColor,
+  lineColorTwo: $lineColorTwo,
   lineColorOne: $lineColorOne,
   borderGray: $borderGray,
   audioBg: $audioBg,

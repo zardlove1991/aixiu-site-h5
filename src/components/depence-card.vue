@@ -5,7 +5,7 @@
       <!--内容展示区域-->
       <div class="grade-info-wrap">
         <!--头部信息-->
-        <div class="header-info-wrap">
+        <div :class="[ answerCardInfo.essay_status ? 'header-info-wrap' : 'essay-header-wrap']">
           <div class="avater-bg">
             <img class="avater" :src="examInfo.member_avatar || defaultAvaterUrl" />
           </div>
@@ -13,15 +13,24 @@
         </div>
         <!--主体信息-->
         <div class="body-info-wrap">
-          <h3 class="title">{{examInfo.title}}</h3>
-          <div class="score-wrap">
-            <div class="text-wrap">
-              <span class="score">{{answerCardInfo.score}}</span>
-              <span class="tip">分</span>
+          <!--正常答题分数展示-->
+          <div class="normal-scrol-wrap" v-if="answerCardInfo.essay_status">
+            <h3 class="title">{{examInfo.title}}</h3>
+            <div class="score-wrap">
+              <div class="text-wrap">
+                <span class="score">{{answerCardInfo.score}}</span>
+                <span class="tip">分</span>
+              </div>
             </div>
           </div>
+          <!--问答题批阅信息提醒-->
+          <div class="essay-audit-wrap" v-else>
+            <div class="empty-logo"></div>
+            <h4 class="tip">提交成功，耐心等待老师批阅</h4>
+          </div>
+          <!--详细信息列表展示-->
           <div class="exam-detail-wrap">
-            <div class="row">
+            <div class="row" v-show="answerCardInfo.essay_status">
               <span class="title">试卷总分</span>
               <span class="desc">{{`${answerCardInfo.total_score}分`}}</span>
             </div>
@@ -29,7 +38,7 @@
               <span class="title">总题数目</span>
               <span class="desc">{{`${examInfo.question_num}题`}}</span>
             </div>
-            <div class="row">
+            <div class="row" v-show="answerCardInfo.essay_status">
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
@@ -273,41 +282,90 @@ export default {
           @include font-color('tipColor');
         }
       }
+      .essay-header-wrap{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: px2rem(30px) 0 px2rem(89px);
+        box-sizing: border-box;
+        .avater-bg{
+          width: px2rem(70px);
+          height: px2rem(70px);
+          border-radius: 50%;
+          margin-right: px2rem(18px);
+          @include border('all', px2rem(2px), solid,'bgColor');
+          .avater{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+          }
+        }
+        .name{
+          line-height: 1;
+          @include font-dpr(15px);
+          @include font-color('titleColor');
+        }
+      }
       .body-info-wrap{
         width: 100%;
         padding: 0 px2rem(71px);
         box-sizing: border-box;
-        .title{
+        .normal-scrol-wrap{
           width: 100%;
-          text-align: center;
-          font-weight: bold;
-          padding: px2rem(59px) 0;
-          line-height: px2rem(52px);
-          @include font-dpr(17px);
-          @include font-color('titleColor');
-        }
-        .score-wrap{
-          position: relative;
-          text-align: center;
-          padding-top: px2rem(159px);
-          .text-wrap{
-            position: absolute;
-            left: 50%;
-            top: px2rem(-16px);
-            transform: translateX(-50%);
-            .score{
-              line-height: 1;
-              @include font-dpr(60px);
-              @include font-color('titleColor');
-            }
-            .tip{
+          display: block;
+          .title{
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            padding: px2rem(59px) 0;
+            line-height: px2rem(52px);
+            @include font-dpr(17px);
+            @include font-color('titleColor');
+          }
+          .score-wrap{
+            position: relative;
+            text-align: center;
+            padding-top: px2rem(159px);
+            .text-wrap{
               position: absolute;
-              bottom: px2rem(16px);
-              right: px2rem(-46px);
-              line-height: 1;
-              @include font-dpr(15px);
-              @include font-color('titleColor');
+              left: 50%;
+              top: px2rem(-16px);
+              transform: translateX(-50%);
+              .score{
+                line-height: 1;
+                @include font-dpr(60px);
+                @include font-color('titleColor');
+              }
+              .tip{
+                position: absolute;
+                bottom: px2rem(16px);
+                right: px2rem(-46px);
+                line-height: 1;
+                @include font-dpr(15px);
+                @include font-color('titleColor');
+              }
             }
+          }
+        }
+        .essay-audit-wrap{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          .empty-logo{
+            width: px2rem(444px);
+            height: px2rem(222px);
+            background-position: center;
+            background-repeat: no-repeat;
+            margin-bottom: px2rem(40px);
+            @include img-retina('~@/assets/common/essay_empty@2x.png', '~@/assets/common/essay_empty@3x.png', 100%, 100%);
+          }
+          .tip{
+            line-height: 1;
+            margin-bottom: px2rem(132px);
+            @include font-dpr(17px);
+            @include font-color('titleColor');
           }
         }
         .exam-detail-wrap{

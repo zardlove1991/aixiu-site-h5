@@ -145,7 +145,7 @@ export default {
       let examId = this.examId
       this.toggleGiveUpModel()
       try {
-        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
@@ -166,7 +166,7 @@ export default {
       let redirectParams = this.redirectParams
       this.toggleSubmitModel()
       try {
-        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
@@ -203,7 +203,7 @@ export default {
     },
     ...mapActions('depence', {
       endExam: 'END_EXAM',
-      checkCheckboxRecord: 'CHECK_CHECKBOX_RECORD'
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION'
     })
   }
 }

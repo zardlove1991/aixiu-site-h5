@@ -1,7 +1,12 @@
 <template lang="html">
   <div class="denpncelist-wrap" :class="{hide: isShowModelThumb}" v-if="examList.length">
     <!--头部组件-->
-    <exam-header v-if="renderType === 'exam'" :list="examList" :showSubmitModel.sync="isShowSubmitModel" :curIndex="currentSubjectIndex" @timeup="toggleSuspendModel"></exam-header>
+    <exam-header v-if="renderType === 'exam'"
+      :list="examList"
+      :showSubmitModel.sync="isShowSubmitModel"
+      :curIndex="currentSubjectIndex"
+      @timeup="toggleSuspendModel">
+    </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
     <div class="list-wrap">
@@ -12,10 +17,13 @@
               <span>{{item.typeTip}}</span>
               <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
             </h3>
+            <!--当前题目进度提示-->
             <div v-show="renderType === 'exam'" class="subject-tip-wrap" @click.stop="toggetSubjectList">
               <div class="tip-img"></div>
               <div class="tip-count">{{`${index+1}/${examList.length}`}}</div>
             </div>
+            <!--问答题批阅得分提醒-->
+            <div v-show="renderType === 'analysis' && item.type === 'essay' && item.remark.score" class="essay-audio-score">{{`得${item.remark.score}分`}}</div>
           </div>
           <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
           <!--题干的每题数据-->
@@ -42,37 +50,37 @@
             </div>
           </div>
           <!--问答题的表单-->
-          <div class="subject-essay-wrap" v-show="item.type==='essay'">
+          <div class="subject-essay-wrap" v-if="item.type==='essay' && essayTempAnswerInfo">
             <h4 class="title-tip">问答</h4>
             <!--表单编辑区域-->
             <div class="from-wrap">
-              <textarea class="content"
-                placeholder="请输入答案"
-                rows="5" cols="42"
-                maxlength="300"
+              <textarea class="content" placeholder="请输入答案" rows="5" cols="42" maxlength="300"
+                :value = "essayTempAnswerInfo.text"
+                @input="_dealEssayFromValue('text',$event)"
+                v-show="renderType === 'exam'"
               ></textarea>
               <!--回答的内容信息-->
-              <p class="answer-content" v-show="false">“生”字用的好，以下是我的解说</p>
+              <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text}}</p>
               <!--上传的媒体展示区域-->
               <div class="upload-media-wrap" v-show="false">
                 <div class="images-wrap">
                   <div class="single-image-wrap" v-for="item in 3" :key="item">
                     <img :src="demoImgUrl" preview-nav-enable="false" class="eassy-image" v-preview="demoImgUrl"/>
                     <!--删除图标-->
-                    <div class="delete-icon"></div>
+                    <div class="delete-icon" v-show="renderType === 'exam'"></div>
                   </div>
                 </div>
                 <!--音频播放-->
                 <div class="eassy-audio-wrap">
                   <my-audio class="eassy-audio" :src="demoAudioUrl"></my-audio>
                   <!--删除图标-->
-                  <div class="delete-icon"></div>
+                  <div class="delete-icon" v-show="renderType === 'exam'"></div>
                 </div>
                 <!--视频播放-->
                 <div class="eassy-video-wrap">
                   <my-video class="eassy-video" :src="demoVideoUrl"></my-video>
                   <!--删除图标-->
-                  <div class="delete-icon"></div>
+                  <div class="delete-icon" v-show="renderType === 'exam'"></div>
                 </div>
               </div>
               <!--上传区域-->
@@ -112,13 +120,13 @@
               <p class="percent">{{`正确率: ${item.correct_percent ? Math.round(item.correct_percent) : 0}%`}}</p>
             </div>
             <!--问答题的老师点评-->
-            <div class="essay-markinfo-wrap" v-show="item.type==='essay'">
+            <div class="essay-markinfo-wrap" v-if="item.type==='essay' && item.remark.score">
               <h4 class="title">点评</h4>
-              <div class="teacher-info">
-                <img :src="demoImgUrl" class="icon" />
-                <span class="name">宋老师</span>
+              <div class="teacher-info" v-show="item.remark.teacher.name">
+                <img v-show="item.remark.teacher.avatar" :src="item.remark.teacher.avatar" class="icon" />
+                <span class="name">{{item.remark.teacher.name}}</span>
               </div>
-              <p class="markinfo">"生"字描绘不够贴切，要提提现出白云的动感</p>
+              <p class="markinfo" v-show="item.remark.content.text">{{item.remark.content.text}}</p>
             </div>
           </div>
         </template>
@@ -206,7 +214,8 @@ export default {
       isShowSuspendModel: false,
       isShowSubmitModel: false,
       isShowSubjectList: false,
-      isShowOpsModel: false
+      isShowOpsModel: false,
+      essayTempAnswerInfo: null
     }
   },
   components: {
@@ -221,7 +230,7 @@ export default {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
       'currentSubjectInfo', 'redirectParams', 'examId',
-      'examInfo', 'isShowModelThumb'
+      'examInfo', 'isShowModelThumb', 'essayAnswerInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -237,12 +246,25 @@ export default {
       let isActive = subject.options.some(item => item.active)
       let isAnswerd = subject.answer && subject.answer.length
       let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
+      // 赋值当前问答题临时对象
+      this._setTempEssayAnswerInfo()
       // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
-      if (renderType === 'exam' && !isActive && !isAnswerd && !isPrevIndex) {
-        this.showOpsModel()
+      if (renderType === 'exam') {
+        let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
+        let isShowModel = subject.type === 'essay' ? this._checkEssayAnswerInfoEmpty(subject.id) : isDidRecord
+        // 这边针对问答题的判断需要重新判断模态框的展示
+        if (isShowModel) this.showOpsModel()
       }
-      // 检查多选考试的提交
-      this.checkCheckboxRecord(subject)
+      // 检查是否有特殊类型提醒的提交操作: 问答、多选
+      this.sendSaveRecordOption(subject)
+    },
+    essayTempAnswerInfo (newAnwer) {
+      console.log('当前问答题触发的临时提交数据', newAnwer)
+      let essayAnswerInfo = this.essayAnswerInfo
+      let currentSubjectInfo = this.currentSubjectInfo
+      essayAnswerInfo[currentSubjectInfo.id] = newAnwer
+      // 直接更改store数据
+      this.setEssayAnswerInfo(essayAnswerInfo)
     }
   },
   created () {
@@ -280,6 +302,8 @@ export default {
         })
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
+        // 赋值当前问答题临时对象
+        this._setTempEssayAnswerInfo()
       } catch (err) {
         console.log(err)
         this.dealErrorType({ examId, redirectParams }, err)
@@ -302,7 +326,7 @@ export default {
       this.toggleSuspendModel()
       // 提交试卷
       try {
-        await this.checkCheckboxRecord(subject) // 检查多选考试的提交
+        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -380,8 +404,47 @@ export default {
         if (index >= 0) this.changeSubjectIndex(index)
       }
     },
+    _setTempEssayAnswerInfo () {
+      let currentSubjectInfo = this.currentSubjectInfo
+      let essayAnswerInfo = this.essayAnswerInfo
+      let curEssayObj = essayAnswerInfo[currentSubjectInfo.id]
+      // 如果存在就赋值
+      if (curEssayObj) this.essayTempAnswerInfo = curEssayObj
+    },
+    _checkEssayAnswerInfoEmpty (subjectId) {
+      let essayAnswerInfo = this.essayAnswerInfo
+      let curEssayObj = essayAnswerInfo[subjectId]
+      let flag = true
+      // 排查当前对象里是否有数据填写
+      for (let key in curEssayObj) {
+        if (curEssayObj[key].length) {
+          flag = false
+          break
+        }
+      }
+      return flag
+    },
+    _dealEssayFromValue (flag, e) {
+      let target = e.target
+      let essayTempAnswerInfo = this.essayTempAnswerInfo
+      if (flag === 'text') {
+        essayTempAnswerInfo.text = target.value
+      }
+      // 更改问答题当前store的存储数据
+      if (this.changeEssayTimer) {
+        clearTimeout(this.changeEssayTimer)
+        this.changeEssayTimer = null
+      }
+      this.changeEssayTimer = setTimeout(() => {
+        // 更新当前数据对象
+        this.essayTempAnswerInfo = Object.assign({}, essayTempAnswerInfo)
+      }, 200)
+    },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'
+    }),
+    ...mapMutations('depence', {
+      setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO'
     }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -391,7 +454,7 @@ export default {
       saveAnswerRecord: 'SAVE_ANSWER_RECORD',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
-      checkCheckboxRecord: 'CHECK_CHECKBOX_RECORD'
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION'
     })
   }
 }

@@ -11,7 +11,8 @@ const state = {
   examInfo: null, // 试卷信息
   currentSubjectIndex: 0, // 当前题目索引
   answerCardInfo: null, // 答题卡当前的信息
-  isShowModelThumb: false // 判断界面是否有弹窗展示
+  isShowModelThumb: false, // 判断界面是否有弹窗展示
+  essayAnswerInfo: {} // 保存试题中的问答题表单信息
 }
 
 const getters = {
@@ -58,7 +59,8 @@ const getters = {
   renderType: state => state.renderType,
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,
-  isShowModelThumb: state => state.isShowModelThumb
+  isShowModelThumb: state => state.isShowModelThumb,
+  essayAnswerInfo: state => state.essayAnswerInfo
 }
 
 const mutations = {
@@ -85,6 +87,9 @@ const mutations = {
   },
   SET_CURRENT_SUBJECT_INDEX (state, payload) {
     state.currentSubjectIndex = payload
+  },
+  SET_ESSAY_ANSWER_INFO (state, payload) {
+    state.essayAnswerInfo = payload
   }
 }
 
@@ -108,6 +113,7 @@ const actions = {
       Indicator.open({ spinnerType: 'fading-circle' })
       API[reqMethodName]({ params }).then(res => {
         let list = res.data
+        let essayAnswerInfo = state.essayAnswerInfo
         if (list && list.length) {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
@@ -125,8 +131,15 @@ const actions = {
                 }
               }
             })
+            // 初始化为问答题的基础提交数据对象
+            if (subject.type === 'essay') {
+              let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
+              essayAnswerInfo[subject.id] = essayData
+            }
           })
+          // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', list)
+          commit('SET_ESSAY_ANSWER_INFO', essayAnswerInfo)
         } else {
           throw new Error('初始化试题列表失败')
         }
@@ -277,29 +290,37 @@ const actions = {
     return new Promise((resolve, reject) => {
       let id = state.examId
       let renderType = state.renderType
+      let essayAnswerInfo = state.essayAnswerInfo
       let subject = payload
       if (renderType === 'analysis') {
-        reject(new Error({error_message: '当前为解析不需要保存答题记录'}))
+        reject(new Error('当前为解析不需要保存答题记录'))
         return
       }
       // 提交的参数
       let data = {
-        question_id: subject.id,
-        options_id: null
+        question_id: subject.id
       }
-      // 筛选当前选中的数据
-      let optionsArr = []
-      subject.options.forEach(item => {
-        if (item.active) optionsArr.push(item.id)
-      })
-      if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
-      data.options_id = optionsArr
-      // 判断是否有选项 没有直接return
-      if (!data.options_id || !data.options_id.length) {
-        resolve()
-        return
+      // 问答题保存参数和普通题目不同这边需要区分
+      if (subject.type !== 'essay') {
+        // 添加data参数
+        data.options_id = null
+        // 筛选当前选中的数据
+        let optionsArr = []
+        subject.options.forEach(item => {
+          if (item.active) optionsArr.push(item.id)
+        })
+        if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
+        data.options_id = optionsArr
+        // 判断是否有选项 没有直接return
+        if (!data.options_id || !data.options_id.length) {
+          resolve()
+          return
+        }
+      } else {
+        let value = essayAnswerInfo[subject.id]
+        data.value = value
       }
-
+      // 发送保存答题信息
       API.saveSubjectRecord({
         query: { id },
         data
@@ -357,12 +378,13 @@ const actions = {
     // 更新试题列表
     commit('SET_EXAMLIST', examList)
   },
-  CHECK_CHECKBOX_RECORD ({state, commit, dispatch}, payload) {
+  SEND_SAVE_RECORD_OPTION ({state, commit, dispatch}, payload) {
     let subject = payload
     let renderType = state.renderType
     let subjectType = subject.type
     // 只有考试的采取记录多选的提交
-    if (subjectType === 'checkbox' && renderType === 'exam') {
+    let submitTypeArr = ['checkbox', 'essay']
+    if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }
