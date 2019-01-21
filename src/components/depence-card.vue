@@ -75,7 +75,7 @@
     <div class="depence-ops-wrap" v-if="answerCardInfo && isShowOpsPage">
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
-      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ dealLimitTimeTip(examInfo.limit_time) }}</p>
+      <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ _dealLimitTimeTip(examInfo.limit_time) }}</p>
       <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
@@ -211,6 +211,9 @@ export default {
         // 网页就直接跳转
         window.location.href = params.redirect
       }
+    },
+    _dealLimitTimeTip (time) {
+      DEPENCE.dealLimitTimeTip(time)
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'

@@ -55,12 +55,11 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import MyModel from './model'
-import mixins from '@/common/mixins'
+import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   name: 'exam-header',
-  mixins: [mixins],
   props: {
     list: {
       type: Array,
@@ -157,7 +156,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
-        this.dealErrorType({ examId, redirectParams }, err)
+        DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async confirmSubmitModel () {
@@ -178,7 +177,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
-        this.dealErrorType({ examId, redirectParams }, err)
+        DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
     toggleGiveUpModel () {

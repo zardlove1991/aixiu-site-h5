@@ -1,4 +1,5 @@
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
@@ -388,6 +389,87 @@ const actions = {
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }
+  },
+  GET_TENCENT_TOKEN ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      // 获得任务详情
+      API.getTencentToken().then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        // 提醒
+        let tip = err.message || err.error_message || '获取腾讯云签名失败'
+        Toast(tip)
+        reject(err)
+      })
+    })
+  },
+  GET_TENCENT_VIDEO_TOKEN ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      let { type } = payload
+      // 获得任务详情
+      API.getTencentVideoToken({
+        params: { transcode: type }
+      }).then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        // 提醒
+        let tip = err.message || err.error_message || '获取腾讯云签名失败'
+        Toast(tip)
+        reject(err)
+      })
+    })
+  },
+  GET_MATERIAL_INFO ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      let { serverIds, type } = payload
+      let data = { server_id: serverIds, type }
+      Indicator.open({ spinnerType: 'fading-circle' })
+      // 获得任务详情
+      API.getMaterialInfo({ data }).then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        Indicator.close()
+        resolve(data)
+      }).catch(err => {
+        Indicator.close()
+        // 提醒
+        let tip = err.message || err.error_message || '获取素材信息出错'
+        Toast(tip)
+        reject(err)
+      })
+    })
+  },
+  GET_WEIXIN_INFO ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      let params = { url: decodeURIComponent(window.location.href) }
+      // 缓存的微信信息
+      let weixnAuthInfo = STORAGE.get('weixin-auth-info')
+      // 是否从缓存里取
+      if (weixnAuthInfo.appId) {
+        resolve(weixnAuthInfo)
+      } else {
+        // 获得微信信息
+        API.getWeixinInfo({ params }).then(data => {
+          // 设置数据
+          STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
+          // 结束
+          resolve(data)
+        }).catch(err => {
+          STORAGE.remove('weixin-auth-info')
+          // 提醒
+          let tip = err.message || err.error_message || '获取微信认证信息出错'
+          Toast(tip)
+          reject(err)
+        })
+      }
+    })
   }
 }
 

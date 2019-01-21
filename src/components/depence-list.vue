@@ -166,7 +166,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{dealLimitTimeTip(examInfo.limit_time)}}</div>
+        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->
@@ -183,6 +183,7 @@
 import MOCKDATA from '@/lib/mock'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
+import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
@@ -306,7 +307,7 @@ export default {
         this._setTempEssayAnswerInfo()
       } catch (err) {
         console.log(err)
-        this.dealErrorType({ examId, redirectParams }, err)
+        DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async confirmSuspendModel () {
@@ -338,7 +339,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
-        this.dealErrorType({ examId, redirectParams }, err)
+        DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
     async selectAnswer (selectIndex) {
@@ -439,6 +440,9 @@ export default {
         // 更新当前数据对象
         this.essayTempAnswerInfo = Object.assign({}, essayTempAnswerInfo)
       }, 200)
+    },
+    _dealLimitTimeTip (time) {
+      DEPENCE.dealLimitTimeTip(time)
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'

@@ -1,4 +1,4 @@
-import wx from 'weixin-js-sdk'
+import wx from '@/config/weixin-js-sdk'
 
 const METHODS = {
   detectionRestart (item) {
@@ -22,13 +22,22 @@ const METHODS = {
 
 export const DEPENCE = {
   getSubjetType: METHODS.getSubjetType,
-  goWxAppPage (url) {
-    wx.miniProgram.navigateTo({ url })
+  dealErrorType (params, err) {
+    let examId = params.examId
+    let redirectParams = params.redirectParams
+    let _this = window.$vue
+    // 如果开始考试出错就直接去答题卡页面
+    if (err.status && err.status === 422) {
+      _this.$router.replace({
+        path: `/depencecard/${examId}`,
+        query: redirectParams
+      })
+    }
   },
-  backWxAppPage (num = 3) {
-    wx.miniProgram.navigateBack({ delta: Number(num) })
+  dealLimitTimeTip (time) {
+    let tip = time > 0 ? `${time}分钟` : '不限时'
+    return tip
   },
-  wxPostMessage (msg = 'back') {
-    wx.miniProgram.postMessage({ flag: msg })
-  }
+  goWxAppPage: url => wx.navigateTo(url),
+  backWxAppPage: num => wx.navigateBack(num)
 }
