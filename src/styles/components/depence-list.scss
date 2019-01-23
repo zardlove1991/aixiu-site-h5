@@ -144,9 +144,10 @@
             }
           }
           .answer-content{
-            padding-top: px2rem(7px);
+            padding: px2rem(7px) px2rem(30px) 0;
             line-height: px2rem(44px);
             word-wrap: break-word;
+            box-sizing: border-box;
             @include font-dpr(15px);
             @include font-color('titleColor');
           }
@@ -477,5 +478,129 @@
       @include font-dpr(14px);
       @include font-color('activeColor');
     }
+  }
+  .fixed-btn-wrap{
+    position: absolute;
+    top:0;
+    width: 100%;
+    min-height: 100.1%;
+    pointer-events: none;
+    .record-audio-wrap{
+      position: absolute;
+      left:0;
+      bottom: 0;
+      width: 100%;
+      height: px2rem(300px);
+      pointer-events: auto;
+      @include bg-color('bgColor');
+      z-index: 10;
+      .audio-tip{
+        width: 100%;
+        padding: px2rem(34px) 0 px2rem(30px);
+        line-height: 1;
+        text-align: center;
+        @include font-dpr(14px);
+        @include font-color('descColor');
+      }
+      .all-btn-wrap{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        .record-reset-wrap,.record-confirm-wrap{
+          padding-top: px2rem(30px);
+          .btn{
+            width: px2rem(60px);
+            height: px2rem(60px);
+            border-radius: 50%;
+            margin-bottom: px2rem(58px);
+            background-repeat: no-repeat;
+            background-position: center;
+            @include bg-color('themeColor');
+            @include img-retina('~@/assets/common/record_reset@2x.png', '~@/assets/common/record_reset@3x.png', px2rem(28px),px2rem(28px));
+          }
+          .tip{
+            line-height: 1;
+            @include font-dpr(14px);
+            @include font-color('descColor');
+          }
+        }
+        .record-confirm-wrap{
+          .btn{
+            background-position: center;
+            @include img-retina('~@/assets/common/record_correct@2x.png', '~@/assets/common/record_correct@3x.png', px2rem(30px), px2rem(20px));
+          }
+        }
+        .record-play-wrap{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin: 0 px2rem(120px);
+          .record-btn-wrap{
+            position: relative;
+            width: px2rem(120px);
+            height: px2rem(120px);
+            margin-bottom: px2rem(28px);
+            .record-paly-bg{
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: px2rem(120px);
+              height: px2rem(120px);
+              opacity:0.2;
+              border-radius:50%;
+              @include bg-color('themeColor');
+              &.animation{
+                animation: scaleAudioBg 0.8s linear infinite alternate;
+              }
+            }
+            .record-paly-btn{
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background-repeat: no-repeat;
+              background-position:center;
+              @include bg-color('themeColor');
+              @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
+              &.record-stop{
+                background-position: px2rem(50px) center;
+                @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
+              }
+              &.record-start{
+                background-position:center;
+                @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
+              }
+            }
+          }
+          .time,.tip{
+            line-height: 1;
+            @include font-dpr(14px);
+            @include font-color('descColor');
+            .hige{
+              font-style: normal;
+              @include font-color('themeColor');
+            }
+          }
+        }
+      }
+      .close-bg{
+        position: absolute;
+        top: px2rem(10px);
+        right:0;
+        width: px2rem(60px);
+        height: px2rem(60px);
+        background-position: center;
+        background-repeat: no-repeat;
+        @include img-retina('~@/assets/common/close_1@2x.png', '~@/assets/common/close_1@3x.png',px2rem(30px),px2rem(30px));
+      }
+    }
+  }
+}
+
+@keyframes scaleAudioBg {
+  from{
+    transform: scale(1);
+  }
+  to{
+    transform: scale(1.2);
   }
 }

@@ -54,7 +54,7 @@
             <h4 class="title-tip">问答</h4>
             <!--表单编辑区域-->
             <div class="from-wrap">
-              <div class="content-wrap">
+              <div class="content-wrap" v-show="renderType === 'exam'">
                 <textarea class="content" placeholder="请输入答案" maxlength="300"
                   :value = "essayTempAnswerInfo.text"
                   @input="uploadText"
@@ -62,54 +62,59 @@
                 ></textarea>
               </div>
               <!--回答的内容信息-->
-              <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text}}</p>
+              <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text || "当前没有回答信息哦~"}}</p>
               <!--上传的媒体展示区域-->
               <div class="upload-media-wrap">
-                <div class="images-wrap"
-                  v-if="essayTempAnswerInfo.image.length"
-                  :class="{'disabled': essayTempAnswerInfo.image.length > 8}"
-                  >
+                <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
                   <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
-                    <img :src="item.src" preview-nav-enable="false" class="eassy-image" v-preview="item.src"/>
+                    <img :src="item" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
                     <!--删除图标-->
-                    <div class="delete-icon" v-show="renderType === 'exam'"></div>
+                    <div class="delete-icon"
+                      v-show="renderType === 'exam'"
+                      @click.stop="deleteUploadData(index,'image')">
+                    </div>
                   </div>
                 </div>
                 <!--音频播放-->
-                <div class="eassy-audio-wrap"
-                  v-if="essayTempAnswerInfo.audio.length"
-                  :class="{'disabled': essayTempAnswerInfo.audio.length}"
-                  >
-                  <my-audio class="eassy-audio" :src="essayTempAnswerInfo.audio[0].src"></my-audio>
+                <div class="eassy-audio-wrap" v-if="essayTempAnswerInfo.audio.length">
+                  <my-audio class="eassy-audio" :src="essayTempAnswerInfo.audio[0]"></my-audio>
                   <!--删除图标-->
-                  <div class="delete-icon" v-show="renderType === 'exam'"></div>
+                  <div class="delete-icon"
+                    v-show="renderType === 'exam'"
+                    @click.stop="deleteUploadData(0, 'audio')"
+                    >
+                  </div>
                 </div>
                 <!--视频播放-->
-                <div class="eassy-video-wrap"
-                  v-if="essayTempAnswerInfo.video.length"
-                  :class="{'disabled': essayTempAnswerInfo.video.length}"
-                  >
-                  <my-video class="eassy-video" :src="essayTempAnswerInfo.video[0].src"></my-video>
+                <div class="eassy-video-wrap" v-if="essayTempAnswerInfo.video.length">
+                  <my-video class="eassy-video" :src="essayTempAnswerInfo.video[0]"></my-video>
                   <!--删除图标-->
-                  <div class="delete-icon" v-show="renderType === 'exam'"></div>
+                  <div class="delete-icon"
+                    v-show="renderType === 'exam'"
+                    @click.stop="deleteUploadData(0, 'video')"
+                    >
+                  </div>
                 </div>
               </div>
               <!--上传区域-->
-              <div class="upload-option-wrap">
+              <div class="upload-option-wrap" v-show="renderType === 'exam'">
                 <div class="upload-img"
                   v-show="['unlimit','image'].includes(item.mode)"
+                  :class="{'disabled': essayTempAnswerInfo && (essayTempAnswerInfo.image.length > 8)}"
                   @click.stop='uploadImg'
                   >
                   <i class="examfont icon-image"></i>
                 </div>
                 <div class="upload-audio"
                   v-show="['unlimit','audio'].includes(item.mode)"
+                  :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.audio.length}"
                   @click.stop="uploadAudio"
                   >
                   <i class="examfont icon-audio"></i>
                 </div>
                 <div class="upload-video"
                   v-show="['unlimit','video'].includes(item.mode)"
+                  :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.video.length}"
                   @click.stop="uploadVideo"
                   >
                   <i class="examfont icon-video"></i>
@@ -201,13 +206,56 @@
         <div class="ops-tip">跳过本题,可稍后作答</div>
       </div>
     </transition>
+    <!--遮罩包裹-->
+    <div class="fixed-btn-wrap">
+      <!--录音区域-->
+      <transition name="up" mode="out-in">
+        <div class="record-audio-wrap" v-if="isShowRecordAudio">
+          <p class="audio-tip">{{recordInfoTip}}</p>
+          <!--所有操作按钮包裹区域-->
+          <div class="all-btn-wrap">
+            <!--重录-->
+            <div class="record-reset-wrap"  v-show="recordConfig.isStop">
+              <div class="btn" @click.stop="recordAuio('reset')"></div>
+              <p class="tip">重录</p>
+            </div>
+            <!--录音按钮-->
+            <div class="record-play-wrap">
+              <div class="record-btn-wrap" @click.stop="recordAuio('start')">
+                <div class="record-paly-bg"
+                  :class="{'animation': recordConfig.isRecord}"
+                ></div>
+                <div class="record-paly-btn"
+                  :class="{
+                    'record-stop':  recordConfig.isStop,
+                    'record-start': recordConfig.isRecord || recordConfig.isPlay
+                  }"
+                ></div>
+              </div>
+              <!--提示-->
+              <p class="time" v-show="!recordConfig.isStop"><i class="hige">{{recoderTimeTip}}</i>/{{_setRecordMaxTime()}}</p>
+              <p class="tip" v-show="recordConfig.isStop">试听</p>
+            </div>
+            <!--确认-->
+            <div class="record-confirm-wrap"  v-show="recordConfig.isStop"
+              @click.stop="confirmRecordAudio"
+            >
+              <div class="btn"></div>
+              <p class="tip">确认</p>
+            </div>
+          </div>
+          <!--关闭按钮-->
+          <div class="close-bg" @click.stop="closeAudioRecoder"></div>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { setBrowserTitle } from '@/utils/utils'
-import { isWeixnBrowser } from '@/utils/app'
+import { setBrowserTitle, formatTimeBySec } from '@/utils/utils'
+import { isWeixnBrowser, isIOSsystem } from '@/utils/app'
 import { Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
@@ -238,11 +286,20 @@ export default {
   },
   data () {
     return {
+      recoderTimeTip: '00:00',
+      recoderPlayTip: '00:00',
       isShowSuspendModel: false,
       isShowSubmitModel: false,
       isShowSubjectList: false,
       isShowOpsModel: false,
+      isShowRecordAudio: false,
       essayTempAnswerInfo: null,
+      recordConfig: {
+        isRecord: false,
+        isStop: false,
+        isReset: false,
+        isPlay: false
+      },
       uploadConfig: {
         image: {
           type: 'image/*',
@@ -281,6 +338,16 @@ export default {
       let examList = this.examList
       let renderType = this.renderType
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
+    },
+    recordInfoTip () {
+      let recordConfig = this.recordConfig
+      let recoderTimeTip = this.recoderTimeTip
+      let recoderPlayTip = this.recoderPlayTip
+      let tip = '点击开始录音'
+      if (recordConfig.isRecord) tip = '点击结束录音'
+      else if (recordConfig.isStop && !recordConfig.isPlay) tip = `上传${recoderTimeTip}`
+      else if (recordConfig.isStop && recordConfig.isPlay) tip = `上传${recoderPlayTip}`
+      return tip
     }
   },
   watch: {
@@ -309,9 +376,22 @@ export default {
       essayAnswerInfo[currentSubjectInfo.id] = newAnwer
       // 直接更改store数据
       this.setEssayAnswerInfo(essayAnswerInfo)
+    },
+    isShowRecordAudio (newStatus) {
+      // 当隐藏的时候直接重新设置状态
+      if (!newStatus) this._resetAuioStatus()
+    },
+    recordConfig (newConfig, oldConfig) {
+      this.dealRecordOption(newConfig)
     }
   },
   created () {
+    // 初始化定时器数字和存储ID
+    this.recoderSecond = 0
+    this.recoderLocalId = null
+    // 上传对象
+    this.fileUploader = null
+    // 初始化方法
     this.initReirectParams()
     this.initList()
   },
@@ -409,10 +489,8 @@ export default {
           console.log('当前获得图片的serverIds', serverIds)
           // 获取素材地址信息
           let uploadImgs = await this.getMaterialInfo({ type: 'image', serverIds })
-          uploadImgs = currentData.concat(uploadImgs).map(item => ({
-            fileid: item.fileid,
-            src: item.content.url.replace('https', 'http')
-          }))
+          uploadImgs = uploadImgs.map(item => item.content.url.replace('https', 'http'))
+          uploadImgs = currentData.concat(uploadImgs)
           console.log('当前上传素材后的图片信息', uploadImgs)
           // 更新数据
           this._dealEssayFromValue({ image: uploadImgs })
@@ -435,17 +513,88 @@ export default {
       if (audioMedia.length) return
       // 判断是否是微信内核
       let isWx = isWeixnBrowser()
+      let WX = this.$wx
       if (isWx) {
-        // if (this.isShowRecordAudio) return
-        // // 提前去模拟请求录音弹窗防止后续操作有问题
-        // elementConfig.toastMessage({message: '为您初始化录音中...', duration: 2000})
-        // WX.normalExecute('startRecord') // 调用微信录音
-        // setTimeout(() => {
-        //   WX.stopRecord()
-        //   this.isShowRecordAudio = true
-        // }, 2000)
+        if (this.isShowRecordAudio) return
+        // 提前去模拟请求录音弹窗防止后续操作有问题
+        this.$toast({message: '为您初始化录音中...', duration: 3000})
+        WX.normalExecute('startRecord') // 调用微信录音
+        // 显示录音弹层
+        setTimeout(() => {
+          WX.stopRecord()
+          this.isShowRecordAudio = true
+        }, 3000)
       } else {
         this._triggerFileUpload()
+      }
+    },
+    async dealRecordOption (newConfig) {
+      try {
+        console.log('监听录音状态配置', newConfig)
+        let WX = this.$wx
+        // 判断当前录音配置状态
+        if (newConfig.isRecord && !newConfig.isStop) { // 开始录音
+          // {errorTip: '开始录音错误'}
+          await WX.normalExecute('startRecord') // 调用微信录音
+          this._setCurrentRecordTime('start')
+        } else if (!newConfig.isRecord && newConfig.isStop) { // 停止录音
+          if (newConfig.isPlay && !this.isCurrentPlay) {
+            console.log('开始播放的录音localId', this.recoderLocalId)
+            this._playRecordAudio('start') // 播放录音
+            this.isCurrentPlay = true // 是否当前正在播放
+            await WX.normalExecute('playVoice', {
+              errorTip: '播放语音错误',
+              params: { localId: this.recoderLocalId }
+            })
+          } else if (!newConfig.isPlay && this.isCurrentPlay) {
+            console.log('停止播放的录音localId', this.recoderLocalId)
+            // 判断是否有播放的timer有的话在停止
+            if (this.playRecoderTimer) {
+              await WX.normalExecute('stopVoice', {
+                errorTip: '停止播放错误',
+                params: { localId: this.recoderLocalId }
+              })
+            }
+            this._playRecordAudio('stop') // 停止播放录音
+            this.isCurrentPlay = false
+          } else if (!this.isCurrentPlay) {
+            // 停止录音 当没有录音ID的时候在执行
+            if (!this.recoderLocalId) {
+              this.recoderLocalId = await WX.stopRecord()
+            }
+            console.log('结束录音得到的localId', this.recoderLocalId)
+            this._setCurrentRecordTime('stop')
+          }
+        }
+      } catch (err) {
+        // 调用出错直接重置
+        // this._resetAuioStatus()
+        console.log(err)
+      }
+    },
+    async confirmRecordAudio () {
+      this.isShowRecordAudio = false // 隐藏弹层
+      let WX = this.$wx
+      try {
+        Indicator.open({ spinnerType: 'fading-circle' })
+        let localId = this.recoderLocalId // 录音的localId
+        // 存放数据
+        let serverId = await WX.uploadVoice({ localId })
+        // 获取素材地址信息
+        let uploadAudioData = await this.getMaterialInfo({
+          type: 'audio',
+          serverIds: [serverId]
+        })
+        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url.replace('https', 'http')))
+        // 更新数据
+        this._dealEssayFromValue({ audio: uploadAudioData })
+        // 结束loading
+        Indicator.close()
+        this.recoderLocalId = null
+      } catch (err) {
+        // 结束loading
+        Indicator.close()
+        console.log(err)
       }
     },
     async fileUpload (e) {
@@ -464,18 +613,12 @@ export default {
         if (uploadKey === 'image') {
           let uploadImgs = await upload.fileUploaderImg(uploader, files, curUploadConfig.maxcount, currentData.length)
           // 这边组织数组的格式
-          uploadData = uploadImgs.map(item => ({
-            fileid: item.vid,
-            src: item.source_url.replace('https', 'http')
-          }))
+          uploadData = uploadImgs.map(item => item.source_url.replace('https', 'http'))
           uploadData = currentData.concat(uploadData)
         } else {
           let uploadMedias = await upload.fileUploaderMedia(files, uploadKey)
           // 处理数据格式
-          uploadData = [uploadMedias].map(item => ({
-            src: item.videoUrl.replace('https', 'http'),
-            fileid: item.fileId
-          }))
+          uploadData = [uploadMedias].map(item => item.videoUrl.replace('https', 'http'))
         }
         // 更新数据
         this._dealEssayFromValue({ [uploadKey]: uploadData })
@@ -557,6 +700,122 @@ export default {
         if (index >= 0) this.changeSubjectIndex(index)
       }
     },
+    deleteUploadData (index, key) {
+      let essayTempAnswerInfo = this.essayTempAnswerInfo
+      let curUploadData = essayTempAnswerInfo[key]
+      // 更新数据
+      curUploadData.splice(index, 1)
+      this.essayTempAnswerInfo = {...essayTempAnswerInfo}
+    },
+    recordAuio (flag) {
+      let recordConfig = this.recordConfig
+      // 判断是否是重置还是开始录音
+      if (flag === 'start') {
+        // 判断是否开始录音
+        if (recordConfig.isRecord) {
+          recordConfig.isRecord = false
+          recordConfig.isStop = true
+        } else {
+          // 判断是否停止
+          if (recordConfig.isStop) {
+            recordConfig.isPlay = !recordConfig.isPlay
+          } else {
+            recordConfig.isRecord = true
+            recordConfig.isStop = false
+          }
+        }
+      } else if (flag === 'reset') {
+        this._resetAuioStatus()
+      }
+      // 设置对象
+      this.recordConfig = Object.assign({}, recordConfig)
+    },
+    closeAudioRecoder () {
+      this.isShowRecordAudio = false
+      this._resetAuioStatus()
+    },
+    _playRecordAudio (flag) {
+      let recordConfig = this.recordConfig
+      let tempRecoderCount = this.recoderSecond
+      console.log('录音播放的状态', flag)
+      // 判断是否主动停止播放
+      if (flag === 'stop') {
+        // 直接清除定时器
+        clearInterval(this.playRecoderTimer)
+        this.playRecoderTimer = null
+        // 直接设置为初始化时间
+        this.recoderPlayTip = this.recoderTimeTip
+        return
+      }
+      // 直接设置为初始化时间
+      this.recoderPlayTip = this.recoderTimeTip
+      this.playRecoderTimer = setInterval(() => {
+        if (tempRecoderCount <= 0) {
+          // 直接清除定时器
+          clearInterval(this.playRecoderTimer)
+          this.playRecoderTimer = null
+          // 恢复为可播放状态
+          recordConfig.isPlay = false
+          this.recordConfig = Object.assign({}, recordConfig)
+          // 阻止继续执行
+          return
+        }
+        tempRecoderCount--
+        this.recoderPlayTip = formatTimeBySec(tempRecoderCount)
+      }, 1000)
+    },
+    _setCurrentRecordTime (flag) {
+      let recordConfig = this.recordConfig
+      let audioLimitTime = 60
+      console.log('录音的进行中状态', flag)
+      // 判断是否直接停止录音
+      if (flag === 'stop') {
+        clearInterval(this.recoderTimer)
+        this.recoderTimer = null
+        return
+      }
+      let initTip = () => {
+        this.recoderSecond++
+        this.recoderTimeTip = formatTimeBySec(this.recoderSecond)
+      }
+      // 初始化调用
+      let delay = isIOSsystem() ? 990 : 1000
+      this.recoderSecond++
+      this.recoderTimer = setInterval(() => {
+        // 判断是否超过了录制时间
+        if (this.recoderSecond >= audioLimitTime) {
+          clearInterval(this.recoderTimer)
+          this.recoderTimer = null
+          // 更改为停止录音的状态
+          recordConfig.isRecord = false
+          recordConfig.isStop = true
+          this.recordConfig = Object.assign({}, recordConfig)
+          // 返回
+          return false
+        }
+        // 开始计时
+        initTip()
+      }, delay)
+    },
+    _resetAuioStatus () {
+      let recordConfig = this.recordConfig
+      for (let key in recordConfig) {
+        recordConfig[key] = false
+      }
+      // 设置对象
+      this.recordConfig = Object.assign({}, recordConfig)
+      // 还原当前的时间和计算的时间总和
+      this.recoderTimeTip = '00:00'
+      this.recoderSecond = 0
+      // 判断是否需要停止录音
+      if (this.recoderTimer) {
+        console.log('关闭或重置的时候清除录音状态 !!!')
+        this.$wx.stopRecord()
+      }
+      // 清除当前计时的timer
+      if (this.playRecoderTimer) clearInterval(this.playRecoderTimer)
+      if (this.recoderTimer) clearInterval(this.recoderTimer)
+    },
     _triggerFileUpload () {
       let fileInputEl = this.$refs.uploadFileInput[0]
       let curUploadConfig = this.uploadConfig[this.uploadKey]
@@ -614,6 +873,10 @@ export default {
     },
     _dealLimitTimeTip (time) {
       DEPENCE.dealLimitTimeTip(time)
+    },
+    _setRecordMaxTime () {
+      // 直接设置音频长度为1分钟
+      return formatTimeBySec(60)
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'

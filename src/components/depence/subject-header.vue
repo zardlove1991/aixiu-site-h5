@@ -94,7 +94,6 @@ export default {
 @import "@/styles/index.scss";
 
 .subject-header-wrap{
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -110,6 +109,7 @@ export default {
     margin:0;
     padding:0;
     .item{
+      position: relative;
       display: inline-block;
       text-align: center;
       line-height: px2rem(58px);
@@ -121,12 +121,13 @@ export default {
       .essay-tip{
         position: absolute;
         top: 0;
+        right:0;
         width: px2rem(34px);
         height: px2rem(34px);
         border-radius: 50%;
         text-align: center;
         line-height: px2rem(34px);
-        transform: translate3d(100%, 36%, 0);
+        transform: translate3d(36%, -8%, 0);
         @include font-dpr(12px);
         @include bg-color('bgColor');
       }

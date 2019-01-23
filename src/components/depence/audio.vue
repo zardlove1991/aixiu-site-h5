@@ -37,7 +37,7 @@ import { formatTimeBySec, prefixStyle } from '@/utils/utils'
 import { isIOSsystem } from '@/utils/app'
 
 const TRANSFORM = prefixStyle('transform')
-const PROGRESS_BTN_W = 2
+const PROGRESS_BTN_W = 1
 
 export default {
   name: 'myAudio',
@@ -132,12 +132,11 @@ export default {
     },
     timeUpdate (e) {
       // 针对IOS播放延迟问题做处理 关闭初始化状态
-      console.log('IOS音频初始化状态', this.iosAudioInit)
       let time = e.target.currentTime
       if (this.iosAudioInit && time) {
         this.audio.pause()
         this.iosAudioInit = false
-        console.log('IOS音频初始化状态', this.iosAudioInit)
+        console.log('IOS音频初始化状态完毕 ！！')
         return
       }
       this.currentTime = time
@@ -177,10 +176,11 @@ export default {
       if (!this.playing) this.togglePlay()
     },
     _getAudioInfo (e) {
-      // console.log('audio触发的metaload事件', e)
       let myAudio = this.audio
       // 赋值总时长
-      this.currentDuration = parseInt(Math.round(myAudio.duration.toFixed(2)))
+      // this.currentDuration = parseInt(Math.round(myAudio.duration.toFixed(2)))
+      this.currentDuration = myAudio.duration
+      console.log('audio触发的metaload事件', this.currentDuration)
       // 发送当前音频总时长
       this.$emit('audoinfo', {duration: this.currentDuration})
     }
