@@ -387,7 +387,7 @@ export default {
   },
   created () {
     // 初始化定时器数字和存储ID
-    this.recoderSecond = 0
+    this.recoderSecond = -1
     this.recoderLocalId = null
     // 上传对象
     this.fileUploader = null
@@ -780,7 +780,7 @@ export default {
       }
       // 初始化调用
       let delay = isIOSsystem() ? 990 : 1000
-      this.recoderSecond++
+      initTip()
       this.recoderTimer = setInterval(() => {
         // 判断是否超过了录制时间
         if (this.recoderSecond >= audioLimitTime) {
@@ -806,7 +806,7 @@ export default {
       this.recordConfig = Object.assign({}, recordConfig)
       // 还原当前的时间和计算的时间总和
       this.recoderTimeTip = '00:00'
-      this.recoderSecond = 0
+      this.recoderSecond = -1
       // 判断是否需要停止录音
       if (this.recoderTimer) {
         console.log('关闭或重置的时候清除录音状态 !!!')
