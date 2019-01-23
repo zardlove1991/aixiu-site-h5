@@ -54,46 +54,71 @@
             <h4 class="title-tip">问答</h4>
             <!--表单编辑区域-->
             <div class="from-wrap">
-              <textarea class="content" placeholder="请输入答案" rows="5" cols="42" maxlength="300"
-                :value = "essayTempAnswerInfo.text"
-                @input="_dealEssayFromValue('text',$event)"
-                v-show="renderType === 'exam'"
-              ></textarea>
+              <div class="content-wrap">
+                <textarea class="content" placeholder="请输入答案" maxlength="300"
+                  :value = "essayTempAnswerInfo.text"
+                  @input="uploadText"
+                  v-show="renderType === 'exam'"
+                ></textarea>
+              </div>
               <!--回答的内容信息-->
               <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text}}</p>
               <!--上传的媒体展示区域-->
-              <div class="upload-media-wrap" v-show="false">
-                <div class="images-wrap">
-                  <div class="single-image-wrap" v-for="item in 3" :key="item">
-                    <img :src="demoImgUrl" preview-nav-enable="false" class="eassy-image" v-preview="demoImgUrl"/>
+              <div class="upload-media-wrap">
+                <div class="images-wrap"
+                  v-if="essayTempAnswerInfo.image.length"
+                  :class="{'disabled': essayTempAnswerInfo.image.length > 8}"
+                  >
+                  <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
+                    <img :src="item.src" preview-nav-enable="false" class="eassy-image" v-preview="item.src"/>
                     <!--删除图标-->
                     <div class="delete-icon" v-show="renderType === 'exam'"></div>
                   </div>
                 </div>
                 <!--音频播放-->
-                <div class="eassy-audio-wrap">
-                  <my-audio class="eassy-audio" :src="demoAudioUrl"></my-audio>
+                <div class="eassy-audio-wrap"
+                  v-if="essayTempAnswerInfo.audio.length"
+                  :class="{'disabled': essayTempAnswerInfo.audio.length}"
+                  >
+                  <my-audio class="eassy-audio" :src="essayTempAnswerInfo.audio[0].src"></my-audio>
                   <!--删除图标-->
                   <div class="delete-icon" v-show="renderType === 'exam'"></div>
                 </div>
                 <!--视频播放-->
-                <div class="eassy-video-wrap">
-                  <my-video class="eassy-video" :src="demoVideoUrl"></my-video>
+                <div class="eassy-video-wrap"
+                  v-if="essayTempAnswerInfo.video.length"
+                  :class="{'disabled': essayTempAnswerInfo.video.length}"
+                  >
+                  <my-video class="eassy-video" :src="essayTempAnswerInfo.video[0].src"></my-video>
                   <!--删除图标-->
                   <div class="delete-icon" v-show="renderType === 'exam'"></div>
                 </div>
               </div>
               <!--上传区域-->
-              <div class="upload-option-wrap" v-show="false">
-                <div class="upload-img">
+              <div class="upload-option-wrap">
+                <div class="upload-img"
+                  v-show="['unlimit','image'].includes(item.mode)"
+                  @click.stop='uploadImg'
+                  >
                   <i class="examfont icon-image"></i>
                 </div>
-                <div class="upload-audio">
+                <div class="upload-audio"
+                  v-show="['unlimit','audio'].includes(item.mode)"
+                  @click.stop="uploadAudio"
+                  >
                   <i class="examfont icon-audio"></i>
                 </div>
-                <div class="upload-video">
+                <div class="upload-video"
+                  v-show="['unlimit','video'].includes(item.mode)"
+                  @click.stop="uploadVideo"
+                  >
                   <i class="examfont icon-video"></i>
                 </div>
+                <!--原生上传操作-->
+                <input type="file"
+                  ref="uploadFileInput" name="filte" class="file-input"
+                  @change="fileUpload"
+                />
               </div>
             </div>
           </div>
@@ -180,11 +205,13 @@
 </template>
 
 <script>
-import MOCKDATA from '@/lib/mock'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
+import { isWeixnBrowser } from '@/utils/app'
+import { Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
+import upload from '@/utils/upload'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
 import SubjectList from './depence/subject-list'
@@ -211,12 +238,28 @@ export default {
   },
   data () {
     return {
-      ...MOCKDATA,
       isShowSuspendModel: false,
       isShowSubmitModel: false,
       isShowSubjectList: false,
       isShowOpsModel: false,
-      essayTempAnswerInfo: null
+      essayTempAnswerInfo: null,
+      uploadConfig: {
+        image: {
+          type: 'image/*',
+          multiple: true,
+          maxcount: 9
+        },
+        audio: {
+          type: 'audio/*',
+          multiple: false,
+          maxcount: 1
+        },
+        video: {
+          type: 'video/*',
+          multiple: false,
+          maxcount: 1
+        }
+      }
     }
   },
   components: {
@@ -254,7 +297,7 @@ export default {
         let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
         let isShowModel = subject.type === 'essay' ? this._checkEssayAnswerInfoEmpty(subject.id) : isDidRecord
         // 这边针对问答题的判断需要重新判断模态框的展示
-        if (isShowModel) this.showOpsModel()
+        if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
       }
       // 检查是否有特殊类型提醒的提交操作: 问答、多选
       this.sendSaveRecordOption(subject)
@@ -273,13 +316,6 @@ export default {
     this.initList()
   },
   methods: {
-    initReirectParams () {
-      let redirectParams = this.redirectParams || {}
-      let redirect = this.redirect
-      let delta = this.delta
-      let params = Object.assign({ redirect, delta }, redirectParams)
-      this.setRedirectParams(params)
-    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
@@ -354,6 +390,122 @@ export default {
         console.log(err)
       }
     },
+    async uploadImg () {
+      // 设置当前上传标识
+      this.uploadKey = 'image'
+      // 判断是否是微信内核
+      let isWx = isWeixnBrowser()
+      let wx = this.$wx
+      console.log('useragent is in weixin', isWx)
+      let essayTempAnswerInfo = this.essayTempAnswerInfo
+      if (isWx) {
+        try {
+          let curUploadConfig = this.uploadConfig[this.uploadKey]
+          let currentData = essayTempAnswerInfo.image
+          let weixinLocalIds = await upload.getWeixinLocalId(wx, curUploadConfig.maxcount, currentData)
+          weixinLocalIds = Array.isArray(weixinLocalIds) ? weixinLocalIds : [weixinLocalIds]
+          // 执行获取微信图片服务ID
+          let serverIds = await upload.getWeixinServerIdS(wx, weixinLocalIds)
+          console.log('当前获得图片的serverIds', serverIds)
+          // 获取素材地址信息
+          let uploadImgs = await this.getMaterialInfo({ type: 'image', serverIds })
+          uploadImgs = currentData.concat(uploadImgs).map(item => ({
+            fileid: item.fileid,
+            src: item.content.url.replace('https', 'http')
+          }))
+          console.log('当前上传素材后的图片信息', uploadImgs)
+          // 更新数据
+          this._dealEssayFromValue({ image: uploadImgs })
+        } catch (err) {
+          console.log(err)
+        }
+      } else {
+        // 初始化上传对象
+        this.fileUploader = await upload.initFileUploader()
+        console.log('uploader 当前初始化的对象', this.fileUploader)
+        // 触发原生上传操作
+        this._triggerFileUpload()
+      }
+    },
+    async uploadAudio () {
+      // 设置当前上传标识
+      this.uploadKey = 'audio'
+      let audioMedia = this.essayTempAnswerInfo[this.uploadKey]
+      // 代码阻止点击 兼容IOS
+      if (audioMedia.length) return
+      // 判断是否是微信内核
+      let isWx = isWeixnBrowser()
+      if (isWx) {
+        // if (this.isShowRecordAudio) return
+        // // 提前去模拟请求录音弹窗防止后续操作有问题
+        // elementConfig.toastMessage({message: '为您初始化录音中...', duration: 2000})
+        // WX.normalExecute('startRecord') // 调用微信录音
+        // setTimeout(() => {
+        //   WX.stopRecord()
+        //   this.isShowRecordAudio = true
+        // }, 2000)
+      } else {
+        this._triggerFileUpload()
+      }
+    },
+    async fileUpload (e) {
+      try {
+        Indicator.open({ spinnerType: 'fading-circle' })
+        let files = e.target.files
+        // 拿到当前的信息配置
+        let uploadKey = this.uploadKey
+        let essayTempAnswerInfo = this.essayTempAnswerInfo
+        let curUploadConfig = this.uploadConfig[uploadKey]
+        let currentData = essayTempAnswerInfo[uploadKey]
+        // 执行上传
+        let uploader = this.fileUploader
+        let uploadData = [...currentData]
+        // 更具key不同调用不同的uploader
+        if (uploadKey === 'image') {
+          let uploadImgs = await upload.fileUploaderImg(uploader, files, curUploadConfig.maxcount, currentData.length)
+          // 这边组织数组的格式
+          uploadData = uploadImgs.map(item => ({
+            fileid: item.vid,
+            src: item.source_url.replace('https', 'http')
+          }))
+          uploadData = currentData.concat(uploadData)
+        } else {
+          let uploadMedias = await upload.fileUploaderMedia(files, uploadKey)
+          // 处理数据格式
+          uploadData = [uploadMedias].map(item => ({
+            src: item.videoUrl.replace('https', 'http'),
+            fileid: item.fileId
+          }))
+        }
+        // 更新数据
+        this._dealEssayFromValue({ [uploadKey]: uploadData })
+        // 结束loading
+        Indicator.close()
+      } catch (err) {
+        Indicator.close() // 结束loading
+        console.log(err)
+      }
+    },
+    uploadText (e) {
+      this.uploadKey = 'text'
+      this._dealEssayFromValue({ e })
+    },
+    uploadVideo () {
+      // 设置当前上传的KEY
+      this.uploadKey = 'video'
+      // 代码阻止点击 兼容IOS
+      let videoMedia = this.essayTempAnswerInfo[this.uploadKey]
+      if (videoMedia.length) return
+      // 触发原生上传操作
+      this._triggerFileUpload()
+    },
+    initReirectParams () {
+      let redirectParams = this.redirectParams || {}
+      let redirect = this.redirect
+      let delta = this.delta
+      let params = Object.assign({ redirect, delta }, redirectParams)
+      this.setRedirectParams(params)
+    },
     jumpToGradePage () {
       let examId = this.id
       let redirectParams = this.redirectParams
@@ -405,6 +557,20 @@ export default {
         if (index >= 0) this.changeSubjectIndex(index)
       }
     },
+    _triggerFileUpload () {
+      let fileInputEl = this.$refs.uploadFileInput[0]
+      let curUploadConfig = this.uploadConfig[this.uploadKey]
+      // 判断是否是微信内核
+      let touchFileClick = () => {
+        // 手动触发
+        let fileEl = this.$refs.uploadFileInput[0]
+        fileEl.click()
+      }
+      // 设置访问属性
+      fileInputEl.accept = curUploadConfig.type
+      fileInputEl.multiple = curUploadConfig.multiple
+      touchFileClick()
+    },
     _setTempEssayAnswerInfo () {
       let currentSubjectInfo = this.currentSubjectInfo
       let essayAnswerInfo = this.essayAnswerInfo
@@ -418,25 +584,30 @@ export default {
       let flag = true
       // 排查当前对象里是否有数据填写
       for (let key in curEssayObj) {
-        if (curEssayObj[key].length) {
+        if (curEssayObj[key] && curEssayObj[key].length) {
           flag = false
           break
         }
       }
       return flag
     },
-    _dealEssayFromValue (flag, e) {
-      let target = e.target
-      let essayTempAnswerInfo = this.essayTempAnswerInfo
-      if (flag === 'text') {
-        essayTempAnswerInfo.text = target.value
-      }
-      // 更改问答题当前store的存储数据
+    _dealEssayFromValue (params) {
+      // 防止多次处理
       if (this.changeEssayTimer) {
         clearTimeout(this.changeEssayTimer)
         this.changeEssayTimer = null
       }
+      // 更改问答题当前store的存储数据
       this.changeEssayTimer = setTimeout(() => {
+        // 获取数据
+        let uploadKey = this.uploadKey
+        let essayTempAnswerInfo = this.essayTempAnswerInfo // 获取当前设置的问答题的数据
+        // 通过key自动赋值数据 没有的默认为text
+        if (['audio', 'video', 'image'].includes(uploadKey)) {
+          essayTempAnswerInfo[uploadKey] = params[uploadKey]
+        } else if (uploadKey === 'text') {
+          essayTempAnswerInfo.text = params.e.target.value
+        }
         // 更新当前数据对象
         this.essayTempAnswerInfo = Object.assign({}, essayTempAnswerInfo)
       }, 200)
@@ -458,7 +629,8 @@ export default {
       saveAnswerRecord: 'SAVE_ANSWER_RECORD',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION'
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
+      getMaterialInfo: 'GET_MATERIAL_INFO'
     })
   }
 }

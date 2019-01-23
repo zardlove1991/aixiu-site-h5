@@ -15,6 +15,7 @@ $descColorOne: #808080;
 $errorColor: #FF564D;
 $activeColor: #FFAB26;
 $disabledColor: #AFAFAF;
+$disabledColorOne: #ccc;
 // 边框颜色
 $borderColor: #dbdbdb;
 $lineColor: #ebebeb;
@@ -36,6 +37,7 @@ $defaultColorMap: (
   errorColor: $errorColor,
   activeColor: $activeColor,
   disabledColor: $disabledColor,
+  disabledColorOne: $disabledColorOne,
   borderColor: $borderColor,
   lineColor: $lineColor,
   lineColorTwo: $lineColorTwo,

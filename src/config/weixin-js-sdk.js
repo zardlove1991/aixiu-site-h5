@@ -140,7 +140,7 @@ const WX_API = {
   },
   /* 选择小程序首页菜单 */
   switchTab (url) {
-    wx.switchTab({ url })
+    wx.miniProgram.switchTab({ url })
   },
   /* 小程序跳转 */
   navigateTo (url) {

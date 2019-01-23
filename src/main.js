@@ -1,20 +1,14 @@
 import Vue from 'vue'
-import MintUi from 'mint-ui'
-import vuePicturePreview from 'vue-picture-preview'
 import App from './App'
 import router from '@/router/index'
 import store from '@/store/index'
 import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
-// 引入样式文件
-import 'mint-ui/lib/style.css'
-import '@/styles/iconfont/exam/iconfont.scss'
+// 引入所有第三库
+import '@/lib/index'
 
 Vue.config.productionTip = false
-Vue.use(MintUi)
-Vue.use(vuePicturePreview)
 // 判定当前是否有平台参数
 setPlatCssInclude()
-
 // 添加路由的钩子函数
 router.afterEach(route => {
   // dynamicTitle 动态标题（某个内容跳转）
