@@ -141,13 +141,14 @@
             </div>
             <div class="answer-analysis">
               <h4 class="title">解析</h4>
-              <p class="content" v-html="item.analysis"></p>
+              <p class="content" v-if="item.analysis" v-html="item.analysis"></p>
+              <p class="content" v-else>暂无解析内容~</p>
               <!--目前还没有类别和正确率 暂时隐藏-->
               <div class="exam-types" v-show="item.point && item.point.length">
                 <span class="tip">考点</span>
                 <span class="type" v-for="item in item.point" :key="item.id">{{item.name}}</span>
               </div>
-              <p class="percent">{{`正确率: ${item.correct_percent ? Math.round(item.correct_percent) : 0}%`}}</p>
+              <p class="percent" v-show="item.type!=='essay'">{{`正确率: ${item.correct_percent ? Math.round(item.correct_percent) : 0}%`}}</p>
             </div>
             <!--问答题的老师点评-->
             <div class="essay-markinfo-wrap" v-if="item.type==='essay' && item.remark.score">
@@ -157,6 +158,21 @@
                 <span class="name">{{item.remark.teacher.name}}</span>
               </div>
               <p class="markinfo" v-show="item.remark.content.text">{{item.remark.content.text}}</p>
+              <!--图片展示-->
+              <div class="mark-img-wrap" v-if="item.remark.content.image.length">
+                <img :src="src" class="mark-img"
+                  v-preview="item" preview-nav-enable="false"
+                  v-for="(src, index) in item.remark.content.image" :key="index"
+                />
+              </div>
+              <!--音频播放-->
+              <div class="mark-audio-wrap" v-if="item.remark.content.audio.length">
+                <my-audio  class="mark-audio" :src="item.remark.content.audio[0]"></my-audio>
+              </div>
+              <!--视频播放-->
+              <div class="mark-video-wrap" v-if="item.remark.content.video.length">
+                <my-video class="mark-video" :src="item.remark.content.video[0]"></my-video>
+              </div>
             </div>
           </div>
         </template>
