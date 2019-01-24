@@ -333,36 +333,6 @@
         }
       }
     }
-    .btn-wrap{
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: px2rem(100px);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      @include bg-color('bgColor');
-      .prev,.next{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: px2rem(330px);
-        height: px2rem(80px);
-        border-radius: px2rem(40px);
-        @include font-dpr(16px);
-      }
-      .prev{
-        @include bg-color('bgColor');
-        @include font-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-      .next{
-        @include font-color('bgColor');
-        @include bg-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-    }
   }
   .grade-tip-wrap{
     display: flex;
@@ -485,6 +455,37 @@
     width: 100%;
     min-height: 100.1%;
     pointer-events: none;
+    .btn-wrap{
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: px2rem(100px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      pointer-events: auto;
+      @include bg-color('bgColor');
+      .prev,.next{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: px2rem(330px);
+        height: px2rem(80px);
+        border-radius: px2rem(40px);
+        @include font-dpr(16px);
+      }
+      .prev{
+        @include bg-color('bgColor');
+        @include font-color('themeColor');
+        @include border('all',1px,solid,'themeColor');
+      }
+      .next{
+        @include font-color('bgColor');
+        @include bg-color('themeColor');
+        @include border('all',1px,solid,'themeColor');
+      }
+    }
     .record-audio-wrap{
       position: absolute;
       left:0;
