@@ -506,24 +506,35 @@ export default {
       }
     },
     async uploadAudio () {
+      let _this = this
       // 设置当前上传标识
-      this.uploadKey = 'audio'
-      let audioMedia = this.essayTempAnswerInfo[this.uploadKey]
+      _this.uploadKey = 'audio'
+      let audioMedia = _this.essayTempAnswerInfo[_this.uploadKey]
       // 代码阻止点击 兼容IOS
       if (audioMedia.length) return
       // 判断是否是微信内核
       let isWx = isWeixnBrowser()
-      let WX = this.$wx
+      let WX = _this.$wx
       if (isWx) {
-        if (this.isShowRecordAudio) return
+        if (_this.isShowRecordAudio) return
         // 提前去模拟请求录音弹窗防止后续操作有问题
-        this.$toast({message: '为您初始化录音中...', duration: 3000})
-        WX.normalExecute('startRecord') // 调用微信录音
-        // 显示录音弹层
-        setTimeout(() => {
-          WX.stopRecord()
-          this.isShowRecordAudio = true
-        }, 3000)
+        let toastInstance = _this.$toast({message: '为您初始化录音中...', duration: 3000})
+        // 调用微信录音
+        WX.execute('startRecord', {
+          success () {
+            setTimeout(() => {
+              WX.stopRecord()
+              // 显示录音弹层
+              _this.isShowRecordAudio = true
+              toastInstance.close()
+            }, 1500)
+          },
+          cancel () {
+            toastInstance.close()
+            // 取消授权的时候去处理
+            _this.$toast({message: '初始化录音失败', duration: 1500})
+          }
+        })
       } else {
         this._triggerFileUpload()
       }
