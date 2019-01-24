@@ -353,6 +353,7 @@ export default {
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {
       let renderType = this.renderType
+      let essayAnswerInfo = this.essayAnswerInfo
       let subject = this.examList[oldIndex]
       let isActive = subject.options.some(item => item.active)
       let isAnswerd = subject.answer && subject.answer.length
@@ -362,7 +363,7 @@ export default {
       // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
       if (renderType === 'exam') {
         let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
-        let isShowModel = subject.type === 'essay' ? this._checkEssayAnswerInfoEmpty(subject.id) : isDidRecord
+        let isShowModel = subject.type === 'essay' ? DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id) : isDidRecord
         // 这边针对问答题的判断需要重新判断模态框的展示
         if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
       }
@@ -847,19 +848,6 @@ export default {
       let curEssayObj = essayAnswerInfo[currentSubjectInfo.id]
       // 如果存在就赋值
       if (curEssayObj) this.essayTempAnswerInfo = curEssayObj
-    },
-    _checkEssayAnswerInfoEmpty (subjectId) {
-      let essayAnswerInfo = this.essayAnswerInfo
-      let curEssayObj = essayAnswerInfo[subjectId]
-      let flag = true
-      // 排查当前对象里是否有数据填写
-      for (let key in curEssayObj) {
-        if (curEssayObj[key] && curEssayObj[key].length) {
-          flag = false
-          break
-        }
-      }
-      return flag
     },
     _dealEssayFromValue (params) {
       // 防止多次处理

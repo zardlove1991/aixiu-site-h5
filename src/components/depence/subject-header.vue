@@ -34,7 +34,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 import SubjectList from './subject-list'
 
 export default {
@@ -54,6 +55,9 @@ export default {
       isShowSubjectList: false
     }
   },
+  computed: {
+    ...mapGetters('depence', ['essayAnswerInfo'])
+  },
   components: {
     SubjectList
   },
@@ -72,10 +76,14 @@ export default {
       }, 20)
     },
     addClass (subject) {
+      let essayAnswerInfo = this.essayAnswerInfo
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
-      if (!answers.length || !correntInfo.length) {
+      if (subject.type === 'essay') {
+        let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        isDid ? className = 'success' : className = 'disabled'
+      } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))

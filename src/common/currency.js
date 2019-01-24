@@ -38,6 +38,19 @@ export const DEPENCE = {
     let tip = time > 0 ? `${time}分钟` : '不限时'
     return tip
   },
+  checkCurEssayEmpty (essayAnswerInfo, subjectId) {
+    let curEssayObj = essayAnswerInfo[subjectId]
+    let flag = true
+    if (!curEssayObj) return flag
+    // 排查当前对象里是否有数据填写
+    for (let key in curEssayObj) {
+      if (curEssayObj[key] && curEssayObj[key].length) {
+        flag = false
+        break
+      }
+    }
+    return flag
+  },
   goWxAppPage: url => wx.navigateTo(url),
   backWxAppPage: num => wx.navigateBack(num)
 }
