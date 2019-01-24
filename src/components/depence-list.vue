@@ -161,12 +161,6 @@
           </div>
         </template>
       </div>
-      <!--底部跳转按钮-->
-      <div class="btn-wrap">
-        <div class="prev" v-show="currentSubjectIndex !== 0" @click.stop="changeSubjectIndex('sub')">上一题</div>
-        <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
-        <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
-      </div>
     </div>
     <!--跳转成绩单页面-->
     <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
@@ -208,6 +202,12 @@
     </transition>
     <!--遮罩包裹-->
     <div class="fixed-btn-wrap">
+      <!--底部跳转按钮-->
+      <div class="btn-wrap">
+        <div class="prev" v-show="currentSubjectIndex !== 0" @click.stop="changeSubjectIndex('sub')">上一题</div>
+        <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
+        <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
+      </div>
       <!--录音区域-->
       <transition name="up" mode="out-in">
         <div class="record-audio-wrap" v-if="isShowRecordAudio">
