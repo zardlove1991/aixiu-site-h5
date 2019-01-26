@@ -612,9 +612,7 @@ export default {
             this.isCurrentPlay = false
           } else if (!this.isCurrentPlay) {
             // 停止录音 当没有录音ID的时候在执行
-            if (!this.recoderLocalId) {
-              this.recoderLocalId = await WX.stopRecord()
-            }
+            this.recoderLocalId = await WX.stopRecord()
             console.log('结束录音得到的localId', this.recoderLocalId)
             this._setCurrentRecordTime('stop')
           }
