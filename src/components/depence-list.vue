@@ -403,9 +403,10 @@ export default {
     }
   },
   created () {
-    // 初始化定时器数字和存储ID
+    // 初始化定时器数字、存储ID、是否初始化录音过
     this.recoderSecond = -1
     this.recoderLocalId = null
+    this.initRecordLimit = false
     // 上传对象
     this.fileUploader = null
     // 初始化方法
@@ -533,25 +534,49 @@ export default {
       let isWx = isWeixnBrowser()
       let WX = _this.$wx
       if (isWx) {
-        if (_this.isShowRecordAudio) return
-        // 提前去模拟请求录音弹窗防止后续操作有问题
-        let toastInstance = _this.$toast({message: '为您初始化录音中...', duration: 3000})
-        // 调用微信录音
-        WX.execute('startRecord', {
-          success () {
-            setTimeout(() => {
-              WX.stopRecord()
-              // 显示录音弹层
-              _this.isShowRecordAudio = true
-              toastInstance.close()
-            }, 1500)
-          },
-          cancel () {
-            toastInstance.close()
-            // 取消授权的时候去处理
-            _this.$toast({message: '初始化录音失败', duration: 1500})
+        // 判断是否初始过录音
+        if (_this.initRecordLimit) {
+          _this.isShowRecordAudio = !_this.isShowRecordAudio
+        } else {
+          // 提前去模拟请求录音弹窗防止后续操作有问题
+          let toastInstance = _this.$toast({message: '为您初始化录音中...', duration: 3000})
+          // 停止和显示录音弹层
+          let dealAuthStopRecord = () => {
+            WX.execute('stopRecord', {
+              success () {
+                console.log('提前语音stopRecord授权结束走成功！！')
+                // 显示录音弹层
+                _this.isShowRecordAudio = true
+              },
+              fail () {
+                console.log('提前语音stopRecord授权结束走失败！！')
+                _this.$toast({message: '初始化录音失败', duration: 1500})
+                // 隐藏录音弹层
+                _this.isShowRecordAudio = false
+              },
+              complete () {
+                toastInstance.close()
+              }
+            })
           }
-        })
+          // 调用微信录音
+          WX.execute('startRecord', {
+            success () {
+              console.log('提前语音startRecord授权走成功！！')
+              setTimeout(() => {
+                // 设置初始化录音成功
+                _this.initRecordLimit = true
+                // 调用停止录音操作
+                dealAuthStopRecord()
+              }, 1500)
+            },
+            cancel () {
+              toastInstance.close()
+              // 取消授权的时候去处理
+              _this.$toast({message: '初始化录音失败', duration: 1500})
+            }
+          })
+        }
       } else {
         this._triggerFileUpload()
       }
@@ -794,7 +819,7 @@ export default {
     },
     _setCurrentRecordTime (flag) {
       let recordConfig = this.recordConfig
-      let audioLimitTime = 60
+      let audioLimitTime = 59
       console.log('录音的进行中状态', flag)
       // 判断是否直接停止录音
       if (flag === 'stop') {
@@ -807,12 +832,14 @@ export default {
         this.recoderTimeTip = formatTimeBySec(this.recoderSecond)
       }
       // 初始化调用
-      let delay = isIOSsystem() ? 990 : 1000
+      let delay = isIOSsystem() ? 990 : 995
       initTip()
       this.recoderTimer = setInterval(() => {
         // 判断是否超过了录制时间
         if (this.recoderSecond >= audioLimitTime) {
           clearInterval(this.recoderTimer)
+          this.recoderSecond = 60
+          this.recoderTimeTip = formatTimeBySec(60)
           this.recoderTimer = null
           // 更改为停止录音的状态
           recordConfig.isRecord = false

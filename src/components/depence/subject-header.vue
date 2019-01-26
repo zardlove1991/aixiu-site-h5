@@ -27,7 +27,7 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        <subject-list class="list-item-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
       </div>
     </transition>
   </div>
@@ -68,7 +68,8 @@ export default {
     selectSubject ({subject, index}) {
       let subjectScrollEl = this.$refs.subjectItemWrap
       let subjectItem = this.$refs.subjectItem[index]
-      subjectScrollEl.scrollTo(subjectItem.offsetLeft - 15, 0)
+      let offsetX = subjectItem.offsetLeft - 15
+      subjectScrollEl.scrollLeft = offsetX
       // 更改当前索引数据
       this.toggleSubjectList()
       setTimeout(() => {
@@ -227,8 +228,9 @@ export default {
         background-position: center;
       }
     }
-    .list-wrap{
-      padding:0 px2rem(36px);
+    .list-item-wrap{
+      padding:0 px2rem(36px) !important;
+      min-height: calc(100% - 65px);
       box-sizing: border-box;
     }
   }

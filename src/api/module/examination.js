@@ -31,7 +31,7 @@ export default {
   getTencentToken: config => createAPI(configUrl.getTencentToken, 'GET', config, API_FLAG),
   getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),
   getMaterialInfo: config => createAPI(configUrl.getMaterialInfo, 'POST', config, API_FLAG),
-  getWeixinInfo: config => createAPI(configUrl.getWeixinInfo, 'GET', config, API_FLAG),
+  getWeixinInfo: config => createAPI(configUrl.getWeixinInfo, 'POST', config, API_FLAG),
   setSubjectFavorInfo: config => createAPI(configUrl.setSubjectFavorInfo, 'post', config, API_FLAG),
   getSubjectFavorInfo: config => createAPI(configUrl.getSubjectFavorInfo, 'get', config, API_FLAG),
   saveSubjectRecord: config => createAPI(configUrl.saveSubjectRecord, 'post', config, API_FLAG),

@@ -11,8 +11,7 @@ const API_CONFIG = {
   playVoice: 'playVoice', // 播放语音
   stopVoice: 'stopVoice', // 停止播放
   uploadVoice: 'uploadVoice', // 上传录音
-  downloadVoice: 'downloadVoice', // 下载录音为本地
-  onVoiceRecordEnd: 'onVoiceRecordEnd' // 监听录音是否结束 时限 1分钟
+  downloadVoice: 'downloadVoice' // 下载录音为本地
 }
 
 const WX_API = {
@@ -149,6 +148,15 @@ const WX_API = {
   /* 小程序返回 */
   navigateBack (num = 3) {
     wx.miniProgram.navigateBack({ delta: Number(num) })
+  },
+  /* 获得当前微信小程序的环境 */
+  getEnv () {
+    return new Promise((resolve, reject) => {
+      console.log('当前执行微信的参数', wx.miniProgram)
+      wx.miniProgram.getEnv(res => {
+        resolve(res.miniprogram)
+      })
+    })
   }
 }
 

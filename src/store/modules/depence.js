@@ -1,7 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
-import { DEPENCE } from '@/common/currency'
+import { METHODS } from '@/common/currency'
 import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
@@ -20,7 +20,7 @@ const getters = {
   examList (state) {
     let list = state.examList
     list.map((item, index) => {
-      item.typeTip = DEPENCE.getSubjetType(item.type)
+      item.typeTip = METHODS.getSubjetType(item.type)
       // 添加一个正确信息选项的对象
       item.correntInfo = []
       item.answersInfo = []
@@ -448,27 +448,22 @@ const actions = {
   },
   GET_WEIXIN_INFO ({commit, state}, payload) {
     return new Promise((resolve, reject) => {
-      let params = { url: decodeURIComponent(window.location.href) }
-      // 缓存的微信信息
-      let weixnAuthInfo = STORAGE.get('weixin-auth-info')
-      // 是否从缓存里取
-      if (weixnAuthInfo.appId) {
-        resolve(weixnAuthInfo)
-      } else {
-        // 获得微信信息
-        API.getWeixinInfo({ params }).then(data => {
-          // 设置数据
-          STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
-          // 结束
-          resolve(data)
-        }).catch(err => {
-          STORAGE.remove('weixin-auth-info')
-          // 提醒
-          let tip = err.message || err.error_message || '获取微信认证信息出错'
-          Toast(tip)
-          reject(err)
-        })
-      }
+      let { url } = payload
+      // 获得微信信息
+      API.getWeixinInfo({
+        data: { url }
+      }).then(data => {
+        // 设置数据
+        STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        STORAGE.remove('weixin-auth-info')
+        // 提醒
+        let tip = err.message || err.error_message || '获取微信认证信息出错'
+        Toast(tip)
+        reject(err)
+      })
     })
   }
 }

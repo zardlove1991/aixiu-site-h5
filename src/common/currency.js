@@ -1,6 +1,6 @@
 import wx from '@/config/weixin-js-sdk'
 
-const METHODS = {
+export const METHODS = {
   detectionRestart (item) {
     let passScore = item.pass_score
     let answerScore = item.answer_score
@@ -21,7 +21,6 @@ const METHODS = {
 }
 
 export const DEPENCE = {
-  getSubjetType: METHODS.getSubjetType,
   dealErrorType (params, err) {
     let examId = params.examId
     let redirectParams = params.redirectParams
