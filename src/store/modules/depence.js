@@ -121,7 +121,10 @@ const actions = {
           // 添加初始化active的状态
           list.forEach((subject, index) => {
             subject.options.forEach((item, itemIdx) => {
-              let answers = subject.answer
+              // 做答题数据兼容 选项数据全部转换成字符串
+              let answers = subject.answer && subject.answer.map(id => String(id))
+              item.id = String(item.id)
+
               if (answers && answers.includes(item.id)) {
                 // 判断是否是解析状态展示
                 if (renderType === 'analysis') {

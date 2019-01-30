@@ -229,9 +229,7 @@ export default {
       }
     }
     .list-item-wrap{
-      padding:0 px2rem(36px) !important;
       min-height: calc(100% - 65px);
-      box-sizing: border-box;
     }
   }
 }
