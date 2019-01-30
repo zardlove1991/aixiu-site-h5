@@ -134,7 +134,7 @@ export default {
 .list-wrap{
   .row-wrap{
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: px2rem(36px);
     &:last-child{
       margin-bottom: 0;
@@ -145,6 +145,7 @@ export default {
       width: px2rem(100px);
       height: px2rem(100px);
       border-radius: 50%;
+      margin-left: px2rem(36px);
       @include font-dpr(16px);
       &.normal{
         @include bg-color('bgColor');

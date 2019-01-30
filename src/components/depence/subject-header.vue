@@ -191,10 +191,6 @@ export default {
         background-position: center;
       }
     }
-    .list-wrap{
-      padding:0 px2rem(36px);
-      box-sizing: border-box;
-    }
   }
 }
 
