@@ -73,8 +73,8 @@ export default {
     height: 100%;
     background-color: rgba(0,0,0,0.5);
     .play-btn{
-      width: px2rem(70px);
-      height: px2rem(70px);
+      width: px2rem(80px);
+      height: px2rem(80px);
       @include img-retina('~@/assets/common/video@2x.png', '~@/assets/common/video@3x.png', 100%, 100%);
       background-repeat: no-repeat;
       background-position: center;

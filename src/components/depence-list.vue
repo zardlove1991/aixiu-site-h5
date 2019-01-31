@@ -64,8 +64,8 @@
               <!--回答的内容信息-->
               <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text || "当前没有回答信息哦~"}}</p>
               <!--上传的媒体展示区域-->
-              <div class="upload-media-wrap" v-if="essayTempAnswerInfo.image.length">
-                <div class="images-wrap">
+              <div class="upload-media-wrap">
+                <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
                   <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
                     <img :src="item" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
                     <!--删除图标-->

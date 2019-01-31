@@ -108,7 +108,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: px2rem(100px);
-  box-shadow: 0 px2rem(5px) px2rem(20px) rgba(0,0,0,0.2);
+  box-shadow: 0 px2rem(5px) px2rem(14px) rgba(0,0,0,0.1);
   .subject-item-wrap{
     flex:1;
     white-space: nowrap;

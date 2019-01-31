@@ -196,6 +196,7 @@
               }
               .eassy-video{
                 margin-top:px2rem(30px);
+                height: px2rem(390px);
               }
               .delete-icon{
                 transform: translate3d(-10%,-40%,0);
@@ -521,6 +522,7 @@
       pointer-events: auto;
       @include bg-color('bgColor');
       z-index: 10;
+      box-shadow: 0 px2rem(-5px) px2rem(5px) rgba(156, 156, 156, 0.1);
       .audio-tip{
         width: 100%;
         padding: px2rem(34px) 0 px2rem(30px);
