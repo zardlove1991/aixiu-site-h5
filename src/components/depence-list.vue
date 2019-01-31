@@ -769,6 +769,10 @@ export default {
         } else {
           // 判断是否停止
           if (recordConfig.isStop) {
+            // 当前的录音长度
+            let playRecoderSecond = this.playRecoderSecond
+            // 只有当录音时间大于0的时候再去调用API 解决IOS中回调过慢的问题
+            if (recordConfig.isPlay && playRecoderSecond <= 0) return
             recordConfig.isPlay = !recordConfig.isPlay
           } else {
             recordConfig.isRecord = true
@@ -787,7 +791,7 @@ export default {
     },
     _playRecordAudio (flag) {
       let recordConfig = this.recordConfig
-      let tempRecoderCount = this.recoderSecond
+      let tempRecoderCount = this.playRecoderSecond = this.recoderSecond
       console.log('录音播放的状态', flag)
       // 判断是否主动停止播放
       if (flag === 'stop') {
@@ -813,6 +817,8 @@ export default {
         }
         tempRecoderCount--
         this.recoderPlayTip = formatTimeBySec(tempRecoderCount)
+        // 更新当前的录音值
+        this.playRecoderSecond = tempRecoderCount
       }, 1000)
     },
     _setCurrentRecordTime (flag) {
