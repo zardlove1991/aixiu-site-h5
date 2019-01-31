@@ -64,8 +64,8 @@
               <!--回答的内容信息-->
               <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text || "当前没有回答信息哦~"}}</p>
               <!--上传的媒体展示区域-->
-              <div class="upload-media-wrap">
-                <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
+              <div class="upload-media-wrap" v-if="essayTempAnswerInfo.image.length">
+                <div class="images-wrap">
                   <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
                     <img :src="item" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
                     <!--删除图标-->
@@ -74,6 +74,8 @@
                       @click.stop="deleteUploadData(index,'image')">
                     </div>
                   </div>
+                  <!--空白填充的个数-->
+                  <div class="single-image-wrap" v-for="item in _getEmptyDivNum(4, essayTempAnswerInfo.image)" :key="`empty_${item}`"></div>
                 </div>
                 <!--音频播放-->
                 <div class="eassy-audio-wrap" v-if="essayTempAnswerInfo.audio.length">
@@ -919,6 +921,10 @@ export default {
     },
     _dealLimitTimeTip (time) {
       DEPENCE.dealLimitTimeTip(time)
+    },
+    _getEmptyDivNum (rowNums, data) {
+      let delta = rowNums - data.length % rowNums
+      return delta === rowNums ? 0 : delta
     },
     _setRecordMaxTime () {
       // 直接设置音频长度为1分钟
