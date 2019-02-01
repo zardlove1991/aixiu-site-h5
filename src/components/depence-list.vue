@@ -200,6 +200,7 @@
     </div>
     <!--试题中断弹窗-->
     <my-model :show="isShowSuspendModel"
+              :isLock="true"
               doneText="重新考试"
               cancelText="放弃并交卷"
               @confirm="confirmSuspendModel"

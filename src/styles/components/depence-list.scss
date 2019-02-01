@@ -141,7 +141,7 @@
               box-sizing: border-box;
               @include font-dpr(16px);
               @include font-color('titleColor');
-              @include border('all', px2rem(1px), solid, 'lineColorOne');
+              @include border('all', px2rem(2px), solid, 'lineColorOne');
             }
           }
           .answer-content{

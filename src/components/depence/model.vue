@@ -1,5 +1,10 @@
 <template lang="html">
-  <div class="model-wrap" @touchmove.prevent="" v-if="show" @click.stop='cancel'>
+  <div class="model-wrap"
+    v-if="show"
+    :class="{'lock': isLock}"
+    @touchmove.prevent=""
+    @click.stop='cancel'
+    >
     <!--弹窗模块-->
     <div class="model-content">
       <!--主体内容-->
@@ -30,6 +35,10 @@ export default {
     doneText: {
       type: String,
       default: '确定'
+    },
+    isLock: {
+      type: Boolean,
+      default: false
     },
     cancelText: {
       type: String,
@@ -69,7 +78,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: auto;
   z-index: 99;
+  &.lock{
+    pointer-events: none;
+  }
   .model-content{
     min-width: px2rem(560px);
     border-radius: px2rem(8px);
