@@ -920,7 +920,7 @@ export default {
       }, 200)
     },
     _dealLimitTimeTip (time) {
-      DEPENCE.dealLimitTimeTip(time)
+      return DEPENCE.dealLimitTimeTip(time)
     },
     _getEmptyDivNum (rowNums, data) {
       let delta = rowNums - data.length % rowNums

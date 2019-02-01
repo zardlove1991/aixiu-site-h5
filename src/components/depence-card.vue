@@ -213,7 +213,7 @@ export default {
       }
     },
     _dealLimitTimeTip (time) {
-      DEPENCE.dealLimitTimeTip(time)
+      return DEPENCE.dealLimitTimeTip(time)
     },
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'

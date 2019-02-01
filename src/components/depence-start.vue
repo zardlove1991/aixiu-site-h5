@@ -3,14 +3,22 @@
   <div class="depence-start-wrap" v-if="examInfo">
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
-      <!-- <img :src="" class="bg" /> -->
+      <template v-if="examInfo.indexpic">
+        <img :src="examInfo.indexpic" class="bg" />
+        <!--透明遮罩-->
+        <div class="thumb"></div>
+      </template>
+      <!--默认的背景图片-->
+      <div v-show="!examInfo.indexpic" class="indexpic-bg"></div>
     </div>
     <!--主体展示部分-->
     <div class="content-wrap">
       <div class="content">
         <!--头部-->
         <div class="header-desc">
-          <!-- <img :src="testImgUrl" alt="" class="avater"> -->
+          <div class="default-avater">
+            <img v-show="examInfo.indexpic" :src="examInfo.indexpic" alt="" class="avater">
+          </div>
           <span class="title">{{examInfo.title}}</span>
         </div>
         <div class="body-wrap">
@@ -60,7 +68,6 @@ export default {
   },
   data () {
     return {
-      testImgUrl: 'https://images3.alphacoders.com/825/825213.png',
       starMap: {
         easy: 0,
         middle: 2,
@@ -99,7 +106,7 @@ export default {
       return curLevel
     },
     _dealLimitTimeTip (time) {
-      DEPENCE.dealLimitTimeTip(time)
+      return DEPENCE.dealLimitTimeTip(time)
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
@@ -118,15 +125,31 @@ export default {
   width: 100%;
   height: 100vh;
   .header-wrap{
+    position: relative;
     width: 100%;
-    height: px2rem(332px);
+    height: px2rem(300px);
     overflow: hidden;
-    @include bg-color('themeColor');
     .bg{
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(2px);
+      filter: blur(4px);
+    }
+    .thumb{
+      position: absolute;
+      top:0;
+      left:0;
+      right: 0;
+      bottom:0;
+      background-color: rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .indexpic-bg{
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      @include img-retina('~@/assets/common/empty_indepic_bg@2x.png','~@/assets/common/empty_indepic_bg@3x.png', 100%, 100%);
     }
   }
   .content-wrap{
@@ -150,23 +173,31 @@ export default {
       }
       .header-desc{
         display: flex;
-        justify-content: center;
         align-items: center;
         padding: px2rem(60px) 0 px2rem(39px);
         @include border('bottom',1px,solid,'lineColor');
-        .avater{
+        .default-avater{
           width: px2rem(125px);
           height: px2rem(125px);
-          object-fit: cover;
           border-radius: px2rem(5px);
+          background-position: center;
+          background-repeat: no-repeat;
+          @include img-retina('~@/assets/common/empty_indexpic@2x.png','~@/assets/common/empty_indexpic@3x.png', 100%, 100%);
+          .avater{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: px2rem(5px);
+          }
         }
         .title{
           max-width: px2rem(470px);
           line-height: px2rem(50px);
           font-weight: bold;
-          text-align: center;
+          margin-left: px2rem(53px);
           @include font-dpr(17px);
           @include font-color('titleColor');
+          @include line-overflow(2);
         }
       }
       .body-wrap{
@@ -215,6 +246,7 @@ export default {
         padding: px2rem(18px) px2rem(22px) px2rem(15px);
         box-sizing: border-box;
         line-height: px2rem(40px);
+        word-break: break-all;
         @include bg-color('tipBgColor');
         @include font-dpr(13px);
         @include font-color('descColor')
