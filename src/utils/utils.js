@@ -165,18 +165,21 @@ export function decodeBase64 (str) {
 /* 当前试题的annex中的video字段对象的处理 */
 export function dealAnnexObject (annex) {
   let mediaObject = {...annex}
-  let dealKey = 'video'
+  // 处理数据
   for (let key in mediaObject) {
     let data = mediaObject[key]
     // 兼容为字符串数据
     if (typeof data === 'string') data = [data]
-    // 排除key不同、没有数据
-    if (key === dealKey && data.length) {
+    // 排除没有数据
+    if (data.length) {
       // 处理对象的兼容
       data = data.map(item => {
         let newItem = item
-        if (typeof newItem === 'object' && newItem.content) {
-          newItem = newItem.content.url
+        if (typeof newItem === 'object') {
+          // 带有centent字段
+          if (newItem.content) newItem = newItem.content.url
+          // 带有url字段
+          else if (newItem.url) newItem = newItem.url
         }
         return newItem
       })

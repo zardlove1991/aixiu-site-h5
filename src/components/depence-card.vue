@@ -61,7 +61,7 @@
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam" v-show="examInfo.restart && answerCardInfo.essay_status">
+        <div class="col-wrap reset" @click.stop="startReExam('card')" v-show="examInfo.restart && answerCardInfo.essay_status">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
@@ -76,7 +76,7 @@
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
       <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ _dealLimitTimeTip(examInfo.limit_time) }}</p>
-      <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
+      <div class="reexam-btn" @click.stop="startReExam('ops')">重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
   </div>
@@ -158,14 +158,29 @@ export default {
         console.log(err)
       }
     },
-    startReExam () {
+    startReExam (flag) {
       let examId = this.id
       let redirectParams = this.redirectParams
-      // 跳转去准备开始考试页面
-      this.$router.replace({
-        path: `/depencestart/${examId}`,
-        query: { ...redirectParams }
-      })
+      // 如果是答题卡中断弹层直接允许重新进入考试 否则去往考试准备页面
+      if (flag === 'ops') {
+        // 设置当前试题索引
+        this.changeSubjectIndex(0)
+        // 去往查看考试概况页面
+        this.$router.replace({
+          path: `/depencelist/${examId}`,
+          query: {
+            rtp: 'exam',
+            restart: 'need',
+            ...redirectParams
+          }
+        })
+      } else if (flag === 'card') {
+        // 跳转去准备开始考试页面
+        this.$router.replace({
+          path: `/depencestart/${examId}`,
+          query: { ...redirectParams }
+        })
+      }
     },
     jumpToExamAnalysis (jumpType) {
       let examId = this.id

@@ -103,7 +103,7 @@ export default {
     initAudioInfo () {
       this.audio = this.$refs.audio
       // 赋值src
-      this.audio.src = this.src.replace('https', 'http')
+      this.audio.src = this.src
       // 监听客户端请求数据
       this.audio.load()
     },

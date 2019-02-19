@@ -138,6 +138,7 @@ const actions = {
             // 初始化为问答题的基础提交数据对象
             if (subject.type === 'essay') {
               let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
+              // 赋值数据
               essayAnswerInfo[subject.id] = essayData
             }
           })
