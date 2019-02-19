@@ -87,6 +87,7 @@ export default {
   .model-content{
     min-width: px2rem(560px);
     border-radius: px2rem(8px);
+    pointer-events: auto;
     @include bg-color('bgColor');
     .btn-wrap{
       display: flex;

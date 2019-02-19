@@ -51,12 +51,18 @@
       </div>
     </div>
     <!--底部按钮-->
-    <button class="start-exambtn" @click.stop="goExamPage">开始测验</button>
+    <button v-if ="examInfo.person_status === 0" class="start-exambtn" @click.stop="goExamPage">开始测验</button>
+    <!--底部已考按钮组-->
+    <div v-else class="reset-exam-btns" :class="{'center': !examInfo.restart}">
+      <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
+      <button class="show" @click.stop="jumpGradePage">查看成绩</button>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { Toast, Indicator } from 'mint-ui'
 import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
@@ -76,7 +82,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['examInfo'])
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo'])
   },
   created () {
     this.initStartInfo()
@@ -92,12 +98,52 @@ export default {
         console.log(err)
       }
     },
+    async startReExam () {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      Indicator.open({ spinnerType: 'fading-circle' })
+      try {
+        await this.getAnswerCardInfo({id: examId})
+        // 当上次试卷审核结束后才可以继续重新考试
+        if (this.answerCardInfo.essay_status) {
+          // 设置当前试题索引
+          this.changeSubjectIndex(0)
+          // 去往查看考试概况页面
+          this.$router.replace({
+            path: `/depencelist/${examId}`,
+            query: {
+              rtp: 'exam',
+              restart: 'need',
+              ...redirectParams
+            }
+          })
+        } else {
+          Toast('试卷正在批阅中，暂不支持重新考试')
+        }
+        // 结束loading
+        Indicator.close()
+      } catch (err) {
+        console.log(err)
+        // 结束loading
+        Indicator.close()
+      }
+    },
     goExamPage () {
       let examId = this.id
+      let redirectParams = this.redirectParams
       // 去往查看考试概况页面
       this.$router.push({
         path: `/depencelist/${examId}`,
-        query: { rtp: 'exam' }
+        query: { rtp: 'exam', ...redirectParams }
+      })
+    },
+    jumpGradePage () {
+      let examId = this.id
+      let redirectParams = this.redirectParams // mixin中的公共属性
+      // 跳转去往答题卡页面
+      this.$router.push({
+        path: `/depencecard/${examId}`,
+        query: { ...redirectParams }
       })
     },
     _getStarNum (level) {
@@ -109,7 +155,9 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     ...mapActions('depence', {
-      getExamDetail: 'GET_EXAM_DETAIL'
+      getExamDetail: 'GET_EXAM_DETAIL',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO'
     })
   }
 }
@@ -262,6 +310,36 @@ export default {
     @include font-dpr(16px);
     @include font-color('bgColor');
     @include bg-color('themeColor')
+  }
+  .reset-exam-btns{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 px2rem(30px) px2rem(30px);
+    width: 100%;
+    box-sizing: border-box;
+    @include bg-color('tipBgColor');
+    &.center{
+      justify-content: center;
+    }
+    .reset,.show{
+      width: px2rem(330px);
+      height: px2rem(80px);
+      line-height: px2rem(80px);
+      text-align: center;
+      border: none;
+      border-radius: px2rem(40px);
+      @include font-dpr(16px);
+    }
+    .reset{
+      @include font-color('themeColor');
+      @include bg-color('tipBgColor');
+      @include border('all', px2rem(1px), solid, 'themeColor');
+    }
+    .show{
+      @include font-color('bgColor');
+      @include bg-color('themeColor');
+      @include border('all', px2rem(1px), solid, 'themeColor');
+    }
   }
 }
 </style>

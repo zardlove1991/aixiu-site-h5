@@ -38,7 +38,7 @@
               <span class="title">总题数目</span>
               <span class="desc">{{`${examInfo.question_num}题`}}</span>
             </div>
-            <div class="row" v-show="answerCardInfo.essay_status">
+            <div class="row" v-show="answerCardInfo.essay_status && answerCardInfo.answer_num.right_answer_num">
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 
@@ -91,9 +91,7 @@ export default {
   name: 'depence-card',
   mixins: [mixins],
   props: {
-    id: String,
-    redirect: String,
-    delta: String
+    id: String
   },
   data () {
     return {
@@ -103,8 +101,7 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'answerCardInfo', 'examInfo',
-      'redirectParams'
+      'answerCardInfo', 'examInfo'
     ]),
     isShowBackBtn () {
       let redirectParams = this.redirectParams
@@ -134,17 +131,9 @@ export default {
     }
   },
   created () {
-    this.initReirectParams()
     this.initInfo()
   },
   methods: {
-    initReirectParams () {
-      let redirectParams = this.redirectParams || {}
-      let redirect = this.redirect
-      let delta = this.delta
-      let params = Object.assign({ redirect, delta }, redirectParams)
-      this.setRedirectParams(params)
-    },
     async initInfo () {
       let examId = this.id
       try {
@@ -172,17 +161,10 @@ export default {
     startReExam () {
       let examId = this.id
       let redirectParams = this.redirectParams
-      // 设置当前试题索引
-      this.changeSubjectIndex(0)
-      // 去往查看考试概况页面
+      // 跳转去准备开始考试页面
       this.$router.replace({
-        path: `/depencelist/${examId}`,
-        query: {
-          rtp: 'exam',
-          restart: 'need',
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
-        }
+        path: `/depencestart/${examId}`,
+        query: { ...redirectParams }
       })
     },
     jumpToExamAnalysis (jumpType) {
@@ -196,8 +178,7 @@ export default {
         query: {
           rtp: 'analysis',
           listType: jumpType,
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
+          ...redirectParams
         }
       })
     },
@@ -215,9 +196,6 @@ export default {
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
     },
-    ...mapMutations('depence', {
-      setRedirectParams: 'SET_REDIRECT_PARAMS'
-    }),
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',

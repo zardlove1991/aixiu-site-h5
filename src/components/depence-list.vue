@@ -294,8 +294,6 @@ export default {
   props: {
     id: String,
     rtp: String,
-    redirect: String,
-    delta: String,
     restart: {
       type: String,
       default: 'none'
@@ -351,8 +349,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'redirectParams', 'examId',
-      'examInfo', 'essayAnswerInfo'
+      'currentSubjectInfo', 'examId', 'examInfo', 'essayAnswerInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -415,7 +412,6 @@ export default {
     // 上传对象
     this.fileUploader = null
     // 初始化方法
-    this.initReirectParams()
     this.initList()
   },
   methods: {
@@ -450,14 +446,15 @@ export default {
       }
     },
     async confirmSuspendModel () {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      // 关闭模态框
       this.toggleSuspendModel()
-      // 重新加载考试页面
-      try {
-        await this.startExam({ restart: true })
-        this.$router.go(0)
-      } catch (err) {
-        console.log(err)
-      }
+      // 跳转去准备开始考试页面
+      this.$router.replace({
+        path: `/depencestart/${examId}`,
+        query: { ...redirectParams }
+      })
     },
     async cancelSuspendModel () {
       let examId = this.id
@@ -471,10 +468,7 @@ export default {
         // 跳转去往答题卡页面
         this.$router.replace({
           path: `/depencecard/${examId}`,
-          query: {
-            redirect: redirectParams.redirect,
-            delta: redirectParams.delta
-          }
+          query: { ...redirectParams }
         })
       } catch (err) {
         console.log(err)
@@ -698,22 +692,12 @@ export default {
       // 触发原生上传操作
       this._triggerFileUpload()
     },
-    initReirectParams () {
-      let redirectParams = this.redirectParams || {}
-      let redirect = this.redirect
-      let delta = this.delta
-      let params = Object.assign({ redirect, delta }, redirectParams)
-      this.setRedirectParams(params)
-    },
     jumpToGradePage () {
       let examId = this.id
       let redirectParams = this.redirectParams
       this.$router.replace({
         path: `/depencecard/${examId}`,
-        query: {
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
-        }
+        query: { ...redirectParams }
       })
     },
     submitExam () {
@@ -933,9 +917,6 @@ export default {
       // 直接设置音频长度为1分钟
       return formatTimeBySec(60)
     },
-    ...mapMutations('depence', {
-      setRedirectParams: 'SET_REDIRECT_PARAMS'
-    }),
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO'
     }),

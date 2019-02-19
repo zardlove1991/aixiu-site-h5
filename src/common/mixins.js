@@ -1,9 +1,13 @@
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
 
 export default {
+  props: {
+    redirect: String,
+    delta: String
+  },
   /* 为了处理在小程序内部嵌入H5 wxjssdk授权webview中的url地址不会改变的问题 */
   beforeRouteEnter (to, from, next) {
     if (!isWeixnBrowser()) { // 不是微信浏览器无需重载
@@ -31,6 +35,10 @@ export default {
   created () {
     this.$wx = wx// 初始化通用weixin变量
     this.initWeixinInfo() // 初始化微信配置信息
+    this.initReirectParams() // 判断是否有全局参数
+  },
+  computed: {
+    ...mapGetters('depence', ['redirectParams'])
   },
   methods: {
     async initWeixinInfo () {
@@ -54,8 +62,18 @@ export default {
         console.log('mixin中初始化微信的方法报错', err)
       }
     },
+    initReirectParams () {
+      let redirectParams = this.redirectParams || {}
+      let redirect = this.redirect
+      let delta = this.delta
+      let params = Object.assign({ redirect, delta }, redirectParams)
+      this.setRedirectParams(params)
+    },
     ...mapActions('depence', {
       getWeixinInfo: 'GET_WEIXIN_INFO'
+    }),
+    ...mapMutations('depence', {
+      setRedirectParams: 'SET_REDIRECT_PARAMS'
     })
   }
 }
