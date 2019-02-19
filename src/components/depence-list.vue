@@ -506,7 +506,7 @@ export default {
           console.log('当前获得图片的serverIds', serverIds)
           // 获取素材地址信息
           let uploadImgs = await this.getMaterialInfo({ type: 'image', serverIds })
-          uploadImgs = uploadImgs.map(item => item.content.url.replace('https', 'http'))
+          uploadImgs = uploadImgs.map(item => item.content.url)
           uploadImgs = currentData.concat(uploadImgs)
           console.log('当前上传素材后的图片信息', uploadImgs)
           // 更新数据
@@ -635,7 +635,7 @@ export default {
           type: 'audio',
           serverIds: [serverId]
         })
-        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url.replace('https', 'http')))
+        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url))
         // 更新数据
         this._dealEssayFromValue({ audio: uploadAudioData })
         // 结束loading
@@ -663,12 +663,12 @@ export default {
         if (uploadKey === 'image') {
           let uploadImgs = await upload.fileUploaderImg(uploader, files, curUploadConfig.maxcount, currentData.length)
           // 这边组织数组的格式
-          uploadData = uploadImgs.map(item => item.source_url.replace('https', 'http'))
+          uploadData = uploadImgs.map(item => item.source_url)
           uploadData = currentData.concat(uploadData)
         } else {
           let uploadMedias = await upload.fileUploaderMedia(files, uploadKey)
           // 处理数据格式
-          uploadData = [uploadMedias].map(item => item.videoUrl.replace('https', 'http'))
+          uploadData = [uploadMedias].map(item => item.videoUrl)
         }
         // 更新数据
         this._dealEssayFromValue({ [uploadKey]: uploadData })

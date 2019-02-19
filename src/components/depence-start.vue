@@ -322,7 +322,7 @@ export default {
       justify-content: center;
     }
     .reset,.show{
-      width: px2rem(330px);
+      flex:1;
       height: px2rem(80px);
       line-height: px2rem(80px);
       text-align: center;
@@ -331,6 +331,7 @@ export default {
       @include font-dpr(16px);
     }
     .reset{
+      margin-right: px2rem(30px);
       @include font-color('themeColor');
       @include bg-color('tipBgColor');
       @include border('all', px2rem(1px), solid, 'themeColor');
