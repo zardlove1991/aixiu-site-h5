@@ -869,6 +869,7 @@ export default {
           errorTip: '停止播放错误',
           params: { localId: this.recoderLocalId }
         })
+        this.isCurrentPlay = false
       }
       // 清除当前计时的timer
       if (this.recoderTimer) {
