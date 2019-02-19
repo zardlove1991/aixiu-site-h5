@@ -31,7 +31,7 @@
             <span class="title">考试时间</span>
             <span class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</span>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <span class="title">考试难度</span>
             <div class="desc-wrap">
               <i class="star" :class='{active: index <= _getStarNum(examInfo.level)}' v-for="(val,index) in 5" :key='index'></i>
@@ -40,7 +40,7 @@
           <div class="row">
             <span class="title">辅导老师</span>
             <span class="desc">{{examInfo.builder || '暂无'}}</span>
-          </div>
+          </div> -->
           <div class="row">
             <span class="title">考试次数</span>
             <span class="desc">{{examInfo.restart ? '不限' : '1次'}}</span>
