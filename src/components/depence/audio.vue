@@ -20,7 +20,7 @@
       </template>
       <!--加载提示-->
       <div class="ios-audio-loading" v-if="iosAudioInit">
-        <mt-spinner type="fading-circle" :size="20" color="#999"></mt-spinner>
+        <mt-spinner type="fading-circle" :size="15" color="#999"></mt-spinner>
         <span class="tip">加载中...</span>
       </div>
     </div>
@@ -195,6 +195,7 @@ export default {
   width: 100%;
   height: px2rem(80px);
   .audio{
+    position: relative;
     display: flex;
     align-items: center;
     width: 100%;
