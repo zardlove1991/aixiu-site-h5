@@ -862,8 +862,17 @@ export default {
       // 还原当前的时间和计算的时间总和
       this.recoderTimeTip = '00:00'
       this.recoderSecond = -1
-      // 判断是否需要停止录音
+      // 清除当前播放的timer
+      if (this.playRecoderTimer) {
+        clearInterval(this.playRecoderTimer)
+        this.$wx.normalExecute('stopVoice', {
+          errorTip: '停止播放错误',
+          params: { localId: this.recoderLocalId }
+        })
+      }
+      // 清除当前计时的timer
       if (this.recoderTimer) {
+        clearInterval(this.recoderTimer)
         console.log('关闭或重置的时候清除录音状态 !!!')
         this.$wx.stopRecord()
       }

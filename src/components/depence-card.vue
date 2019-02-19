@@ -54,18 +54,18 @@
         </div>
       </div>
       <!--底部按钮-->
-      <div class="grade-btn-wrap" :class="{'center': !answerCardInfo.essay_status}">
+      <div class="grade-btn-wrap" ref="gradeBtnWrap" :class="{'center': isBottomBtnCenter}">
         <div class="col-wrap back"
-             v-show="isShowBackBtn"
+             v-if="isShowBackBtn"
              @click.stop="jumpPage">
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam('card')" v-show="examInfo.restart && answerCardInfo.essay_status">
+        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && answerCardInfo.essay_status">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
-        <div class="col-wrap analysis" v-show="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
+        <div class="col-wrap analysis" v-if="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
           <div class="icon-bg"></div>
           <span class="tip">答案解析</span>
         </div>
@@ -96,7 +96,8 @@ export default {
   data () {
     return {
       defaultAvaterUrl: require('@/assets/common/avater@3x.png'),
-      isShowOpsPage: false
+      isShowOpsPage: false,
+      isBottomBtnCenter: false
     }
   },
   computed: {
@@ -143,6 +144,10 @@ export default {
         // 判断当前用户考试是否在进行中
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true
+        // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
+        let answerCardInfo = this.answerCardInfo
+        let showBtns = [this.isShowBackBtn, (examInfo.restart && answerCardInfo.essay_status), answerCardInfo.essay_status].filter(state => state)
+        this.isBottomBtnCenter = (showBtns.length === 1)
       } catch (err) {
         console.log(err)
       }
