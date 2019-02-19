@@ -26,6 +26,13 @@ const getters = {
       item.answersInfo = []
       // 处理下annex对象数据的兼容性
       item.annex = dealAnnexObject(item.annex)
+      // 处理点评字段
+      if (item.remark) {
+        item.remark = {
+          ...item.remark,
+          content: dealAnnexObject(item.remark.content)
+        }
+      }
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)

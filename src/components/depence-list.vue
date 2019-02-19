@@ -32,7 +32,7 @@
             <!--音频播放-->
             <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
             <!--视频播放-->
-            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
+            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="media[0].cover" :src="media[0].src"></my-video>
           </div>
           <!--每个选择项-->
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
@@ -46,7 +46,7 @@
               <!--音频播放-->
               <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
               <!--视频播放-->
-              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
+              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="media[0].cover" :src="media[0].src"></my-video>
             </div>
           </div>
           <!--问答题的表单-->
@@ -89,7 +89,10 @@
                 </div>
                 <!--视频播放-->
                 <div class="eassy-video-wrap" v-if="essayTempAnswerInfo.video.length">
-                  <my-video class="eassy-video" :src="essayTempAnswerInfo.video[0]"></my-video>
+                  <my-video class="eassy-video"
+                    :poster="essayTempAnswerInfo.video[0].cover"
+                    :src="essayTempAnswerInfo.video[0].src"
+                  ></my-video>
                   <!--删除图标-->
                   <div class="delete-icon"
                     v-show="renderType === 'exam'"
@@ -155,17 +158,18 @@
             <!--问答题的老师点评-->
             <div class="essay-markinfo-wrap" v-if="item.type==='essay' && item.remark.score">
               <h4 class="title">点评</h4>
-              <div class="teacher-info" v-show="item.remark.teacher.name">
+              <!--点评的老师信息先不展示-->
+              <!-- <div class="teacher-info" v-show="item.remark.teacher.name">
                 <img v-show="item.remark.teacher.avatar" :src="item.remark.teacher.avatar" class="icon" />
                 <span class="name">{{item.remark.teacher.name}}</span>
-              </div>
+              </div> -->
               <p class="markinfo"
                 :class="{ 'empty-info': !item.remark.content.text }"
-              >{{item.remark.content.text || '此处无声胜有声'}}</p>
+              >{{item.remark.content.text || '此处无声胜有声~'}}</p>
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
-                  v-preview="item" preview-nav-enable="false"
+                  v-preview="src" preview-nav-enable="false"
                   v-for="(src, index) in item.remark.content.image" :key="index"
                 />
               </div>
@@ -175,7 +179,10 @@
               </div>
               <!--视频播放-->
               <div class="mark-video-wrap" v-if="item.remark.content.video.length">
-                <my-video class="mark-video" :src="item.remark.content.video[0]"></my-video>
+                <my-video class="mark-video"
+                  :poster="item.remark.content.video[0].cover"
+                  :src="item.remark.content.video[0].src"
+                ></my-video>
               </div>
             </div>
           </div>

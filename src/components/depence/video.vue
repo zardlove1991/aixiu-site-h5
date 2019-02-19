@@ -3,6 +3,7 @@
     <!--视频组件-->
     <video ref="video" class="video" :src="src"
       :controls="isShowControl"
+      :poster="poster"
       :webkit-playsinline="!isForIOS"
       :x5-playsinline="!isForIOS"
       :playsinline="!isForIOS"
@@ -27,7 +28,8 @@ import { isIOSsystem } from '@/utils/app'
 export default {
   name: 'myVideo',
   props: {
-    src: String
+    src: String,
+    poster: String
   },
   data () {
     return {
