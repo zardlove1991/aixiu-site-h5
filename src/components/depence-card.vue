@@ -54,18 +54,18 @@
         </div>
       </div>
       <!--底部按钮-->
-      <div class="grade-btn-wrap">
+      <div class="grade-btn-wrap" :class="{'center': !answerCardInfo.essay_status}">
         <div class="col-wrap back"
              v-show="isShowBackBtn"
              @click.stop="jumpPage">
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam" v-if="examInfo.restart">
+        <div class="col-wrap reset" @click.stop="startReExam" v-show="examInfo.restart && answerCardInfo.essay_status">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
-        <div class="col-wrap analysis" @click.stop="jumpToExamAnalysis('list')">
+        <div class="col-wrap analysis" v-show="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
           <div class="icon-bg"></div>
           <span class="tip">答案解析</span>
         </div>
@@ -408,6 +408,9 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      &.center{
+        justify-content: center;
+      }
       .col-wrap{
         flex:0 0 px2rem(120px);
         display: flex;

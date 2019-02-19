@@ -1,5 +1,6 @@
 <template lang="html">
   <div class="model-wrap"
+    ref="modelWrap"
     v-if="show"
     :class="{'lock': isLock}"
     @touchmove.prevent=""
@@ -69,11 +70,11 @@ export default {
 @import "@/styles/index.scss";
 
 .model-wrap{
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100vh;
   background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;

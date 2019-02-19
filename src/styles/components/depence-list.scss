@@ -4,9 +4,6 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
-  &.hide{
-    overflow: hidden;
-  }
   .list-wrap{
     position: relative;
     width: 100%;
@@ -334,6 +331,9 @@
             box-sizing: border-box;
             @include font-dpr(15px);
             @include font-color('titleColor');
+            &.empty-info{
+              @include font-color('descColor');
+            }
           }
           .mark-img-wrap{
             width: 100%;
@@ -415,7 +415,7 @@
         box-sizing: border-box;
         overflow: auto;
         .list-wrap{
-          padding: px2rem(36px) px2rem(41px) px2rem(26px);
+          padding: px2rem(36px) px2rem(41px) px2rem(26px) 0;
           box-sizing: border-box;
           @include bg-color('bgColor');
         }

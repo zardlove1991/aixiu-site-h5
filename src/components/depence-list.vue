@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="denpncelist-wrap" :class="{hide: isShowModelThumb}" v-if="examList.length">
+  <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
@@ -159,7 +159,9 @@
                 <img v-show="item.remark.teacher.avatar" :src="item.remark.teacher.avatar" class="icon" />
                 <span class="name">{{item.remark.teacher.name}}</span>
               </div>
-              <p class="markinfo" v-show="item.remark.content.text">{{item.remark.content.text}}</p>
+              <p class="markinfo"
+                :class="{ 'empty-info': !item.remark.content.text }"
+              >{{item.remark.content.text || '此处无声胜有声'}}</p>
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
@@ -193,7 +195,7 @@
           <div class="title">题号</div>
           <!--答题列表-->
           <div class="info-list-wrap">
-            <subject-list v-if="isShowSubjectList" class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+            <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
           </div>
         </div>
       </transition>
@@ -350,7 +352,7 @@ export default {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
       'currentSubjectInfo', 'redirectParams', 'examId',
-      'examInfo', 'isShowModelThumb', 'essayAnswerInfo'
+      'examInfo', 'essayAnswerInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
