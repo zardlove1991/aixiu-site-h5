@@ -476,6 +476,25 @@ const actions = {
         reject(err)
       })
     })
+  },
+  GET_QCLOUD_VIDEO_INFO ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { fileid } = payload
+      // 添加参数
+      let params = { fileid }
+
+      API.getQcloudVideoInfo({ params }).then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        // 提醒
+        let tip = err.message || err.error_message || '获取视频信息失败'
+        Toast(tip)
+        reject(err)
+      })
+    })
   }
 }
 

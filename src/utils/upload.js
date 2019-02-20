@@ -1,6 +1,6 @@
 import * as CosCloud from 'cos-js-sdk-v4'
 import { getQcloud } from '@/utils/utils'
-import { Toast, Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 
 const getSignature = function (actionName, params = {}) {
   return function (callback) {
@@ -198,7 +198,6 @@ let UPLOAD = {
     let uploadObj = {}
     console.log('uploader 当前media去请求签名的回调', type)
     return new Promise((resolve, reject) => {
-      Indicator.open({ spinnerType: 'fading-circle' })
       let currentFile = files[0] // 当前上传的文件
       let showErrorTip = (err) => {
         let tip = err.message || err || '上传出错'
@@ -224,7 +223,6 @@ let UPLOAD = {
         },
         finish (result) {
           console.log('uploader finish上传文件结束', result)
-          Indicator.close() // 结束loading
           if (result.fileId) {
             resolve(result) // 返回数据
           } else {

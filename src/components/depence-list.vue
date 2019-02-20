@@ -284,7 +284,7 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle, formatTimeBySec } from '@/utils/utils'
 import { isWeixnBrowser, isIOSsystem } from '@/utils/app'
-import { Indicator } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 import upload from '@/utils/upload'
@@ -674,8 +674,18 @@ export default {
           uploadData = currentData.concat(uploadData)
         } else {
           let uploadMedias = await upload.fileUploaderMedia(files, uploadKey)
-          // 处理数据格式
-          uploadData = [uploadMedias].map(item => item.videoUrl)
+          // 针对音视频处理数据格式
+          if (uploadKey === 'audio') {
+            uploadData = [uploadMedias].map(item => item.videoUrl)
+          } else if (uploadKey === 'video') {
+            // 获取视频信息接口
+            let videoInfo = await this.getQcloudVideoInfo({ fileid: uploadMedias.fileId })
+            uploadData = [uploadMedias].map(item => ({
+              src: item.videoUrl,
+              fileid: item.fileId,
+              cover: videoInfo.cover
+            }))
+          }
         }
         // 更新数据
         this._dealEssayFromValue({ [uploadKey]: uploadData })
@@ -756,6 +766,11 @@ export default {
     },
     recordAuio (flag) {
       let recordConfig = this.recordConfig
+      let recordTimerStamp = this.recordTimerStamp
+      if (recordTimerStamp && ((+new Date() - recordTimerStamp) < 1000)) {
+        Toast('间隔过短,稍后再试~')
+        return
+      }
       // 判断是否是重置还是开始录音
       if (flag === 'start') {
         // 判断是否开始录音
@@ -780,6 +795,8 @@ export default {
       }
       // 设置对象
       this.recordConfig = Object.assign({}, recordConfig)
+      // 设置点击间隔
+      this.recordTimerStamp = +new Date()
     },
     closeAudioRecoder () {
       this.isShowRecordAudio = false
@@ -865,6 +882,7 @@ export default {
       // 清除当前播放的timer
       if (this.playRecoderTimer) {
         clearInterval(this.playRecoderTimer)
+        this.playRecoderTimer = null
         this.$wx.normalExecute('stopVoice', {
           errorTip: '停止播放错误',
           params: { localId: this.recoderLocalId }
@@ -874,6 +892,7 @@ export default {
       // 清除当前计时的timer
       if (this.recoderTimer) {
         clearInterval(this.recoderTimer)
+        this.recoderTimer = null
         console.log('关闭或重置的时候清除录音状态 !!!')
         this.$wx.stopRecord()
       }
@@ -946,7 +965,8 @@ export default {
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
-      getMaterialInfo: 'GET_MATERIAL_INFO'
+      getMaterialInfo: 'GET_MATERIAL_INFO',
+      getQcloudVideoInfo: 'GET_QCLOUD_VIDEO_INFO'
     })
   }
 }
