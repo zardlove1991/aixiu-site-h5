@@ -49,7 +49,7 @@ export default {
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
-      this.setModelThumbStae(newState)
+      this.setModelThumbState(newState)
     }
   },
   methods: {
@@ -60,7 +60,7 @@ export default {
       this.$emit('cancel')
     },
     ...mapMutations('depence', {
-      setModelThumbStae: 'SET_MODEL_THUMB_STATE'
+      setModelThumbState: 'SET_MODEL_THUMB_STATE'
     })
   }
 }
