@@ -38,7 +38,7 @@
               <span class="title">总题数目</span>
               <span class="desc">{{`${examInfo.question_num}题`}}</span>
             </div>
-            <div class="row" v-show="answerCardInfo.essay_status">
+            <div class="row" v-show="answerCardInfo.essay_status && answerCardInfo.answer_num.right_answer_num">
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
@@ -54,18 +54,18 @@
         </div>
       </div>
       <!--底部按钮-->
-      <div class="grade-btn-wrap">
+      <div class="grade-btn-wrap" ref="gradeBtnWrap" :class="{'center': isBottomBtnCenter}">
         <div class="col-wrap back"
-             v-show="isShowBackBtn"
+             v-if="isShowBackBtn"
              @click.stop="jumpPage">
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam" v-if="examInfo.restart">
+        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && answerCardInfo.essay_status">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
-        <div class="col-wrap analysis" @click.stop="jumpToExamAnalysis('list')">
+        <div class="col-wrap analysis" v-if="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
           <div class="icon-bg"></div>
           <span class="tip">答案解析</span>
         </div>
@@ -76,14 +76,14 @@
       <div class="tip-bg"></div>
       <h4 class="tip-title">Ops,考试中断了</h4>
       <p class="tip-desc">考试题数：{{answerCardInfo.questions.length}}，考试时间：{{ _dealLimitTimeTip(examInfo.limit_time) }}</p>
-      <div class="reexam-btn" @click.stop='startReExam'>重新考试</div>
+      <div class="reexam-btn" @click.stop="startReExam('ops')">重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 
@@ -91,20 +91,18 @@ export default {
   name: 'depence-card',
   mixins: [mixins],
   props: {
-    id: String,
-    redirect: String,
-    delta: String
+    id: String
   },
   data () {
     return {
       defaultAvaterUrl: require('@/assets/common/avater@3x.png'),
-      isShowOpsPage: false
+      isShowOpsPage: false,
+      isBottomBtnCenter: false
     }
   },
   computed: {
     ...mapGetters('depence', [
-      'answerCardInfo', 'examInfo',
-      'redirectParams'
+      'answerCardInfo', 'examInfo'
     ]),
     isShowBackBtn () {
       let redirectParams = this.redirectParams
@@ -134,17 +132,9 @@ export default {
     }
   },
   created () {
-    this.initReirectParams()
     this.initInfo()
   },
   methods: {
-    initReirectParams () {
-      let redirectParams = this.redirectParams || {}
-      let redirect = this.redirect
-      let delta = this.delta
-      let params = Object.assign({ redirect, delta }, redirectParams)
-      this.setRedirectParams(params)
-    },
     async initInfo () {
       let examId = this.id
       try {
@@ -154,6 +144,10 @@ export default {
         // 判断当前用户考试是否在进行中
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true
+        // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
+        let answerCardInfo = this.answerCardInfo
+        let showBtns = [this.isShowBackBtn, (examInfo.restart && answerCardInfo.essay_status), answerCardInfo.essay_status].filter(state => state)
+        this.isBottomBtnCenter = (showBtns.length === 1)
       } catch (err) {
         console.log(err)
       }
@@ -169,21 +163,29 @@ export default {
         console.log(err)
       }
     },
-    startReExam () {
+    startReExam (flag) {
       let examId = this.id
       let redirectParams = this.redirectParams
-      // 设置当前试题索引
-      this.changeSubjectIndex(0)
-      // 去往查看考试概况页面
-      this.$router.replace({
-        path: `/depencelist/${examId}`,
-        query: {
-          rtp: 'exam',
-          restart: 'need',
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
-        }
-      })
+      // 如果是答题卡中断弹层直接允许重新进入考试 否则去往考试准备页面
+      if (flag === 'ops') {
+        // 设置当前试题索引
+        this.changeSubjectIndex(0)
+        // 去往查看考试概况页面
+        this.$router.replace({
+          path: `/depencelist/${examId}`,
+          query: {
+            rtp: 'exam',
+            restart: 'need',
+            ...redirectParams
+          }
+        })
+      } else if (flag === 'card') {
+        // 跳转去准备开始考试页面
+        this.$router.replace({
+          path: `/depencestart/${examId}`,
+          query: { ...redirectParams }
+        })
+      }
     },
     jumpToExamAnalysis (jumpType) {
       let examId = this.id
@@ -196,8 +198,7 @@ export default {
         query: {
           rtp: 'analysis',
           listType: jumpType,
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
+          ...redirectParams
         }
       })
     },
@@ -213,11 +214,8 @@ export default {
       }
     },
     _dealLimitTimeTip (time) {
-      DEPENCE.dealLimitTimeTip(time)
+      return DEPENCE.dealLimitTimeTip(time)
     },
-    ...mapMutations('depence', {
-      setRedirectParams: 'SET_REDIRECT_PARAMS'
-    }),
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
@@ -408,6 +406,9 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      &.center{
+        justify-content: center;
+      }
       .col-wrap{
         flex:0 0 px2rem(120px);
         display: flex;

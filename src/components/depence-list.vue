@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="denpncelist-wrap" :class="{hide: isShowModelThumb}" v-if="examList.length">
+  <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
@@ -32,7 +32,7 @@
             <!--音频播放-->
             <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
             <!--视频播放-->
-            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
+            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="media[0].cover" :src="media[0].src"></my-video>
           </div>
           <!--每个选择项-->
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
@@ -46,7 +46,7 @@
               <!--音频播放-->
               <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
               <!--视频播放-->
-              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :src="media[0]"></my-video>
+              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="media[0].cover" :src="media[0].src"></my-video>
             </div>
           </div>
           <!--问答题的表单-->
@@ -89,7 +89,10 @@
                 </div>
                 <!--视频播放-->
                 <div class="eassy-video-wrap" v-if="essayTempAnswerInfo.video.length">
-                  <my-video class="eassy-video" :src="essayTempAnswerInfo.video[0]"></my-video>
+                  <my-video class="eassy-video"
+                    :poster="essayTempAnswerInfo.video[0].cover"
+                    :src="essayTempAnswerInfo.video[0].src"
+                  ></my-video>
                   <!--删除图标-->
                   <div class="delete-icon"
                     v-show="renderType === 'exam'"
@@ -155,15 +158,18 @@
             <!--问答题的老师点评-->
             <div class="essay-markinfo-wrap" v-if="item.type==='essay' && item.remark.score">
               <h4 class="title">点评</h4>
-              <div class="teacher-info" v-show="item.remark.teacher.name">
+              <!--点评的老师信息先不展示-->
+              <!-- <div class="teacher-info" v-show="item.remark.teacher.name">
                 <img v-show="item.remark.teacher.avatar" :src="item.remark.teacher.avatar" class="icon" />
                 <span class="name">{{item.remark.teacher.name}}</span>
-              </div>
-              <p class="markinfo" v-show="item.remark.content.text">{{item.remark.content.text}}</p>
+              </div> -->
+              <p class="markinfo"
+                :class="{ 'empty-info': !item.remark.content.text }"
+              >{{item.remark.content.text || '此处无声胜有声~'}}</p>
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
-                  v-preview="item" preview-nav-enable="false"
+                  v-preview="src" preview-nav-enable="false"
                   v-for="(src, index) in item.remark.content.image" :key="index"
                 />
               </div>
@@ -173,7 +179,10 @@
               </div>
               <!--视频播放-->
               <div class="mark-video-wrap" v-if="item.remark.content.video.length">
-                <my-video class="mark-video" :src="item.remark.content.video[0]"></my-video>
+                <my-video class="mark-video"
+                  :poster="item.remark.content.video[0].cover"
+                  :src="item.remark.content.video[0].src"
+                ></my-video>
               </div>
             </div>
           </div>
@@ -193,13 +202,14 @@
           <div class="title">题号</div>
           <!--答题列表-->
           <div class="info-list-wrap">
-            <subject-list v-if="isShowSubjectList" class="list-wrap" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+            <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
           </div>
         </div>
       </transition>
     </div>
     <!--试题中断弹窗-->
     <my-model :show="isShowSuspendModel"
+              :isLock="true"
               doneText="重新考试"
               cancelText="放弃并交卷"
               @confirm="confirmSuspendModel"
@@ -274,7 +284,7 @@
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle, formatTimeBySec } from '@/utils/utils'
 import { isWeixnBrowser, isIOSsystem } from '@/utils/app'
-import { Indicator } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 import upload from '@/utils/upload'
@@ -291,8 +301,6 @@ export default {
   props: {
     id: String,
     rtp: String,
-    redirect: String,
-    delta: String,
     restart: {
       type: String,
       default: 'none'
@@ -348,8 +356,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'redirectParams', 'examId',
-      'examInfo', 'isShowModelThumb', 'essayAnswerInfo'
+      'currentSubjectInfo', 'examId', 'examInfo', 'essayAnswerInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -412,7 +419,6 @@ export default {
     // 上传对象
     this.fileUploader = null
     // 初始化方法
-    this.initReirectParams()
     this.initList()
   },
   methods: {
@@ -447,14 +453,15 @@ export default {
       }
     },
     async confirmSuspendModel () {
+      let examId = this.id
+      let redirectParams = this.redirectParams
+      // 关闭模态框
       this.toggleSuspendModel()
-      // 重新加载考试页面
-      try {
-        await this.startExam({ restart: true })
-        this.$router.go(0)
-      } catch (err) {
-        console.log(err)
-      }
+      // 跳转去准备开始考试页面
+      this.$router.replace({
+        path: `/depencestart/${examId}`,
+        query: { ...redirectParams }
+      })
     },
     async cancelSuspendModel () {
       let examId = this.id
@@ -468,10 +475,7 @@ export default {
         // 跳转去往答题卡页面
         this.$router.replace({
           path: `/depencecard/${examId}`,
-          query: {
-            redirect: redirectParams.redirect,
-            delta: redirectParams.delta
-          }
+          query: { ...redirectParams }
         })
       } catch (err) {
         console.log(err)
@@ -509,7 +513,7 @@ export default {
           console.log('当前获得图片的serverIds', serverIds)
           // 获取素材地址信息
           let uploadImgs = await this.getMaterialInfo({ type: 'image', serverIds })
-          uploadImgs = uploadImgs.map(item => item.content.url.replace('https', 'http'))
+          uploadImgs = uploadImgs.map(item => item.content.url)
           uploadImgs = currentData.concat(uploadImgs)
           console.log('当前上传素材后的图片信息', uploadImgs)
           // 更新数据
@@ -638,7 +642,7 @@ export default {
           type: 'audio',
           serverIds: [serverId]
         })
-        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url.replace('https', 'http')))
+        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url))
         // 更新数据
         this._dealEssayFromValue({ audio: uploadAudioData })
         // 结束loading
@@ -666,12 +670,22 @@ export default {
         if (uploadKey === 'image') {
           let uploadImgs = await upload.fileUploaderImg(uploader, files, curUploadConfig.maxcount, currentData.length)
           // 这边组织数组的格式
-          uploadData = uploadImgs.map(item => item.source_url.replace('https', 'http'))
+          uploadData = uploadImgs.map(item => item.source_url)
           uploadData = currentData.concat(uploadData)
         } else {
           let uploadMedias = await upload.fileUploaderMedia(files, uploadKey)
-          // 处理数据格式
-          uploadData = [uploadMedias].map(item => item.videoUrl.replace('https', 'http'))
+          // 针对音视频处理数据格式
+          if (uploadKey === 'audio') {
+            uploadData = [uploadMedias].map(item => item.videoUrl)
+          } else if (uploadKey === 'video') {
+            // 获取视频信息接口
+            let videoInfo = await this.getQcloudVideoInfo({ fileid: uploadMedias.fileId })
+            uploadData = [uploadMedias].map(item => ({
+              src: item.videoUrl,
+              fileid: item.fileId,
+              cover: videoInfo.cover
+            }))
+          }
         }
         // 更新数据
         this._dealEssayFromValue({ [uploadKey]: uploadData })
@@ -695,22 +709,12 @@ export default {
       // 触发原生上传操作
       this._triggerFileUpload()
     },
-    initReirectParams () {
-      let redirectParams = this.redirectParams || {}
-      let redirect = this.redirect
-      let delta = this.delta
-      let params = Object.assign({ redirect, delta }, redirectParams)
-      this.setRedirectParams(params)
-    },
     jumpToGradePage () {
       let examId = this.id
       let redirectParams = this.redirectParams
       this.$router.replace({
         path: `/depencecard/${examId}`,
-        query: {
-          redirect: redirectParams.redirect,
-          delta: redirectParams.delta
-        }
+        query: { ...redirectParams }
       })
     },
     submitExam () {
@@ -762,6 +766,11 @@ export default {
     },
     recordAuio (flag) {
       let recordConfig = this.recordConfig
+      let recordTimerStamp = this.recordTimerStamp
+      if (recordTimerStamp && ((+new Date() - recordTimerStamp) < 1000)) {
+        Toast('间隔过短,稍后再试~')
+        return
+      }
       // 判断是否是重置还是开始录音
       if (flag === 'start') {
         // 判断是否开始录音
@@ -786,6 +795,8 @@ export default {
       }
       // 设置对象
       this.recordConfig = Object.assign({}, recordConfig)
+      // 设置点击间隔
+      this.recordTimerStamp = +new Date()
     },
     closeAudioRecoder () {
       this.isShowRecordAudio = false
@@ -868,8 +879,20 @@ export default {
       // 还原当前的时间和计算的时间总和
       this.recoderTimeTip = '00:00'
       this.recoderSecond = -1
-      // 判断是否需要停止录音
+      // 清除当前播放的timer
+      if (this.playRecoderTimer) {
+        clearInterval(this.playRecoderTimer)
+        this.playRecoderTimer = null
+        this.$wx.normalExecute('stopVoice', {
+          errorTip: '停止播放错误',
+          params: { localId: this.recoderLocalId }
+        })
+        this.isCurrentPlay = false
+      }
+      // 清除当前计时的timer
       if (this.recoderTimer) {
+        clearInterval(this.recoderTimer)
+        this.recoderTimer = null
         console.log('关闭或重置的时候清除录音状态 !!!')
         this.$wx.stopRecord()
       }
@@ -920,7 +943,7 @@ export default {
       }, 200)
     },
     _dealLimitTimeTip (time) {
-      DEPENCE.dealLimitTimeTip(time)
+      return DEPENCE.dealLimitTimeTip(time)
     },
     _getEmptyDivNum (rowNums, data) {
       let delta = rowNums - data.length % rowNums
@@ -930,9 +953,6 @@ export default {
       // 直接设置音频长度为1分钟
       return formatTimeBySec(60)
     },
-    ...mapMutations('depence', {
-      setRedirectParams: 'SET_REDIRECT_PARAMS'
-    }),
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO'
     }),
@@ -945,7 +965,8 @@ export default {
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
-      getMaterialInfo: 'GET_MATERIAL_INFO'
+      getMaterialInfo: 'GET_MATERIAL_INFO',
+      getQcloudVideoInfo: 'GET_QCLOUD_VIDEO_INFO'
     })
   }
 }

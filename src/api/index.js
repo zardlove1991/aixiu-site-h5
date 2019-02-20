@@ -84,7 +84,7 @@ instance.interceptors.response.use((res, xhr) => {
   } else {
     rej = {
       error_code: 'AJAX_ERROR',
-      error_message: '访问错误',
+      error_message: '服务器开小差了，请稍后再试~',
       status: 500
     }
   }

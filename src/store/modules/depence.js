@@ -26,6 +26,13 @@ const getters = {
       item.answersInfo = []
       // 处理下annex对象数据的兼容性
       item.annex = dealAnnexObject(item.annex)
+      // 处理点评字段
+      if (item.remark) {
+        item.remark = {
+          ...item.remark,
+          content: dealAnnexObject(item.remark.content)
+        }
+      }
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)
@@ -90,7 +97,7 @@ const mutations = {
     state.currentSubjectIndex = payload
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
-    state.essayAnswerInfo = payload
+    state.essayAnswerInfo = Object.assign({}, payload)
   }
 }
 
@@ -138,6 +145,7 @@ const actions = {
             // 初始化为问答题的基础提交数据对象
             if (subject.type === 'essay') {
               let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
+              // 赋值数据
               essayAnswerInfo[subject.id] = essayData
             }
           })
@@ -464,6 +472,25 @@ const actions = {
         STORAGE.remove('weixin-auth-info')
         // 提醒
         let tip = err.message || err.error_message || '获取微信认证信息出错'
+        Toast(tip)
+        reject(err)
+      })
+    })
+  },
+  GET_QCLOUD_VIDEO_INFO ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { fileid } = payload
+      // 添加参数
+      let params = { fileid }
+
+      API.getQcloudVideoInfo({ params }).then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        // 提醒
+        let tip = err.message || err.error_message || '获取视频信息失败'
         Toast(tip)
         reject(err)
       })

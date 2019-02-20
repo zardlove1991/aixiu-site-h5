@@ -6,6 +6,7 @@ const API_FLAG = getApiFlag()
 let QCloundUrl = {
   getTencentToken: 'client/upload/image/signature', // 上传腾讯云签名
   getTencentVideoToken: 'client/upload/video/signature', // 上传腾讯云签名(视频类型)
+  getQcloudVideoInfo: 'client/material/video/info', // 获取腾讯云视频信息
   getMaterialInfo: 'client/material/save' // 获取素材信息
 }
 // 不带GUID
@@ -30,6 +31,7 @@ let configUrl = {
 export default {
   getTencentToken: config => createAPI(configUrl.getTencentToken, 'GET', config, API_FLAG),
   getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),
+  getQcloudVideoInfo: config => createAPI(configUrl.getQcloudVideoInfo, 'GET', config, API_FLAG),
   getMaterialInfo: config => createAPI(configUrl.getMaterialInfo, 'POST', config, API_FLAG),
   getWeixinInfo: config => createAPI(configUrl.getWeixinInfo, 'POST', config, API_FLAG),
   setSubjectFavorInfo: config => createAPI(configUrl.setSubjectFavorInfo, 'post', config, API_FLAG),

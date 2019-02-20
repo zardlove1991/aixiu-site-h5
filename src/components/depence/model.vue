@@ -1,5 +1,11 @@
 <template lang="html">
-  <div class="model-wrap" @touchmove.prevent="" v-if="show" @click.stop='cancel'>
+  <div class="model-wrap"
+    ref="modelWrap"
+    v-if="show"
+    :class="{'lock': isLock}"
+    @touchmove.prevent=""
+    @click.stop='cancel'
+    >
     <!--弹窗模块-->
     <div class="model-content">
       <!--主体内容-->
@@ -31,6 +37,10 @@ export default {
       type: String,
       default: '确定'
     },
+    isLock: {
+      type: Boolean,
+      default: false
+    },
     cancelText: {
       type: String,
       default: '取消'
@@ -60,19 +70,24 @@ export default {
 @import "@/styles/index.scss";
 
 .model-wrap{
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: auto;
   z-index: 99;
+  &.lock{
+    pointer-events: none;
+  }
   .model-content{
     min-width: px2rem(560px);
     border-radius: px2rem(8px);
+    pointer-events: auto;
     @include bg-color('bgColor');
     .btn-wrap{
       display: flex;
