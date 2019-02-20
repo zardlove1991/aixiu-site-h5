@@ -13,7 +13,8 @@ const state = {
   currentSubjectIndex: 0, // 当前题目索引
   answerCardInfo: null, // 答题卡当前的信息
   isShowModelThumb: false, // 判断界面是否有弹窗展示
-  essayAnswerInfo: {} // 保存试题中的问答题表单信息
+  essayAnswerInfo: {}, // 保存试题中的问答题表单信息
+  curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
 
 const getters = {
@@ -68,7 +69,8 @@ const getters = {
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,
   isShowModelThumb: state => state.isShowModelThumb,
-  essayAnswerInfo: state => state.essayAnswerInfo
+  essayAnswerInfo: state => state.essayAnswerInfo,
+  curSubjectVideos: state => state.curSubjectVideos
 }
 
 const mutations = {
@@ -98,6 +100,9 @@ const mutations = {
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
     state.essayAnswerInfo = Object.assign({}, payload)
+  },
+  SET_CURSUBJECT_VIDEOS (state, payload) {
+    state.curSubjectVideos = payload
   }
 }
 
@@ -495,6 +500,18 @@ const actions = {
         reject(err)
       })
     })
+  },
+  ADD_CURSUBJECT_VIDEOS_INFO ({state, commit}, payload) {
+    let { video } = payload
+    let curSubjectVideos = state.curSubjectVideos
+    // 排除相同video的信息
+    if (curSubjectVideos.length) {
+      let isInludeVideo = curSubjectVideos.some(item => item.src === video.src)
+      if (isInludeVideo) curSubjectVideos.push(video)
+    } else {
+      curSubjectVideos.push(video)
+    }
+    commit('SET_CURSUBJECT_VIDEOS', curSubjectVideos)
   }
 }
 

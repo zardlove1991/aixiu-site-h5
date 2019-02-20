@@ -28,7 +28,7 @@
           <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
           <!--题干的每题数据-->
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
-            <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+            <img v-if="mediaKey=='image' && media.length" :src="media[0]"  @click.stop="_setPreviewState" v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
             <!--音频播放-->
             <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
             <!--视频播放-->
@@ -42,7 +42,7 @@
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-              <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+              <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
               <!--音频播放-->
               <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
               <!--视频播放-->
@@ -67,7 +67,7 @@
               <div class="upload-media-wrap">
                 <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
                   <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
-                    <img :src="item" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
+                    <img :src="item" @click.stop="_setPreviewState" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
                     <!--删除图标-->
                     <div class="delete-icon"
                       v-show="renderType === 'exam'"
@@ -169,6 +169,7 @@
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
+                  @click.stop="_setPreviewState"
                   v-preview="src" preview-nav-enable="false"
                   v-for="(src, index) in item.remark.content.image" :key="index"
                 />
@@ -355,8 +356,9 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examList', 'renderType', 'currentSubjectIndex',
-      'currentSubjectInfo', 'examId', 'examInfo', 'essayAnswerInfo'
+      'examList', 'renderType', 'currentSubjectIndex', 'curSubjectVideos',
+      'currentSubjectInfo', 'examId', 'examInfo', 'essayAnswerInfo',
+      'isShowModelThumb'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -394,6 +396,8 @@ export default {
       }
       // 检查是否有特殊类型提醒的提交操作: 问答、多选
       this.sendSaveRecordOption(subject)
+      // 清空当前页面的视频组件信息
+      if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
     },
     essayTempAnswerInfo (newAnwer) {
       console.log('当前问答题触发的临时提交数据', newAnwer)
@@ -953,8 +957,29 @@ export default {
       // 直接设置音频长度为1分钟
       return formatTimeBySec(60)
     },
+    _setPreviewState () {
+      // 如果是IOS 或者是存在预览的定时器就直接返回不做操作
+      // 这边是针对安卓视频层级问题设置公共弹层状态
+      if (isIOSsystem() || this.previewTimer) return
+      // 定时获取当前是否有预览操作
+      this.previewTimer = setInterval(() => {
+        let isShowModelThumb = this.isShowModelThumb // 全局模态框状态
+        let previewEl = document.querySelector('.lg-preview-wrapper')
+        let isPreview = !(previewEl.style.display === 'none')
+        console.log('当前图片预览状态', isPreview)
+        // 设置全局模态框状态 相同状态就不设置
+        if (isShowModelThumb !== isPreview) this.setModelThumbState(isPreview)
+        // 停止预览的时候清除定时器
+        if (!isPreview) {
+          clearInterval(this.previewTimer)
+          this.previewTimer = null
+        }
+      }, 500)
+    },
     ...mapMutations('depence', {
-      setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO'
+      setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO',
+      setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS',
+      setModelThumbState: 'SET_MODEL_THUMB_STATE'
     }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
