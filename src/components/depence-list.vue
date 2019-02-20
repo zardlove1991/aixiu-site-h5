@@ -28,7 +28,7 @@
           <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
           <!--题干的每题数据-->
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
-            <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+            <img v-if="mediaKey=='image' && media.length" :src="media[0]"  @click.stop="_setPreviewState" v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
             <!--音频播放-->
             <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
             <!--视频播放-->
@@ -42,7 +42,7 @@
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-              <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" preview-nav-enable="false" class="my-img"/>
+              <img v-if="mediaKey=='image' && media.length" :src="media[0]"  v-preview="media[0]" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
               <!--音频播放-->
               <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="media[0]"></my-audio>
               <!--视频播放-->
@@ -169,6 +169,7 @@
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
+                  @click.stop="_setPreviewState"
                   v-preview="src" preview-nav-enable="false"
                   v-for="(src, index) in item.remark.content.image" :key="index"
                 />
