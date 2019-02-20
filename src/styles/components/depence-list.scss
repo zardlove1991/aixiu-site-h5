@@ -266,6 +266,7 @@
             margin-bottom: px2rem(44px);
             @include font-dpr(16px);
             @include font-color('titleColor');
+            @extend .rich-content-style;
           }
           .exam-types{
             display: flex;
