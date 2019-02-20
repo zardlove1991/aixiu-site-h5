@@ -19,6 +19,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 
 export default {
   name: 'subject-list',
@@ -39,7 +40,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['renderType']),
+    ...mapGetters('depence', ['renderType', 'essayAnswerInfo']),
     rows () {
       // 建立一个mock的数据
       let limitCols = this.limitCols
@@ -106,7 +107,11 @@ export default {
     haveDone (subject) {
       let isDid = true
       let answers = subject.answer
-      if (answers && answers.length) {
+      let essayAnswerInfo = this.essayAnswerInfo
+      // 针对问答题是否做完需要检查是否有回答数据
+      if (subject.type === 'essay') {
+        isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+      } else if (answers && answers.length) {
         isDid = true
       } else {
         isDid = subject.options.some(item => item.active)
@@ -115,10 +120,18 @@ export default {
       return !isDid
     },
     addClass (subject) {
+      let essayAnswerInfo = this.essayAnswerInfo
+      let renderType = this.renderType
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
-      if (answers.length && correntInfo.length) {
+      // 不是解析模式 不需要添加class
+      if (renderType !== 'analysis') return className
+      // 判断是否作答了问答题
+      if (subject.type === 'essay') {
+        let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        isDid && (className = 'success')
+      } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
         isAllMatch ? className = 'success' : className = 'error'
       }

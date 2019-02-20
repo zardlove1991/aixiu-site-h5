@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import STORAGE from '@/utils/storage'
 // 引入动态组件
 const getComponent = name => () => import(`@/components/${name}`)
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   mode: 'history',
   routes: [
     {
@@ -62,3 +63,15 @@ export default new Router({
     }
   ]
 })
+
+// 添加路由后置钩子
+router.afterEach((to, from) => {
+  let storeAuthReload = STORAGE.get('auth-reload-info')
+  // 如果有重载的认证信息需要重置状态
+  if (storeAuthReload && storeAuthReload[to.path]) {
+    storeAuthReload[to.path] = false
+    STORAGE.set('auth-reload-info', storeAuthReload)
+  }
+})
+
+export default router

@@ -21,7 +21,7 @@
           </div>
           <div class="row">
             <span class="title">考试时间</span>
-            <span class="desc">{{ dealLimitTimeTip(examInfo.limit_time) }}</span>
+            <span class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</span>
           </div>
           <div class="row">
             <span class="title">考试难度</span>
@@ -50,6 +50,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
+import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 
 export default {
@@ -96,6 +97,9 @@ export default {
       let starMap = this.starMap
       let curLevel = starMap[level] || -1
       return curLevel
+    },
+    _dealLimitTimeTip (time) {
+      DEPENCE.dealLimitTimeTip(time)
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'

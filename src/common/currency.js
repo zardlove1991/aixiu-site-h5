@@ -1,6 +1,6 @@
-import wx from 'weixin-js-sdk'
+import wx from '@/config/weixin-js-sdk'
 
-const METHODS = {
+export const METHODS = {
   detectionRestart (item) {
     let passScore = item.pass_score
     let answerScore = item.answer_score
@@ -15,19 +15,41 @@ const METHODS = {
     else if (type === 'radio') typeTip = '单选题'
     else if (type === 'checkbox') typeTip = '多选题'
     else if (type === 'judge') typeTip = '判断题'
+    else if (type === 'essay') typeTip = '问答题'
     return typeTip
   }
 }
 
 export const DEPENCE = {
-  getSubjetType: METHODS.getSubjetType,
-  goWxAppPage (url) {
-    wx.miniProgram.navigateTo({ url })
+  dealErrorType (params, err) {
+    let examId = params.examId
+    let redirectParams = params.redirectParams
+    let _this = window.$vue
+    // 如果开始考试出错就直接去答题卡页面
+    if (err.status && err.status === 422) {
+      _this.$router.replace({
+        path: `/depencecard/${examId}`,
+        query: redirectParams
+      })
+    }
   },
-  backWxAppPage (num = 3) {
-    wx.miniProgram.navigateBack({ delta: Number(num) })
+  dealLimitTimeTip (time) {
+    let tip = time > 0 ? `${time}分钟` : '不限时'
+    return tip
   },
-  wxPostMessage (msg = 'back') {
-    wx.miniProgram.postMessage({ flag: msg })
-  }
+  checkCurEssayEmpty (essayAnswerInfo, subjectId) {
+    let curEssayObj = essayAnswerInfo[subjectId]
+    let flag = true
+    if (!curEssayObj) return flag
+    // 排查当前对象里是否有数据填写
+    for (let key in curEssayObj) {
+      if (curEssayObj[key] && curEssayObj[key].length) {
+        flag = false
+        break
+      }
+    }
+    return flag
+  },
+  goWxAppPage: url => wx.navigateTo(url),
+  backWxAppPage: num => wx.navigateBack(num)
 }

@@ -7,7 +7,9 @@
            v-for="(item,index) in list" :key="index"
            @click.stop="changeSubjectIndex(index)"
       >
-        {{index+1}}
+        <span>{{index+1}}</span>
+        <!--问答题的特殊标识-->
+        <div class="essay-tip" v-show="item.type=='essay'">问</div>
       </div>
     </div>
     <!--缩略按钮-->
@@ -25,14 +27,15 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        <subject-list class="list-item-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { DEPENCE } from '@/common/currency'
 import SubjectList from './subject-list'
 
 export default {
@@ -52,6 +55,9 @@ export default {
       isShowSubjectList: false
     }
   },
+  computed: {
+    ...mapGetters('depence', ['essayAnswerInfo'])
+  },
   components: {
     SubjectList
   },
@@ -62,7 +68,8 @@ export default {
     selectSubject ({subject, index}) {
       let subjectScrollEl = this.$refs.subjectItemWrap
       let subjectItem = this.$refs.subjectItem[index]
-      subjectScrollEl.scrollTo(subjectItem.offsetLeft - 15, 0)
+      let offsetX = subjectItem.offsetLeft - 15
+      subjectScrollEl.scrollLeft = offsetX
       // 更改当前索引数据
       this.toggleSubjectList()
       setTimeout(() => {
@@ -70,10 +77,14 @@ export default {
       }, 20)
     },
     addClass (subject) {
+      let essayAnswerInfo = this.essayAnswerInfo
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
-      if (!answers.length || !correntInfo.length) {
+      if (subject.type === 'essay') {
+        let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        isDid ? className = 'success' : className = 'disabled'
+      } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
@@ -97,7 +108,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: px2rem(100px);
-  box-shadow: 0 px2rem(5px) px2rem(20px) rgba(0,0,0,0.2);
+  box-shadow: 0 px2rem(5px) px2rem(14px) rgba(0,0,0,0.1);
   .subject-item-wrap{
     flex:1;
     white-space: nowrap;
@@ -107,6 +118,7 @@ export default {
     margin:0;
     padding:0;
     .item{
+      position: relative;
       display: inline-block;
       text-align: center;
       line-height: px2rem(58px);
@@ -115,6 +127,19 @@ export default {
       border-radius: 50%;
       margin-left: px2rem(30px);
       @include font-dpr(14px);
+      .essay-tip{
+        position: absolute;
+        top: 0;
+        right:0;
+        width: px2rem(34px);
+        height: px2rem(34px);
+        border-radius: 50%;
+        text-align: center;
+        line-height: px2rem(34px);
+        transform: translate3d(36%, -8%, 0);
+        @include font-dpr(12px);
+        @include bg-color('bgColor');
+      }
       &:last-child{
         margin-right: px2rem(30px);
       }
@@ -122,21 +147,33 @@ export default {
         @include bg-color('bgColor');
         @include font-color('themeColor');
         @include border('all',1px,solid,'themeColor');
+        .essay-tip{
+          @include font-color('themeColor');
+        }
       }
       &.error{
         @include bg-color('bgColor');
         @include font-color('errorColor');
         @include border('all',1px,solid,'errorColor');
+        .essay-tip{
+          @include font-color('errorColor');
+        }
       }
       &.disabled{
         @include bg-color('bgGrayColor');
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
+        .essay-tip{
+          @include font-color('disabledColor');
+        }
       }
       &.active{
         @include bg-color('activeColor');
         @include font-color('bgColor');
         @include border('all',1px,solid,'activeColor');
+        .essay-tip{
+          @include font-color('activeColor');
+        }
       }
     }
   }
@@ -190,6 +227,9 @@ export default {
         background-repeat: no-repeat;
         background-position: center;
       }
+    }
+    .list-item-wrap{
+      min-height: calc(100% - 65px);
     }
   }
 }

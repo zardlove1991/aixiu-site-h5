@@ -2,8 +2,16 @@ import { createAPI } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
+// 腾讯云相关接口
+let QCloundUrl = {
+  getTencentToken: 'client/upload/image/signature', // 上传腾讯云签名
+  getTencentVideoToken: 'client/upload/video/signature', // 上传腾讯云签名(视频类型)
+  getMaterialInfo: 'client/material/save' // 获取素材信息
+}
 // 不带GUID
 let configUrl = {
+  ...QCloundUrl,
+  getWeixinInfo: 'client/wechat/js/sign', // 获得微信公众号信息
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -20,6 +28,10 @@ let configUrl = {
 }
 
 export default {
+  getTencentToken: config => createAPI(configUrl.getTencentToken, 'GET', config, API_FLAG),
+  getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),
+  getMaterialInfo: config => createAPI(configUrl.getMaterialInfo, 'POST', config, API_FLAG),
+  getWeixinInfo: config => createAPI(configUrl.getWeixinInfo, 'POST', config, API_FLAG),
   setSubjectFavorInfo: config => createAPI(configUrl.setSubjectFavorInfo, 'post', config, API_FLAG),
   getSubjectFavorInfo: config => createAPI(configUrl.getSubjectFavorInfo, 'get', config, API_FLAG),
   saveSubjectRecord: config => createAPI(configUrl.saveSubjectRecord, 'post', config, API_FLAG),

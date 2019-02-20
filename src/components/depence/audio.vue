@@ -2,31 +2,42 @@
   <div class="audio-wrap">
     <!--自定义样式-->
     <div class="audio">
-      <div class="play" :class="playClass" @click.stop="togglePlay"></div>
-      <!--进度条-->
-      <div class="progress-bar-wrap" ref="progressBarWrap">
-        <div class="progress" ref="progress"></div>
-        <div class="progress-btn-wrap" ref="progressBtn"
-             @touchstart.prevent="changeProgressStart"
-             @touchmove.prevent="changeProgressMove"
-             @touchend="changeProgressEnd"
-        >
-          <div class="progress-btn"></div>
+      <template v-if="!iosAudioInit">
+        <div class="play" :class="playClass" @click.stop="togglePlay"></div>
+        <!--进度条-->
+        <div class="progress-bar-wrap" ref="progressBarWrap">
+          <div class="progress" ref="progress"></div>
+          <div class="progress-btn-wrap" ref="progressBtn"
+               @touchstart.prevent="changeProgressStart"
+               @touchmove.prevent="changeProgressMove"
+               @touchend="changeProgressEnd"
+          >
+            <div class="progress-btn"></div>
+          </div>
         </div>
+        <!--显示时间-->
+        <div class="time" v-if="duration">{{duration + '"'}}</div>
+      </template>
+      <!--加载提示-->
+      <div class="ios-audio-loading" v-if="iosAudioInit">
+        <mt-spinner type="fading-circle" :size="20" color="#999"></mt-spinner>
+        <span class="tip">加载中...</span>
       </div>
-      <!--显示时间-->
-      <div class="time" v-if="duration">{{duration + '"'}}</div>
     </div>
     <!--audio组件-->
-    <audio :src="src" ref="audio" preload="metadata" @canplay="audioCanPlay" @ended="audioStop" @error="error" @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
+    <audio ref="audio"
+      @loadedmetadata="_getAudioInfo" @ended="audioStop"
+      @error="error" @timeupdate="timeUpdate" preload='auto'
+    >该浏览器不支持audio属性</audio>
   </div>
 </template>
 
 <script>
 import { formatTimeBySec, prefixStyle } from '@/utils/utils'
+import { isIOSsystem } from '@/utils/app'
 
 const TRANSFORM = prefixStyle('transform')
-const PROGRESS_BTN_W = 2
+const PROGRESS_BTN_W = 1
 
 export default {
   name: 'myAudio',
@@ -34,7 +45,8 @@ export default {
     return {
       currentDuration: null,
       playing: false,
-      currentTime: 0
+      currentTime: 0,
+      iosAudioInit: false
     }
   },
   props: {
@@ -48,7 +60,11 @@ export default {
       let currentTime = this.currentTime
       let duration = this.currentDuration
       let reuslt = null
-      if (duration) reuslt = formatTimeBySec(duration - currentTime)
+      if (duration) {
+        let lastCountTime = duration - currentTime
+        let curCountTime = lastCountTime > 0 ? lastCountTime : 0
+        reuslt = formatTimeBySec(curCountTime)
+      }
       return reuslt
     },
     percent () {
@@ -60,15 +76,7 @@ export default {
       let audio = this.audio
       // 通过状态判定播放
       if (state) {
-        // 解决在小程序中的兼容性
-        let WeixinJSBridge = window.WeixinJSBridge
-        if (typeof WeixinJSBridge === 'object' && typeof WeixinJSBridge.invoke === 'function') {
-          // IOS
-          WeixinJSBridge.invoke('getNetworkType', {}, (res) => audio.play())
-        } else {
-          // Android
-          audio.play()
-        }
+        audio.play()
       } else {
         audio.pause()
       }
@@ -85,34 +93,53 @@ export default {
   mounted () {
     // 初始化
     this.initAudioInfo()
+    // 为IOS中提前加载音频信息
+    if (isIOSsystem()) this.initPlay()
   },
   created () {
     this.touch = {}
   },
   methods: {
     initAudioInfo () {
-      this.$nextTick(() => {
-        this.audio = this.$refs.audio
-        // 监听客户端请求数据
-        this.audio.load()
-      })
+      this.audio = this.$refs.audio
+      // 赋值src
+      this.audio.src = this.src.replace('https', 'http')
+      // 监听客户端请求数据
+      this.audio.load()
     },
-    audioCanPlay () {
-      let myAudio = this.audio
-      // 赋值总时长
-      this.currentDuration = parseInt(Math.round(myAudio.duration.toFixed(2)))
+    initPlay () {
+      this.$nextTick(() => {
+        let WeixinJSBridge = window.WeixinJSBridge
+        if (typeof WeixinJSBridge === 'object' && typeof WeixinJSBridge.invoke === 'function') {
+          // IOS下在微信不能自动载入音频信息问题
+          WeixinJSBridge.invoke('getNetworkType', {}, (res) => {
+            console.log('触发了微信内置事件 音频主动载入 ！！！')
+            // 设置初始化loading
+            this.iosAudioInit = true
+            this.audio.play()
+          })
+        }
+      })
     },
     audioStop () {
       this.togglePlay()
     },
     error () {
-      this.$toast('音频加载失败')
+      this.$toast({ message: '音频加载失败', type: 'error' })
     },
     togglePlay () {
       this.playing = !this.playing
     },
     timeUpdate (e) {
-      this.currentTime = e.target.currentTime
+      // 针对IOS播放延迟问题做处理 关闭初始化状态
+      let time = e.target.currentTime
+      if (this.iosAudioInit && time) {
+        this.audio.pause()
+        this.iosAudioInit = false
+        console.log('IOS音频初始化状态完毕 ！！')
+        return
+      }
+      this.currentTime = time
     },
     changeProgressStart (e) {
       let touchObj = this.touch
@@ -147,6 +174,15 @@ export default {
       this.currentTime = this.currentDuration * percent
       this.audio.currentTime = this.currentTime
       if (!this.playing) this.togglePlay()
+    },
+    _getAudioInfo (e) {
+      let myAudio = this.audio
+      // 赋值总时长
+      // this.currentDuration = parseInt(Math.round(myAudio.duration.toFixed(2)))
+      this.currentDuration = myAudio.duration
+      console.log('audio触发的metaload事件', this.currentDuration)
+      // 发送当前音频总时长
+      this.$emit('audoinfo', {duration: this.currentDuration})
     }
   }
 }
@@ -209,6 +245,21 @@ export default {
       margin-right: px2rem(40px);
       @include font-dpr(13px);
       @include font-color('audioProgressBar');
+    }
+    .ios-audio-loading{
+      position: absolute;
+      left:0;
+      top:0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      @include font-dpr(14px);
+      @include font-color('descColor');
+      .tip{
+        margin-left: px2rem(10px);
+      }
     }
   }
 }
