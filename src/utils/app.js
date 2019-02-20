@@ -57,3 +57,19 @@ export const getApiFlag = () => {
   console.log('当前请求的API的FLAG', localUrl, flag)
   return flag
 }
+
+// 判断使用的是不是微信浏览器内核
+export const isWeixnBrowser = () => {
+  let ua = navigator.userAgent.toLowerCase()
+  if (ua.includes('micromessenger')) {
+    return true
+  } else {
+    return false
+  }
+}
+
+// 判断是否是IOS系统
+export const isIOSsystem = () => {
+  let equipmentVersion = navigator.userAgent.toLowerCase()
+  return /iphone|ipad|ipod/.test(equipmentVersion)
+}

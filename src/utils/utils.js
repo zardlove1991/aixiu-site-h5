@@ -1,5 +1,10 @@
 import base64 from '@/lib/base64'
 import utf8 from '@/lib/utf8'
+import {
+  qcloudSettingLine,
+  qcloudSettingDev,
+  qcloudSetting
+} from '@/config/upload'
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -76,7 +81,7 @@ export const setBrowserTitle = (title) => {
   document.title = title
   if (plat === 'dingding' || plat === 'dingdone') {
     let i = document.createElement('iframe')
-    i.src = '/static/browser.js'
+    i.src = '/static/js/browser.js'
     i.style.display = 'none'
     i.onload = function () {
       setTimeout(function () {
@@ -181,4 +186,19 @@ export function dealAnnexObject (annex) {
   }
 
   return mediaObject
+}
+// 获得qCloud的配置信息
+export const getQcloud = (type) => {
+  let key = window.location.href.split('.')[1]
+  let isTest = true
+  if (key && key === 'duanshu') isTest = false
+  if (type === 'dir_name' && isTest) type = 'test_name'
+
+  if (window.location.href.indexOf('_dev') > -1 || window.location.href.indexOf('test') > -1) {
+    return qcloudSettingDev[type] || ''
+  } else if (window.location.href.indexOf('pre') > -1 || window.location.href.indexOf('pro_') > -1) {
+    return qcloudSetting[type] || '' // 预发布上传配置
+  } else {
+    return qcloudSettingLine[type] || '' // 线上上传配置
+  }
 }
