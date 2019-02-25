@@ -1,7 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
-import { METHODS } from '@/common/currency'
+import { METHODS, DEPENCE } from '@/common/currency'
 import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
@@ -308,6 +308,7 @@ const actions = {
       let id = state.examId
       let renderType = state.renderType
       let essayAnswerInfo = state.essayAnswerInfo
+      let dataIsEmpty = false
       let subject = payload
       if (renderType === 'analysis') {
         reject(new Error('当前为解析不需要保存答题记录'))
@@ -329,13 +330,19 @@ const actions = {
         if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
         data.options_id = optionsArr
         // 判断是否有选项 没有直接return
-        if (!data.options_id || !data.options_id.length) {
-          resolve()
-          return
-        }
+        if (!data.options_id || !data.options_id.length) dataIsEmpty = true
       } else {
-        let value = essayAnswerInfo[subject.id]
-        data.value = value
+        // 这边判断提交的问答题数据是否为空 为空就不发送请求
+        if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
+          dataIsEmpty = true
+        } else {
+          data.value = essayAnswerInfo[subject.id]
+        }
+      }
+      // 为空的时候全部return
+      if (dataIsEmpty) {
+        resolve()
+        return
       }
       // 发送保存答题信息
       API.saveSubjectRecord({
