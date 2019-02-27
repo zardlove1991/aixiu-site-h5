@@ -62,7 +62,8 @@ export default {
       let reuslt = null
       if (duration) {
         let lastCountTime = duration - currentTime
-        let curCountTime = lastCountTime > 0 ? lastCountTime : 0
+        // 兼容IOS录音的时长
+        let curCountTime = (lastCountTime > 59 ? 60 : lastCountTime) || 0
         reuslt = formatTimeBySec(curCountTime)
       }
       return reuslt
