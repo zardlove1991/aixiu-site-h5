@@ -853,7 +853,7 @@ export default {
         this.recoderTimeTip = formatTimeBySec(this.recoderSecond)
       }
       // 初始化调用
-      let delay = isIOSsystem() ? 990 : 995
+      let delay = isIOSsystem() ? 984 : 995
       initTip()
       this.recoderTimer = setInterval(() => {
         // 判断是否超过了录制时间
