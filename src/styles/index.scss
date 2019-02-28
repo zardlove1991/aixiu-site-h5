@@ -20,3 +20,42 @@ img{
   width: 0 !important ;
   height: 0 !important;
 }
+
+// 针对富文本样式全局兼容处理
+.rich-content-style{
+  overflow:hidden;
+  *{
+    // 防内容溢出
+    max-width:100% !important;
+  }
+  a{
+    display:inline;
+  }
+  img{
+    max-height:inherit;
+    height:auto;
+  }
+  ol{
+    // 重置 默认为 数字
+    list-style-type:decimal;
+  }
+  ul{
+    // 重置 默认为 黑圆点
+    list-style-type:disc;
+  }
+  li{
+    list-style:inherit;
+    margin-left:1.8em;
+  }
+  table{
+    border-collapse:collapse;
+    display:block;
+  }
+  td,
+  th{
+    border:1px solid #ddd;
+  }
+  p{
+    min-height:1em;
+  }
+}

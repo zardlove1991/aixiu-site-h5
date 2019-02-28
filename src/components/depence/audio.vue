@@ -20,7 +20,7 @@
       </template>
       <!--加载提示-->
       <div class="ios-audio-loading" v-if="iosAudioInit">
-        <mt-spinner type="fading-circle" :size="20" color="#999"></mt-spinner>
+        <mt-spinner type="fading-circle" :size="15" color="#999"></mt-spinner>
         <span class="tip">加载中...</span>
       </div>
     </div>
@@ -62,7 +62,8 @@ export default {
       let reuslt = null
       if (duration) {
         let lastCountTime = duration - currentTime
-        let curCountTime = lastCountTime > 0 ? lastCountTime : 0
+        // 兼容IOS录音的时长
+        let curCountTime = (lastCountTime > 59 ? 60 : lastCountTime) || 0
         reuslt = formatTimeBySec(curCountTime)
       }
       return reuslt
@@ -103,7 +104,7 @@ export default {
     initAudioInfo () {
       this.audio = this.$refs.audio
       // 赋值src
-      this.audio.src = this.src.replace('https', 'http')
+      this.audio.src = this.src
       // 监听客户端请求数据
       this.audio.load()
     },
@@ -195,6 +196,7 @@ export default {
   width: 100%;
   height: px2rem(80px);
   .audio{
+    position: relative;
     display: flex;
     align-items: center;
     width: 100%;

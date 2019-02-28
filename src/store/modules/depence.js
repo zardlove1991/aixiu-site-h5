@@ -1,7 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
-import { METHODS } from '@/common/currency'
+import { METHODS, DEPENCE } from '@/common/currency'
 import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
@@ -13,7 +13,8 @@ const state = {
   currentSubjectIndex: 0, // 当前题目索引
   answerCardInfo: null, // 答题卡当前的信息
   isShowModelThumb: false, // 判断界面是否有弹窗展示
-  essayAnswerInfo: {} // 保存试题中的问答题表单信息
+  essayAnswerInfo: {}, // 保存试题中的问答题表单信息
+  curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
 
 const getters = {
@@ -26,6 +27,13 @@ const getters = {
       item.answersInfo = []
       // 处理下annex对象数据的兼容性
       item.annex = dealAnnexObject(item.annex)
+      // 处理点评字段
+      if (item.remark) {
+        item.remark = {
+          ...item.remark,
+          content: dealAnnexObject(item.remark.content)
+        }
+      }
       // 处理下选项数据
       item.options.map((optItem, optIndex) => {
         optItem.selectTip = getEnglishChar(optIndex)
@@ -61,7 +69,8 @@ const getters = {
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,
   isShowModelThumb: state => state.isShowModelThumb,
-  essayAnswerInfo: state => state.essayAnswerInfo
+  essayAnswerInfo: state => state.essayAnswerInfo,
+  curSubjectVideos: state => state.curSubjectVideos
 }
 
 const mutations = {
@@ -90,7 +99,10 @@ const mutations = {
     state.currentSubjectIndex = payload
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
-    state.essayAnswerInfo = payload
+    state.essayAnswerInfo = Object.assign({}, payload)
+  },
+  SET_CURSUBJECT_VIDEOS (state, payload) {
+    state.curSubjectVideos = payload
   }
 }
 
@@ -138,6 +150,7 @@ const actions = {
             // 初始化为问答题的基础提交数据对象
             if (subject.type === 'essay') {
               let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
+              // 赋值数据
               essayAnswerInfo[subject.id] = essayData
             }
           })
@@ -295,6 +308,7 @@ const actions = {
       let id = state.examId
       let renderType = state.renderType
       let essayAnswerInfo = state.essayAnswerInfo
+      let dataIsEmpty = false
       let subject = payload
       if (renderType === 'analysis') {
         reject(new Error('当前为解析不需要保存答题记录'))
@@ -316,13 +330,19 @@ const actions = {
         if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
         data.options_id = optionsArr
         // 判断是否有选项 没有直接return
-        if (!data.options_id || !data.options_id.length) {
-          resolve()
-          return
-        }
+        if (!data.options_id || !data.options_id.length) dataIsEmpty = true
       } else {
-        let value = essayAnswerInfo[subject.id]
-        data.value = value
+        // 这边判断提交的问答题数据是否为空 为空就不发送请求
+        if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
+          dataIsEmpty = true
+        } else {
+          data.value = essayAnswerInfo[subject.id]
+        }
+      }
+      // 为空的时候全部return
+      if (dataIsEmpty) {
+        resolve()
+        return
       }
       // 发送保存答题信息
       API.saveSubjectRecord({
@@ -468,6 +488,37 @@ const actions = {
         reject(err)
       })
     })
+  },
+  GET_QCLOUD_VIDEO_INFO ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { fileid } = payload
+      // 添加参数
+      let params = { fileid }
+
+      API.getQcloudVideoInfo({ params }).then(data => {
+        // 判断是否有问题
+        if (data.error) throw new Error(data.message)
+        // 结束
+        resolve(data)
+      }).catch(err => {
+        // 提醒
+        let tip = err.message || err.error_message || '获取视频信息失败'
+        Toast(tip)
+        reject(err)
+      })
+    })
+  },
+  ADD_CURSUBJECT_VIDEOS_INFO ({state, commit}, payload) {
+    let { video } = payload
+    let curSubjectVideos = state.curSubjectVideos
+    // 排除相同video的信息
+    if (curSubjectVideos.length) {
+      let isInludeVideo = curSubjectVideos.some(item => item.src === video.src)
+      if (isInludeVideo) curSubjectVideos.push(video)
+    } else {
+      curSubjectVideos.push(video)
+    }
+    commit('SET_CURSUBJECT_VIDEOS', curSubjectVideos)
   }
 }
 

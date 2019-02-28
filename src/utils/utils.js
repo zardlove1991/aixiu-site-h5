@@ -165,21 +165,41 @@ export function decodeBase64 (str) {
 /* 当前试题的annex中的video字段对象的处理 */
 export function dealAnnexObject (annex) {
   let mediaObject = {...annex}
-  let dealKey = 'video'
+  // 处理每个对象中的链接
+  let dealItem = (key, item) => {
+    let newItem = item
+    // 获取链接
+    if (typeof item === 'object') {
+      // 带有content字段
+      if (item.content) {
+        newItem = item.content.url
+        // 针对视频做个特殊处理 可能包含缩略图
+        if (key === 'video') {
+          newItem = {
+            src: item.content.url,
+            cover: item.content.cover
+          }
+        }
+      } else if (item.url) { // 带有url字段
+        newItem = item.url
+        // 针对视频做个特殊处理 可能包含缩略图
+        if (key === 'video') {
+          newItem = {
+            src: item.url,
+            cover: item.cover
+          }
+        }
+      }
+    }
+    return newItem
+  }
+  // 处理数据
   for (let key in mediaObject) {
     let data = mediaObject[key]
-    // 兼容为字符串数据
-    if (typeof data === 'string') data = [data]
-    // 排除key不同、没有数据
-    if (key === dealKey && data.length) {
+    // 排除没有数据并且为
+    if (data && Array.isArray(data) && data.length) {
       // 处理对象的兼容
-      data = data.map(item => {
-        let newItem = item
-        if (typeof newItem === 'object' && newItem.content) {
-          newItem = newItem.content.url
-        }
-        return newItem
-      })
+      data = data.map(item => dealItem(key, item))
     }
     // 赋值
     mediaObject[key] = data

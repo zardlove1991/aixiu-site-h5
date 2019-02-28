@@ -50,6 +50,16 @@ export const DEPENCE = {
     }
     return flag
   },
+  checkMedaiObjIsEmpty (mediaObj) {
+    let flag = true
+    for (let key in mediaObj) {
+      if (mediaObj[key] && mediaObj[key].length) {
+        flag = false
+        break
+      }
+    }
+    return flag
+  },
   goWxAppPage: url => wx.navigateTo(url),
   backWxAppPage: num => wx.navigateBack(num)
 }

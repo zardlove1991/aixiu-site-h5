@@ -43,7 +43,9 @@ let router = new Router({
       name: 'depencestart',
       component: getComponent('depence-start'),
       props: (route) => ({
-        id: route.params.id // 传入需要请求当前试卷的ID
+        id: route.params.id, // 传入需要请求当前试卷的ID
+        redirect: route.query.redirect, // 小程序传入的重定向地址
+        delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
         title: '加载中...'
