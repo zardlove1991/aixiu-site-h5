@@ -1,4 +1,5 @@
-# exam-h5
+## 更新日志
+1. `release/1.1` 更新问答题、问答题等待批阅状态、查看老师批阅
 
 > exam independent project
 
