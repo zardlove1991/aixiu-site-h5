@@ -62,7 +62,10 @@
                 ></textarea>
               </div>
               <!--回答的内容信息-->
-              <p class="answer-content" v-show="renderType === 'analysis'">{{essayTempAnswerInfo.text || "当前没有回答信息哦~"}}</p>
+              <p class="answer-content" v-show="renderType === 'analysis'">
+                <span v-show="_checkMedaiObjIsEmpty(essayTempAnswerInfo)">当前没有回答信息哦~</span>
+                <span v-show="essayTempAnswerInfo.text">{{essayTempAnswerInfo.text}}</span>
+              </p>
               <!--上传的媒体展示区域-->
               <div class="upload-media-wrap">
                 <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
@@ -163,9 +166,10 @@
                 <img v-show="item.remark.teacher.avatar" :src="item.remark.teacher.avatar" class="icon" />
                 <span class="name">{{item.remark.teacher.name}}</span>
               </div> -->
-              <p class="markinfo"
-                :class="{ 'empty-info': !item.remark.content.text }"
-              >{{item.remark.content.text || '此处无声胜有声~'}}</p>
+              <p class="markinfo" :class="{ 'empty-info': !item.remark.content.text }">
+                <span v-show="_checkMedaiObjIsEmpty(item.remark.content)">此处无声胜有声~</span>
+                <span v-show="item.remark.content.text">{{item.remark.content.text}}</span>
+              </p>
               <!--图片展示-->
               <div class="mark-img-wrap" v-if="item.remark.content.image.length">
                 <img :src="src" class="mark-img"
@@ -976,6 +980,8 @@ export default {
         }
       }, 500)
     },
+    // 检查当前媒体对象是否为空
+    _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO',
       setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS',
