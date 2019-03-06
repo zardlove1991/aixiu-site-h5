@@ -21,6 +21,11 @@ img{
   height: 0 !important;
 }
 
+// 设置全局图片预览的图片模式
+.lg-preview-wrapper .lg-preview-img{
+  object-fit: contain;
+}
+
 // 针对富文本样式全局兼容处理
 .rich-content-style{
   overflow:hidden;
