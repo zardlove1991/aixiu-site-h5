@@ -69,7 +69,7 @@
         .my-img{
           width: 100%;
           height: px2rem(300px);
-          object-fit: cover;
+          object-fit: contain;
         }
       }
       .subject-select-wrap{
