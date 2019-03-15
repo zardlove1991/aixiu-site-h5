@@ -9,7 +9,7 @@
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
-    <div class="list-wrap">
+    <div class="qtnlist-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
         <template v-if="index === currentSubjectIndex">
           <div class="subject-type-wrap">
@@ -200,7 +200,7 @@
       <div class="tip">成绩单</div>
     </div>
     <!--题号情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList" @touchmove.prevent="">
+    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->

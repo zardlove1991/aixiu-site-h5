@@ -4,7 +4,7 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
-  .list-wrap{
+  .qtnlist-wrap{
     position: relative;
     width: 100%;
     min-height: calc(100% - 50px);
@@ -412,12 +412,13 @@
       }
       .info-list-wrap{
         width: 100%;
-        height: 100%;
+        max-height: px2rem(800px);
+        overflow: scroll;
+        -webkit-overflow-scrolling:touch;
         box-sizing: border-box;
-        overflow: auto;
+        padding-bottom: px2rem(36px);
+        @include bg-color('bgColor');
         .list-wrap{
-          padding: px2rem(36px) px2rem(41px) px2rem(26px) 0;
-          box-sizing: border-box;
           @include bg-color('bgColor');
         }
       }
