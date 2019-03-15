@@ -27,7 +27,9 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-item-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        <div class="list-item-wrap">
+          <subject-list :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        </div>
       </div>
     </transition>
   </div>
@@ -233,7 +235,9 @@ export default {
       }
     }
     .list-item-wrap{
-      max-height: calc(100% - 60px);
+      max-height: calc(100vh - 60px);
+      padding-bottom: px2rem(38px);
+      box-sizing: border-box;
       overflow: scroll;
       -webkit-overflow-scrolling:touch;
     }
