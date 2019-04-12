@@ -169,7 +169,7 @@ export function dealAnnexObject (annex) {
   let dealItem = (key, item) => {
     let newItem = item
     // 获取链接
-    if (typeof item === 'object') {
+    if (item instanceof Object) {
       // 带有content字段
       if (item.content) {
         newItem = item.content.url
