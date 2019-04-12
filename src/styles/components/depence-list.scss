@@ -67,8 +67,9 @@
           margin-top: px2rem(39px);
         }
         .my-img{
-          width: 100%;
-          height: px2rem(300px);
+          width: auto;
+          max-width: 100%;
+          max-height: px2rem(300px);
           object-fit: contain;
         }
       }
