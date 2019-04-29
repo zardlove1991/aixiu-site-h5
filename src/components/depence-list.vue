@@ -236,7 +236,7 @@
     <!--遮罩包裹-->
     <div class="fixed-btn-wrap">
       <!--底部跳转按钮-->
-      <div class="btn-wrap">
+      <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
         <div class="prev" v-show="currentSubjectIndex !== 0" @click.stop="changeSubjectIndex('sub')">上一题</div>
         <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
         <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
@@ -288,7 +288,7 @@
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { setBrowserTitle, formatTimeBySec } from '@/utils/utils'
-import { isWeixnBrowser, isIOSsystem } from '@/utils/app'
+import { isWeixnBrowser, isIOSsystem, isIphoneX } from '@/utils/app'
 import { Toast, Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
@@ -317,6 +317,7 @@ export default {
   },
   data () {
     return {
+      isInIphoneX: isIphoneX(),
       recoderTimeTip: '00:00',
       recoderPlayTip: '00:00',
       isShowSuspendModel: false,

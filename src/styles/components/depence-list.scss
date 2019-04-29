@@ -496,6 +496,9 @@
       align-items: center;
       pointer-events: auto;
       @include bg-color('bgColor');
+      &.iphonex-h{
+        height: px2rem(160px);
+      }
       .prev,.next{
         display: flex;
         justify-content: center;
