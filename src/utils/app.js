@@ -73,3 +73,8 @@ export const isIOSsystem = () => {
   let equipmentVersion = navigator.userAgent.toLowerCase()
   return /iphone|ipad|ipod/.test(equipmentVersion)
 }
+
+/* 判断是否是iphonex环境 */
+export const isIphoneX = () => {
+  return (isIOSsystem() && (screen.height >= 812 && screen.width >= 375))
+}

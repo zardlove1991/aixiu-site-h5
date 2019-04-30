@@ -148,6 +148,13 @@ export default {
         let answerCardInfo = this.answerCardInfo
         let showBtns = [this.isShowBackBtn, (examInfo.restart && answerCardInfo.essay_status), answerCardInfo.essay_status].filter(state => state)
         this.isBottomBtnCenter = (showBtns.length === 1)
+        // 设置分享的SDK -> mixin中的方法
+        this.initPageShareInfo({
+          title: examInfo.title,
+          desc: examInfo.brief,
+          indexpic: examInfo.indexpic,
+          link: this.redirect
+        })
       } catch (err) {
         console.log(err)
       }

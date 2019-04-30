@@ -3,7 +3,11 @@ import { Toast } from 'mint-ui'
 import STORAGE from '@/utils/storage'
 
 const API_CONFIG = {
+  shareQQZone: 'onMenuShareQZone', // 分享到QQ空间
+  shareQQFriends: 'onMenuShareQQ', // 分享到QQ朋友信息
+  shareWeChatZone: 'onMenuShareTimeline', // 设置分享到朋友圈
   shareFriends: 'onMenuShareAppMessage', // 设置自定义分享给朋友信息
+  shareWeibo: 'onMenuShareWeibo', // 分享到微博
   chooseImage: 'chooseImage', // 上传图片
   uploadImage: 'uploadImage', // 上传图片
   startRecord: 'startRecord', // 开始录音

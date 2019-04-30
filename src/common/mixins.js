@@ -69,6 +69,27 @@ export default {
       let params = Object.assign({ redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
+    initPageShareInfo (data) {
+      let auth = () => {
+        let params = {
+          title: data.title, // 分享标题
+          desc: data.desc, // 分享描述
+          imgUrl: data.indexpic, // 分享图标
+          link: data.link // 分享链接
+        }
+        console.log('执行了分享参数调用', data)
+        // 执行调用
+        wx.execute('shareQQZone', params)
+        wx.execute('shareQQFriends', params)
+        wx.execute('shareWeChatZone', params)
+        wx.execute('shareFriends', params)
+        wx.execute('shareWeibo', params)
+      }
+      // 执行分享SDK调用
+      setTimeout(() => {
+        auth()
+      }, 1000)
+    },
     ...mapActions('depence', {
       getWeixinInfo: 'GET_WEIXIN_INFO'
     }),

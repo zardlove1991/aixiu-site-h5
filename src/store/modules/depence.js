@@ -235,9 +235,12 @@ const actions = {
   END_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId || payload.id
+      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
+        // 删除本地缓存的单选的ID信息
+        if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
         // 结束
         Indicator.close()
         if (res.success === 1) {
@@ -308,6 +311,7 @@ const actions = {
       let id = state.examId
       let renderType = state.renderType
       let essayAnswerInfo = state.essayAnswerInfo
+      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       let dataIsEmpty = false
       let subject = payload
       if (renderType === 'analysis') {
@@ -327,10 +331,21 @@ const actions = {
         subject.options.forEach(item => {
           if (item.active) optionsArr.push(item.id)
         })
-        if (optionsArr.length === 1 && subject.type !== 'checkbox') optionsArr = optionsArr.join('')
+        // 针对单选和判断做处理
+        if (optionsArr.length === 1 && subject.type !== 'checkbox') {
+          optionsArr = optionsArr.join('')
+          // 这边保存下当前单选和判断选择的题目ID为了做防止多次请求操作
+          if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
+            STORAGE.set('examlist-single-selcectid', optionsArr)
+          } else {
+            // 当选择的ID相同时当做为空处理 不发请求
+            optionsArr = []
+          }
+        }
         data.options_id = optionsArr
         // 判断是否有选项 没有直接return
-        if (!data.options_id || !data.options_id.length) dataIsEmpty = true
+        let noOptionID = !data.options_id || !data.options_id.length
+        if (noOptionID) dataIsEmpty = true
       } else {
         // 这边判断提交的问答题数据是否为空 为空就不发送请求
         if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
