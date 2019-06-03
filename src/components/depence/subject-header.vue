@@ -91,8 +91,12 @@ export default {
       } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
-        let isAllMatch = correntInfo.every(item => answers.includes(item.id))
-        isAllMatch ? className = 'success' : className = 'error'
+        let isAllMatch = correntInfo.every(item => answers.includes(item.id)) // 判断是否全部符合
+        if (correntInfo.length === answers.length && isAllMatch) {
+          className = 'success'
+        } else {
+          className = 'error'
+        }
       }
       return className
     },
