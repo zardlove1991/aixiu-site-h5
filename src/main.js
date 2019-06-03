@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App'
+import 'babel-polyfill'
 import router from '@/router/index'
 import store from '@/store/index'
 import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
