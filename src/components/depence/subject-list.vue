@@ -133,7 +133,11 @@ export default {
         isDid && (className = 'success')
       } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
-        isAllMatch ? className = 'success' : className = 'error'
+        if (correntInfo.length === answers.length && isAllMatch) {
+          className = 'success'
+        } else {
+          className = 'error'
+        }
       }
       return className
     }
