@@ -116,8 +116,7 @@
                 <div class="upload-audio"
                   v-show="['unlimit','audio'].includes(item.mode)"
                   :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.audio.length}"
-                  @click.stop="uploadAudio"
-                  >
+                  @click.stop="uploadAudio">
                   <i class="examfont icon-audio"></i>
                 </div>
                 <div class="upload-video"
@@ -241,55 +240,17 @@
         <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
         <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
       </div>
-      <!--录音区域-->
-      <transition name="up" mode="out-in">
-        <div class="record-audio-wrap" v-if="isShowRecordAudio">
-          <p class="audio-tip">{{recordInfoTip}}</p>
-          <!--所有操作按钮包裹区域-->
-          <div class="all-btn-wrap">
-            <!--重录-->
-            <div class="record-reset-wrap"  v-show="recordConfig.isStop">
-              <div class="btn" @click.stop="recordAuio('reset')"></div>
-              <p class="tip">重录</p>
-            </div>
-            <!--录音按钮-->
-            <div class="record-play-wrap">
-              <div class="record-btn-wrap" @click.stop="recordAuio('start')">
-                <div class="record-paly-bg"
-                  :class="{'animation': recordConfig.isRecord}"
-                ></div>
-                <div class="record-paly-btn"
-                  :class="{
-                    'record-stop':  recordConfig.isStop,
-                    'record-start': recordConfig.isRecord || recordConfig.isPlay
-                  }"
-                ></div>
-              </div>
-              <!--提示-->
-              <p class="time" v-show="!recordConfig.isStop"><i class="hige">{{recoderTimeTip}}</i>/{{_setRecordMaxTime()}}</p>
-              <p class="tip" v-show="recordConfig.isStop">试听</p>
-            </div>
-            <!--确认-->
-            <div class="record-confirm-wrap"  v-show="recordConfig.isStop"
-              @click.stop="confirmRecordAudio"
-            >
-              <div class="btn"></div>
-              <p class="tip">确认</p>
-            </div>
-          </div>
-          <!--关闭按钮-->
-          <div class="close-bg" @click.stop="closeAudioRecoder"></div>
-        </div>
-      </transition>
+      <!--引入录音组件-->
+      <my-record ref="myRecord" @finish="_dealEssayFromValue"></my-record>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { setBrowserTitle, formatTimeBySec } from '@/utils/utils'
+import { setBrowserTitle } from '@/utils/utils'
 import { isWeixnBrowser, isIOSsystem, isIphoneX } from '@/utils/app'
-import { Toast, Indicator } from 'mint-ui'
+import { Indicator } from 'mint-ui'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/common/mixins'
 import upload from '@/utils/upload'
@@ -299,6 +260,7 @@ import SubjectList from './depence/subject-list'
 import MyAudio from './depence/audio'
 import MyVideo from './depence/video'
 import MyModel from './depence/model'
+import MyRecord from './depence/record'
 
 export default {
   name: 'depence-list',
@@ -318,20 +280,11 @@ export default {
   data () {
     return {
       isInIphoneX: isIphoneX(),
-      recoderTimeTip: '00:00',
-      recoderPlayTip: '00:00',
       isShowSuspendModel: false,
       isShowSubmitModel: false,
       isShowSubjectList: false,
       isShowOpsModel: false,
-      isShowRecordAudio: false,
       essayTempAnswerInfo: null,
-      recordConfig: {
-        isRecord: false,
-        isStop: false,
-        isReset: false,
-        isPlay: false
-      },
       uploadConfig: {
         image: {
           type: 'image/*',
@@ -357,7 +310,8 @@ export default {
     SubjectList,
     MyAudio,
     MyVideo,
-    MyModel
+    MyModel,
+    MyRecord
   },
   computed: {
     ...mapGetters('depence', [
@@ -370,16 +324,6 @@ export default {
       let examList = this.examList
       let renderType = this.renderType
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
-    },
-    recordInfoTip () {
-      let recordConfig = this.recordConfig
-      let recoderTimeTip = this.recoderTimeTip
-      let recoderPlayTip = this.recoderPlayTip
-      let tip = '点击开始录音'
-      if (recordConfig.isRecord) tip = '点击结束录音'
-      else if (recordConfig.isStop && !recordConfig.isPlay) tip = `上传${recoderTimeTip}`
-      else if (recordConfig.isStop && recordConfig.isPlay) tip = `上传${recoderPlayTip}`
-      return tip
     }
   },
   watch: {
@@ -411,20 +355,9 @@ export default {
       essayAnswerInfo[currentSubjectInfo.id] = newAnwer
       // 直接更改store数据
       this.setEssayAnswerInfo(essayAnswerInfo)
-    },
-    isShowRecordAudio (newStatus) {
-      // 当隐藏的时候直接重新设置状态
-      if (!newStatus) this._resetAuioStatus()
-    },
-    recordConfig (newConfig, oldConfig) {
-      this.dealRecordOption(newConfig)
     }
   },
   created () {
-    // 初始化定时器数字、存储ID、是否初始化录音过
-    this.recoderSecond = -1
-    this.recoderLocalId = null
-    this.initRecordLimit = false
     // 上传对象
     this.fileUploader = null
     // 初始化方法
@@ -546,128 +479,18 @@ export default {
       }
     },
     async uploadAudio () {
-      let _this = this
       // 设置当前上传标识
-      _this.uploadKey = 'audio'
-      let audioMedia = _this.essayTempAnswerInfo[_this.uploadKey]
+      this.uploadKey = 'audio'
+      let audioMedia = this.essayTempAnswerInfo[this.uploadKey]
       // 代码阻止点击 兼容IOS
       if (audioMedia.length) return
       // 判断是否是微信内核
       let isWx = isWeixnBrowser()
-      let WX = _this.$wx
       if (isWx) {
-        // 判断是否初始过录音
-        if (_this.initRecordLimit) {
-          _this.isShowRecordAudio = !_this.isShowRecordAudio
-        } else {
-          // 提前去模拟请求录音弹窗防止后续操作有问题
-          let toastInstance = _this.$toast({message: '为您初始化录音中...', duration: 3000})
-          // 停止和显示录音弹层
-          let dealAuthStopRecord = () => {
-            WX.execute('stopRecord', {
-              success () {
-                console.log('提前语音stopRecord授权结束走成功！！')
-                // 显示录音弹层
-                _this.isShowRecordAudio = true
-              },
-              fail () {
-                console.log('提前语音stopRecord授权结束走失败！！')
-                _this.$toast({message: '初始化录音失败', duration: 1500})
-                // 隐藏录音弹层
-                _this.isShowRecordAudio = false
-              },
-              complete () {
-                toastInstance.close()
-              }
-            })
-          }
-          // 调用微信录音
-          WX.execute('startRecord', {
-            success () {
-              console.log('提前语音startRecord授权走成功！！')
-              setTimeout(() => {
-                // 设置初始化录音成功
-                _this.initRecordLimit = true
-                // 调用停止录音操作
-                dealAuthStopRecord()
-              }, 1500)
-            },
-            cancel () {
-              toastInstance.close()
-              // 取消授权的时候去处理
-              _this.$toast({message: '初始化录音失败', duration: 1500})
-            }
-          })
-        }
+        let recordEl = this.$refs['myRecord']
+        recordEl.initRecord() // 调用初始化方法
       } else {
         this._triggerFileUpload()
-      }
-    },
-    async dealRecordOption (newConfig) {
-      try {
-        console.log('监听录音状态配置', newConfig)
-        let WX = this.$wx
-        // 判断当前录音配置状态
-        if (newConfig.isRecord && !newConfig.isStop) { // 开始录音
-          // {errorTip: '开始录音错误'}
-          await WX.normalExecute('startRecord') // 调用微信录音
-          this._setCurrentRecordTime('start')
-        } else if (!newConfig.isRecord && newConfig.isStop) { // 停止录音
-          if (newConfig.isPlay && !this.isCurrentPlay) {
-            console.log('开始播放的录音localId', this.recoderLocalId)
-            this._playRecordAudio('start') // 播放录音
-            this.isCurrentPlay = true // 是否当前正在播放
-            await WX.normalExecute('playVoice', {
-              errorTip: '播放语音错误',
-              params: { localId: this.recoderLocalId }
-            })
-          } else if (!newConfig.isPlay && this.isCurrentPlay) {
-            console.log('停止播放的录音localId', this.recoderLocalId)
-            // 判断是否有播放的timer有的话在停止
-            if (this.playRecoderTimer) {
-              await WX.normalExecute('stopVoice', {
-                errorTip: '停止播放错误',
-                params: { localId: this.recoderLocalId }
-              })
-            }
-            this._playRecordAudio('stop') // 停止播放录音
-            this.isCurrentPlay = false
-          } else if (!this.isCurrentPlay) {
-            // 停止录音 当没有录音ID的时候在执行
-            this.recoderLocalId = await WX.stopRecord()
-            console.log('结束录音得到的localId', this.recoderLocalId)
-            this._setCurrentRecordTime('stop')
-          }
-        }
-      } catch (err) {
-        // 调用出错直接重置
-        // this._resetAuioStatus()
-        console.log(err)
-      }
-    },
-    async confirmRecordAudio () {
-      this.isShowRecordAudio = false // 隐藏弹层
-      let WX = this.$wx
-      try {
-        Indicator.open({ spinnerType: 'fading-circle' })
-        let localId = this.recoderLocalId // 录音的localId
-        // 存放数据
-        let serverId = await WX.uploadVoice({ localId })
-        // 获取素材地址信息
-        let uploadAudioData = await this.getMaterialInfo({
-          type: 'audio',
-          serverIds: [serverId]
-        })
-        uploadAudioData = uploadAudioData.map(item => decodeURIComponent(item.content.url))
-        // 更新数据
-        this._dealEssayFromValue({ audio: uploadAudioData })
-        // 结束loading
-        Indicator.close()
-        this.recoderLocalId = null
-      } catch (err) {
-        // 结束loading
-        Indicator.close()
-        console.log(err)
       }
     },
     async fileUpload (e) {
@@ -780,142 +603,6 @@ export default {
       curUploadData.splice(index, 1)
       this.essayTempAnswerInfo = {...essayTempAnswerInfo}
     },
-    recordAuio (flag) {
-      let recordConfig = this.recordConfig
-      let recordTimerStamp = this.recordTimerStamp
-      if (recordTimerStamp && ((+new Date() - recordTimerStamp) < 1000)) {
-        Toast('间隔过短,稍后再试~')
-        return
-      }
-      // 判断是否是重置还是开始录音
-      if (flag === 'start') {
-        // 判断是否开始录音
-        if (recordConfig.isRecord) {
-          recordConfig.isRecord = false
-          recordConfig.isStop = true
-        } else {
-          // 判断是否停止
-          if (recordConfig.isStop) {
-            // 当前的录音长度
-            let playRecoderSecond = this.playRecoderSecond
-            // 只有当录音时间大于0的时候再去调用API 解决IOS中回调过慢的问题
-            if (recordConfig.isPlay && playRecoderSecond <= 0) return
-            recordConfig.isPlay = !recordConfig.isPlay
-          } else {
-            recordConfig.isRecord = true
-            recordConfig.isStop = false
-          }
-        }
-      } else if (flag === 'reset') {
-        this._resetAuioStatus()
-      }
-      // 设置对象
-      this.recordConfig = Object.assign({}, recordConfig)
-      // 设置点击间隔
-      this.recordTimerStamp = +new Date()
-    },
-    closeAudioRecoder () {
-      this.isShowRecordAudio = false
-      this._resetAuioStatus()
-    },
-    _playRecordAudio (flag) {
-      let recordConfig = this.recordConfig
-      let tempRecoderCount = this.playRecoderSecond = this.recoderSecond
-      console.log('录音播放的状态', flag)
-      // 判断是否主动停止播放
-      if (flag === 'stop') {
-        // 直接清除定时器
-        clearInterval(this.playRecoderTimer)
-        this.playRecoderTimer = null
-        // 直接设置为初始化时间
-        this.recoderPlayTip = this.recoderTimeTip
-        return
-      }
-      // 直接设置为初始化时间
-      this.recoderPlayTip = this.recoderTimeTip
-      this.playRecoderTimer = setInterval(() => {
-        if (tempRecoderCount <= 0) {
-          // 直接清除定时器
-          clearInterval(this.playRecoderTimer)
-          this.playRecoderTimer = null
-          // 恢复为可播放状态
-          recordConfig.isPlay = false
-          this.recordConfig = Object.assign({}, recordConfig)
-          // 阻止继续执行
-          return
-        }
-        tempRecoderCount--
-        this.recoderPlayTip = formatTimeBySec(tempRecoderCount)
-        // 更新当前的录音值
-        this.playRecoderSecond = tempRecoderCount
-      }, 1000)
-    },
-    _setCurrentRecordTime (flag) {
-      let recordConfig = this.recordConfig
-      let audioLimitTime = 59
-      console.log('录音的进行中状态', flag)
-      // 判断是否直接停止录音
-      if (flag === 'stop') {
-        clearInterval(this.recoderTimer)
-        this.recoderTimer = null
-        return
-      }
-      let initTip = () => {
-        this.recoderSecond++
-        this.recoderTimeTip = formatTimeBySec(this.recoderSecond)
-      }
-      // 初始化调用
-      let delay = isIOSsystem() ? 984 : 995
-      initTip()
-      this.recoderTimer = setInterval(() => {
-        // 判断是否超过了录制时间
-        if (this.recoderSecond >= audioLimitTime) {
-          clearInterval(this.recoderTimer)
-          this.recoderSecond = 60
-          this.recoderTimeTip = formatTimeBySec(60)
-          this.recoderTimer = null
-          // 更改为停止录音的状态
-          recordConfig.isRecord = false
-          recordConfig.isStop = true
-          this.recordConfig = Object.assign({}, recordConfig)
-          // 返回
-          return false
-        }
-        // 开始计时
-        initTip()
-      }, delay)
-    },
-    _resetAuioStatus () {
-      let recordConfig = this.recordConfig
-      for (let key in recordConfig) {
-        recordConfig[key] = false
-      }
-      // 设置对象
-      this.recordConfig = Object.assign({}, recordConfig)
-      // 还原当前的时间和计算的时间总和
-      this.recoderTimeTip = '00:00'
-      this.recoderSecond = -1
-      // 清除当前播放的timer
-      if (this.playRecoderTimer) {
-        clearInterval(this.playRecoderTimer)
-        this.playRecoderTimer = null
-        this.$wx.normalExecute('stopVoice', {
-          errorTip: '停止播放错误',
-          params: { localId: this.recoderLocalId }
-        })
-        this.isCurrentPlay = false
-      }
-      // 清除当前计时的timer
-      if (this.recoderTimer) {
-        clearInterval(this.recoderTimer)
-        this.recoderTimer = null
-        console.log('关闭或重置的时候清除录音状态 !!!')
-        this.$wx.stopRecord()
-      }
-      // 清除当前计时的timer
-      if (this.playRecoderTimer) clearInterval(this.playRecoderTimer)
-      if (this.recoderTimer) clearInterval(this.recoderTimer)
-    },
     _triggerFileUpload () {
       let fileInputEl = this.$refs.uploadFileInput[0]
       let curUploadConfig = this.uploadConfig[this.uploadKey]
@@ -964,10 +651,6 @@ export default {
     _getEmptyDivNum (rowNums, data) {
       let delta = rowNums - data.length % rowNums
       return delta === rowNums ? 0 : delta
-    },
-    _setRecordMaxTime () {
-      // 直接设置音频长度为1分钟
-      return formatTimeBySec(60)
     },
     _setPreviewState () {
       // 如果是IOS 或者是存在预览的定时器就直接返回不做操作
