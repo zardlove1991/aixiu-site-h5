@@ -85,7 +85,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
-import mixins from '@/common/mixins'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'depence-card',

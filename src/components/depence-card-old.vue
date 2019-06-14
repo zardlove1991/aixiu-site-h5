@@ -73,7 +73,7 @@ import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import MyCircle from '@/components/depence/circle'
 import MyModel from './depence/model'
-import mixins from '@/common/mixins'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'depence-card-old',
