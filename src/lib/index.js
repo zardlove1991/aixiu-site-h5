@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import MintUi from 'mint-ui'
 import vuePicturePreview from 'vue-picture-preview'
+import echarts from 'echarts'
 import { getApiFlag } from '@/utils/app'
 // 引入样式文件
 import 'mint-ui/lib/style.css'
@@ -11,7 +12,9 @@ function addVconsole () {
   let apiFlag = getApiFlag()
   if (['API41', 'EXAMAPI'].includes(apiFlag)) import(`@/lib/vconsole`)
 }
-
 addVconsole()
+
 Vue.use(MintUi)
 Vue.use(vuePicturePreview)
+
+Vue.prototype.$echarts = echarts
