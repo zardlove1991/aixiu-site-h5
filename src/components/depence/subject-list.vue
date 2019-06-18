@@ -5,8 +5,7 @@
       <div v-for="(item,index) in row" :key="item.key"
            class="item normal"
            :class="[{ disabled: haveDone(item) }, setActiveClass(item), addClass(item)]"
-           @click.stop= "selectSubject(item)"
-      >
+           @click.stop= "selectSubject(item)">
         {{showSubjectIndex(rowIndex,index)}}
       </div>
       <!--空占位-->
