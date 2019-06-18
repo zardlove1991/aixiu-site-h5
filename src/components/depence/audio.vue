@@ -52,6 +52,18 @@
         <span class="tip">加载中...</span>
       </div>
     </div>
+    <!--气泡形播放器-->
+    <div class="bubble-player-wrap" v-else-if="showType === 'bubble'">
+      <div class="audio-horn-bg"></div>
+      <!--主体展示区域-->
+      <div class="audio-content" ref="audioContent"
+        :style="dynamicStyle"
+        :class="{'play': playing }"
+        @click.stop="togglePlay">
+        <i class="player-wave"></i>
+        <span class="player-duration" v-if="duration">{{duration + '"'}}</span>
+      </div>
+    </div>
     <!--audio组件-->
     <audio ref="audio"
       @loadedmetadata="_getAudioInfo" @ended="audioStop"
@@ -92,7 +104,8 @@ export default {
       type: Object,
       default: () => ({
         isLimit: true,
-        limtTime: 60
+        limitTime: 60,
+        showSecond: false
       })
     }
   },
@@ -104,6 +117,7 @@ export default {
       let showType = this.showType
       let maxW = null // 限制的最大宽度
       if (showType === 'wave') maxW = 225
+      else if (showType === 'bubble') maxW = 175
       // 计算宽度
       let duration = this.currentDuration
       let { limitTime } = this.limitInfo
@@ -112,23 +126,28 @@ export default {
         w = duration > limitTime ? maxW : parseInt((duration / limitTime) * maxW)
       }
       let defaultW = w ? `${w}px` : (maxW || '100%')
-      console.log('当前设置动态宽度', defaultW, limitTime)
+      console.log('当前设置动态宽度', duration, defaultW, this.limitInfo)
       return { width: defaultW }
     },
     duration () {
       let sign = this.splitSign
       let currentTime = this.currentTime
       let duration = this.currentDuration
-      let { isLimit, limtTime } = this.limitInfo
+      let { isLimit, limitTime, showSecond } = this.limitInfo
       let reuslt = null
       if (duration) {
         let lastCountTime = duration - currentTime
-        // 兼容IOS录音的时长
-        if (isLimit) {
-          let curCountTime = (lastCountTime > (limtTime - 1) ? limtTime : lastCountTime) || 0
-          reuslt = formatTimeBySec(curCountTime, false, sign)
+        // 判断是否展示秒
+        if (showSecond) {
+          reuslt = Math.ceil(lastCountTime || 0)
         } else {
-          reuslt = formatTimeBySec(lastCountTime, false, sign)
+          // 兼容IOS录音的时长
+          if (isLimit) {
+            let curCountTime = (lastCountTime > (limitTime - 1) ? limitTime : lastCountTime) || 0
+            reuslt = formatTimeBySec(curCountTime, false, sign)
+          } else {
+            reuslt = formatTimeBySec(lastCountTime, false, sign)
+          }
         }
       }
       return reuslt
@@ -425,6 +444,50 @@ export default {
       }
     }
   }
+  .bubble-player-wrap{
+    position: relative;
+    width:auto;
+    height: px2rem(70px);
+    padding-left: px2rem(16px);
+    .audio-horn-bg{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: px2rem(45px);
+      height: px2rem(39px);
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      @include img-retina('~@/assets/audio/audio_bubble@2x.png','~@/assets/audio/audio_bubble@3x.png', 100%, 100%);
+    }
+    .audio-content{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: px2rem(150px);
+      height: 100%;
+      padding: 0 px2rem(30px);
+      box-sizing: border-box;
+      border-radius: px2rem(35px);
+      transition: width 0.3s ease;
+      z-index: 1;
+      @include bg-color('audioBgTwo');
+      @include font-color('bgColor');
+      @include font-dpr(14px);
+      .player-wave{
+        width: px2rem(24px);
+        height: px2rem(24px);
+        background-position: center;
+        background-repeat: no-repeat;
+        @include img-retina('~@/assets/audio/voice_end@2x.png', '~@/assets/audio/voice_end@3x.png', 100%, 100%);
+      }
+      &.play{
+        .player-wave{
+          animation: voiceWave 1.4s linear infinite;
+        }
+      }
+    }
+  }
 }
 
 @keyframes wave{
@@ -433,6 +496,18 @@ export default {
   50% { height: px2rem(20px) }
   70% { height: px2rem(32px) }
   100% { height: px2rem(4px) }
+}
+
+@keyframes voiceWave{
+  0%{
+    @include img-retina('~@/assets/audio/voice_start@2x.png', '~@/assets/audio/voice_start@3x.png', 100%, 100%);
+  }
+  50%{
+    @include img-retina('~@/assets/audio/voice_middle@2x.png', '~@/assets/audio/voice_middle@3x.png', 100%, 100%);
+  }
+  100%{
+    @include img-retina('~@/assets/audio/voice_end@2x.png', '~@/assets/audio/voice_end@3x.png', 100%, 100%);
+  }
 }
 
 </style>
