@@ -170,18 +170,21 @@ export default {
       this.essayTempAnswerInfo = {...essayTempAnswerInfo}
     },
     _triggerFileUpload () {
-      let fileInputEl = this.$refs.uploadFileInput[0]
+      let fileInputEl = this.$refs.uploadFileInput
       let curUploadConfig = this.uploadConfig[this.uploadKey]
       // 判断是否是微信内核
       let touchFileClick = () => {
         // 手动触发
-        let fileEl = this.$refs.uploadFileInput[0]
+        let fileEl = this.$refs.uploadFileInput
         fileEl.click()
       }
       // 设置访问属性
       fileInputEl.accept = curUploadConfig.type
       fileInputEl.multiple = curUploadConfig.multiple
       touchFileClick()
+    },
+    _dealTestAudio (e) {
+      console.log('xxx 录音结束拿到的信息', e)
     },
     _dealEssayFromValue (params) {
       // 防止多次处理

@@ -97,9 +97,35 @@
     <div class="fixed-btn-wrap">
       <!--底部跳转按钮-->
       <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
-        <div class="prev" v-show="currentSubjectIndex !== 0" @click.stop="changeSubjectIndex('sub')">上一题</div>
-        <div class="next" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">下一题</div>
-        <div class="next" v-show="isShowSubmitBtn" @click.stop="submitExam">交卷</div>
+        <!--上一题按钮-->
+        <div class="prev-wrap"
+          :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
+          @click.stop="changeSubjectIndex('sub')">
+          <div class="prev-arrow-wrap">
+            <i class="examfont prev-arrow">&#xe713;</i>
+          </div>
+          <div class="prev-text">上一题</div>
+        </div>
+        <!--中间操作区域-->
+        <div class="btn-record-option-wrap">
+          <!--内部阴影层-->
+          <div class="btn-record-option-shadow"></div>
+          <!--当前操作层-->
+          <div class="btn-record-option">
+            <my-record record-type="touch" @finish="_dealTestAudio"></my-record>
+          </div>
+        </div>
+        <!--下一题按钮-->
+        <div class="next-wrap" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">
+          <div class="next-arrow-wrap">
+            <i class="examfont next-arrow">&#xe713;</i>
+          </div>
+          <div class="next-text">下一题</div>
+        </div>
+        <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
+          <div class="next-arrow-wrap"></div>
+          <div class="next-text">交卷</div>
+        </div>
       </div>
       <!--引入录音组件-->
       <my-record ref="myRecord" @finish="_dealEssayFromValue"></my-record>

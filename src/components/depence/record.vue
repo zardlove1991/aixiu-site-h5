@@ -1,45 +1,70 @@
 <template lang="html">
-  <!--录音区域-->
-  <transition name="up" mode="out-in">
-    <!--录音包裹-->
-    <div class="record-audio-wrap" v-if="isShowRecordAudio">
-      <p class="audio-tip">{{recordInfoTip}}</p>
-      <!--所有操作按钮包裹区域-->
-      <div class="all-btn-wrap">
-        <!--重录-->
-        <div class="record-reset-wrap"  v-show="recordConfig.isStop">
-          <div class="btn" @click.stop="recordAuio('reset')"></div>
-          <p class="tip">重录</p>
-        </div>
-        <!--录音按钮-->
-        <div class="record-play-wrap">
-          <div class="record-btn-wrap" @click.stop="recordAuio('start')">
-            <div class="record-paly-bg"
-              :class="{'animation': recordConfig.isRecord}"
-            ></div>
-            <div class="record-paly-btn"
-              :class="{
-                'record-stop':  recordConfig.isStop,
-                'record-start': recordConfig.isRecord || recordConfig.isPlay
-              }"
-            ></div>
+  <!--录音容器包裹-->
+  <div class="record-total-template-wrap">
+    <!--弹层录音区域-->
+    <transition name="up" mode="out-in">
+      <!--录音包裹-->
+      <div class="record-audio-wrap" v-if="isShowRecordAudio && recordType === 'pop'">
+        <p class="audio-tip">{{recordInfoTip}}</p>
+        <!--所有操作按钮包裹区域-->
+        <div class="all-btn-wrap">
+          <!--重录-->
+          <div class="record-reset-wrap"  v-show="recordConfig.isStop">
+            <div class="btn" @click.stop="recordAuio('reset')"></div>
+            <p class="tip">重录</p>
           </div>
-          <!--提示-->
-          <p class="time" v-show="!recordConfig.isStop"><i class="hige">{{recoderTimeTip}}</i>/{{_setRecordMaxTime()}}</p>
-          <p class="tip" v-show="recordConfig.isStop">试听</p>
+          <!--录音按钮-->
+          <div class="record-play-wrap">
+            <div class="record-btn-wrap" @click.stop="recordAuio('start')">
+              <div class="record-paly-bg"
+                :class="{'animation': recordConfig.isRecord}"
+              ></div>
+              <div class="record-paly-btn"
+                :class="{
+                  'record-stop':  recordConfig.isStop,
+                  'record-start': recordConfig.isRecord || recordConfig.isPlay
+                }"
+              ></div>
+            </div>
+            <!--提示-->
+            <p class="time" v-show="!recordConfig.isStop"><i class="hige">{{recoderTimeTip}}</i>/{{_setRecordMaxTime()}}</p>
+            <p class="tip" v-show="recordConfig.isStop">试听</p>
+          </div>
+          <!--确认-->
+          <div class="record-confirm-wrap"  v-show="recordConfig.isStop"
+            @click.stop="confirmRecordAudio"
+          >
+            <div class="btn"></div>
+            <p class="tip">确认</p>
+          </div>
         </div>
-        <!--确认-->
-        <div class="record-confirm-wrap"  v-show="recordConfig.isStop"
-          @click.stop="confirmRecordAudio"
-        >
-          <div class="btn"></div>
-          <p class="tip">确认</p>
-        </div>
+        <!--关闭按钮-->
+        <div class="close-bg" @click.stop="closeAudioRecoder"></div>
       </div>
-      <!--关闭按钮-->
-      <div class="close-bg" @click.stop="closeAudioRecoder"></div>
+    </transition>
+    <!--按压录音区域-->
+    <div class="record-touch-wrap" v-if="recordType === 'touch'">
+      <!--进度条展示区域-->
+      <el-progress color="#25C17C" type="circle"
+        :class="{'hide-progress': percent === 0 }"
+        :width="53"
+        :show-text="false"
+        :stroke-width="1.5"
+        :percentage="percent">
+      </el-progress>
+      <!--主体内容展示-->
+      <div class="record-play-wrap" @click.stop="initRecord">
+        <i class="record-play-bg"
+          :class="{
+            'record-stop':  recordConfig.isStop,
+            'record-start': recordConfig.isRecord
+          }">
+        </i>
+      </div>
+      <!--录音提示-->
+      <p class="record-play-tip">{{recordInfoTip}}</p>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script>
@@ -51,8 +76,15 @@ import wx from '@/config/weixin-js-sdk'
 
 export default {
   name: 'record',
+  props: {
+    recordType: {
+      type: String,
+      default: 'pop'
+    }
+  },
   data () {
     return {
+      percent: 0,
       recoderTimeTip: '00:00',
       recoderPlayTip: '00:00',
       isShowRecordAudio: false,
@@ -66,13 +98,21 @@ export default {
   },
   computed: {
     recordInfoTip () {
+      let recordType = this.recordType
       let recordConfig = this.recordConfig
       let recoderTimeTip = this.recoderTimeTip
       let recoderPlayTip = this.recoderPlayTip
-      let tip = '点击开始录音'
-      if (recordConfig.isRecord) tip = '点击结束录音'
-      else if (recordConfig.isStop && !recordConfig.isPlay) tip = `上传${recoderTimeTip}`
-      else if (recordConfig.isStop && recordConfig.isPlay) tip = `上传${recoderPlayTip}`
+      let tip = ''
+      if (recordType === 'pop') {
+        tip = '点击开始录音'
+        if (recordConfig.isRecord) tip = '点击结束录音'
+        else if (recordConfig.isStop && !recordConfig.isPlay) tip = `上传${recoderTimeTip}`
+        else if (recordConfig.isStop && recordConfig.isPlay) tip = `上传${recoderPlayTip}`
+      } else if (recordType === 'touch') {
+        tip = '开始录音'
+        if (recordConfig.isRecord) tip = '点击停止'
+        else if (recordConfig.isReset) tip = '重新录音'
+      }
       return tip
     }
   },
@@ -97,6 +137,7 @@ export default {
     async dealRecordOption (newConfig) {
       try {
         console.log('监听录音状态配置', newConfig)
+        let recordType = this.recordType
         let WX = this.$wx
         // 判断当前录音配置状态
         if (newConfig.isRecord && !newConfig.isStop) { // 开始录音
@@ -128,11 +169,11 @@ export default {
             this.recoderLocalId = await WX.stopRecord()
             console.log('结束录音得到的localId', this.recoderLocalId)
             this._setCurrentRecordTime('stop')
+            // 如果touch的话 结束后自动把录音上传
+            if (recordType === 'touch') this.confirmRecordAudio()
           }
         }
       } catch (err) {
-        // 调用出错直接重置
-        // this._resetAuioStatus()
         console.log(err)
       }
     },
@@ -163,10 +204,13 @@ export default {
     },
     initRecord () {
       let _this = this
+      let recordType = this.recordType
       let WX = this.$wx
       // 判断是否初始过录音
       if (_this.initRecordLimit) {
-        _this.isShowRecordAudio = !_this.isShowRecordAudio
+        // 处理下为弹层的展示
+        if (recordType === 'pop') _this.isShowRecordAudio = !_this.isShowRecordAudio
+        else if (recordType === 'touch') _this.recordAuio('start')
       } else {
         // 提前去模拟请求录音弹窗防止后续操作有问题
         let toastInstance = _this.$toast({message: '为您初始化录音中...', duration: 3000})
@@ -176,13 +220,15 @@ export default {
             success () {
               console.log('提前语音stopRecord授权结束走成功！！')
               // 显示录音弹层
-              _this.isShowRecordAudio = true
+              if (recordType === 'pop') _this.isShowRecordAudio = true
+              // 授权成功后直接走录音
+              else if (recordType === 'touch') _this.recordAuio('start')
             },
             fail () {
               console.log('提前语音stopRecord授权结束走失败！！')
               _this.$toast({message: '初始化录音失败', duration: 1500})
               // 隐藏录音弹层
-              _this.isShowRecordAudio = false
+              if (recordType === 'pop') _this.isShowRecordAudio = false
             },
             complete () {
               toastInstance.close()
@@ -210,25 +256,34 @@ export default {
     },
     recordAuio (flag) {
       let recordConfig = this.recordConfig
+      let recordType = this.recordType
       let recordTimerStamp = this.recordTimerStamp
       if (recordTimerStamp && ((+new Date() - recordTimerStamp) < 1000)) {
         Toast('间隔过短,稍后再试~')
         return
       }
+      recordConfig.isReset = false
       // 判断是否是重置还是开始录音
       if (flag === 'start') {
         // 判断是否开始录音
         if (recordConfig.isRecord) {
           recordConfig.isRecord = false
           recordConfig.isStop = true
+          // 先重置下当前的状态
+          if (recordType === 'touch') {
+            this.$nextTick(() => this._resetAuioStatus())
+          }
         } else {
           // 判断是否停止
           if (recordConfig.isStop) {
-            // 当前的录音长度
-            let playRecoderSecond = this.playRecoderSecond
-            // 只有当录音时间大于0的时候再去调用API 解决IOS中回调过慢的问题
-            if (recordConfig.isPlay && playRecoderSecond <= 0) return
-            recordConfig.isPlay = !recordConfig.isPlay
+            // 播放录音只有在为弹层样式的时候展示
+            if (recordType === 'pop') {
+              // 当前的录音长度
+              let playRecoderSecond = this.playRecoderSecond
+              // 只有当录音时间大于0的时候再去调用API 解决IOS中回调过慢的问题
+              if (recordConfig.isPlay && playRecoderSecond <= 0) return
+              recordConfig.isPlay = !recordConfig.isPlay
+            }
           } else {
             recordConfig.isRecord = true
             recordConfig.isStop = false
@@ -279,6 +334,7 @@ export default {
       }, 1000)
     },
     _setCurrentRecordTime (flag) {
+      let recordType = this.recordType
       let recordConfig = this.recordConfig
       let audioLimitTime = 59
       console.log('录音的进行中状态', flag)
@@ -291,6 +347,9 @@ export default {
       let initTip = () => {
         this.recoderSecond++
         this.recoderTimeTip = formatTimeBySec(this.recoderSecond)
+        // 计算百分比
+        let percent = Math.ceil((this.recoderSecond / 60) * 100)
+        this.percent = percent > 100 ? 100 : percent
       }
       // 初始化调用
       let delay = isIOSsystem() ? 984 : 995
@@ -305,6 +364,10 @@ export default {
           // 更改为停止录音的状态
           recordConfig.isRecord = false
           recordConfig.isStop = true
+          // 先重置下当前的状态
+          if (recordType === 'touch') {
+            this.$nextTick(() => this._resetAuioStatus())
+          }
           this.recordConfig = Object.assign({}, recordConfig)
           // 返回
           return false
@@ -316,13 +379,15 @@ export default {
     _resetAuioStatus () {
       let recordConfig = this.recordConfig
       for (let key in recordConfig) {
-        recordConfig[key] = false
+        if (key === 'isReset') recordConfig[key] = true
+        else recordConfig[key] = false
       }
       // 设置对象
       this.recordConfig = Object.assign({}, recordConfig)
       // 还原当前的时间和计算的时间总和
       this.recoderTimeTip = '00:00'
       this.recoderSecond = -1
+      this.percent = 0
       // 清除当前播放的timer
       if (this.playRecoderTimer) {
         clearInterval(this.playRecoderTimer)
@@ -465,6 +530,53 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     @include img-retina('~@/assets/common/close_1@2x.png', '~@/assets/common/close_1@3x.png',px2rem(30px),px2rem(30px));
+  }
+}
+.record-touch-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  .hide-progress{
+    opacity: 0 !important;
+  }
+  .record-play-wrap{
+    position: absolute;
+    top: 50%;
+    left:50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 84%;
+    height: 84%;
+    border-radius: 50%;
+    transform: translate3d(-49.5%, -50%, 0);
+    @include bg-color('themeColor');
+    .record-play-bg{
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
+      &.record-stop{
+        background-position: px2rem(34px) center;
+        @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
+      }
+      &.record-start{
+        background-position:center;
+        @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
+      }
+    }
+  }
+  .record-play-tip{
+    position: absolute;
+    top: 100%;
+    padding-top: px2rem(12px);
+    line-height: px2rem(26px);
+    @include font-dpr(12px);
+    @include font-color('descColor');
   }
 }
 

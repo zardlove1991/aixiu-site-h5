@@ -239,33 +239,86 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: px2rem(100px);
+      padding: px2rem(20px) px2rem(80px) 0;
+      height: px2rem(140px);
       display: flex;
-      justify-content: space-around;
-      align-items: center;
+      justify-content: space-between;
       pointer-events: auto;
+      box-sizing: border-box;
+      box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
       @include bg-color('bgColor');
       &.iphonex-h{
         height: px2rem(160px);
       }
-      .prev,.next{
+      .prev-wrap,.next-wrap{
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
-        width: px2rem(330px);
-        height: px2rem(80px);
-        border-radius: px2rem(40px);
-        @include font-dpr(16px);
+        pointer-events: auto;
+        min-width: px2rem(72px);
+        .prev-arrow-wrap,.next-arrow-wrap{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: px2rem(58px);
+          height: px2rem(58px);
+          border-radius: 50%;
+          margin-bottom: px2rem(12px);
+          @include font-dpr(13px);
+          @include font-color('themeColor');
+          @include border('all',1px,solid,'themeColor');
+          .prev-arrow,.next-arrow{
+            line-height: px2rem(28px);
+          }
+        }
+        .prev-text,.next-text{
+          line-height: px2rem(26px);
+          @include font-dpr(12px);
+          @include font-color('descColor');
+        }
+        .prev-arrow{
+          position: relative;
+          left: px2rem(-2px);
+          top: px2rem(2px);
+          transform: rotate(180deg);
+        }
+        .next-arrow{
+          position: relative;
+          left: px2rem(4px);
+          top: px2rem(2px);
+        }
+        &.arrow-wrap-disabeld{
+          pointer-events: none;
+          .prev-arrow-wrap,.next-arrow-wrap{
+            @include font-color('disabledColorOne');
+            @include border('all',1px,solid,'borderGray');
+          }
+        }
       }
-      .prev{
-        @include bg-color('bgColor');
-        @include font-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-      .next{
-        @include font-color('bgColor');
-        @include bg-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
+      .btn-record-option-wrap{
+        position: relative;
+        width: px2rem(120px);
+        height: px2rem(120px);
+        .btn-record-option-shadow{
+          position: relative;
+          top: px2rem(-50px);
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          box-shadow: 0 0 px2rem(20px) rgba(0,0,0,0.05);
+          z-index: -1;
+          @include bg-color('bgColor');
+        }
+        .btn-record-option{
+          position: absolute;
+          top: px2rem(-46px);
+          left:px2rem(6px);
+          width: px2rem(106px);
+          height: px2rem(106px);
+          padding-top: px2rem(4px);
+          border-radius: 50%;
+          @include bg-color('bgColor');
+        }
       }
     }
   }

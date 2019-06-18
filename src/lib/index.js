@@ -3,6 +3,7 @@ import MintUi from 'mint-ui'
 import vuePicturePreview from 'vue-picture-preview'
 import echarts from 'echarts'
 import { getApiFlag } from '@/utils/app'
+import AddElementUI from '@/lib/elemen-ui'
 // 引入样式文件
 import 'mint-ui/lib/style.css'
 import '@/styles/iconfont/exam/iconfont.scss'
@@ -13,6 +14,7 @@ function addVconsole () {
   if (['API41', 'EXAMAPI'].includes(apiFlag)) import(`@/lib/vconsole`)
 }
 addVconsole()
+AddElementUI(Vue)
 
 Vue.use(MintUi)
 Vue.use(vuePicturePreview)
