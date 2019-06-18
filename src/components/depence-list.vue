@@ -30,7 +30,7 @@
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
             <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
             <!--音频播放-->
-            <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="annexMedia(media)"></my-audio>
+            <my-audio v-if="mediaKey=='audio' && (annexMedia(media) && annexMedia(media).url)" class="my-audio" :src="annexMedia(media).url"></my-audio>
             <!--视频播放-->
             <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
           </div>
@@ -44,7 +44,7 @@
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
               <!--音频播放-->
-              <my-audio v-if="mediaKey=='audio' && media.length" class="my-audio" :src="annexMedia(media)"></my-audio>
+              <my-audio v-if="mediaKey=='audio' && (annexMedia(media) && annexMedia(media).url)" class="my-audio" :src="annexMedia(media).url"></my-audio>
               <!--视频播放-->
               <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
             </div>
@@ -216,6 +216,21 @@ export default {
     this.initList()
   },
   methods: {
+    annexMedia (origin) {
+      if (typeof origin === 'string') {
+        return origin
+      } else if (origin instanceof Array) {
+        if (origin.length) {
+          return origin[0]
+        } else {
+          return null
+        }
+      } else if (origin instanceof Object) {
+        return origin
+      } else {
+        return null
+      }
+    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
