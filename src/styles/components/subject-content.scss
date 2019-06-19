@@ -1,199 +1,101 @@
 @import "@/styles/index.scss";
+
+/* 题目大部分共公共样式 */
 .subject-content-wrap{
-  .subject-essay-wrap{
-    width: 100%;
-    padding:px2rem(100px) 0 0;
+  .subject-type-wrap{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: px2rem(54px) px2rem(43px) px2rem(16px) px2rem(32px);
     box-sizing: border-box;
-    .title-tip{
-      margin-left: px2rem(30px);
+    .subject-type{
       line-height: 1;
       @include font-dpr(16px);
-      @include font-color('titleColor');
-    }
-    .from-wrap{
-      width: 100%;
-      padding: px2rem(30px) 0 0;
-      margin: 0 auto;
-      .content-wrap{
-        width: 100%;
-        height: px2rem(240px);
-        padding: 0 px2rem(30px);
-        box-sizing: border-box;
-        .content{
-          width: 100%;
-          height: 100%;
-          padding: px2rem(30px) px2rem(21px);
-          -webkit-appearance:none;
-          outline: none;
-          font-weight: 300;
-          box-sizing: border-box;
-          @include font-dpr(16px);
-          @include font-color('titleColor');
-          @include border('all', px2rem(2px), solid, 'lineColorOne');
-        }
-      }
-      .answer-content{
-        padding: px2rem(7px) px2rem(30px) 0;
-        line-height: px2rem(44px);
-        word-wrap: break-word;
-        box-sizing: border-box;
-        @include font-dpr(15px);
-        @include font-color('titleColor');
-      }
-      .upload-media-wrap{
-        width: 100%;
-        .images-wrap{
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          align-content: flex-start;
-          width: 100%;
-          overflow: hidden;
-          padding: 0 px2rem(30px);
-          box-sizing: border-box;
-          .single-image-wrap{
-            position: relative;
-            width: px2rem(158px);
-            height: px2rem(158px);
-            margin-top: px2rem(24px);
-            .eassy-image{
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
-          }
-        }
-        .delete-icon{
-          position: absolute;
-          right: 0;
-          top:0;
-          transform: translate3d(40%,-40%,0);
-          width: px2rem(60px);
-          height: px2rem(60px);
-          border-radius: 50%;
-          background-position: center;
-          background-repeat: no-repeat;
-          @include img-retina('~@/assets/common/close_1@2x.png','~@/assets/common/close_1@3x.png', px2rem(36px),px2rem(36px));
-        }
-        .eassy-audio-wrap,.eassy-video-wrap{
-          padding: 0 px2rem(30px);
-          position: relative;
-          box-sizing: border-box;
-          .eassy-audio{
-            margin-top: px2rem(30px);
-          }
-          .eassy-video{
-            margin-top:px2rem(30px);
-            height: px2rem(390px);
-          }
-          .delete-icon{
-            transform: translate3d(-10%,-40%,0);
-          }
-        }
-      }
-      .upload-option-wrap{
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: px2rem(25px) px2rem(30px) 0;
-        box-sizing: border-box;
-        .upload-img,.upload-audio,.upload-video{
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          pointer-events: auto;
-          @include font-color('descColorOne');
-          .examfont{
-            line-height: 1;
-            @include font-dpr(28px);
-          }
-          &.disabled{
-            pointer-events: none;
-            @include font-color('disabledColorOne');
-          }
-        }
-        .upload-img{
-          .examfont{
-            @include font-dpr(24px);
-          }
-        }
-        .upload-audio{
-          margin: 0 px2rem(70px);
-        }
-        .file-input{
-          width: px2rem(2px);
-          height: px2rem(2px);
-          opacity: 0;
-          margin-left: px2rem(60px);
-          z-index: -1;
-        }
+      .score{
+        font-weight: normal;
+        margin-left: px2rem(10px);
+        @include font-dpr(14px);
       }
     }
-  }
-  .subject-voice-wrap{
-    position: relative;
-    margin: px2rem(40px) px2rem(30px) 0;
-    padding: px2rem(40px) px2rem(30px) px2rem(50px);
-    box-shadow: 0px 0px px2rem(10px) 0px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    background-repeat: no-repeat;
-    background-position: 96% bottom;
-    @include img-retina('~@/assets/common/personal_bg@2x.png','~@/assets/common/personal_bg@2x.png', px2rem(135px), px2rem(163px));
-    .voice-score{
-      position: absolute;
-      top:0;
-      right: px2rem(20px);
-      width: px2rem(76px);
-      height: px2rem(80px);
-      padding-top: px2rem(10px);
-      text-align: center;
-      box-sizing: border-box;
-      background-position: center;
-      background-repeat: no-repeat;
-      @include font-dpr(13px);
-      @include font-color('bgColor');
-      @include img-retina('~@/assets/common/score_flag@2x.png','~@/assets/common/score_flag@3x.png', 100%, 100%);
-    }
-    .voice-read-tip-wrap{
+    .subject-tip-wrap{
       display: flex;
       align-items: center;
-      .voice-read-tip{
-        font-weight: normal;
-        line-height: px2rem(30px);
-        margin-right: px2rem(22px);
-        @include font-dpr(13px);
-        @include font-color('tipColor');
+      .tip-img{
+        width: px2rem(30px);
+        height: px2rem(30px);
+        @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
+        background-repeat: no-repeat;
+        background-position: center;
+        margin-right: px2rem(11px);
       }
-      .voice-score-tip-wrap{
-        width: px2rem(32px);
-        height: px2rem(32px);
-        text-align: center;
-        line-height: px2rem(36px);
+      .tip-count{
+        @include font-dpr(13px);
+        @include font-color('tipColor')
+      }
+    }
+    .essay-audio-score{
+      line-height: 1;
+      padding: px2rem(9px) px2rem(9px) px2rem(9px) px2rem(11px);
+      border-radius: px2rem(4px);
+      @include font-dpr(15px);
+      @include font-color('errorColor');
+      @include border('all', px2rem(1px), dashed,'lineColorTwo');
+    }
+  }
+  .subject-title{
+    @include font-dpr(16px);
+    padding:px2rem(39px) px2rem(43px) 0 px2rem(30px);
+    box-sizing: border-box;
+  }
+  .media-wrap{
+    padding:0 px2rem(43px) 0 px2rem(30px);
+    box-sizing: border-box;
+    text-align: center;
+    .my-audio,.my-video,.my-img{
+      margin-top: px2rem(39px);
+    }
+    .my-img{
+      width: auto;
+      max-width: 100%;
+      max-height: px2rem(300px);
+      object-fit: contain;
+    }
+  }
+  .subject-select-wrap{
+    margin-top: px2rem(40px);
+    padding:0 px2rem(43px) 0 px2rem(30px);
+    box-sizing: border-box;
+    .select-tip-wrap{
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      .select-tip{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 0 0 px2rem(54px);
+        width: px2rem(54px);
+        height: px2rem(54px);
         border-radius: 50%;
-        @include font-dpr(12px);
-        @include font-color('descColor');
-        @include border('all', 1px,solid, 'descColor');
+        margin-right: px2rem(40px);
+        @include font-dpr(14px);
+        @include bg-color('bgColor');
+        @extend .box-shadow;
+        &.active{
+          @include font-color('bgColor');
+          @include bg-color('themeColor');
+        }
+        &.error{
+          @include font-color('bgColor');
+          @include bg-color('errorColor');
+        }
+      }
+      .select-desc{
+        max-width: 90%;
       }
     }
-    .voice-words-tip{
-      padding: px2rem(20px) 0;
-      line-height: px2rem(48px);
-      word-break: break-all;
-      @include font-dpr(14px);
-      @include font-color('themeColor');
-      &.error{
-        @include font-color('errorColor');
-      }
-    }
-    .voice-audio-wrap{
-      padding: px2rem(40px) 0 0;
-      .voice-audio-tip{
-        font-weight: normal;
-        line-height: px2rem(30px);
-        margin-bottom: px2rem(28px);
-        @include font-dpr(13px);
-        @include font-color('tipColor');
-      }
+    .media-wrap{
+      padding: 0;
     }
   }
   .answerinfo-wrap{
@@ -315,42 +217,6 @@
       .mark-audio-wrap{
         padding-bottom: px2rem(30px);
       }
-    }
-  }
-}
-
-/* 图标统计的包裹 */
-#voice-statistics{
-  padding-top: px2rem(70px);
-}
-
-/* 语音问答题的tooltip样式 */
-.score-tip-wrap{
-  display: flex;
-  align-items: center;
-  .tip-row-wrap{
-    display: flex;
-    align-items: center;
-    margin-right: px2rem(30px);
-    &:last-child{
-      margin-right: 0;
-    }
-    .tip-row-icon{
-      width: px2rem(10px);
-      height: px2rem(10px);
-      border-radius: 50%;
-      margin-right: px2rem(6px);
-      &.success{
-        @include bg-color('themeColor');
-      }
-      &.error{
-        @include bg-color('errorColor');
-      }
-    }
-    .tip-row-text{
-      line-height: px2rem(28px);
-      @include font-dpr(12px);
-      @include font-color('bgColor');
     }
   }
 }

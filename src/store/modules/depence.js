@@ -13,6 +13,7 @@ const state = {
   currentSubjectIndex: 0, // 当前题目索引
   answerCardInfo: null, // 答题卡当前的信息
   isShowModelThumb: false, // 判断界面是否有弹窗展示
+  isShowSubjectList: false, // 是否显示考试答题缩率展示
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
   curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
@@ -69,6 +70,7 @@ const getters = {
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,
   isShowModelThumb: state => state.isShowModelThumb,
+  isShowSubjectList: state => state.isShowSubjectList,
   essayAnswerInfo: state => state.essayAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos
 }
@@ -82,6 +84,9 @@ const mutations = {
   },
   SET_MODEL_THUMB_STATE (state, payload) {
     state.isShowModelThumb = payload
+  },
+  SET_SUBJECT_LIST_SHOW (state, payload) {
+    state.isShowSubjectList = payload
   },
   SET_EXAMID (state, payload) {
     state.examId = payload

@@ -15,6 +15,7 @@ export default {
   data () {
     return {
       essayTempAnswerInfo: null,
+      isShowOpsModel: false,
       uploadConfig: {
         image: {
           type: 'image/*',
@@ -37,10 +38,29 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'essayAnswerInfo', 'currentSubjectInfo', 'isShowModelThumb',
-      'renderType', 'examList'
+      'renderType', 'examList', 'currentSubjectIndex', 'isShowSubjectList'
     ])
   },
   watch: {
+    currentSubjectIndex (newIndex, oldIndex) {
+      let renderType = this.renderType
+      let essayAnswerInfo = this.essayAnswerInfo // mixin中的数据
+      let subject = this.examList[oldIndex]
+      let isActive = subject.options.some(item => item.active)
+      let isAnswerd = subject.answer && subject.answer.length
+      let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
+      // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
+      if (renderType === 'exam') {
+        let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
+        let isShowModel = subject.type === 'essay' ? DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id) : isDidRecord
+        // 这边针对问答题的判断需要重新判断模态框的展示
+        if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
+      }
+      // 检查是否有特殊类型提醒的提交操作: 问答、多选
+      this.sendSaveRecordOption(subject)
+      // 清空当前页面的视频组件信息
+      if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
+    },
     essayTempAnswerInfo (newAnwer) {
       console.log('当前问答题触发的临时提交数据', newAnwer)
       let essayAnswerInfo = this.essayAnswerInfo
@@ -149,6 +169,18 @@ export default {
         console.log(err)
       }
     },
+    async selectAnswer (selectIndex) {
+      let subject = this.currentSubjectInfo
+      try {
+        await this.addSelectActiveFlag(selectIndex)
+        // 保存答题记录 这边不处理多选 多选checkboxrecord提交
+        if (subject.type !== 'checkbox') {
+          await this.saveAnswerRecord(subject)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
     uploadText (e) {
       this.uploadKey = 'text'
       this._dealEssayFromValue({ e })
@@ -168,6 +200,46 @@ export default {
       // 更新数据
       curUploadData.splice(index, 1)
       this.essayTempAnswerInfo = {...essayTempAnswerInfo}
+    },
+    annexMedia (origin) {
+      if (typeof origin === 'string') {
+        return origin
+      } else if (origin instanceof Array) {
+        if (origin.length) {
+          return origin[0]
+        } else {
+          return null
+        }
+      } else if (origin instanceof Object) {
+        return origin
+      } else {
+        return null
+      }
+    },
+    toggetSubjectList () {
+      let state = this.isShowSubjectList
+      // 提交改变
+      this.setSubjectListShow(!state)
+    },
+    dealExamHeaderSelect ({subject, index}) {
+      this.toggetSubjectList()
+      this.changeSubjectIndex(index)
+    },
+    showOpsModel () {
+      this.isShowOpsModel = true
+      setTimeout(() => {
+        this.isShowOpsModel = false
+      }, 520)
+    },
+    selectTouchStart (selectIndex) {
+      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
+      selectEl.style.backgroundColor = '#f9f9f9'
+    },
+    selectTouchEnd (selectIndex) {
+      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
+      selectEl.style.backgroundColor = ''
+      // 调用选择答案
+      this.selectAnswer(selectIndex)
     },
     _triggerFileUpload () {
       let fileInputEl = this.$refs.uploadFileInput
@@ -243,11 +315,17 @@ export default {
     _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO',
-      setModelThumbState: 'SET_MODEL_THUMB_STATE'
+      setSubjectListShow: 'SET_SUBJECT_LIST_SHOW',
+      setModelThumbState: 'SET_MODEL_THUMB_STATE',
+      setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS'
     }),
     ...mapActions('depence', {
       getMaterialInfo: 'GET_MATERIAL_INFO',
-      getQcloudVideoInfo: 'GET_QCLOUD_VIDEO_INFO'
+      getQcloudVideoInfo: 'GET_QCLOUD_VIDEO_INFO',
+      addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG',
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
+      saveAnswerRecord: 'SAVE_ANSWER_RECORD',
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
     })
   }
 }

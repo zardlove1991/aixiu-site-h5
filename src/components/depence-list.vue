@@ -12,62 +12,10 @@
     <div class="qtnlist-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
         <template v-if="index === currentSubjectIndex">
-          <div class="subject-type-wrap">
-            <h3 class="subject-type">
-              <span>{{item.typeTip}}</span>
-              <span class="score" v-show="item.score">{{`(${item.score}分)`}}</span>
-            </h3>
-            <!--当前题目进度提示-->
-            <div v-show="renderType === 'exam'" class="subject-tip-wrap" @click.stop="toggetSubjectList">
-              <div class="tip-img"></div>
-              <div class="tip-count">{{`${index+1}/${examList.length}`}}</div>
-            </div>
-            <!--问答题批阅得分提醒-->
-            <div v-show="renderType === 'analysis' && item.type === 'essay' && item.remark.score" class="essay-audio-score">{{`得${item.remark.score}分`}}</div>
-          </div>
-          <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
-          <!--题干的每题数据-->
-          <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
-            <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
-            <!--音频播放-->
-            <my-audio
-              v-if="mediaKey=='audio' && annexMedia(media)"
-              class="my-audio"
-              :limit-info="{ isLimit: false }"
-              :src="annexMedia(media)">
-            </my-audio>
-            <!--视频播放-->
-            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
-          </div>
-          <!--每个选择项-->
-          <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
-            <!--每个选择项描述-->
-            <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
-              <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
-              <div class="select-desc">{{optItem.name}}</div>
-            </div>
-            <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-              <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
-              <!--音频播放-->
-              <my-audio
-                v-if="mediaKey=='audio' && annexMedia(media)"
-                class="my-audio"
-                :limit-info="{ isLimit: false }"
-                :src="annexMedia(media)">
-              </my-audio>
-              <!--视频播放-->
-              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
-            </div>
-          </div>
           <!--每个题型内容渲染-->
-          <subject-content v-if="item" :data="item" :mode="renderType"></subject-content>
+          <subject-content :data="item" :mode="renderType"></subject-content>
         </template>
       </div>
-    </div>
-    <!--跳转成绩单页面-->
-    <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
-      <div class="bg"></div>
-      <div class="tip">成绩单</div>
     </div>
     <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
@@ -81,6 +29,11 @@
           </div>
         </div>
       </transition>
+    </div>
+    <!--跳转成绩单页面-->
+    <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
+      <div class="bg"></div>
+      <div class="tip">成绩单</div>
     </div>
     <!--试题中断弹窗-->
     <my-model
@@ -126,14 +79,19 @@
           </div>
         </div>
         <!--下一题按钮-->
-        <div class="next-wrap" v-show="currentSubjectIndex !== examList.length-1" @click.stop="changeSubjectIndex('add')">
+        <div class="next-wrap"
+          v-show="!isShowSubmitBtn"
+          :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
+          @click.stop="changeSubjectIndex('add')">
           <div class="next-arrow-wrap">
             <i class="examfont next-arrow">&#xe713;</i>
           </div>
           <div class="next-text">下一题</div>
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-          <div class="next-arrow-wrap"></div>
+          <div class="next-arrow-wrap">
+            <i class="examfont next-submit">&#xe718;</i>
+          </div>
           <div class="next-text">交卷</div>
         </div>
       </div>
@@ -144,7 +102,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
@@ -152,8 +110,8 @@ import mixins from '@/mixins/index'
 import SubjectMixin from '@/mixins/subject'
 import ExamHeader from './depence/exam-header'
 import SubjectHeader from './depence/subject-header'
-import SubjectList from './depence/subject-list'
 import SubjectContent from './depence/subject-content'
+import SubjectList from '@/components/depence/subject-list'
 import MyModel from './depence/model'
 import MyRecord from './depence/record'
 
@@ -176,22 +134,20 @@ export default {
     return {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
-      isShowSubmitModel: false,
-      isShowSubjectList: false,
-      isShowOpsModel: false
+      isShowSubmitModel: false
     }
   },
   components: {
     ExamHeader,
     SubjectHeader,
-    SubjectList,
     SubjectContent,
+    SubjectList,
     MyModel,
     MyRecord
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos', 'currentSubjectIndex'
+      'examId', 'examInfo', 'curSubjectVideos'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -200,47 +156,11 @@ export default {
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
     }
   },
-  watch: {
-    currentSubjectIndex (newIndex, oldIndex) {
-      let renderType = this.renderType
-      let essayAnswerInfo = this.essayAnswerInfo // mixin中的数据
-      let subject = this.examList[oldIndex]
-      let isActive = subject.options.some(item => item.active)
-      let isAnswerd = subject.answer && subject.answer.length
-      let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
-      // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
-      if (renderType === 'exam') {
-        let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
-        let isShowModel = subject.type === 'essay' ? DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id) : isDidRecord
-        // 这边针对问答题的判断需要重新判断模态框的展示
-        if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
-      }
-      // 检查是否有特殊类型提醒的提交操作: 问答、多选
-      this.sendSaveRecordOption(subject)
-      // 清空当前页面的视频组件信息
-      if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
-    }
-  },
   created () {
     // 初始化方法
     this.initList()
   },
   methods: {
-    annexMedia (origin) {
-      if (typeof origin === 'string') {
-        return origin
-      } else if (origin instanceof Array) {
-        if (origin.length) {
-          return origin[0]
-        } else {
-          return null
-        }
-      } else if (origin instanceof Object) {
-        return origin
-      } else {
-        return null
-      }
-    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
@@ -299,18 +219,6 @@ export default {
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
-    async selectAnswer (selectIndex) {
-      let subject = this.currentSubjectInfo
-      try {
-        await this.addSelectActiveFlag(selectIndex)
-        // 保存答题记录 这边不处理多选 多选checkboxrecord提交
-        if (subject.type !== 'checkbox') {
-          await this.saveAnswerRecord(subject)
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    },
     jumpToGradePage () {
       let examId = this.id
       let redirectParams = this.redirectParams
@@ -324,29 +232,6 @@ export default {
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
-    },
-    toggetSubjectList () {
-      this.isShowSubjectList = !this.isShowSubjectList
-    },
-    showOpsModel () {
-      this.isShowOpsModel = true
-      setTimeout(() => {
-        this.isShowOpsModel = false
-      }, 520)
-    },
-    selectTouchStart (selectIndex) {
-      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = '#f9f9f9'
-    },
-    selectTouchEnd (selectIndex) {
-      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = ''
-      // 调用选择答案
-      this.selectAnswer(selectIndex)
-    },
-    dealExamHeaderSelect ({subject, index}) {
-      this.toggetSubjectList()
-      this.changeSubjectIndex(index)
     },
     checkAnswerMaxQuestionId () {
       let examInfo = this.examInfo
@@ -362,16 +247,9 @@ export default {
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
     },
-    ...mapMutations('depence', {
-      setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS'
-    }),
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       getExamDetail: 'GET_EXAM_DETAIL',
-      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
-      addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG',
-      saveAnswerRecord: 'SAVE_ANSWER_RECORD',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM'
     })
