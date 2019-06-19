@@ -16,6 +16,8 @@ export const METHODS = {
     else if (type === 'checkbox') typeTip = '多选题'
     else if (type === 'judge') typeTip = '判断题'
     else if (type === 'essay') typeTip = '问答题'
+    else if (type === 'mandarin') typeTip = '普通话'
+    else if (type === 'englishspoken') typeTip = '英语口语能力'
     return typeTip
   }
 }
@@ -48,6 +50,12 @@ export const DEPENCE = {
         break
       }
     }
+    return flag
+  },
+  checkRoralEmpty (oralAnswerInfo, subjectId) {
+    let curOralObj = oralAnswerInfo[subjectId]
+    let flag = true
+    if (curOralObj && curOral.value) flag = false
     return flag
   },
   checkMedaiObjIsEmpty (mediaObj) {

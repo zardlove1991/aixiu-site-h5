@@ -45,7 +45,7 @@
     }
   }
   .voice-words-tip{
-    padding: px2rem(20px) 0;
+    padding: px2rem(20px) 0 px2rem(40px);
     line-height: px2rem(48px);
     word-break: break-all;
     @include font-dpr(14px);
@@ -55,7 +55,6 @@
     }
   }
   .voice-audio-wrap{
-    padding: px2rem(40px) 0 0;
     .voice-audio-tip{
       font-weight: normal;
       line-height: px2rem(30px);

@@ -222,7 +222,11 @@ export default {
               // 显示录音弹层
               if (recordType === 'pop') _this.isShowRecordAudio = true
               // 授权成功后直接走录音
-              else if (recordType === 'touch') _this.recordAuio('start')
+              else if (recordType === 'touch') {
+                setTimeout(() => {
+                  _this.recordAuio('start')
+                } , 300)
+              }
             },
             fail () {
               console.log('提前语音stopRecord授权结束走失败！！')

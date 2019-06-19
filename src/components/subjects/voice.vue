@@ -32,64 +32,59 @@
       <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
     <!--题目的内容区域-->
-    <div class="subject-voice-content-wrap">
+    <div class="subject-voice-content-wrap" v-if="curOralInfo">
       <!--得分区域-->
-      <div class="voice-score">3分</div>
+      <div class="voice-score" v-if="curOralInfo.score">{{`${curOralInfo.score}分`}}</div>
       <!--跟读文本区域-->
-      <div class="voice-read-tip-wrap">
-        <h4 class="voice-read-tip">跟读文本</h4>
-        <!--文本颜色提醒-->
-        <el-tooltip :value="showVoiceTip" placement="right" :manual="true">
-          <div class="voice-score-tip-wrap" @click.stop="showVoiceTip = !showVoiceTip">?</div>
-          <!--提醒的内容信息-->
-          <div slot="content" class="score-tip-wrap">
-            <div class="tip-row-wrap">
-              <i class="tip-row-icon success"></i>
-              <span class="tip-row-text">优秀</span>
+      <template v-if="data.extra && data.extra.show_follow_text && mode === 'analysis'">
+        <div class="voice-read-tip-wrap">
+          <h4 class="voice-read-tip">跟读文本</h4>
+          <!--文本颜色提醒-->
+          <el-tooltip :value="showVoiceTip" placement="right" :manual="true">
+            <div class="voice-score-tip-wrap" @click.stop="showVoiceTip = !showVoiceTip">?</div>
+            <!--提醒的内容信息-->
+            <div slot="content" class="score-tip-wrap">
+              <div class="tip-row-wrap">
+                <i class="tip-row-icon success"></i>
+                <span class="tip-row-text">优秀</span>
+              </div>
+              <div class="tip-row-wrap">
+                <i class="tip-row-icon error"></i>
+                <span class="tip-row-text">待加强</span>
+              </div>
             </div>
-            <div class="tip-row-wrap">
-              <i class="tip-row-icon error"></i>
-              <span class="tip-row-text">待加强</span>
-            </div>
-          </div>
-        </el-tooltip>
-      </div>
-      <!--跟读文本的正文内容-->
-      <p class="voice-words-tip">Are you sure that's a real spell ?</p>
+          </el-tooltip>
+        </div>
+        <!--跟读文本的正文内容-->
+        <p class="voice-words-tip">{{data.extra.follow_text}}</p>
+      </template>
       <!--语音问答的语音-->
-      <div class="voice-audio-wrap">
+      <div class="voice-audio-wrap" v-if="curOralInfo.value && curOralInfo.value.audio.length">
         <h4 class="voice-audio-tip">你的答题语音</h4>
         <my-audio
           show-type="bubble"
-          src="https://1400163958.vod2.myqcloud.com/fade8787vodcq1400163958/14314f895285890784101367631/Ul8fw5860aYA.mp3"
+          :src="curOralInfo.value.audio[0]"
           :limit-info="{isLimit: true, limitTime: 60, showSecond: true }">
         </my-audio>
       </div>
       <!--图形统计区域-->
-      <div id="voice-statistics" style="width:100%;height:280px"></div>
-      <!--题目解析选项-->
-      <div class="answerinfo-wrap" v-if="mode === 'analysis'">
-        <div class="correct-answer">
-          <span>正确答案:</span>
-          <span v-show="!data.correntInfo.length">&nbsp;未指定</span>
-          <span v-for="info in data.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
+      <div id="voice-statistics"
+        v-if="curOralInfo.content"
+        style="width:100%;height:280px">
+      </div>
+    </div>
+    <!--题目解析选项-->
+    <div class="answerinfo-wrap" v-if="mode === 'analysis'">
+      <div class="answer-analysis">
+        <h4 class="title">解析</h4>
+        <p class="content" v-if="data.analysis" v-html="data.analysis"></p>
+        <p class="content" v-else>暂无解析内容~</p>
+        <!--目前还没有类别和正确率 暂时隐藏-->
+        <div class="exam-types" v-show="data.point && data.point.length">
+          <span class="tip">考点</span>
+          <span class="type" v-for="item in data.point" :key="item.id">{{item.name}}</span>
         </div>
-        <div class="my-answer">
-          <span>您的回答:</span>
-          <span v-show="!data.answersInfo.length">&nbsp;未选择</span>
-          <span v-for="info in data.answersInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
-        </div>
-        <div class="answer-analysis">
-          <h4 class="title">解析</h4>
-          <p class="content" v-if="data.analysis" v-html="data.analysis"></p>
-          <p class="content" v-else>暂无解析内容~</p>
-          <!--目前还没有类别和正确率 暂时隐藏-->
-          <div class="exam-types" v-show="data.point && data.point.length">
-            <span class="tip">考点</span>
-            <span class="type" v-for="item in data.point" :key="item.id">{{item.name}}</span>
-          </div>
-          <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p>
-        </div>
+        <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p>
       </div>
     </div>
   </div>
@@ -103,31 +98,56 @@ import SubjectMixin from '@/mixins/subject'
 export default {
   name: 'essay-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
-  data  () {
+  data () {
     return {
+      curOralInfo: null,
       showVoiceTip: false
     }
   },
+  watch: {
+    oralAnswerInfo () {
+      this.initOralInfo() // 如果更新一次就重新获取一次值
+    }
+  },
   created () {
-    // 如果是语音问答题并且解析的时候调用绘制
-    this.drawVoiceEchart()
+    this.initOralInfo()
   },
   methods: {
+    initOralInfo () {
+      let oralAnswerInfo = this.oralAnswerInfo
+      let curSubject = this.currentSubjectInfo
+      let curOralInfo = oralAnswerInfo[curSubject.id] // 拿到当前跟读信息
+      this.curOralInfo = !Array.isArray(curOralInfo) ? curOralInfo : null // 这边为空返回的是数组(尴尬)
+      // 如果是语音问答题并且解析的时候调用绘制
+      this.drawVoiceEchart()
+    },
     drawVoiceEchart () {
+      let curOralInfo = this.curOralInfo
+      if (!curOralInfo || !curOralInfo.content) return
       this.$nextTick(() => {
         let { VOICE_RANDAR } = EchartConfig
+        let chartInfo = curOralInfo.content
         let charEl = document.getElementById('voice-statistics')
         let options = JSON.parse(JSON.stringify(VOICE_RANDAR))
         let indicators = options.radar[0].indicator
         let vals = options.series[0].data[0].value
-        for (let i = 0; i < 4; i++) {
-          let val = Math.ceil(Math.random() * 100)
-          indicators.push({
-            text: `坐标${i + 1} ${val}`,
-            max: 100
-          })
-
-          vals.push(val)
+        let maping = {
+          pron_accuracy: '准确度',
+          pron_fluency: '流利度',
+          pron_completion: '完整度'
+        }
+        for (let key in chartInfo) {
+          let chartVal = chartInfo[key]
+          let mapKey = maping[key]
+          if (mapKey) {
+            // 索引点
+            indicators.push({
+              text: `${mapKey} ${chartVal}%`,
+              max: 100
+            })
+            // 存放值
+            vals.push(chartVal)
+          }
         }
         console.log('xxx options', options)
         // 初始化图

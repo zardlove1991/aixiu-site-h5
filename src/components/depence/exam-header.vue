@@ -89,7 +89,7 @@ export default {
     ...mapGetters('depence', [
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
-      'essayAnswerInfo'
+      'essayAnswerInfo', 'oralAnswerInfo'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -100,12 +100,15 @@ export default {
     unDoSubjectLength () {
       let list = this.list
       let essayAnswerInfo = this.essayAnswerInfo
+      let oralAnswerInfo = this.oralAnswerInfo
       let count = 0
       list.forEach(subject => {
         // 这边需要对问答题做一个特殊判定 因为没有选项的active状态 需要判定是否有存储的回答数据
         let isDidEssay = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        // 判断语音问答题是否回答过
+        let isDidOral = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
         let isDid = subject.options.some(item => item.active)
-        if (isDidEssay || isDid) count++
+        if (isDidEssay || isDidOral || isDid) count++
       })
       return (list.length - count)
     }

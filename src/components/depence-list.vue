@@ -70,12 +70,13 @@
           <div class="prev-text">上一题</div>
         </div>
         <!--中间操作区域-->
-        <div class="btn-record-option-wrap">
+        <div class="btn-record-option-wrap"
+          v-show="isShowReordBtn">
           <!--内部阴影层-->
           <div class="btn-record-option-shadow"></div>
           <!--当前操作层-->
           <div class="btn-record-option">
-            <my-record record-type="touch" @finish="_dealTestAudio"></my-record>
+            <my-record record-type="touch" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
         <!--下一题按钮-->
@@ -149,6 +150,11 @@ export default {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos'
     ]),
+    isShowReordBtn () {
+      let renderType = this.renderType
+      let curSubject = this.currentSubjectInfo
+      return (['englishspoken', 'mandarin'].includes(curSubject.type) && renderType === 'exam')
+    },
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
       let examList = this.examList

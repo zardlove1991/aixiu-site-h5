@@ -61,7 +61,7 @@
         :class="{'play': playing }"
         @click.stop="togglePlay">
         <i class="player-wave"></i>
-        <span class="player-duration" v-if="duration">{{duration + '"'}}</span>
+        <span class="player-duration" v-if="duration || duration === 0">{{duration + '"'}}</span>
       </div>
     </div>
     <!--audio组件-->
@@ -125,6 +125,8 @@ export default {
       if (duration && maxW) {
         w = duration > limitTime ? maxW : parseInt((duration / limitTime) * maxW)
       }
+      // 给个最小宽度
+      if (w && w < 100) w = 100
       let defaultW = w ? `${w}px` : (maxW || '100%')
       console.log('当前设置动态宽度', duration, defaultW, this.limitInfo)
       return { width: defaultW }

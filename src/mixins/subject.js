@@ -38,13 +38,13 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'essayAnswerInfo', 'currentSubjectInfo', 'isShowModelThumb',
-      'renderType', 'examList', 'currentSubjectIndex', 'isShowSubjectList'
+      'renderType', 'examList', 'currentSubjectIndex', 'isShowSubjectList',
+      'oralAnswerInfo'
     ])
   },
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {
       let renderType = this.renderType
-      let essayAnswerInfo = this.essayAnswerInfo // mixin中的数据
       let subject = this.examList[oldIndex]
       let isActive = subject.options.some(item => item.active)
       let isAnswerd = subject.answer && subject.answer.length
@@ -52,7 +52,11 @@ export default {
       // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
       if (renderType === 'exam') {
         let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
-        let isShowModel = subject.type === 'essay' ? DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id) : isDidRecord
+        let isShowModel = isDidRecord
+        // 特殊类型走检查
+        if (['essay', 'englishspoken', 'mandarin'].includes(subject.type)) {
+          isShowModel = this._checkSubjectEmpty(subject)
+        }
         // 这边针对问答题的判断需要重新判断模态框的展示
         if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
       }
@@ -255,8 +259,12 @@ export default {
       fileInputEl.multiple = curUploadConfig.multiple
       touchFileClick()
     },
-    _dealTestAudio (e) {
-      console.log('xxx 录音结束拿到的信息', e)
+    _dealRoalAudio (e) {
+      let oralAnswerInfo = this.oralAnswerInfo
+      let curSubject = this.currentSubjectInfo
+      // 提交数据
+      oralAnswerInfo[curSubject.id] = { value: e }
+      this.setOralAnswerInfo(oralAnswerInfo)
     },
     _dealEssayFromValue (params) {
       // 防止多次处理
@@ -313,8 +321,20 @@ export default {
     },
     // 检查当前媒体对象是否为空
     _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
+    _checkSubjectEmpty (subject) {
+      let flag = false
+      let essayAnswerInfo = this.essayAnswerInfo // 问答题的书
+      let oralAnswerInfo = this.oralAnswerInfo // mixin中的数据
+      if (subject.type === 'essay') {
+        flag = DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+      } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
+        flag = DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
+      }
+      return flag
+    },
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO',
+      setOralAnswerInfo: 'SET_ORAL_ANSWER_INFO',
       setSubjectListShow: 'SET_SUBJECT_LIST_SHOW',
       setModelThumbState: 'SET_MODEL_THUMB_STATE',
       setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS'

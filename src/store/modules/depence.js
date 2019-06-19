@@ -15,6 +15,7 @@ const state = {
   isShowModelThumb: false, // 判断界面是否有弹窗展示
   isShowSubjectList: false, // 是否显示考试答题缩率展示
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
+  oralAnswerInfo: {}, // 保存语音问答题中的信息
   curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
 
@@ -72,6 +73,7 @@ const getters = {
   isShowModelThumb: state => state.isShowModelThumb,
   isShowSubjectList: state => state.isShowSubjectList,
   essayAnswerInfo: state => state.essayAnswerInfo,
+  oralAnswerInfo: state => state.oralAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos
 }
 
@@ -106,9 +108,100 @@ const mutations = {
   SET_ESSAY_ANSWER_INFO (state, payload) {
     state.essayAnswerInfo = Object.assign({}, payload)
   },
+  SET_ORAL_ANSWER_INFO (state, payload) {
+    state.oralAnswerInfo = Object.assign({}, payload)
+  },
   SET_CURSUBJECT_VIDEOS (state, payload) {
     state.curSubjectVideos = payload
   }
+}
+
+// 定义一些列表处理方法
+function dealInitExamList ({ list, renderType }) {
+  let tempEassyAnswerInfo = {} // 临时保存当前问答题信息
+  let tempOralAnswerInfo = {} // 临时保存语音问答题的数据
+  // 处理列表
+  list.forEach((subject, index) => {
+    subject.options.forEach((item, itemIdx) => {
+      // 做答题数据兼容 选项数据全部转换成字符串
+      let answers = subject.answer && subject.answer.map(id => String(id))
+      item.id = String(item.id)
+      // 处理答案匹配
+      if (answers && answers.includes(item.id)) {
+        // 判断是否是解析状态展示
+        if (renderType === 'analysis') {
+          if (item.is_true) item.active = true
+          else item.error = true
+        } else {
+          item.active = true
+        }
+      }
+    })
+    // 初始化为问答题的基础提交数据对象
+    if (subject.type === 'essay') {
+      let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
+      // 赋值数据
+      tempEassyAnswerInfo[subject.id] = essayData
+    } else if (['mandarin', 'englishspoken'].includes(subject.type)) {
+      let oralData = subject.oral_answer || { score: '', value: null, content: null }
+      // 赋值数据
+      tempOralAnswerInfo[subject.id] = oralData
+    }
+  })
+  // 返回数据
+  return {
+    examList: list,
+    eassyInfo: tempEassyAnswerInfo,
+    oralInfo: tempOralAnswerInfo
+  }
+}
+
+// 处理提交字段
+function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }) {
+  let dataIsEmpty = false
+  let params = {}
+  // 问答题保存参数和普通题目不同这边需要区分
+  if (!['essay', 'englishspoken', 'mandarin'].includes(subject.type)) {
+    let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
+    // 添加data参数
+    params.options_id = null
+    // 筛选当前选中的数据
+    let optionsArr = []
+    subject.options.forEach(item => {
+      if (item.active) optionsArr.push(item.id)
+    })
+    // 针对单选和判断做处理
+    if (optionsArr.length === 1 && subject.type !== 'checkbox') {
+      optionsArr = optionsArr.join('')
+      // 这边保存下当前单选和判断选择的题目ID为了做防止多次请求操作
+      if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
+        STORAGE.set('examlist-single-selcectid', optionsArr)
+      } else {
+        // 当选择的ID相同时当做为空处理 不发请求
+        optionsArr = []
+      }
+    }
+    params.options_id = optionsArr
+    // 判断是否有选项 没有直接return
+    let noOptionID = !params.options_id || !params.options_id.length
+    if (noOptionID) dataIsEmpty = true
+  } else if (subject.type === 'essay') {
+    // 这边判断提交的问答题数据是否为空 为空就不发送请求
+    if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
+      dataIsEmpty = true
+    } else {
+      params.value = essayAnswerInfo[subject.id]
+    }
+  } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
+    let curOralInfo = oralAnswerInfo[subject.id]
+    if (curOralInfo.value && curOralInfo.value.audio.length) {
+      params.value = curOralInfo.value
+    } else {
+      dataIsEmpty = true
+    }
+  }
+
+  return { isEmpty: dataIsEmpty, params }
 }
 
 const actions = {
@@ -131,37 +224,15 @@ const actions = {
       Indicator.open({ spinnerType: 'fading-circle' })
       API[reqMethodName]({ params }).then(res => {
         let list = res.data
-        let essayAnswerInfo = state.essayAnswerInfo
         if (list && list.length) {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
-          // 添加初始化active的状态
-          list.forEach((subject, index) => {
-            subject.options.forEach((item, itemIdx) => {
-              // 做答题数据兼容 选项数据全部转换成字符串
-              let answers = subject.answer && subject.answer.map(id => String(id))
-              item.id = String(item.id)
-
-              if (answers && answers.includes(item.id)) {
-                // 判断是否是解析状态展示
-                if (renderType === 'analysis') {
-                  if (item.is_true) item.active = true
-                  else item.error = true
-                } else {
-                  item.active = true
-                }
-              }
-            })
-            // 初始化为问答题的基础提交数据对象
-            if (subject.type === 'essay') {
-              let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
-              // 赋值数据
-              essayAnswerInfo[subject.id] = essayData
-            }
-          })
+          // 处理列表的初始化操作
+          let { examList, eassyInfo, oralInfo } = dealInitExamList({ list, renderType })
           // 设置列表和问答题的出事对象
-          commit('SET_EXAMLIST', list)
-          commit('SET_ESSAY_ANSWER_INFO', essayAnswerInfo)
+          commit('SET_EXAMLIST', examList)
+          commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
+          commit('SET_ORAL_ANSWER_INFO', oralInfo)
         } else {
           throw new Error('初始化试题列表失败')
         }
@@ -316,51 +387,18 @@ const actions = {
       let id = state.examId
       let renderType = state.renderType
       let essayAnswerInfo = state.essayAnswerInfo
-      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
-      let dataIsEmpty = false
+      let oralAnswerInfo = state.oralAnswerInfo
       let subject = payload
       if (renderType === 'analysis') {
         reject(new Error('当前为解析不需要保存答题记录'))
         return
       }
+      // 整理数据的提交格式
+      let { isEmpty, params } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo })
       // 提交的参数
-      let data = {
-        question_id: subject.id
-      }
-      // 问答题保存参数和普通题目不同这边需要区分
-      if (subject.type !== 'essay') {
-        // 添加data参数
-        data.options_id = null
-        // 筛选当前选中的数据
-        let optionsArr = []
-        subject.options.forEach(item => {
-          if (item.active) optionsArr.push(item.id)
-        })
-        // 针对单选和判断做处理
-        if (optionsArr.length === 1 && subject.type !== 'checkbox') {
-          optionsArr = optionsArr.join('')
-          // 这边保存下当前单选和判断选择的题目ID为了做防止多次请求操作
-          if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
-            STORAGE.set('examlist-single-selcectid', optionsArr)
-          } else {
-            // 当选择的ID相同时当做为空处理 不发请求
-            optionsArr = []
-          }
-        }
-        data.options_id = optionsArr
-        // 判断是否有选项 没有直接return
-        let noOptionID = !data.options_id || !data.options_id.length
-        if (noOptionID) dataIsEmpty = true
-      } else {
-        // 这边判断提交的问答题数据是否为空 为空就不发送请求
-        if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
-          dataIsEmpty = true
-        } else {
-          data.value = essayAnswerInfo[subject.id]
-        }
-      }
+      let data = Object.assign({ question_id: subject.id }, params)
       // 为空的时候全部return
-      if (dataIsEmpty) {
+      if (isEmpty) {
         resolve()
         return
       }
@@ -427,8 +465,10 @@ const actions = {
     let renderType = state.renderType
     let subjectType = subject.type
     // 只有考试的采取记录多选的提交
-    let submitTypeArr = ['checkbox', 'essay']
+    let submitTypeArr = ['checkbox', 'essay', 'englishspoken', 'mandarin']
+    console.log('xxx 111')
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
+      console.log('xxx 222222')
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }
