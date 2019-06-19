@@ -128,6 +128,45 @@
         </div>
       </div>
     </template>
+    <!--语音问答题的区域-->
+    <template>
+      <div class="subject-voice-wrap">
+        <!--得分区域-->
+        <div class="voice-score">3分</div>
+        <!--跟读文本区域-->
+        <div class="voice-read-tip-wrap">
+          <h4 class="voice-read-tip">跟读文本</h4>
+          <!--文本颜色提醒-->
+          <el-tooltip :value="showVoiceTip" placement="right" :manual="true">
+            <div class="voice-score-tip-wrap" @click.stop="showVoiceTip = !showVoiceTip">?</div>
+            <!--提醒的内容信息-->
+            <div slot="content" class="score-tip-wrap">
+              <div class="tip-row-wrap">
+                <i class="tip-row-icon success"></i>
+                <span class="tip-row-text">优秀</span>
+              </div>
+              <div class="tip-row-wrap">
+                <i class="tip-row-icon error"></i>
+                <span class="tip-row-text">待加强</span>
+              </div>
+            </div>
+          </el-tooltip>
+        </div>
+        <!--跟读文本的正文内容-->
+        <p class="voice-words-tip">Are you sure that's a real spell ?</p>
+        <!--语音问答的语音-->
+        <div class="voice-audio-wrap">
+          <h4 class="voice-audio-tip">你的答题语音</h4>
+          <my-audio
+            show-type="bubble"
+            src="https://1400163958.vod2.myqcloud.com/fade8787vodcq1400163958/14314f895285890784101367631/Ul8fw5860aYA.mp3"
+            :limit-info="{isLimit: true, limitTime: 60, showSecond: true }">
+          </my-audio>
+        </div>
+        <!--图形统计区域-->
+        <div id="voice-statistics" style="width:100%;height:280px"></div>
+      </div>
+    </template>
     <!--通用答案解析-->
     <template v-if="data.type !== 'essay' && mode === 'analysis'">
       <div class="answerinfo-wrap">
@@ -158,6 +197,7 @@
 </template>
 
 <script>
+import EchartConfig from '@/config/echarts'
 import SubjectMixin from '@/mixins/subject'
 
 export default {
@@ -175,9 +215,41 @@ export default {
       default: ''
     }
   },
+  data  () {
+    return {
+      showVoiceTip: false
+    }
+  },
   created () {
     // 赋值当前问答题临时对象 -> 调用mixin的方法
     this._setTempEssayAnswerInfo()
+    // 如果是语音问答题并且解析的时候调用绘制
+    this.drawVoiceEchart()
+  },
+  methods: {
+    drawVoiceEchart () {
+      this.$nextTick(() => {
+        let { VOICE_RANDAR } = EchartConfig
+        let charEl = document.getElementById('voice-statistics')
+        let options = JSON.parse(JSON.stringify(VOICE_RANDAR))
+        let indicators = options.radar[0].indicator
+        let vals = options.series[0].data[0].value
+        for (let i = 0; i < 4; i++) {
+          let val = Math.ceil(Math.random() * 100)
+          indicators.push({
+            text: `坐标${i + 1} ${val}`,
+            max: 100
+          })
+
+          vals.push(val)
+        }
+        console.log('xxx options', options)
+        // 初始化图
+        let echartIns = this.$echarts.init(charEl)
+        echartIns.setOption(options)
+        window.addEventListener('resize', () => echartIns.resize())
+      })
+    }
   }
 }
 </script>

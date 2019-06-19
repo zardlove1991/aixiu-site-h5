@@ -9,6 +9,7 @@ $audioBgOne: #51CD96;
 $audioBgTwo: #718db9;
 $audioProgressBar: #d9d9d9;
 $tipBgColor: #f4f4f4;
+$tipBgColorOne: #f6f6f6;
 // 文字颜色
 $titleColor: #333;
 $tipColor: #666;
@@ -36,6 +37,7 @@ $defaultColorMap: (
   descColorOne: $descColorOne,
   tipColor:$tipColor,
   tipBgColor:$tipBgColor,
+  tipBgColorOne: $tipBgColorOne,
   errorColor: $errorColor,
   activeColor: $activeColor,
   disabledColor: $disabledColor,
