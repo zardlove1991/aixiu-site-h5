@@ -59,7 +59,9 @@
         <p class="voice-words-tip" v-if="curOralInfo.content.words.length">
           <span class="voice-word"
             v-for="(wItem, wIndex) in _dealWords(curOralInfo.content.words)"
-            :class="{'error': wItem.pron_accuracy < 80 }">{{wItem.word}}</span>
+            :key="wIndex"
+            :class="{'error': wItem.pron_accuracy < 80 }">{{wItem.word}}
+          </span>
         </p>
         <!--没有解析的全部为空-->
         <p class="voice-words-tip error" v-else>{{data.extra.follow_text}}</p>
