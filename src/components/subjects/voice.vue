@@ -56,7 +56,13 @@
           </el-tooltip>
         </div>
         <!--跟读文本的正文内容-->
-        <p class="voice-words-tip">{{data.extra.follow_text}}</p>
+        <p class="voice-words-tip" v-if="curOralInfo.content.words.length">
+          <span class="voice-word"
+            v-for="(wItem, wIndex) in _dealWords(curOralInfo.content.words)"
+            :class="{'error': wItem.pron_accuracy < 80 }">{{wItem.word}}</span>
+        </p>
+        <!--没有解析的全部为空-->
+        <p class="voice-words-tip error" v-else>{{data.extra.follow_text}}</p>
       </template>
       <!--语音问答的语音-->
       <div class="voice-audio-wrap" v-if="curOralInfo.value && curOralInfo.value.audio.length">
@@ -145,18 +151,22 @@ export default {
           if (mapKey) {
             // 索引点
             indicators.push({
-              text: `${mapKey} ${chartVal}%`,
+              text: chartVal > 0 ? `${mapKey} ${chartVal}%` : `${mapKey}`,
               max: 100
             })
             // 存放值
-            vals.push(chartVal)
+            if (chartVal > 0) vals.push(chartVal)
           }
         }
-        console.log('xxx options', options)
         // 初始化图
         let echartIns = this.$echarts.init(charEl)
         echartIns.setOption(options)
         window.addEventListener('resize', () => echartIns.resize())
+      })
+    },
+    _dealWords (words) {
+      return words.filter(item => {
+        return (item.word && item.word !== '*')
       })
     }
   }

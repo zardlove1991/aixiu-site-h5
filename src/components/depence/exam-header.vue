@@ -79,6 +79,7 @@ export default {
       isShowSubjectList: false,
       isShowGiveupModel: false,
       isShowSubmitModel: false,
+      unDoSubjectLength: 0,
       timeTip: null
     }
   },
@@ -93,19 +94,11 @@ export default {
       'subjectAnswerInfo'
     ]),
     currentIndex () {
+      this._dealUndoCount() // 有变化进行计算
       return this.curIndex + 1
     },
     percent () {
       return this.currentIndex / this.list.length
-    },
-    unDoSubjectLength () {
-      let subjectAnswerInfo = this.subjectAnswerInfo
-      let list = this.list
-      let count = 1
-      for (let subjectId in subjectAnswerInfo) {
-        if (subjectAnswerInfo[subjectId]) count++
-      }
-      return (list.length - count)
     }
   },
   watch: {
@@ -114,6 +107,7 @@ export default {
     }
   },
   mounted () {
+    this.unDoSubjectLength = this.list.length
     this.initCountTime()
     this._moveProgressBtn()
   },
@@ -167,7 +161,7 @@ export default {
       let redirectParams = this.redirectParams
       this.toggleSubmitModel()
       try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
@@ -192,6 +186,15 @@ export default {
       } else {
         this.isShowSubmitModel = !this.isShowSubmitModel
       }
+    },
+    _dealUndoCount () {
+      let subjectAnswerInfo = this.subjectAnswerInfo
+      let list = this.list
+      let count = 0
+      for (let subjectId in subjectAnswerInfo) {
+        if (subjectAnswerInfo[subjectId]) count++
+      }
+      return (list.length - count)
     },
     _moveProgressBtn () {
       let maxOffsetW = this.$refs.headerProgressBar.clientWidth

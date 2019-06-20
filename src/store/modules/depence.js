@@ -402,6 +402,8 @@ const actions = {
       }
       // 整理数据的提交格式
       let { isEmpty, params } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo }, 'save-record')
+      // 更新当前的回答题目的信息
+      dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject)
       // 提交的参数
       let data = Object.assign({ question_id: subject.id }, params)
       // 为空的时候全部return
@@ -409,8 +411,6 @@ const actions = {
         resolve()
         return
       }
-      // 更新当前的回答题目的信息
-      dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject)
       // 发送保存答题信息
       API.saveSubjectRecord({
         query: { id },

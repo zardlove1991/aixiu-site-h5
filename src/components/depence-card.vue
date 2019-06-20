@@ -5,7 +5,7 @@
       <!--内容展示区域-->
       <div class="grade-info-wrap">
         <!--头部信息-->
-        <div :class="[ answerCardInfo.essay_status ? 'header-info-wrap' : 'essay-header-wrap']">
+        <div :class="[ _dealState(0) ? 'essay-header-wrap' : 'header-info-wrap']">
           <div class="avater-bg">
             <img class="avater" :src="examInfo.member_avatar || defaultAvaterUrl" />
           </div>
@@ -14,7 +14,7 @@
         <!--主体信息-->
         <div class="body-info-wrap">
           <!--正常答题分数展示-->
-          <div class="normal-scrol-wrap" v-if="answerCardInfo.essay_status">
+          <div class="normal-scrol-wrap" v-if="_dealState(1)">
             <h3 class="title">{{examInfo.title}}</h3>
             <div class="score-wrap">
               <div class="text-wrap">
@@ -25,12 +25,18 @@
           </div>
           <!--问答题批阅信息提醒-->
           <div class="essay-audit-wrap" v-else>
-            <div class="empty-logo"></div>
-            <h4 class="tip">提交成功，耐心等待老师批阅</h4>
+            <div class="empty-logo"
+              :class="{
+                'roal-empty': !answerCardInfo.oral_status,
+                'essay-empty': !answerCardInfo.essay_status
+              }">
+            </div>
+            <h4 class="tip" v-if="!answerCardInfo.essay_status">提交成功，耐心等待老师批阅</h4>
+            <h4 class="tip" v-else-if="!answerCardInfo.oral_status">提交成功，系统正在评分，请稍等</h4>
           </div>
           <!--详细信息列表展示-->
           <div class="exam-detail-wrap">
-            <div class="row" v-show="answerCardInfo.essay_status">
+            <div class="row" v-show="_dealState(1)">
               <span class="title">试卷总分</span>
               <span class="desc">{{`${answerCardInfo.total_score}分`}}</span>
             </div>
@@ -38,7 +44,7 @@
               <span class="title">总题数目</span>
               <span class="desc">{{`${examInfo.question_num}题`}}</span>
             </div>
-            <div class="row" v-show="answerCardInfo.essay_status && answerCardInfo.answer_num.right_answer_num">
+            <div class="row" v-show="_dealState(1) && answerCardInfo.answer_num.right_answer_num">
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
@@ -220,6 +226,20 @@ export default {
         window.location.href = params.redirect
       }
     },
+    _dealState (val) {
+      let answerCardInfo = this.answerCardInfo
+      let essayState = answerCardInfo.essay_status
+      let oralState = answerCardInfo.oral_status
+      let flag = false
+      if (answerCardInfo.hasOwnProperty('essay_status')) { // 优先判断问答题的审核
+        if (essayState === val) flag = true
+      } else if (answerCardInfo.hasOwnProperty('oral_status')) { // 判断语音题的解析
+        if (oralState === val) flag = true
+      } else if (answerCardInfo.hasOwnProperty('status')) { // 判断普通题目
+        if (status === val) flag = true
+      }
+      return flag
+    },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
     },
@@ -367,7 +387,12 @@ export default {
             background-position: center;
             background-repeat: no-repeat;
             margin-bottom: px2rem(40px);
-            @include img-retina('~@/assets/common/essay_empty@2x.png', '~@/assets/common/essay_empty@3x.png', 100%, 100%);
+            &.essay-empty{
+              @include img-retina('~@/assets/common/essay_empty@2x.png', '~@/assets/common/essay_empty@3x.png', 100%, 100%);
+            }
+            &.roal-empty{
+              @include img-retina('~@/assets/common/roal_empty@2x.png', '~@/assets/common/roal_empty@3x.png', 100%, 100%);
+            }
           }
           .tip{
             line-height: 1;
