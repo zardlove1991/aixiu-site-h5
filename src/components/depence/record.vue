@@ -225,7 +225,7 @@ export default {
               else if (recordType === 'touch') {
                 setTimeout(() => {
                   _this.recordAuio('start')
-                } , 300)
+                }, 300)
               }
             },
             fail () {

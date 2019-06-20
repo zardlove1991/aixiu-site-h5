@@ -58,7 +58,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['essayAnswerInfo'])
+    ...mapGetters('depence', ['essayAnswerInfo', 'oralAnswerInfo'])
   },
   components: {
     SubjectList
@@ -82,11 +82,15 @@ export default {
     },
     addClass (subject) {
       let essayAnswerInfo = this.essayAnswerInfo
+      let oralAnswerInfo = this.oralAnswerInfo
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
       if (subject.type === 'essay') {
         let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        isDid ? className = 'success' : className = 'disabled'
+      } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
+        let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
         isDid ? className = 'success' : className = 'disabled'
       } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'

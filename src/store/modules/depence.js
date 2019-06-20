@@ -10,6 +10,7 @@ const state = {
   examList: [], // 试卷列表
   redirectParams: null, // 小程序和H5中的传参
   examInfo: null, // 试卷信息
+  subjectAnswerInfo: {}, // 当前已回答的题目信息
   currentSubjectIndex: 0, // 当前题目索引
   answerCardInfo: null, // 答题卡当前的信息
   isShowModelThumb: false, // 判断界面是否有弹窗展示
@@ -68,6 +69,7 @@ const getters = {
   examId: state => state.examId,
   redirectParams: state => state.redirectParams,
   renderType: state => state.renderType,
+  subjectAnswerInfo: state => state.subjectAnswerInfo,
   currentSubjectIndex: state => state.currentSubjectIndex,
   answerCardInfo: state => state.answerCardInfo,
   isShowModelThumb: state => state.isShowModelThumb,
@@ -101,6 +103,9 @@ const mutations = {
   },
   SET_EXAM_DETAIL (state, payload) {
     state.examInfo = payload
+  },
+  SET_SUBJECT_ANSWER_INFO (state, payload) {
+    state.subjectAnswerInfo = payload
   },
   SET_CURRENT_SUBJECT_INDEX (state, payload) {
     state.currentSubjectIndex = payload
@@ -157,7 +162,7 @@ function dealInitExamList ({ list, renderType }) {
 }
 
 // 处理提交字段
-function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }) {
+function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }, optionFlag) {
   let dataIsEmpty = false
   let params = {}
   // 问答题保存参数和普通题目不同这边需要区分
@@ -177,8 +182,8 @@ function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }) {
       if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
         STORAGE.set('examlist-single-selcectid', optionsArr)
       } else {
-        // 当选择的ID相同时当做为空处理 不发请求
-        optionsArr = []
+        // 当选择的ID相同时当做为空处理 不发请求 PS: 当为检查是否答案选项的时候可以不用置空
+        if (optionFlag !== 'check-answer') optionsArr = []
       }
     }
     params.options_id = optionsArr
@@ -205,7 +210,7 @@ function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }) {
 }
 
 const actions = {
-  GET_EXAMLIST ({state, commit}, payload) {
+  GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
 
@@ -233,6 +238,8 @@ const actions = {
           commit('SET_EXAMLIST', examList)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
+          // 这边初始化调用判断当前题目是否已做
+          list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject))
         } else {
           throw new Error('初始化试题列表失败')
         }
@@ -382,7 +389,7 @@ const actions = {
       })
     })
   },
-  SAVE_ANSWER_RECORD ({state, commit}, payload) {
+  SAVE_ANSWER_RECORD ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId
       let renderType = state.renderType
@@ -394,7 +401,7 @@ const actions = {
         return
       }
       // 整理数据的提交格式
-      let { isEmpty, params } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo })
+      let { isEmpty, params } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo }, 'save-record')
       // 提交的参数
       let data = Object.assign({ question_id: subject.id }, params)
       // 为空的时候全部return
@@ -402,6 +409,8 @@ const actions = {
         resolve()
         return
       }
+      // 更新当前的回答题目的信息
+      dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject)
       // 发送保存答题信息
       API.saveSubjectRecord({
         query: { id },
@@ -417,6 +426,25 @@ const actions = {
         reject(err)
       })
     })
+  },
+  CHANGE_SUBJECT_ANSWER_INFO ({state, commit}, subject) {
+    let subjectAnswerInfo = state.subjectAnswerInfo
+    let essayAnswerInfo = state.essayAnswerInfo
+    let oralAnswerInfo = state.oralAnswerInfo
+    // 通过整理参数的方法判断盖提是否为空
+    let { isEmpty } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo }, 'check-answer')
+    // 更改状态
+    if (isEmpty) {
+      subjectAnswerInfo[subject.id] = false
+    } else {
+      subjectAnswerInfo[subject.id] = true
+    }
+    // 处理当多个更新时候的多次请求
+    if (this.changeAnswerTimer) clearTimeout(this.changeAnswerTimer)
+    this.changeAnswerTimer = setTimeout(() => {
+      // 更新当前的回答题目的信息
+      commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
+    }, 300)
   },
   CHANGE_CURRENT_SUBJECT_INDEX ({state, commit}, payload) {
     let index = state.currentSubjectIndex
@@ -466,9 +494,7 @@ const actions = {
     let subjectType = subject.type
     // 只有考试的采取记录多选的提交
     let submitTypeArr = ['checkbox', 'essay', 'englishspoken', 'mandarin']
-    console.log('xxx 111')
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
-      console.log('xxx 222222')
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }

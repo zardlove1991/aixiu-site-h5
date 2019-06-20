@@ -55,7 +55,7 @@ export const DEPENCE = {
   checkRoralEmpty (oralAnswerInfo, subjectId) {
     let curOralObj = oralAnswerInfo[subjectId]
     let flag = true
-    if (curOralObj && curOral.value) flag = false
+    if (curOralObj && curOralObj.value) flag = false
     return flag
   },
   checkMedaiObjIsEmpty (mediaObj) {

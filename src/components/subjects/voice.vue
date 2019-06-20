@@ -91,6 +91,7 @@
 </template>
 
 <script>
+import { DEPENCE } from '@/common/currency'
 import EchartConfig from '@/config/echarts'
 import SubItemMixin from '@/mixins/subject-item'
 import SubjectMixin from '@/mixins/subject'
@@ -117,7 +118,9 @@ export default {
       let oralAnswerInfo = this.oralAnswerInfo
       let curSubject = this.currentSubjectInfo
       let curOralInfo = oralAnswerInfo[curSubject.id] // 拿到当前跟读信息
-      this.curOralInfo = !Array.isArray(curOralInfo) ? curOralInfo : null // 这边为空返回的是数组(尴尬)
+      let isEmpty = DEPENCE.checkRoralEmpty(oralAnswerInfo, curSubject.id)
+      // 这边为空返回的是数组(尴尬)
+      this.curOralInfo = !isEmpty ? curOralInfo : null
       // 如果是语音问答题并且解析的时候调用绘制
       this.drawVoiceEchart()
     },

@@ -39,7 +39,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['renderType', 'essayAnswerInfo']),
+    ...mapGetters('depence', [
+      'renderType', 'essayAnswerInfo', 'subjectAnswerInfo',
+      'oralAnswerInfo'
+    ]),
     rows () {
       // 建立一个mock的数据
       let limitCols = this.limitCols
@@ -105,21 +108,13 @@ export default {
     },
     haveDone (subject) {
       let isDid = true
-      let answers = subject.answer
-      let essayAnswerInfo = this.essayAnswerInfo
-      // 针对问答题是否做完需要检查是否有回答数据
-      if (subject.type === 'essay') {
-        isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
-      } else if (answers && answers.length) {
-        isDid = true
-      } else {
-        isDid = subject.options.some(item => item.active)
-      }
-
+      let subjectAnswerInfo = this.subjectAnswerInfo
+      isDid = subjectAnswerInfo[subject.id] // 直接读取当前题目做的状态
       return !isDid
     },
     addClass (subject) {
       let essayAnswerInfo = this.essayAnswerInfo
+      let oralAnswerInfo = this.oralAnswerInfo
       let renderType = this.renderType
       let correntInfo = subject.correntInfo
       let answers = subject.answer
@@ -129,6 +124,9 @@ export default {
       // 判断是否作答了问答题
       if (subject.type === 'essay') {
         let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
+        isDid && (className = 'success')
+      } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
+        let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
         isDid && (className = 'success')
       } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
