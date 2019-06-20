@@ -79,7 +79,6 @@ export default {
       isShowSubjectList: false,
       isShowGiveupModel: false,
       isShowSubmitModel: false,
-      unDoSubjectLength: 0,
       timeTip: null
     }
   },
@@ -94,11 +93,16 @@ export default {
       'subjectAnswerInfo'
     ]),
     currentIndex () {
-      this._dealUndoCount() // 有变化进行计算
       return this.curIndex + 1
     },
     percent () {
       return this.currentIndex / this.list.length
+    },
+    unDoSubjectLength () {
+      let subjectAnswerInfo = this.subjectAnswerInfo
+      let list = this.list
+      let count = Object.values(subjectAnswerInfo).filter(state => state).length
+      return (list.length - count)
     }
   },
   watch: {
@@ -107,7 +111,6 @@ export default {
     }
   },
   mounted () {
-    this.unDoSubjectLength = this.list.length
     this.initCountTime()
     this._moveProgressBtn()
   },
@@ -186,15 +189,11 @@ export default {
       } else {
         this.isShowSubmitModel = !this.isShowSubmitModel
       }
-    },
-    _dealUndoCount () {
-      let subjectAnswerInfo = this.subjectAnswerInfo
-      let list = this.list
-      let count = 0
-      for (let subjectId in subjectAnswerInfo) {
-        if (subjectAnswerInfo[subjectId]) count++
+      // 展示的时候去计算下当前题目是否回答
+      if (this.isShowSubmitModel || this.showSubmitModel) {
+        let subject = this.currentSubjectInfo
+        this.checkSubjectAnswerInfo(subject)
       }
-      return (list.length - count)
     },
     _moveProgressBtn () {
       let maxOffsetW = this.$refs.headerProgressBar.clientWidth
@@ -207,7 +206,8 @@ export default {
     },
     ...mapActions('depence', {
       endExam: 'END_EXAM',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION'
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
+      checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
     })
   }
 }

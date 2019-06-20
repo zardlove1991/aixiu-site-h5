@@ -332,6 +332,10 @@ export default {
       }
       return flag
     },
+    _dealHtmlLine (str) {
+      if (!str || (str && !str.indexOf('\n'))) return
+      return str.replace(/\n/g, '<br/>')
+    },
     ...mapMutations('depence', {
       setEssayAnswerInfo: 'SET_ESSAY_ANSWER_INFO',
       setOralAnswerInfo: 'SET_ORAL_ANSWER_INFO',

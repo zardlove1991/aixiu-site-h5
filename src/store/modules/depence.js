@@ -105,7 +105,7 @@ const mutations = {
     state.examInfo = payload
   },
   SET_SUBJECT_ANSWER_INFO (state, payload) {
-    state.subjectAnswerInfo = payload
+    state.subjectAnswerInfo = Object.assign({}, payload)
   },
   SET_CURRENT_SUBJECT_INDEX (state, payload) {
     state.currentSubjectIndex = payload

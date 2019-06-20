@@ -15,7 +15,10 @@ export default{
           }
         },
         axisLine: { show: false },
-        name: { color: '#999' },
+        name: {
+          color: '#999',
+          lineHeight: 14
+        },
         splitNumber: 4,
         center: ['50%', '50%'],
         radius: 84,

@@ -16,7 +16,10 @@
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
         class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
     </div>
-    <p class="subject-title">{{`${currentSubjectIndex+1}. ${data.title}`}}</p>
+    <p class="subject-title">
+      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span v-html="_dealHtmlLine(data.title)"></span>
+    </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
       <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
@@ -36,7 +39,7 @@
       <!--得分区域-->
       <div class="voice-score" v-if="curOralInfo.score">{{`${curOralInfo.score}分`}}</div>
       <!--跟读文本区域-->
-      <template v-if="data.extra && data.extra.show_follow_text && mode === 'analysis'">
+      <template v-if="data.extra && data.extra.follow_text && mode === 'analysis'">
         <div class="voice-read-tip-wrap">
           <h4 class="voice-read-tip">跟读文本</h4>
           <!--文本颜色提醒-->
@@ -60,7 +63,8 @@
           <span class="voice-word"
             v-for="(wItem, wIndex) in _dealWords(curOralInfo.content.words)"
             :key="wIndex"
-            :class="{'error': wItem.pron_accuracy < 80 }">{{wItem.word}}
+            :class="{'error': wItem.pron_accuracy < 80 }"
+            v-html="_dealHtmlLine(wItem.word)">
           </span>
         </p>
         <!--没有解析的全部为空-->
@@ -78,7 +82,7 @@
       <!--图形统计区域-->
       <div id="voice-statistics"
         v-if="curOralInfo.content"
-        style="width:100%;height:280px">
+        style="width:98%;height:280px">
       </div>
     </div>
     <!--题目解析选项-->
@@ -92,7 +96,7 @@
           <span class="tip">考点</span>
           <span class="type" v-for="item in data.point" :key="item.id">{{item.name}}</span>
         </div>
-        <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p>
+        <!-- <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p> -->
       </div>
     </div>
   </div>
@@ -151,11 +155,12 @@ export default {
           let chartVal = chartInfo[key]
           let mapKey = maping[key]
           if (mapKey) {
+            let curText = mapKey
+            if (chartVal > 0) {
+              curText = `${mapKey}\n ${chartVal}%`
+            }
             // 索引点
-            indicators.push({
-              text: chartVal > 0 ? `${mapKey} ${chartVal}%` : `${mapKey}`,
-              max: 100
-            })
+            indicators.push({ text: curText, max: 100 })
             // 存放值
             if (chartVal > 0) vals.push(chartVal)
           }
