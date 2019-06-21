@@ -257,7 +257,7 @@ export default {
     },
     timeUpdate (e) {
       // 针对IOS播放延迟问题做处理 关闭初始化状态
-      let time = e.target.currentTime
+      let time = this.audio.currentTime
       if (this.audioInit && time) {
         this.audio.pause()
         this.audioInit = false
@@ -303,10 +303,9 @@ export default {
     _getAudioInfo (e) {
       let myAudio = this.audio
       // 赋值总时长
-      // this.currentDuration = parseInt(Math.round(myAudio.duration.toFixed(2)))
       this.currentDuration = myAudio.duration
-      // 设置是否初始化
-      this.audioInit = false
+      // 设置是否初始化 PS:ios的初始化调用等触发播放事件后在更改
+      if (!isIOSsystem()) this.audioInit = false
       console.log('audio触发的metaload事件', this.currentDuration)
       // 发送当前音频总时长
       this.$emit('audoinfo', {duration: this.currentDuration})

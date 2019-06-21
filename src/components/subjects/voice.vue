@@ -71,6 +71,7 @@
         <h4 class="voice-audio-tip">你的答题语音</h4>
         <my-audio
           show-type="bubble"
+          :key="curOralInfo.value.audio[0]"
           :src="curOralInfo.value.audio[0]"
           :limit-info="{isLimit: true, limitTime: 60, showSecond: true }">
         </my-audio>

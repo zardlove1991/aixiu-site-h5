@@ -274,9 +274,7 @@ export default {
           recordConfig.isRecord = false
           recordConfig.isStop = true
           // 先重置下当前的状态
-          if (recordType === 'touch') {
-            this.$nextTick(() => this._resetAuioStatus())
-          }
+          if (recordType === 'touch') this._dealTouchReset()
         } else {
           // 判断是否停止
           if (recordConfig.isStop) {
@@ -369,9 +367,7 @@ export default {
           recordConfig.isRecord = false
           recordConfig.isStop = true
           // 先重置下当前的状态
-          if (recordType === 'touch') {
-            this.$nextTick(() => this._resetAuioStatus())
-          }
+          if (recordType === 'touch') this._dealTouchReset()
           this.recordConfig = Object.assign({}, recordConfig)
           // 返回
           return false
@@ -379,6 +375,14 @@ export default {
         // 开始计时
         initTip()
       }, delay)
+    },
+    _dealTouchReset () {
+      // 由于IOS的延迟回调要采用定时器
+      if (isIOSsystem()) {
+        setTimeout(() => this._resetAuioStatus(), 1000)
+      } else {
+        this.$nextTick(() => this._resetAuioStatus())
+      }
     },
     _resetAuioStatus () {
       let recordConfig = this.recordConfig
