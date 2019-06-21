@@ -25,7 +25,10 @@
             <!--问答题批阅得分提醒-->
             <div v-show="renderType === 'analysis' && item.type === 'essay' && item.remark.score" class="essay-audio-score">{{`得${item.remark.score}分`}}</div>
           </div>
-          <p class="subject-title">{{`${index+1}. ${item.title}`}}</p>
+          <p class="subject-title">
+            <span>{{`${index + 1}.`}}</span>
+            <span v-html="_dealHtmlLine(item.title)"></span>
+          </p>
           <!--题干的每题数据-->
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
             <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
@@ -995,6 +998,10 @@ export default {
           this.previewTimer = null
         }
       }, 500)
+    },
+    _dealHtmlLine (str) {
+      if (!str || (str && !str.indexOf('\n'))) return
+      return str.replace(/\n/g, '<br/>')
     },
     // 检查当前媒体对象是否为空
     _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
