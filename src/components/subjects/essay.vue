@@ -16,7 +16,10 @@
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
         class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
     </div>
-    <p class="subject-title">{{`${currentSubjectIndex+1}. ${data.title}`}}</p>
+    <p class="subject-title">
+      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span v-html="_dealHtmlLine(data.title)"></span>
+    </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
       <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
