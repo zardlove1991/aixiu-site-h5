@@ -240,7 +240,14 @@ export default {
       })
     },
     audioStop () {
-      this.togglePlay()
+      // 修改播放重置状态
+      this.playing = false
+      this.$nextTick(() => {
+        this.playing = true
+        setTimeout(() => {
+          this.playing = false
+        }, 100)
+      })
     },
     error () {
       this.$toast({ message: '音频加载失败', type: 'error' })
