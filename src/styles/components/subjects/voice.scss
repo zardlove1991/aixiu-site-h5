@@ -53,10 +53,8 @@
     &.error{
       @include font-color('errorColor');
     }
-    .voice-word{
-      &.error{
-        @include font-color('errorColor');
-      }
+    .error{
+      @include font-color('errorColor');
     }
   }
   .voice-audio-wrap{

@@ -14,7 +14,12 @@ export default{
             color: ['#ebebeb']
           }
         },
-        axisLine: { show: false },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#dbdbdb'
+          }
+        },
         name: {
           color: '#999',
           lineHeight: 14

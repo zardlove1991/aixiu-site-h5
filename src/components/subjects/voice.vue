@@ -59,13 +59,9 @@
           </el-tooltip>
         </div>
         <!--跟读文本的正文内容-->
-        <p class="voice-words-tip" v-if="curOralInfo.content.words.length">
-          <span class="voice-word"
-            v-for="(wItem, wIndex) in _dealWords(curOralInfo.content.words)"
-            :key="wIndex"
-            :class="{'error': wItem.pron_accuracy < 80 }"
-            v-html="_dealHtmlLine(wItem.word)">
-          </span>
+        <p class="voice-words-tip"
+          v-if="curOralInfo.content.words.length"
+          v-html="_dealFollowText()">
         </p>
         <!--没有解析的全部为空-->
         <p class="voice-words-tip error" v-else>{{data.extra.follow_text}}</p>
@@ -170,6 +166,24 @@ export default {
         echartIns.setOption(options)
         window.addEventListener('resize', () => echartIns.resize())
       })
+    },
+    _dealFollowText () {
+      let curOralInfo = this.curOralInfo
+      let followText = this.data.extra.follow_text
+      let words = this._dealWords(curOralInfo.content.words)
+      // 这边跟原文字进行比对
+      words.forEach((wItem, index) => {
+        let wordIndex = followText.indexOf(wItem.word)
+        let template = `<span class="error">${wItem.word}</span>`
+        // 进行替换针对错误的
+        if (wordIndex !== -1 && wItem.pron_accuracy < 80) {
+          let preText = followText.substring(0, wordIndex)
+          let afterText = followText.substr(wordIndex + 1)
+          followText = `${preText}${template}${afterText}`
+        }
+      })
+      // 进行整体转换
+      return this._dealHtmlLine(followText)
     },
     _dealWords (words) {
       return words.filter(item => {
