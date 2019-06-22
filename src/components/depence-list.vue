@@ -434,6 +434,7 @@ export default {
     this.initList()
   },
   methods: {
+    // 统一素材格式，保证素材为对象格式，且素材链接为<obj.url>
     annexMedia (origin) {
       let result = null
       if (typeof origin === 'string') {
