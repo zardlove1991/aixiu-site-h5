@@ -85,7 +85,7 @@ export default {
     percent (newVal) {
       // 调用进度条
       if (newVal) {
-        let maxProgressW = this.$refs.progressBarWrap.clientWidth - PROGRESS_BTN_W
+        let maxProgressW = (this.$refs.progressBarWrap && this.$refs.progressBarWrap.clientWidth) - PROGRESS_BTN_W
         let offsetWidth = maxProgressW * newVal
         this._offset(offsetWidth)
       }
@@ -165,8 +165,8 @@ export default {
     _offset (offsetWidth) {
       let progressEl = this.$refs.progress
       let progressBtnEl = this.$refs.progressBtn
-      progressEl.style.width = `${offsetWidth}px`
-      progressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`
+      progressEl && (progressEl.style.width = `${offsetWidth}px`)
+      progressBtnEl && (progressBtnEl.style[TRANSFORM] = `translate3d(${offsetWidth}px,0,0)`)
     },
     _triggerPercent () {
       let progressBarEl = this.$refs.progressBarWrap

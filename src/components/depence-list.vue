@@ -31,11 +31,11 @@
           </p>
           <!--题干的每题数据-->
           <div class="media-wrap" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
-            <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+            <img v-if="mediaKey=='image' && (annexMedia(media) && annexMedia(media).url)" :src="annexMedia(media).url"  @click.stop="_setPreviewState" v-preview="annexMedia(media).url" preview-nav-enable="false" class="my-img"/>
             <!--音频播放-->
             <my-audio v-if="mediaKey=='audio' && (annexMedia(media) && annexMedia(media).url)" class="my-audio" :src="annexMedia(media).url"></my-audio>
             <!--视频播放-->
-            <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+            <my-video v-if="mediaKey=='video' && (annexMedia(media) && annexMedia(media).url)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
           </div>
           <!--每个选择项-->
           <div class="subject-select-wrap" v-for="(optItem,optIndex) in item.options" :key='optIndex' ref="subjectSelectWrap">
@@ -45,11 +45,11 @@
               <div class="select-desc">{{optItem.name}}</div>
             </div>
             <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-              <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
+              <img v-if="mediaKey=='image' && (annexMedia(media) && annexMedia(media).url)" :src="annexMedia(media).url"  v-preview="annexMedia(media).url" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
               <!--音频播放-->
               <my-audio v-if="mediaKey=='audio' && (annexMedia(media) && annexMedia(media).url)" class="my-audio" :src="annexMedia(media).url"></my-audio>
               <!--视频播放-->
-              <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+              <my-video v-if="mediaKey=='video' && (annexMedia(media) && annexMedia(media).url)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
           <!--问答题的表单-->
@@ -435,19 +435,30 @@ export default {
   },
   methods: {
     annexMedia (origin) {
+      let result = null
       if (typeof origin === 'string') {
-        return origin
+        result = {
+          url: origin
+        }
       } else if (origin instanceof Array) {
         if (origin.length) {
-          return origin[0]
+          if (typeof origin[0] === 'string') {
+            result = {
+              url: origin[0]
+            }
+          } else {
+            result = origin[0]
+          }
         } else {
-          return null
+          result = null
         }
       } else if (origin instanceof Object) {
-        return origin
-      } else {
-        return null
+        result = origin
       }
+      if (result && result.src && !result.url) {
+        result.url = result.src
+      }
+      return result
     },
     async initList () {
       let examId = this.id
