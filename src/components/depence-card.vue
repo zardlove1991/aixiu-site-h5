@@ -67,11 +67,11 @@
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && answerCardInfo.essay_status">
+        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && _dealState(1)">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
-        <div class="col-wrap analysis" v-if="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
+        <div class="col-wrap analysis" v-if="_dealState(1)" @click.stop="jumpToExamAnalysis('list')">
           <div class="icon-bg"></div>
           <span class="tip">答案解析</span>
         </div>
@@ -230,15 +230,18 @@ export default {
       let answerCardInfo = this.answerCardInfo
       let essayState = answerCardInfo.essay_status
       let oralState = answerCardInfo.oral_status
-      let flag = false
-      if (answerCardInfo.hasOwnProperty('essay_status')) { // 优先判断问答题的审核
-        if (essayState === val) flag = true
-      } else if (answerCardInfo.hasOwnProperty('oral_status')) { // 判断语音题的解析
-        if (oralState === val) flag = true
-      } else if (answerCardInfo.hasOwnProperty('status')) { // 判断普通题目
-        if (status === val) flag = true
+      let status = answerCardInfo.status
+      // 状态判断优先: 问答->语音->其它
+      let getState = () => {
+        let flag = false
+        if (val === 0) {
+          flag = (essayState === val || oralState === val || status === val)
+        } else {
+          flag = (essayState === val && oralState === val && status === val)
+        }
+        return flag
       }
-      return flag
+      return getState()
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
@@ -395,8 +398,8 @@ export default {
             }
           }
           .tip{
-            line-height: 1;
-            margin-bottom: px2rem(132px);
+            margin-bottom: px2rem(100px);
+            text-align: center;
             @include font-dpr(17px);
             @include font-color('titleColor');
           }

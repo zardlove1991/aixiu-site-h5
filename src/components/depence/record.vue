@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { formatTimeBySec } from '@/utils/utils'
 import { isIOSsystem } from '@/utils/app'
 import { Toast, Indicator } from 'mint-ui'
@@ -97,6 +97,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('depence', ['currentSubjectIndex']),
     recordInfoTip () {
       let recordType = this.recordType
       let recordConfig = this.recordConfig
@@ -123,6 +124,10 @@ export default {
     },
     recordConfig (newConfig, oldConfig) {
       this.dealRecordOption(newConfig)
+    },
+    currentSubjectIndex () {
+      // 题目变更后重置播放器状态
+      this._resetAuioStatus('change')
     }
   },
   created () {
@@ -384,11 +389,15 @@ export default {
         this.$nextTick(() => this._resetAuioStatus())
       }
     },
-    _resetAuioStatus () {
+    _resetAuioStatus (flag = 'default') {
       let recordConfig = this.recordConfig
       for (let key in recordConfig) {
-        if (key === 'isReset') recordConfig[key] = true
-        else recordConfig[key] = false
+        // 只有手动操作重置走状态 题目变更恢复初始状态
+        if (key === 'isReset' && flag === 'default') {
+          recordConfig[key] = true
+        } else {
+          recordConfig[key] = false
+        }
       }
       // 设置对象
       this.recordConfig = Object.assign({}, recordConfig)

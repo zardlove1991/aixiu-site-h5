@@ -195,7 +195,7 @@
           position: relative;
           left: px2rem(2px);
           top: px2rem(2px);
-          @include font-dpr(14px);
+          @include font-dpr(16px);
         }
         &.arrow-wrap-disabeld{
           pointer-events: none;

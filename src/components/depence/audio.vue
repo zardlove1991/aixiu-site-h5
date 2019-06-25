@@ -31,8 +31,8 @@
       <template v-if="!audioInit">
         <!--播放按钮-->
         <div class="wave-play-btn" @click.stop="togglePlay">
-          <i class="wave-play-icon" v-if="!playing"></i>
-          <i class="wave-stop-icon" v-else></i>
+          <i class="examfont wave-play-icon" v-if="!playing">&#xe715;</i>
+          <i class="examfont wave-stop-icon" v-else>&#xe716;</i>
         </div>
         <!--波形滚动-->
         <div class="wave-animation-wrap">
@@ -200,7 +200,7 @@ export default {
       this.audioInit = true
       this.audio = this.$refs.audio
       // 赋值src
-      this.audio.src = this.src
+      this.audio.src = this.src.replace('https', 'http')
       // 监听客户端请求数据
       this.audio.load()
     },
@@ -260,8 +260,7 @@ export default {
       let time = this.audio.currentTime
       if (this.audioInit && time) {
         this.audio.pause()
-        this.audioInit = false
-        console.log('IOS音频初始化状态完毕 ！！')
+        this._getAudioInfo() // 调用信息
         return
       }
       this.currentTime = time
@@ -301,11 +300,13 @@ export default {
       if (!this.playing) this.togglePlay()
     },
     _getAudioInfo (e) {
+      // 如果是IOS内部触发meteload事件直接返回 等播放后获得信息后手动触发
+      if (e && isIOSsystem()) return
       let myAudio = this.audio
       // 赋值总时长
       this.currentDuration = myAudio.duration
-      // 设置是否初始化 PS:ios的初始化调用等触发播放事件后在更改
-      if (!isIOSsystem()) this.audioInit = false
+      // 设置是否初始化
+      this.audioInit = false
       console.log('audio触发的metaload事件', this.currentDuration)
       // 发送当前音频总时长
       this.$emit('audoinfo', {duration: this.currentDuration})
@@ -408,16 +409,15 @@ export default {
       border-radius: 50%;
       @include bg-color('bgColor');
       .wave-play-icon{
-        width: 0;
-        height: 0;
-        @include border('top', px2rem(10px), solid, 'bgColor');
-        @include border('bottom', px2rem(10px), solid, 'bgColor');
-        @include border('left', px2rem(14px), solid, 'audioBgOne');
+        position: relative;
+        left: px2rem(2px);
+        line-height: 1;
+        @include font-dpr(12px);
+        @include font-color('themeColor');
       }
       .wave-stop-icon{
-        width: px2rem(14px);
-        height: px2rem(14px);
-        @include bg-color('audioBgOne');
+        @extend .wave-play-icon;
+        left: 0;
       }
     }
     .wave-time{
