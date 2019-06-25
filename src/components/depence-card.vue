@@ -151,8 +151,7 @@ export default {
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true
         // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
-        let answerCardInfo = this.answerCardInfo
-        let showBtns = [this.isShowBackBtn, (examInfo.restart && answerCardInfo.essay_status), answerCardInfo.essay_status].filter(state => state)
+        let showBtns = [this.isShowBackBtn, examInfo.restart, this._dealState(1)].filter(state => state)
         this.isBottomBtnCenter = (showBtns.length === 1)
         // 设置分享的SDK -> mixin中的方法
         this.initPageShareInfo({

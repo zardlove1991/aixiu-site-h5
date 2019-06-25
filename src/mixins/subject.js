@@ -265,6 +265,8 @@ export default {
       // 提交数据
       oralAnswerInfo[curSubject.id] = { value: e }
       this.setOralAnswerInfo(oralAnswerInfo)
+      // 这边去触发下题目答题变更
+      this.changeSubjectAnswerInfo(curSubject)
     },
     _dealEssayFromValue (params) {
       // 防止多次处理
@@ -349,7 +351,8 @@ export default {
       addSelectActiveFlag: 'ADD_SELECT_ACTIVE_FLAG',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       saveAnswerRecord: 'SAVE_ANSWER_RECORD',
-      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
+      changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
+      changeSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
     })
   }
 }

@@ -169,19 +169,38 @@ export default {
       })
     },
     _dealFollowText () {
+      let subjectType = this.data.type
       let curOralInfo = this.curOralInfo
       let followText = this.data.extra.follow_text
       let words = this._dealWords(curOralInfo.content.words)
       // 这边跟原文字进行比对
+      let mandarinInfo = { index: 0, str: followText }
+      let englishArr = followText.split(' ')
       words.forEach((wItem, index) => {
-        let wordIndex = followText.indexOf(wItem.word)
-        let template = `<span class="error">${wItem.word}</span>`
-        // 进行替换针对错误的
-        if (wordIndex !== -1 && wItem.pron_accuracy < 80) {
-          let preText = followText.substring(0, wordIndex)
-          let afterText = followText.substr(wordIndex + 1)
-          followText = `${preText}${template}${afterText}`
+        let template = val => `<span class="error">${val}</span>`
+        // 处理判定条件
+        if (wItem.pron_accuracy < 80) {
+          // 进行替换针对错误的
+          if (subjectType === 'mandarin') {
+            let errorIndex = mandarinInfo.str.indexOf(wItem.word)
+            if (errorIndex !== -1) {
+              let realIndex = errorIndex + mandarinInfo.index
+              // 处理数据
+              let preText = followText.substring(0, realIndex)
+              let afterText = followText.substr(realIndex + 1)
+              followText = `${preText}${template(wItem.word)}${afterText}`
+              // 更新中文比对信息
+              mandarinInfo.index = realIndex
+              mandarinInfo.str = followText.substr(realIndex)
+            }
+          } else {
+            let realWord = englishArr[index]
+            englishArr[index] = template(realWord)
+          }
         }
+        // 进行拼接
+        let engIsMatch = (index === words.length - 1) && subjectType === 'englishspoken'
+        if (engIsMatch) followText = englishArr.join(' ')
       })
       // 进行整体转换
       return this._dealHtmlLine(followText)
