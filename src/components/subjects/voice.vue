@@ -174,10 +174,10 @@ export default {
       let followText = this.data.extra.follow_text
       let words = this._dealWords(curOralInfo.content.words)
       // 这边跟原文字进行比对
+      let template = val => `<span class="error">${val}</span>`
       let mandarinInfo = { index: 0, str: followText }
       let englishArr = followText.split(' ')
       words.forEach((wItem, index) => {
-        let template = val => `<span class="error">${val}</span>`
         // 处理判定条件
         if (wItem.pron_accuracy < 80) {
           // 进行替换针对错误的
@@ -195,7 +195,7 @@ export default {
             }
           } else {
             let realWord = englishArr[index]
-            englishArr[index] = template(realWord)
+            if (realWord) englishArr[index] = template(realWord)
           }
         }
         // 进行拼接
