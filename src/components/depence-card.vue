@@ -153,6 +153,8 @@ export default {
         // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
         let showBtns = [this.isShowBackBtn, examInfo.restart, this._dealState(1)].filter(state => state)
         this.isBottomBtnCenter = (showBtns.length === 1)
+        // 这边判断包含语音问答的时候需要
+        this.dealRereshInfo()
         // 设置分享的SDK -> mixin中的方法
         this.initPageShareInfo({
           title: examInfo.title,
@@ -173,6 +175,17 @@ export default {
         this.$router.go(0)
       } catch (err) {
         console.log(err)
+      }
+    },
+    dealRereshInfo () {
+      let answerCardInfo = this.answerCardInfo
+      let essayState = answerCardInfo.essay_status
+      let oralState = answerCardInfo.oral_status
+      // 每次清除下
+      if (this.oralTimer) clearInterval(this.oralTimer)
+      // 只有语音问答的时候需要刷新
+      if (essayState === 1 && oralState === 0) {
+        this.oralTimer = setInterval(this.initInfo, 3000)
       }
     },
     startReExam (flag) {
