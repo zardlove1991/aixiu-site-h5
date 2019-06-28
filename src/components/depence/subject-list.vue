@@ -5,8 +5,7 @@
       <div v-for="(item,index) in row" :key="item.key"
            class="item normal"
            :class="[{ disabled: haveDone(item) }, setActiveClass(item), addClass(item)]"
-           @click.stop= "selectSubject(item)"
-      >
+           @click.stop= "selectSubject(item)">
         {{showSubjectIndex(rowIndex,index)}}
       </div>
       <!--空占位-->
@@ -40,7 +39,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['renderType', 'essayAnswerInfo']),
+    ...mapGetters('depence', [
+      'renderType', 'essayAnswerInfo', 'subjectAnswerInfo',
+      'oralAnswerInfo'
+    ]),
     rows () {
       // 建立一个mock的数据
       let limitCols = this.limitCols
@@ -106,21 +108,13 @@ export default {
     },
     haveDone (subject) {
       let isDid = true
-      let answers = subject.answer
-      let essayAnswerInfo = this.essayAnswerInfo
-      // 针对问答题是否做完需要检查是否有回答数据
-      if (subject.type === 'essay') {
-        isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
-      } else if (answers && answers.length) {
-        isDid = true
-      } else {
-        isDid = subject.options.some(item => item.active)
-      }
-
+      let subjectAnswerInfo = this.subjectAnswerInfo
+      isDid = subjectAnswerInfo[subject.id] // 直接读取当前题目做的状态
       return !isDid
     },
     addClass (subject) {
       let essayAnswerInfo = this.essayAnswerInfo
+      let oralAnswerInfo = this.oralAnswerInfo
       let renderType = this.renderType
       let correntInfo = subject.correntInfo
       let answers = subject.answer
@@ -131,9 +125,16 @@ export default {
       if (subject.type === 'essay') {
         let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
         isDid && (className = 'success')
+      } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
+        let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
+        isDid && (className = 'success')
       } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
-        isAllMatch ? className = 'success' : className = 'error'
+        if (correntInfo.length === answers.length && isAllMatch) {
+          className = 'success'
+        } else {
+          className = 'error'
+        }
       }
       return className
     }
@@ -148,7 +149,7 @@ export default {
   .row-wrap{
     display: flex;
     justify-content: flex-start;
-    margin-bottom: px2rem(36px);
+    padding-top: px2rem(36px);
     &:last-child{
       margin-bottom: 0;
     }
@@ -158,7 +159,7 @@ export default {
       width: px2rem(100px);
       height: px2rem(100px);
       border-radius: 50%;
-      margin-left: px2rem(36px);
+      margin-left: px2rem(40px);
       @include font-dpr(16px);
       &.normal{
         @include bg-color('bgColor');

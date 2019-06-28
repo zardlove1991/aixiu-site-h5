@@ -5,7 +5,7 @@
       <!--内容展示区域-->
       <div class="grade-info-wrap">
         <!--头部信息-->
-        <div :class="[ answerCardInfo.essay_status ? 'header-info-wrap' : 'essay-header-wrap']">
+        <div :class="[ _dealState(0) ? 'essay-header-wrap' : 'header-info-wrap']">
           <div class="avater-bg">
             <img class="avater" :src="examInfo.member_avatar || defaultAvaterUrl" />
           </div>
@@ -14,7 +14,7 @@
         <!--主体信息-->
         <div class="body-info-wrap">
           <!--正常答题分数展示-->
-          <div class="normal-scrol-wrap" v-if="answerCardInfo.essay_status">
+          <div class="normal-scrol-wrap" v-if="_dealState(1)">
             <h3 class="title">{{examInfo.title}}</h3>
             <div class="score-wrap">
               <div class="text-wrap">
@@ -25,12 +25,18 @@
           </div>
           <!--问答题批阅信息提醒-->
           <div class="essay-audit-wrap" v-else>
-            <div class="empty-logo"></div>
-            <h4 class="tip">提交成功，耐心等待老师批阅</h4>
+            <div class="empty-logo"
+              :class="{
+                'roal-empty': !answerCardInfo.oral_status,
+                'essay-empty': !answerCardInfo.essay_status
+              }">
+            </div>
+            <h4 class="tip" v-if="!answerCardInfo.essay_status">提交成功，耐心等待老师批阅</h4>
+            <h4 class="tip" v-else-if="!answerCardInfo.oral_status">提交成功，系统正在评分，请稍等</h4>
           </div>
           <!--详细信息列表展示-->
           <div class="exam-detail-wrap">
-            <div class="row" v-show="answerCardInfo.essay_status">
+            <div class="row" v-show="_dealState(1)">
               <span class="title">试卷总分</span>
               <span class="desc">{{`${answerCardInfo.total_score}分`}}</span>
             </div>
@@ -38,7 +44,7 @@
               <span class="title">总题数目</span>
               <span class="desc">{{`${examInfo.question_num}题`}}</span>
             </div>
-            <div class="row" v-show="answerCardInfo.essay_status && answerCardInfo.answer_num.right_answer_num">
+            <div class="row" v-show="_dealState(1) && answerCardInfo.answer_num.right_answer_num">
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
@@ -61,11 +67,11 @@
           <div class="icon-bg"></div>
           <span class="tip">返回</span>
         </div>
-        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && answerCardInfo.essay_status">
+        <div class="col-wrap reset" @click.stop="startReExam('card')" v-if="examInfo.restart && _dealState(1)">
           <div class="icon-bg"></div>
           <span class="tip">重新考试</span>
         </div>
-        <div class="col-wrap analysis" v-if="answerCardInfo.essay_status" @click.stop="jumpToExamAnalysis('list')">
+        <div class="col-wrap analysis" v-if="_dealState(1)" @click.stop="jumpToExamAnalysis('list')">
           <div class="icon-bg"></div>
           <span class="tip">答案解析</span>
         </div>
@@ -85,7 +91,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
-import mixins from '@/common/mixins'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'depence-card',
@@ -145,9 +151,17 @@ export default {
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true
         // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
-        let answerCardInfo = this.answerCardInfo
-        let showBtns = [this.isShowBackBtn, (examInfo.restart && answerCardInfo.essay_status), answerCardInfo.essay_status].filter(state => state)
+        let showBtns = [this.isShowBackBtn, examInfo.restart, this._dealState(1)].filter(state => state)
         this.isBottomBtnCenter = (showBtns.length === 1)
+        // 这边判断包含语音问答的时候需要
+        this.dealRereshInfo()
+        // 设置分享的SDK -> mixin中的方法
+        this.initPageShareInfo({
+          title: examInfo.title,
+          desc: examInfo.brief,
+          indexpic: examInfo.indexpic,
+          link: this.redirect
+        })
       } catch (err) {
         console.log(err)
       }
@@ -161,6 +175,17 @@ export default {
         this.$router.go(0)
       } catch (err) {
         console.log(err)
+      }
+    },
+    dealRereshInfo () {
+      let answerCardInfo = this.answerCardInfo
+      let essayState = answerCardInfo.essay_status
+      let oralState = answerCardInfo.oral_status
+      // 每次清除下
+      if (this.oralTimer) clearInterval(this.oralTimer)
+      // 只有语音问答的时候需要刷新
+      if (essayState === 1 && oralState === 0) {
+        this.oralTimer = setInterval(this.initInfo, 3000)
       }
     },
     startReExam (flag) {
@@ -212,6 +237,23 @@ export default {
         // 网页就直接跳转
         window.location.href = params.redirect
       }
+    },
+    _dealState (val) {
+      let answerCardInfo = this.answerCardInfo
+      let essayState = answerCardInfo.essay_status
+      let oralState = answerCardInfo.oral_status
+      let status = answerCardInfo.status
+      // 状态判断优先: 问答->语音->其它
+      let getState = () => {
+        let flag = false
+        if (val === 0) {
+          flag = (essayState === val || oralState === val || status === val)
+        } else {
+          flag = (essayState === val && oralState === val && status === val)
+        }
+        return flag
+      }
+      return getState()
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
@@ -360,11 +402,16 @@ export default {
             background-position: center;
             background-repeat: no-repeat;
             margin-bottom: px2rem(40px);
-            @include img-retina('~@/assets/common/essay_empty@2x.png', '~@/assets/common/essay_empty@3x.png', 100%, 100%);
+            &.essay-empty{
+              @include img-retina('~@/assets/common/essay_empty@2x.png', '~@/assets/common/essay_empty@3x.png', 100%, 100%);
+            }
+            &.roal-empty{
+              @include img-retina('~@/assets/common/roal_empty@2x.png', '~@/assets/common/roal_empty@3x.png', 100%, 100%);
+            }
           }
           .tip{
-            line-height: 1;
-            margin-bottom: px2rem(132px);
+            margin-bottom: px2rem(100px);
+            text-align: center;
             @include font-dpr(17px);
             @include font-color('titleColor');
           }

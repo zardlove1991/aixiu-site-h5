@@ -4,7 +4,7 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
-  .list-wrap{
+  .qtnlist-wrap{
     position: relative;
     width: 100%;
     min-height: calc(100% - 50px);
@@ -14,352 +14,6 @@
       width: 100%;
       @include font-dpr(16px);
       @include font-color('titleColor');
-      .subject-type-wrap{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: px2rem(54px) px2rem(43px) px2rem(16px) px2rem(32px);
-        box-sizing: border-box;
-        .subject-type{
-          line-height: 1;
-          @include font-dpr(16px);
-          .score{
-            font-weight: normal;
-            margin-left: px2rem(10px);
-            @include font-dpr(14px);
-          }
-        }
-        .subject-tip-wrap{
-          display: flex;
-          align-items: center;
-          .tip-img{
-            width: px2rem(30px);
-            height: px2rem(30px);
-            @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
-            background-repeat: no-repeat;
-            background-position: center;
-            margin-right: px2rem(11px);
-          }
-          .tip-count{
-            @include font-dpr(13px);
-            @include font-color('tipColor')
-          }
-        }
-        .essay-audio-score{
-          line-height: 1;
-          padding: px2rem(9px) px2rem(9px) px2rem(9px) px2rem(11px);
-          border-radius: px2rem(4px);
-          @include font-dpr(15px);
-          @include font-color('errorColor');
-          @include border('all', px2rem(1px), dashed,'lineColorTwo');
-        }
-      }
-      .subject-title{
-        @include font-dpr(16px);
-        padding:px2rem(39px) px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-      }
-      .media-wrap{
-        padding:0 px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-        text-align: center;
-        .my-audio,.my-video,.my-img{
-          margin-top: px2rem(39px);
-        }
-        .my-img{
-          width: 100%;
-          height: px2rem(300px);
-          object-fit: contain;
-        }
-      }
-      .subject-select-wrap{
-        margin-top: px2rem(40px);
-        padding:0 px2rem(43px) 0 px2rem(30px);
-        box-sizing: border-box;
-        .select-tip-wrap{
-          display: flex;
-          align-items: center;
-          box-sizing: border-box;
-          .select-tip{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 0 0 px2rem(54px);
-            width: px2rem(54px);
-            height: px2rem(54px);
-            border-radius: 50%;
-            margin-right: px2rem(40px);
-            @include font-dpr(14px);
-            @include bg-color('bgColor');
-            @extend .box-shadow;
-            &.active{
-              @include font-color('bgColor');
-              @include bg-color('themeColor');
-            }
-            &.error{
-              @include font-color('bgColor');
-              @include bg-color('errorColor');
-            }
-          }
-          .select-desc{
-            max-width: 90%;
-          }
-        }
-        .media-wrap{
-          padding: 0;
-        }
-      }
-      .subject-essay-wrap{
-        width: 100%;
-        padding:px2rem(100px) 0 0;
-        box-sizing: border-box;
-        .title-tip{
-          margin-left: px2rem(30px);
-          line-height: 1;
-          @include font-dpr(16px);
-          @include font-color('titleColor');
-        }
-        .from-wrap{
-          width: 100%;
-          padding: px2rem(30px) 0 0;
-          margin: 0 auto;
-          .content-wrap{
-            width: 100%;
-            height: px2rem(240px);
-            padding: 0 px2rem(30px);
-            box-sizing: border-box;
-            .content{
-              width: 100%;
-              height: 100%;
-              padding: px2rem(30px) px2rem(21px);
-              -webkit-appearance:none;
-              outline: none;
-              font-weight: 300;
-              box-sizing: border-box;
-              @include font-dpr(16px);
-              @include font-color('titleColor');
-              @include border('all', px2rem(2px), solid, 'lineColorOne');
-            }
-          }
-          .answer-content{
-            padding: px2rem(7px) px2rem(30px) 0;
-            line-height: px2rem(44px);
-            word-wrap: break-word;
-            box-sizing: border-box;
-            @include font-dpr(15px);
-            @include font-color('titleColor');
-          }
-          .upload-media-wrap{
-            width: 100%;
-            .images-wrap{
-              display: flex;
-              justify-content: space-between;
-              flex-wrap: wrap;
-              align-content: flex-start;
-              width: 100%;
-              overflow: hidden;
-              padding: 0 px2rem(30px);
-              box-sizing: border-box;
-              .single-image-wrap{
-                position: relative;
-                width: px2rem(158px);
-                height: px2rem(158px);
-                margin-top: px2rem(24px);
-                .eassy-image{
-                  width: 100%;
-                  height: 100%;
-                  object-fit: cover;
-                }
-              }
-            }
-            .delete-icon{
-              position: absolute;
-              right: 0;
-              top:0;
-              transform: translate3d(40%,-40%,0);
-              width: px2rem(60px);
-              height: px2rem(60px);
-              border-radius: 50%;
-              background-position: center;
-              background-repeat: no-repeat;
-              @include img-retina('~@/assets/common/close_1@2x.png','~@/assets/common/close_1@3x.png', px2rem(36px),px2rem(36px));
-            }
-            .eassy-audio-wrap,.eassy-video-wrap{
-              padding: 0 px2rem(30px);
-              position: relative;
-              box-sizing: border-box;
-              .eassy-audio{
-                margin-top: px2rem(30px);
-              }
-              .eassy-video{
-                margin-top:px2rem(30px);
-                height: px2rem(390px);
-              }
-              .delete-icon{
-                transform: translate3d(-10%,-40%,0);
-              }
-            }
-          }
-          .upload-option-wrap{
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: px2rem(25px) px2rem(30px) 0;
-            box-sizing: border-box;
-            .upload-img,.upload-audio,.upload-video{
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              pointer-events: auto;
-              @include font-color('descColorOne');
-              .examfont{
-                line-height: 1;
-                @include font-dpr(28px);
-              }
-              &.disabled{
-                pointer-events: none;
-                @include font-color('disabledColorOne');
-              }
-            }
-            .upload-img{
-              .examfont{
-                @include font-dpr(24px);
-              }
-            }
-            .upload-audio{
-              margin: 0 px2rem(70px);
-            }
-            .file-input{
-              width: px2rem(2px);
-              height: px2rem(2px);
-              opacity: 0;
-              margin-left: px2rem(60px);
-              z-index: -1;
-            }
-          }
-        }
-      }
-      .answerinfo-wrap{
-        width: 100%;
-        padding-top: px2rem(79px);
-        .correct-answer,.my-answer{
-          display: flex;
-          align-items: center;
-          padding: 0 0 px2rem(30px) px2rem(30px);
-          line-height: 1;
-          @include font-dpr(15px);
-          @include font-color('titleColor');
-        }
-        .answer-analysis{
-          width: 100%;
-          padding: 0 px2rem(61px) 0 px2rem(30px);
-          box-sizing: border-box;
-          overflow: hidden;
-          @include border('top',1px,solid,'lineColor');
-          .title{
-            margin: px2rem(26px) 0;
-            @include font-dpr(16px);
-            @include font-color('titleColor');
-          }
-          .content{
-            line-height: px2rem(44px);
-            margin-bottom: px2rem(44px);
-            @include font-dpr(16px);
-            @include font-color('titleColor');
-            @extend .rich-content-style;
-          }
-          .exam-types{
-            display: flex;
-            align-items: center;
-            margin-bottom: px2rem(44px);
-            .tip{
-              margin-right: px2rem(19px);
-              @include font-dpr(13px);
-              @include font-color('tipColor');
-            }
-            .type{
-              padding: px2rem(9px) px2rem(12px);
-              border-radius: px2rem(4px);
-              margin-right: px2rem(19px);
-              line-height: 1;
-              @include border('all',1px,solid,'themeColor');
-              @include font-dpr(12px);
-              @include font-color('themeColor');
-            }
-          }
-          .percent{
-            line-height: 1;
-            padding-bottom: px2rem(61px);
-            @include font-dpr(13px);
-            @include font-color('tipColor');
-          }
-        }
-        .essay-markinfo-wrap{
-          width: 100%;
-          @include border('top',px2rem(1px),solid, 'lineColor');
-          .title{
-            padding: px2rem(40px) px2rem(61px) px2rem(30px) px2rem(30px);
-            box-sizing: border-box;
-            line-height: 1;
-            @include font-dpr(16px);
-            @include font-color('titleColor');
-          }
-          .teacher-info{
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 0 px2rem(61px) px2rem(30px) px2rem(30px);
-            box-sizing: border-box;
-            .icon{
-              flex: 0 0 px2rem(70px);
-              width:px2rem(70px);
-              height: px2rem(70px);
-              margin-right: px2rem(18px);
-              border-radius: 50%;
-              object-fit: cover;
-            }
-            .name{
-              line-height: 1;
-              @include font-dpr(15px);
-              @include font-color('titleColor');
-              @include txt-overflow(400px);
-            }
-          }
-          .markinfo{
-            line-height: px2rem(44px);
-            word-wrap: break-word;
-            padding: 0 px2rem(61px) 0 px2rem(30px);
-            box-sizing: border-box;
-            @include font-dpr(15px);
-            @include font-color('titleColor');
-            &.empty-info{
-              @include font-color('descColor');
-            }
-          }
-          .mark-img-wrap{
-            width: 100%;
-            font-size: 0;
-            padding-bottom: px2rem(30px);
-            overflow: hidden;
-            .mark-img{
-              display: inline-block;
-              vertical-align: top;
-              width: px2rem(150px);
-              height: px2rem(150px);
-              margin: px2rem(30px) 0 0 px2rem(30px);
-              object-fit: cover;
-            }
-          }
-          .mark-audio-wrap,.mark-video-wrap{
-            width: 100%;
-            padding: 0 px2rem(61px) 0 px2rem(30px);
-            box-sizing: border-box;
-          }
-          .mark-audio-wrap{
-            padding-bottom: px2rem(30px);
-          }
-        }
-      }
     }
   }
   .grade-tip-wrap{
@@ -367,7 +21,7 @@
     align-items: center;
     position: fixed;
     right: 0;
-    bottom: px2rem(120px);
+    bottom: px2rem(170px);
     width: px2rem(199px);
     height: px2rem(70px);
     border-radius: px2rem(35px) 0 0 px2rem(35px);
@@ -413,11 +67,12 @@
       .info-list-wrap{
         width: 100%;
         height: 100%;
+        overflow: scroll;
+        -webkit-overflow-scrolling:touch;
         box-sizing: border-box;
-        overflow: auto;
+        padding-bottom: px2rem(36px);
+        @include bg-color('bgColor');
         .list-wrap{
-          padding: px2rem(36px) px2rem(41px) px2rem(26px) 0;
-          box-sizing: border-box;
           @include bg-color('bgColor');
         }
       }
@@ -488,149 +143,93 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: px2rem(100px);
+      padding: px2rem(20px) px2rem(80px) 0;
+      height: px2rem(140px);
       display: flex;
-      justify-content: space-around;
-      align-items: center;
+      justify-content: space-between;
       pointer-events: auto;
+      box-sizing: border-box;
+      box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
       @include bg-color('bgColor');
-      .prev,.next{
+      &.iphonex-h{
+        height: px2rem(160px);
+      }
+      .prev-wrap,.next-wrap{
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
-        width: px2rem(330px);
-        height: px2rem(80px);
-        border-radius: px2rem(40px);
-        @include font-dpr(16px);
-      }
-      .prev{
-        @include bg-color('bgColor');
-        @include font-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-      .next{
-        @include font-color('bgColor');
-        @include bg-color('themeColor');
-        @include border('all',1px,solid,'themeColor');
-      }
-    }
-    .record-audio-wrap{
-      position: absolute;
-      left:0;
-      bottom: 0;
-      width: 100%;
-      height: px2rem(300px);
-      pointer-events: auto;
-      @include bg-color('bgColor');
-      z-index: 10;
-      box-shadow: 0 px2rem(-5px) px2rem(5px) rgba(156, 156, 156, 0.1);
-      .audio-tip{
-        width: 100%;
-        padding: px2rem(34px) 0 px2rem(30px);
-        line-height: 1;
-        text-align: center;
-        @include font-dpr(14px);
-        @include font-color('descColor');
-      }
-      .all-btn-wrap{
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        .record-reset-wrap,.record-confirm-wrap{
-          padding-top: px2rem(30px);
-          .btn{
-            width: px2rem(60px);
-            height: px2rem(60px);
-            border-radius: 50%;
-            margin-bottom: px2rem(58px);
-            background-repeat: no-repeat;
-            background-position: center;
-            @include bg-color('themeColor');
-            @include img-retina('~@/assets/common/record_reset@2x.png', '~@/assets/common/record_reset@3x.png', px2rem(28px),px2rem(28px));
-          }
-          .tip{
-            line-height: 1;
-            @include font-dpr(14px);
-            @include font-color('descColor');
-          }
-        }
-        .record-confirm-wrap{
-          .btn{
-            background-position: center;
-            @include img-retina('~@/assets/common/record_correct@2x.png', '~@/assets/common/record_correct@3x.png', px2rem(30px), px2rem(20px));
-          }
-        }
-        .record-play-wrap{
+        pointer-events: auto;
+        min-width: px2rem(72px);
+        .prev-arrow-wrap,.next-arrow-wrap{
           display: flex;
-          flex-direction: column;
+          justify-content: center;
           align-items: center;
-          margin: 0 px2rem(120px);
-          .record-btn-wrap{
-            position: relative;
-            width: px2rem(120px);
-            height: px2rem(120px);
-            margin-bottom: px2rem(28px);
-            .record-paly-bg{
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: px2rem(120px);
-              height: px2rem(120px);
-              opacity:0.2;
-              border-radius:50%;
-              @include bg-color('themeColor');
-              &.animation{
-                animation: scaleAudioBg 0.8s linear infinite alternate;
-              }
-            }
-            .record-paly-btn{
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-              background-repeat: no-repeat;
-              background-position:center;
-              @include bg-color('themeColor');
-              @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
-              &.record-stop{
-                background-position: px2rem(50px) center;
-                @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
-              }
-              &.record-start{
-                background-position:center;
-                @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
-              }
-            }
+          width: px2rem(58px);
+          height: px2rem(58px);
+          border-radius: 50%;
+          margin-bottom: px2rem(12px);
+          @include font-dpr(13px);
+          @include font-color('themeColor');
+          @include border('all',1px,solid,'themeColor');
+          .prev-arrow,.next-arrow{
+            line-height: px2rem(28px);
           }
-          .time,.tip{
-            line-height: 1;
-            @include font-dpr(14px);
-            @include font-color('descColor');
-            .hige{
-              font-style: normal;
-              @include font-color('themeColor');
-            }
+        }
+        .prev-text,.next-text{
+          line-height: px2rem(26px);
+          @include font-dpr(12px);
+          @include font-color('descColor');
+        }
+        .prev-arrow{
+          position: relative;
+          left: px2rem(-2px);
+          top: px2rem(2px);
+          transform: rotate(180deg);
+        }
+        .next-arrow{
+          position: relative;
+          left: px2rem(4px);
+          top: px2rem(2px);
+        }
+        .next-submit{
+          position: relative;
+          left: px2rem(2px);
+          top: px2rem(2px);
+          @include font-dpr(16px);
+        }
+        &.arrow-wrap-disabeld{
+          pointer-events: none;
+          .prev-arrow-wrap,.next-arrow-wrap{
+            @include font-color('disabledColorOne');
+            @include border('all',1px,solid,'borderGray');
           }
         }
       }
-      .close-bg{
-        position: absolute;
-        top: px2rem(10px);
-        right:0;
-        width: px2rem(60px);
-        height: px2rem(60px);
-        background-position: center;
-        background-repeat: no-repeat;
-        @include img-retina('~@/assets/common/close_1@2x.png', '~@/assets/common/close_1@3x.png',px2rem(30px),px2rem(30px));
+      .btn-record-option-wrap{
+        position: relative;
+        width: px2rem(120px);
+        height: px2rem(120px);
+        .btn-record-option-shadow{
+          position: relative;
+          top: px2rem(-50px);
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          box-shadow: 0 0 px2rem(20px) rgba(0,0,0,0.05);
+          z-index: -1;
+          @include bg-color('bgColor');
+        }
+        .btn-record-option{
+          position: absolute;
+          top: px2rem(-46px);
+          left:px2rem(6px);
+          width: px2rem(106px);
+          height: px2rem(106px);
+          padding-top: px2rem(4px);
+          border-radius: 50%;
+          @include bg-color('bgColor');
+        }
       }
     }
-  }
-}
-
-@keyframes scaleAudioBg {
-  from{
-    transform: scale(1);
-  }
-  to{
-    transform: scale(1.2);
   }
 }

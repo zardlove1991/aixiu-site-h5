@@ -1,0 +1,131 @@
+@import "@/styles/index.scss";
+
+.subject-essay-wrap{
+  width: 100%;
+  .title-tip{
+    padding-top: px2rem(100px);
+    margin-left: px2rem(30px);
+    line-height: 1;
+    @include font-dpr(16px);
+    @include font-color('titleColor');
+  }
+  .from-wrap{
+    width: 100%;
+    padding: px2rem(30px) 0 0;
+    margin: 0 auto;
+    .content-wrap{
+      width: 100%;
+      height: px2rem(240px);
+      padding: 0 px2rem(30px);
+      box-sizing: border-box;
+      .content{
+        width: 100%;
+        height: 100%;
+        padding: px2rem(30px) px2rem(21px);
+        -webkit-appearance:none;
+        outline: none;
+        font-weight: 300;
+        box-sizing: border-box;
+        @include font-dpr(16px);
+        @include font-color('titleColor');
+        @include border('all', px2rem(2px), solid, 'lineColorOne');
+      }
+    }
+    .answer-content{
+      padding: px2rem(7px) px2rem(30px) 0;
+      line-height: px2rem(44px);
+      word-wrap: break-word;
+      box-sizing: border-box;
+      @include font-dpr(15px);
+      @include font-color('titleColor');
+    }
+    .upload-media-wrap{
+      width: 100%;
+      .images-wrap{
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        width: 100%;
+        overflow: hidden;
+        padding: 0 px2rem(30px);
+        box-sizing: border-box;
+        .single-image-wrap{
+          position: relative;
+          width: px2rem(158px);
+          height: px2rem(158px);
+          margin-top: px2rem(24px);
+          .eassy-image{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+      }
+      .delete-icon{
+        position: absolute;
+        right: 0;
+        top:0;
+        transform: translate3d(40%,-40%,0);
+        width: px2rem(60px);
+        height: px2rem(60px);
+        border-radius: 50%;
+        background-position: center;
+        background-repeat: no-repeat;
+        @include img-retina('~@/assets/common/close_1@2x.png','~@/assets/common/close_1@3x.png', px2rem(36px),px2rem(36px));
+      }
+      .eassy-audio-wrap,.eassy-video-wrap{
+        padding: 0 px2rem(30px);
+        position: relative;
+        box-sizing: border-box;
+        .eassy-audio{
+          margin-top: px2rem(30px);
+        }
+        .eassy-video{
+          margin-top:px2rem(30px);
+          height: px2rem(390px);
+        }
+        .delete-icon{
+          transform: translate3d(-10%,-40%,0);
+        }
+      }
+    }
+    .upload-option-wrap{
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: px2rem(25px) px2rem(30px) 0;
+      box-sizing: border-box;
+      .upload-img,.upload-audio,.upload-video{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        @include font-color('descColorOne');
+        .examfont{
+          line-height: 1;
+          @include font-dpr(28px);
+        }
+        &.disabled{
+          pointer-events: none;
+          @include font-color('disabledColorOne');
+        }
+      }
+      .upload-img{
+        .examfont{
+          @include font-dpr(24px);
+        }
+      }
+      .upload-audio{
+        margin: 0 px2rem(70px);
+      }
+      .file-input{
+        width: px2rem(2px);
+        height: px2rem(2px);
+        opacity: 0;
+        margin-left: px2rem(60px);
+        z-index: -1;
+      }
+    }
+  }
+}

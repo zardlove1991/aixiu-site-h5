@@ -27,14 +27,16 @@
           <span class="close" @click.stop="toggleSubjectList"></span>
         </div>
         <!--底部列表-->
-        <subject-list class="list-item-wrap" :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        <div class="list-item-wrap">
+          <subject-list :list="list" :curIndex="curIndex" @select="selectSubject"></subject-list>
+        </div>
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import SubjectList from './subject-list'
 
@@ -56,7 +58,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('depence', ['essayAnswerInfo'])
+    ...mapGetters('depence', ['essayAnswerInfo', 'oralAnswerInfo'])
   },
   components: {
     SubjectList
@@ -64,6 +66,8 @@ export default {
   methods: {
     toggleSubjectList () {
       this.isShowSubjectList = !this.isShowSubjectList
+      // 设置APP根元素是否禁止滚动
+      this.setModelThumbState(this.isShowSubjectList)
     },
     selectSubject ({subject, index}) {
       let subjectScrollEl = this.$refs.subjectItemWrap
@@ -78,20 +82,31 @@ export default {
     },
     addClass (subject) {
       let essayAnswerInfo = this.essayAnswerInfo
+      let oralAnswerInfo = this.oralAnswerInfo
       let correntInfo = subject.correntInfo
       let answers = subject.answer
       let className = ''
       if (subject.type === 'essay') {
         let isDid = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
         isDid ? className = 'success' : className = 'disabled'
+      } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
+        let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
+        isDid ? className = 'success' : className = 'disabled'
       } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
-        let isAllMatch = correntInfo.every(item => answers.includes(item.id))
-        isAllMatch ? className = 'success' : className = 'error'
+        let isAllMatch = correntInfo.every(item => answers.includes(item.id)) // 判断是否全部符合
+        if (correntInfo.length === answers.length && isAllMatch) {
+          className = 'success'
+        } else {
+          className = 'error'
+        }
       }
       return className
     },
+    ...mapMutations('depence', {
+      setModelThumbState: 'SET_MODEL_THUMB_STATE'
+    }),
     ...mapActions('depence', {
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX'
     })
@@ -213,7 +228,6 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding: px2rem(38px) px2rem(41px) px2rem(38px) px2rem(31px);
-      margin-bottom: px2rem(28px);
       box-sizing: border-box;
       .title{
         @include font-dpr(15px);
@@ -229,7 +243,11 @@ export default {
       }
     }
     .list-item-wrap{
-      min-height: calc(100% - 65px);
+      max-height: calc(100vh - 60px);
+      padding-bottom: px2rem(38px);
+      box-sizing: border-box;
+      overflow: scroll;
+      -webkit-overflow-scrolling:touch;
     }
   }
 }

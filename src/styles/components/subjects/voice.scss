@@ -1,0 +1,105 @@
+@import "@/styles/index.scss";
+.subject-voice-content-wrap{
+  position: relative;
+  margin: px2rem(40px) px2rem(30px) 0;
+  padding: px2rem(40px) px2rem(30px) px2rem(50px);
+  box-shadow: 0px 0px px2rem(10px) 0px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: 96% bottom;
+  @include img-retina('~@/assets/common/personal_bg@2x.png','~@/assets/common/personal_bg@2x.png', px2rem(135px), px2rem(163px));
+  .voice-score{
+    position: absolute;
+    top:0;
+    right: px2rem(20px);
+    width: px2rem(76px);
+    height: px2rem(80px);
+    padding-top: px2rem(10px);
+    text-align: center;
+    box-sizing: border-box;
+    background-position: center;
+    background-repeat: no-repeat;
+    @include font-dpr(13px);
+    @include font-color('bgColor');
+    @include img-retina('~@/assets/common/score_flag@2x.png','~@/assets/common/score_flag@3x.png', 100%, 100%);
+  }
+  .voice-read-tip-wrap{
+    display: flex;
+    align-items: center;
+    .voice-read-tip{
+      font-weight: normal;
+      line-height: px2rem(30px);
+      margin-right: px2rem(22px);
+      @include font-dpr(13px);
+      @include font-color('tipColor');
+    }
+    .voice-score-tip-wrap{
+      width: px2rem(32px);
+      height: px2rem(32px);
+      text-align: center;
+      line-height: px2rem(36px);
+      border-radius: 50%;
+      @include font-dpr(12px);
+      @include font-color('descColor');
+      @include border('all', 1px,solid, 'descColor');
+    }
+  }
+  .voice-words-tip{
+    padding: px2rem(20px) 0 px2rem(40px);
+    line-height: px2rem(48px);
+    word-break: break-all;
+    @include font-dpr(14px);
+    @include font-color('themeColor');
+    &.error{
+      @include font-color('errorColor');
+    }
+    .error{
+      @include font-color('errorColor');
+    }
+  }
+  .voice-audio-wrap{
+    .voice-audio-tip{
+      font-weight: normal;
+      line-height: px2rem(30px);
+      margin-bottom: px2rem(28px);
+      @include font-dpr(13px);
+      @include font-color('tipColor');
+    }
+  }
+}
+
+/* 图标统计的包裹 */
+#voice-statistics{
+  padding-top: px2rem(70px);
+}
+
+/* 语音问答题的tooltip样式 */
+.score-tip-wrap{
+  display: flex;
+  align-items: center;
+  .tip-row-wrap{
+    display: flex;
+    align-items: center;
+    margin-right: px2rem(30px);
+    &:last-child{
+      margin-right: 0;
+    }
+    .tip-row-icon{
+      width: px2rem(10px);
+      height: px2rem(10px);
+      border-radius: 50%;
+      margin-right: px2rem(6px);
+      &.success{
+        @include bg-color('themeColor');
+      }
+      &.error{
+        @include bg-color('errorColor');
+      }
+    }
+    .tip-row-text{
+      line-height: px2rem(28px);
+      @include font-dpr(12px);
+      @include font-color('bgColor');
+    }
+  }
+}

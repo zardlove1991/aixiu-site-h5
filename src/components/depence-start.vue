@@ -65,7 +65,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
-import mixins from '@/common/mixins'
+import mixins from '@/mixins/index'
 
 export default {
   mixins: [mixins],
