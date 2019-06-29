@@ -89,7 +89,8 @@ export default {
     ...mapGetters('depence', [
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
-      'essayAnswerInfo'
+      'essayAnswerInfo', 'oralAnswerInfo',
+      'subjectAnswerInfo'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -98,15 +99,9 @@ export default {
       return this.currentIndex / this.list.length
     },
     unDoSubjectLength () {
+      let subjectAnswerInfo = this.subjectAnswerInfo
       let list = this.list
-      let essayAnswerInfo = this.essayAnswerInfo
-      let count = 0
-      list.forEach(subject => {
-        // 这边需要对问答题做一个特殊判定 因为没有选项的active状态 需要判定是否有存储的回答数据
-        let isDidEssay = !DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
-        let isDid = subject.options.some(item => item.active)
-        if (isDidEssay || isDid) count++
-      })
+      let count = Object.values(subjectAnswerInfo).filter(state => state).length
       return (list.length - count)
     }
   },
@@ -169,7 +164,7 @@ export default {
       let redirectParams = this.redirectParams
       this.toggleSubmitModel()
       try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
@@ -194,6 +189,11 @@ export default {
       } else {
         this.isShowSubmitModel = !this.isShowSubmitModel
       }
+      // 展示的时候去计算下当前题目是否回答
+      if (this.isShowSubmitModel || this.showSubmitModel) {
+        let subject = this.currentSubjectInfo
+        this.checkSubjectAnswerInfo(subject)
+      }
     },
     _moveProgressBtn () {
       let maxOffsetW = this.$refs.headerProgressBar.clientWidth
@@ -206,7 +206,8 @@ export default {
     },
     ...mapActions('depence', {
       endExam: 'END_EXAM',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION'
+      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
+      checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
     })
   }
 }
