@@ -1,7 +1,7 @@
 @import "@/styles/index.scss";
 .subject-voice-content-wrap{
   position: relative;
-  margin: px2rem(40px) px2rem(30px) 0;
+  margin: px2rem(60px) px2rem(30px) 0;
   padding: px2rem(40px) px2rem(30px) px2rem(50px);
   box-shadow: 0px 0px px2rem(10px) 0px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
@@ -53,8 +53,14 @@
     &.error{
       @include font-color('errorColor');
     }
+    &.sign{
+      @include font-color('titleColor');
+    }
     .error{
       @include font-color('errorColor');
+    }
+    .sign{
+      @include font-color('titleColor');
     }
   }
   .voice-audio-wrap{
