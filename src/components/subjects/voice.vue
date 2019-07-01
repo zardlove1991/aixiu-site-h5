@@ -13,8 +13,8 @@
       </div>
       <!--问答题批阅得分提醒-->
       <div
-        v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
-        class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
+        v-show="mode === 'analysis' && data.type === 'essay'"
+        class="essay-audio-score">{{`得${data.remark.score || 0}分`}}</div>
     </div>
     <p class="subject-title">
       <span>{{`${currentSubjectIndex+1}.`}}</span>
@@ -32,7 +32,7 @@
         :src="annexMedia(media)">
       </my-audio>
       <!--视频播放-->
-      <my-video v-if="mediaKey=='video' && media.length" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+      <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
     <!--题目的内容区域-->
     <div class="subject-voice-content-wrap" v-if="curOralInfo">
@@ -201,6 +201,14 @@ export default {
         // 进行拼接
         let engIsMatch = (index === words.length - 1) && subjectType === 'englishspoken'
         if (engIsMatch) followText = englishArr.join(' ')
+      })
+      // 进行中文跟读的标点符号转换
+      let signs = ['，', '。', '！', '!', '?', '？']
+      let getSign = index => `<span class="sign">${signs[index]}</span>`
+      signs.forEach((sign, index) => {
+        let regStr = '\\' + sign
+        let reg = new RegExp(regStr, 'g')
+        followText = followText.replace(reg, getSign(index))
       })
       // 进行整体转换
       return this._dealHtmlLine(followText)

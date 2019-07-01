@@ -17,7 +17,7 @@ export default{
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#dbdbdb'
+            color: '#ebebeb'
           }
         },
         name: {

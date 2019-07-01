@@ -151,7 +151,8 @@ export default {
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true
         // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
-        let showBtns = [this.isShowBackBtn, examInfo.restart, this._dealState(1)].filter(state => state)
+        let isPassExam = this._dealState(1)
+        let showBtns = [this.isShowBackBtn, examInfo.restart && isPassExam, isPassExam].filter(state => state)
         this.isBottomBtnCenter = (showBtns.length === 1)
         // 这边判断包含语音问答的时候需要
         this.dealRereshInfo()

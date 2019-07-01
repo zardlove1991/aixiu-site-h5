@@ -49,7 +49,7 @@
         :class="{'hide-progress': percent === 0 }"
         :width="53"
         :show-text="false"
-        :stroke-width="1.5"
+        :stroke-width="1"
         :percentage="percent">
       </el-progress>
       <!--主体内容展示-->
@@ -569,7 +569,7 @@ export default {
     width: 84%;
     height: 84%;
     border-radius: 50%;
-    transform: translate3d(-49.5%, -50%, 0);
+    transform: translate3d(-49%, -49%, 0);
     @include bg-color('themeColor');
     .record-play-bg{
       width: 100%;
@@ -583,7 +583,7 @@ export default {
       }
       &.record-start{
         background-position:center;
-        @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
+        @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(28px), px2rem(28px));
       }
     }
   }

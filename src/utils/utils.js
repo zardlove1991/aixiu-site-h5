@@ -202,7 +202,7 @@ export function dealAnnexObject (annex) {
       data = data.map(item => dealItem(key, item))
     }
     // 赋值
-    mediaObject[key] = data
+    mediaObject[key] = dealItem(key, data)
   }
 
   return mediaObject
