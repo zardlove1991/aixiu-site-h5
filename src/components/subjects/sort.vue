@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="subject-noraml-wrap">
+  <div class="subject-sort-wrap">
     <!--题目的标题-->
     <div class="subject-type-wrap">
       <h3 class="subject-type">
@@ -29,36 +29,27 @@
       <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
     <!--每个选择项-->
-    <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
-      <!--每个选择项描述-->
-      <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
-        <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
-        <div class="select-desc">{{optItem.name}}</div>
-      </div>
-      <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-        <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
-        <!--音频播放-->
-        <my-audio
-          v-if="mediaKey=='audio' && annexMedia(media)"
-          class="my-audio"
-          :limit-info="{ isLimit: false }"
-          :src="annexMedia(media)">
-        </my-audio>
-        <!--视频播放-->
-        <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
-      </div>
-    </div>
+    <vue-draggable v-model="sortOptions" :options="sortConfig" @end="dealSortEnd">
+      <transition-group>
+        <div class="subject-select-wrap" v-for="optItem in sortOptions" :key='optItem.id' ref="subjectSelectWrap">
+          <!--每个选择项描述-->
+          <div class="select-tip-wrap">
+            <div class="select-tip" :class="{error: optItem.error}">{{optItem.selectTip}}</div>
+            <div class="select-desc">{{optItem.name}}</div>
+            <!--拖动的图标-->
+            <div class="sort-icon-wrap">
+              <i class="examfont sort-icon">&#xe718;</i>
+            </div>
+          </div>
+        </div>
+      </transition-group>
+    </vue-draggable>
     <!--题目解析选项-->
     <div class="answerinfo-wrap" v-if="mode === 'analysis'">
       <div class="correct-answer">
         <span>正确答案:</span>
         <span v-show="!data.correntInfo.length">&nbsp;未指定</span>
         <span v-for="info in data.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
-      </div>
-      <div class="my-answer">
-        <span>您的回答:</span>
-        <span v-show="!data.answersInfo.length">&nbsp;未选择</span>
-        <span v-for="info in data.answersInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
       </div>
       <div class="answer-analysis">
         <h4 class="title">解析</h4>
@@ -76,14 +67,51 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import SubItemMixin from '@/mixins/subject-item'
+import vueDraggable from 'vuedraggable'
 
 export default {
   name: 'essay-subject',
-  mixins: [ SubItemMixin, SubjectMixin ]
+  mixins: [ SubItemMixin, SubjectMixin ],
+  data () {
+    return {
+      sortOptions: [],
+      sortConfig: {
+        handle: '.sort-icon-wrap',
+        chosenClass: 'sort-select-shadow'
+      }
+    }
+  },
+  computed: {
+    ...mapGetters('depence', ['sortAnswerInfo'])
+  },
+  components: {
+    vueDraggable
+  },
+  created () {
+    // 赋值默认排序数组
+    this.sortOptions = [...this.data.options]
+  },
+  methods: {
+    dealSortEnd (e) {
+      let subject = this.data
+      let sortAnswerInfo = this.sortAnswerInfo
+      let sortIds = this.sortOptions.map(item => item.id)
+      // 更新数据
+      sortAnswerInfo[subject.id] = sortIds
+      this.setSortAnswerInfo(sortAnswerInfo)
+      // 这边去触发下题目答题变更
+      this.changeSubjectAnswerInfo({ subject })
+    },
+    ...mapMutations('depence', {
+      setSortAnswerInfo: 'SET_SORT_ANSWER_INFO'
+    })
+  }
 }
 </script>
 
 <style lang="scss">
+@import "@/styles/components/subjects/sort.scss";
 </style>

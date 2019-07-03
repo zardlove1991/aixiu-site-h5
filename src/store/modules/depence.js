@@ -17,6 +17,7 @@ const state = {
   isShowSubjectList: false, // 是否显示考试答题缩率展示
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
   oralAnswerInfo: {}, // 保存语音问答题中的信息
+  sortAnswerInfo: {}, // 保存排序的题目的信息
   curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
 
@@ -76,6 +77,7 @@ const getters = {
   isShowSubjectList: state => state.isShowSubjectList,
   essayAnswerInfo: state => state.essayAnswerInfo,
   oralAnswerInfo: state => state.oralAnswerInfo,
+  sortAnswerInfo: state => state.sortAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos
 }
 
@@ -115,6 +117,9 @@ const mutations = {
   },
   SET_ORAL_ANSWER_INFO (state, payload) {
     state.oralAnswerInfo = Object.assign({}, payload)
+  },
+  SET_SORT_ANSWER_INFO (state, payload) {
+    state.sortAnswerInfo = Object.assign({}, payload)
   },
   SET_CURSUBJECT_VIDEOS (state, payload) {
     state.curSubjectVideos = payload
@@ -162,11 +167,38 @@ function dealInitExamList ({ list, renderType }) {
 }
 
 // 处理提交字段
-function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }, optionFlag) {
+function dealSaveRecord ({
+  subject,
+  essayAnswerInfo,
+  oralAnswerInfo,
+  sortAnswerInfo
+}, optionFlag) {
   let dataIsEmpty = false
-  let params = {}
+  let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
-  if (!['essay', 'englishspoken', 'mandarin'].includes(subject.type)) {
+  if (subject.type === 'essay') {
+    // 这边判断提交的问答题数据是否为空 为空就不发送请求
+    if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
+      dataIsEmpty = true
+    } else {
+      params.value = essayAnswerInfo[subject.id]
+    }
+  } else if (subject.type === 'sort') { // 排序题
+    let curSortInfo = sortAnswerInfo[subject.id]
+    if (curSortInfo && curSortInfo.length) {
+      params.value = curSortInfo
+    } else {
+      dataIsEmpty = false
+    }
+  } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
+    let curOralInfo = oralAnswerInfo[subject.id]
+    if (curOralInfo.value && curOralInfo.value.audio.length) {
+      params.value = curOralInfo.value
+    } else {
+      dataIsEmpty = true
+    }
+  } else {
+    // 这边针对判断题、单选题、多选题做处理
     let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
     // 添加data参数
     params.options_id = null
@@ -190,22 +222,8 @@ function dealSaveRecord ({ subject, essayAnswerInfo, oralAnswerInfo }, optionFla
     // 判断是否有选项 没有直接return
     let noOptionID = !params.options_id || !params.options_id.length
     if (noOptionID) dataIsEmpty = true
-  } else if (subject.type === 'essay') {
-    // 这边判断提交的问答题数据是否为空 为空就不发送请求
-    if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
-      dataIsEmpty = true
-    } else {
-      params.value = essayAnswerInfo[subject.id]
-    }
-  } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
-    let curOralInfo = oralAnswerInfo[subject.id]
-    if (curOralInfo.value && curOralInfo.value.audio.length) {
-      params.value = curOralInfo.value
-    } else {
-      dataIsEmpty = true
-    }
   }
-
+  console.log('xxx params', params)
   return { isEmpty: dataIsEmpty, params }
 }
 
@@ -239,7 +257,7 @@ const actions = {
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
           // 这边初始化调用判断当前题目是否已做
-          list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject))
+          list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject }))
         } else {
           throw new Error('初始化试题列表失败')
         }
@@ -393,58 +411,67 @@ const actions = {
     return new Promise((resolve, reject) => {
       let id = state.examId
       let renderType = state.renderType
-      let essayAnswerInfo = state.essayAnswerInfo
-      let oralAnswerInfo = state.oralAnswerInfo
       let subject = payload
       if (renderType === 'analysis') {
         reject(new Error('当前为解析不需要保存答题记录'))
         return
       }
-      // 整理数据的提交格式
-      let { isEmpty, params } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo }, 'save-record')
       // 更新当前的回答题目的信息
-      dispatch('CHANGE_SUBJECT_ANSWER_INFO', subject)
-      // 提交的参数
-      let data = Object.assign({ question_id: subject.id }, params)
-      // 为空的时候全部return
-      if (isEmpty) {
-        resolve()
-        return
-      }
-      // 发送保存答题信息
-      API.saveSubjectRecord({
-        query: { id },
-        data
-      }).then(res => {
-        if (res.success === 1) {
+      dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject, optionFlag: 'save-record' }).then(result => {
+        let { isEmpty, params } = result
+        // 提交的参数
+        let data = Object.assign({}, params)
+        // 为空的时候全部return
+        if (isEmpty) {
           resolve()
-        } else {
-          throw new Error('保存答题记录出错')
+          return
         }
-      }).catch(err => {
-        Toast(err.error_message || err)
-        reject(err)
+        // 发送保存答题信息
+        API.saveSubjectRecord({
+          query: { id },
+          data
+        }).then(res => {
+          if (res.success === 1) {
+            resolve()
+          } else {
+            throw new Error('保存答题记录出错')
+          }
+        }).catch(err => {
+          Toast(err.error_message || err)
+          reject(err)
+        })
       })
     })
   },
-  CHANGE_SUBJECT_ANSWER_INFO ({state, commit}, subject) {
-    let subjectAnswerInfo = state.subjectAnswerInfo
-    let essayAnswerInfo = state.essayAnswerInfo
-    let oralAnswerInfo = state.oralAnswerInfo
-    // 通过整理参数的方法判断盖提是否为空
-    let { isEmpty } = dealSaveRecord({ subject, essayAnswerInfo, oralAnswerInfo }, 'check-answer')
-    // 更改状态
-    if (isEmpty) {
-      subjectAnswerInfo[subject.id] = false
-    } else {
-      subjectAnswerInfo[subject.id] = true
-    }
-    // 处理当多个更新时候的多次请求
-    if (this.changeAnswerTimer) clearTimeout(this.changeAnswerTimer)
-    this.changeAnswerTimer = setTimeout(() => {
-      // 更新当前的回答题目的信息
-      commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
-    }, 300)
+  CHANGE_SUBJECT_ANSWER_INFO ({state, commit}, { subject, optionFlag = 'check-answer' }) {
+    return new Promise((resolve, reject) => {
+      let subjectAnswerInfo = state.subjectAnswerInfo
+      let essayAnswerInfo = state.essayAnswerInfo
+      let oralAnswerInfo = state.oralAnswerInfo
+      let sortAnswerInfo = state.sortAnswerInfo
+      // 通过整理参数的方法判断盖提是否为空
+      let result = dealSaveRecord({
+        subject,
+        essayAnswerInfo,
+        oralAnswerInfo,
+        sortAnswerInfo
+      }, optionFlag)
+      // 更改状态
+      let { isEmpty } = result
+      if (isEmpty) {
+        subjectAnswerInfo[subject.id] = false
+      } else {
+        subjectAnswerInfo[subject.id] = true
+      }
+      // 处理当多个更新时候的多次请求
+      if (this.changeAnswerTimer) clearTimeout(this.changeAnswerTimer)
+      this.changeAnswerTimer = setTimeout(() => {
+        // 更新当前的回答题目的信息
+        commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
+        // 返回数剧
+        resolve(result)
+      }, 300)
+    })
   },
   CHANGE_CURRENT_SUBJECT_INDEX ({state, commit}, payload) {
     let index = state.currentSubjectIndex
@@ -493,7 +520,10 @@ const actions = {
     let renderType = state.renderType
     let subjectType = subject.type
     // 只有考试的采取记录多选的提交
-    let submitTypeArr = ['checkbox', 'essay', 'englishspoken', 'mandarin']
+    let submitTypeArr = [
+      'checkbox', 'essay', 'englishspoken', 'mandarin',
+      'sort'
+    ]
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)

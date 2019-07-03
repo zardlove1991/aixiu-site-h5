@@ -7,7 +7,11 @@
           <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
         </div>
         <div class="right-wrap">
-          <div class="giveup-btn" @click.stop="toggleGiveUpModel">弃考</div>
+          <!--当前题目进度提示-->
+          <div class="subject-tip-wrap" @click.stop="$emit('showlist')">
+            <div class="tip-img"></div>
+            <div class="tip-count">{{`${currentIndex}/${list.length}`}}</div>
+          </div>
           <div class="line"></div>
           <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div>
         </div>
@@ -17,33 +21,25 @@
         <div class="progress" ref="headerProgress"></div>
       </div>
     </div>
-    <!--弃考的弹窗-->
-    <my-model :show="isShowGiveupModel" @confirm="confirmGiveupModel" @cancel="toggleGiveUpModel">
-      <div class="giveup-model" slot="content">
-        <div class="tip-bg"></div>
-        <div class="tip">确定要放弃答题吗？</div>
-        <div class="desc">(如放弃，则以本次考试结果为最终结果)</div>
-      </div>
-    </my-model>
     <!--交卷的弹窗-->
-    <my-model :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
-              doneText="确认交卷"
-              cancelText="继续答题"
-              @confirm="confirmSubmitModel"
-              @cancel="toggleSubmitModel"
-    >
+    <my-model
+      :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
+      doneText="确认交卷"
+      cancelText="继续答题"
+      @confirm="confirmSubmitModel"
+      @cancel="toggleSubmitModel">
       <div class="submit-model" slot="content">
         <div class="tip-bg"></div>
         <div class="desc">您还有{{unDoSubjectLength}}道题未做,确认交卷吗?</div>
       </div>
     </my-model>
     <!--去人交卷的-->
-    <my-model :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
-              doneText="我再想想"
-              cancelText="确认交卷"
-              @confirm="toggleSubmitModel"
-              @cancel="confirmSubmitModel"
-    >
+    <my-model
+      :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
+      doneText="我再想想"
+      cancelText="确认交卷"
+      @confirm="toggleSubmitModel"
+      @cancel="confirmSubmitModel">
       <div class="submit-success-model" slot="content">
         <div class="tip-bg"></div>
         <div class="desc">试题已做完，确认交卷吗？</div>
@@ -77,7 +73,6 @@ export default {
   data () {
     return {
       isShowSubjectList: false,
-      isShowGiveupModel: false,
       isShowSubmitModel: false,
       timeTip: null
     }
@@ -141,7 +136,7 @@ export default {
       let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
       let examId = this.examId
-      this.toggleGiveUpModel()
+
       try {
         await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam() // 提交试卷
@@ -178,9 +173,6 @@ export default {
         console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
-    },
-    toggleGiveUpModel () {
-      this.isShowGiveupModel = !this.isShowGiveupModel
     },
     toggleSubmitModel () {
       if (this.showSubmitModel) {
@@ -243,15 +235,27 @@ export default {
       }
       .right-wrap{
         margin-right: px2rem(37px);
-        .giveup-btn,.submit-btn,.line{
+        .subject-tip-wrap{
+          display: flex;
+          align-items: center;
+          padding-right: px2rem(26px);
+          .tip-img{
+            width: px2rem(30px);
+            height: px2rem(30px);
+            @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-right: px2rem(11px);
+          }
+          .tip-count{
+            @include font-dpr(13px);
+            @include font-color('tipColor')
+          }
+        }
+        .submit-btn,.line{
           display: flex;
           align-items: center;
           height: 100%;
-        }
-        .giveup-btn{
-          padding-right: px2rem(23px);
-          @include font-dpr(13px);
-          @include font-color('tipColor');
         }
         .line{
           width: px2rem(2px);
@@ -280,35 +284,6 @@ export default {
         height: px2rem(4px);
         @include bg-color('themeColor');
       }
-    }
-  }
-  .giveup-model{
-    padding: px2rem(44px) px2rem(64px) px2rem(60px) px2rem(73px);
-    box-sizing: border-box;
-    .tip-bg{
-      width: px2rem(94px);
-      height: px2rem(94px);
-      margin:0  auto;
-      @include img-retina("~@/assets/common/horn@2x.png","~@/assets/common/horn@3x.png", 100%, 100%);
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    .tip,.desc{
-      line-height: 1;
-    }
-    .tip{
-      text-align: center;
-      padding: px2rem(30px) 0;
-      @include font-dpr(14px);
-      @include font-color('tipColor');
-      .strong{
-        @include font-color('titleColor');
-        font-style: normal;
-      }
-    }
-    .desc{
-      @include font-dpr(12px);
-      @include font-color('descColor');
     }
   }
   .submit-model,.submit-success-model{

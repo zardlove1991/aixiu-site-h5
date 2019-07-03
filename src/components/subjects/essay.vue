@@ -6,11 +6,6 @@
         <span>{{data.typeTip}}</span>
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
       </h3>
-      <!--当前题目进度提示-->
-      <div v-show="mode === 'exam'" class="subject-tip-wrap" @click.stop="toggetSubjectList">
-        <div class="tip-img"></div>
-        <div class="tip-count">{{`${currentSubjectIndex+1}/${examList.length}`}}</div>
-      </div>
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"

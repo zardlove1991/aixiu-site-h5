@@ -17,22 +17,6 @@
         @include font-dpr(14px);
       }
     }
-    .subject-tip-wrap{
-      display: flex;
-      align-items: center;
-      .tip-img{
-        width: px2rem(30px);
-        height: px2rem(30px);
-        @include img-retina('~@/assets/common/list@2x.png', '~@/assets/common/list@2x.png', 100%, 100%);
-        background-repeat: no-repeat;
-        background-position: center;
-        margin-right: px2rem(11px);
-      }
-      .tip-count{
-        @include font-dpr(13px);
-        @include font-color('tipColor')
-      }
-    }
     .essay-audio-score{
       line-height: 1;
       padding: px2rem(9px) px2rem(9px) px2rem(9px) px2rem(11px);

@@ -5,7 +5,8 @@
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
-      @timeup="toggleSuspendModel">
+      @timeup="toggleSuspendModel"
+      @showlist="toggetSubjectList">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!--主体试题渲染-->
@@ -67,16 +68,25 @@
           <div class="prev-arrow-wrap">
             <i class="examfont prev-arrow">&#xe713;</i>
           </div>
-          <div class="prev-text">上一题</div>
+          <!-- <div class="prev-text">上一题</div> -->
         </div>
-        <!--中间操作区域-->
+        <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
-          v-show="isShowReordBtn">
+          v-show="_dealShowBtn('record')">
           <!--内部阴影层-->
           <div class="btn-record-option-shadow"></div>
           <!--当前操作层-->
           <div class="btn-record-option">
             <my-record record-type="touch" @finish="_dealRoalAudio"></my-record>
+          </div>
+        </div>
+        <!--填空题和排序题的确认按钮操作-->
+        <div class="btn-confrim-wrap" v-show="_dealShowBtn('confirm')">
+          <!--内部阴影层-->
+          <div class="btn-confrim-shadow"></div>
+          <!--按钮层-->
+          <div class="btn-confrim-content">
+            <div class="btn-confrim-option" :class="{ 'disabled': !isDidCurSubject }">确认</div>
           </div>
         </div>
         <!--下一题按钮-->
@@ -87,13 +97,13 @@
           <div class="next-arrow-wrap">
             <i class="examfont next-arrow">&#xe713;</i>
           </div>
-          <div class="next-text">下一题</div>
+          <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
           <div class="next-arrow-wrap">
             <i class="examfont next-submit">&#xe718;</i>
           </div>
-          <div class="next-text">交卷</div>
+          <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
       <!--引入录音组件-->
@@ -148,13 +158,9 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos'
+      'examId', 'examInfo', 'curSubjectVideos',
+      'isShowSubjectList'
     ]),
-    isShowReordBtn () {
-      let renderType = this.renderType
-      let curSubject = this.currentSubjectInfo
-      return (['englishspoken', 'mandarin'].includes(curSubject.type) && renderType === 'exam')
-    },
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
       let examList = this.examList
@@ -239,6 +245,15 @@ export default {
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
     },
+    toggetSubjectList () {
+      let state = this.isShowSubjectList
+      // 提交改变
+      this.setSubjectListShow(!state)
+    },
+    dealExamHeaderSelect ({subject, index}) {
+      this.toggetSubjectList()
+      this.changeSubjectIndex(index)
+    },
     checkAnswerMaxQuestionId () {
       let examInfo = this.examInfo
       let answerMaxQuestionId = examInfo.answer_max_question_id
@@ -249,6 +264,14 @@ export default {
         let index = list.findIndex(item => item.id === answerMaxQuestionId)
         if (index >= 0) this.changeSubjectIndex(index)
       }
+    },
+    _dealShowBtn (flag) {
+      let renderType = this.renderType
+      let curSubject = this.currentSubjectInfo
+      let filterTypeArr = []
+      if (flag === 'record' ) filterTypeArr = ['englishspoken', 'mandarin']
+      else if (flag === 'confirm' ) filterTypeArr = ['sort']
+      return (filterTypeArr.includes(curSubject.type) && renderType === 'exam')
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
