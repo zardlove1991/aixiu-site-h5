@@ -125,21 +125,25 @@ export default {
       }
       // 调用排序
       this.sortOptions = this._sortByOrder({ arr: sortIds, flag: 'byIdForInit' })
+      // 这边去触发下题目答题变更
+      this.updateAnswer()
+    },
+    dealSortStart (e) {
+      this.setModelThumbState(true) // 将视图静止滚动
     },
     dealSortEnd (e) {
+      this.updateAnswer() // 更新数据
+      this.setModelThumbState(false) // 恢复视图
+    },
+    updateAnswer () {
       let subject = this.data
       let sortAnswerInfo = this.sortAnswerInfo
       let sortIds = this.sortOptions.map(item => item.id)
       // 更新数据
       sortAnswerInfo[subject.id] = sortIds
-      this.setSortAnswerInfo(sortAnswerInfo)
       // 这边去触发下题目答题变更
+      this.setSortAnswerInfo(sortAnswerInfo)
       this.changeSubjectAnswerInfo({ subject })
-      // 恢复视图
-      this.setModelThumbState(false)
-    },
-    dealSortStart (e) {
-      this.setModelThumbState(true) // 将视图静止滚动
     },
     _sortByOrder ({ arr, flag }) {
       let result = []
