@@ -72,6 +72,8 @@ export default {
       essayAnswerInfo[currentSubjectInfo.id] = newAnwer
       // 直接更改store数据
       this.setEssayAnswerInfo(essayAnswerInfo)
+      // 这边去触发下题目答题变更
+      this.changeSubjectAnswerInfo({ subject: currentSubjectInfo })
     }
   },
   created () {
@@ -281,7 +283,7 @@ export default {
         }
         // 更新当前数据对象
         this.essayTempAnswerInfo = Object.assign({}, essayTempAnswerInfo)
-      }, 200)
+      }, 300)
     },
     _setTempEssayAnswerInfo () {
       let currentSubjectInfo = this.currentSubjectInfo
