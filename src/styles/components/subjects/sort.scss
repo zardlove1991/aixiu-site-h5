@@ -4,6 +4,16 @@
   .subjec-drag-wrap{
     -webkit-tap-highlight-color: transparent;
   }
+  .subject-type-wrap{
+    .subject-type{
+      .desc{
+        margin-left: px2rem(10px);
+        font-weight: normal;
+        @include font-dpr(14px);
+        @include font-color('descColor');
+      }
+    }
+  }
   .subject-select-wrap{
     .select-tip-wrap{
       position: relative;
@@ -30,7 +40,7 @@
     }
   }
   .sort-select-shadow{
-    padding: px2rem(10px) 0;
+    padding:px2rem(15px) px2rem(43px) px2rem(15px) px2rem(30px);
     box-shadow:0px 0px px2rem(17px) px2rem(2px) rgba(153,153,153,0.5);
     background-color: rgba(255,255,255, 1);
   }

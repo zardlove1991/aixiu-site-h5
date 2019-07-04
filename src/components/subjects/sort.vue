@@ -5,6 +5,7 @@
       <h3 class="subject-type">
         <span>{{data.typeTip}}</span>
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
+        <span class="desc" v-show="mode === 'exam'">请拖动选项进行排序</span>
       </h3>
       <!--问答题批阅得分提醒-->
       <div
