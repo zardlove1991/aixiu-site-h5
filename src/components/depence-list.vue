@@ -86,7 +86,9 @@
           <div class="btn-confrim-shadow"></div>
           <!--按钮层-->
           <div class="btn-confrim-content">
-            <div class="btn-confrim-option" :class="{ 'disabled': !isDidCurSubject }">确认</div>
+            <div class="btn-confrim-option"
+              :class="{ 'disabled': !isDidCurSubject }"
+              @click.stop="dealConfrimOption">确认</div>
           </div>
         </div>
         <!--下一题按钮-->
@@ -254,6 +256,16 @@ export default {
       this.toggetSubjectList()
       this.changeSubjectIndex(index)
     },
+    dealConfrimOption () {
+      let isShowSubmitBtn = this.isShowSubmitBtn // 判断是否已经到交卷的题目了
+      if (isShowSubmitBtn) {
+        // 这边点击直接交卷操作
+        this.submitExam()
+      } else {
+        // 完成并到下一题
+        this.changeSubjectIndex('add')
+      }
+    },
     checkAnswerMaxQuestionId () {
       let examInfo = this.examInfo
       let answerMaxQuestionId = examInfo.answer_max_question_id
@@ -269,8 +281,11 @@ export default {
       let renderType = this.renderType
       let curSubject = this.currentSubjectInfo
       let filterTypeArr = []
-      if (flag === 'record' ) filterTypeArr = ['englishspoken', 'mandarin']
-      else if (flag === 'confirm' ) filterTypeArr = ['sort']
+      if (flag === 'record') {
+        filterTypeArr = ['englishspoken', 'mandarin']
+      } else if (flag === 'confirm') {
+        filterTypeArr = ['sort']
+      }
       return (filterTypeArr.includes(curSubject.type) && renderType === 'exam')
     },
     _dealLimitTimeTip (time) {

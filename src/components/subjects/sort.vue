@@ -29,7 +29,11 @@
       <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
     <!--每个选择项-->
-    <vue-draggable v-model="sortOptions" :options="sortConfig" @end="dealSortEnd">
+    <vue-draggable class="subjec-drag-wrap"
+      v-model="sortOptions"
+      :options="sortConfig"
+      @end="dealSortEnd"
+      @start="dealSortStart">
       <transition-group>
         <div class="subject-select-wrap" v-for="optItem in sortOptions" :key='optItem.id' ref="subjectSelectWrap">
           <!--每个选择项描述-->
@@ -37,8 +41,8 @@
             <div class="select-tip" :class="{error: optItem.error}">{{optItem.selectTip}}</div>
             <div class="select-desc">{{optItem.name}}</div>
             <!--拖动的图标-->
-            <div class="sort-icon-wrap">
-              <i class="examfont sort-icon">&#xe718;</i>
+            <div class="sort-icon-wrap" v-show="mode === 'exam'">
+              <i class="examfont sort-icon">&#xe71a;</i>
             </div>
           </div>
         </div>
@@ -49,7 +53,10 @@
       <div class="correct-answer">
         <span>正确答案:</span>
         <span v-show="!data.correntInfo.length">&nbsp;未指定</span>
-        <span v-for="info in data.correntInfo" :key='info.id'>&nbsp;{{info.tip}}</span>
+        <span
+          v-for="info in _sortByOrder({ arr: data.correntInfo, flag: 'byOrder' })"
+          :key='info.id'>&nbsp;{{info.tip}}
+        </span>
       </div>
       <div class="answer-analysis">
         <h4 class="title">解析</h4>
@@ -80,7 +87,8 @@ export default {
       sortOptions: [],
       sortConfig: {
         handle: '.sort-icon-wrap',
-        chosenClass: 'sort-select-shadow'
+        chosenClass: 'sort-select-shadow',
+        disabled: false
       }
     }
   },
@@ -91,10 +99,31 @@ export default {
     vueDraggable
   },
   created () {
+    // 判断是否需要禁止拖放
+    this.sortConfig = Object.assign({}, this.sortConfig, { disabeld: this.mode === 'analysis' })
     // 赋值默认排序数组
-    this.sortOptions = [...this.data.options]
+    this.initSortOptions()
   },
   methods: {
+    initSortOptions () {
+      let data = this.data
+      let sortAnswerInfo = this.sortAnswerInfo
+      let sortIds = sortAnswerInfo[data.id]
+      if (!sortIds || this.mode === 'analysis') {
+        let result = null
+        let answers = data.answer // 回答的顺序
+        // 如果是解析根据自己排序的回答展示
+        if (answers.length) {
+          result = this._sortByOrder({ arr: answers, flag: 'byIdForAns' })
+        } else {
+          result = [...data.options]
+        }
+        this.sortOptions = result
+        return
+      }
+      // 调用排序
+      this.sortOptions = this._sortByOrder({ arr: sortIds, flag: 'byIdForInit' })
+    },
     dealSortEnd (e) {
       let subject = this.data
       let sortAnswerInfo = this.sortAnswerInfo
@@ -104,6 +133,27 @@ export default {
       this.setSortAnswerInfo(sortAnswerInfo)
       // 这边去触发下题目答题变更
       this.changeSubjectAnswerInfo({ subject })
+      // 恢复视图
+      this.setModelThumbState(false)
+    },
+    dealSortStart (e) {
+      this.setModelThumbState(true) // 将视图静止滚动
+    },
+    _sortByOrder ({ arr, flag }) {
+      let result = []
+      let data = this.data
+      // 赋值已经更改过的数组的值
+      if (flag !== 'byOrder') {
+        arr.forEach(id => {
+          let item = data.options.find(item => item.id === id) // 找到原数据赋值
+          result.push(item)
+        })
+      } else {
+        result = arr.sort((item1, item2) => {
+          return item1.extra.ordering - item2.extra.ordering
+        })
+      }
+      return result
     },
     ...mapMutations('depence', {
       setSortAnswerInfo: 'SET_SORT_ANSWER_INFO'

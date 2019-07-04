@@ -47,15 +47,18 @@ const getters = {
         let correctObj = {}
         correctObj.tip = optItem.selectTip
         correctObj.id = optItem.id
-        // 判断是否是正确的选项
-        if (optItem.is_true) {
+        // 判断是否是正确的选项 PS: 排序题比较特殊每个选项都要保存下
+        if (optItem.is_true && item.type !== 'sort') {
+          item.correntInfo.push(correctObj)
+        } else if (item.type === 'sort') {
+          correctObj.extra = optItem.extra // 把排序的额外信息存入 在题目中处理
           item.correntInfo.push(correctObj)
         }
         // 判断是否有答题信息
         let answers = item.answer
-        if (answers && answers.includes(optItem.id)) {
-          // 添加回答的参数
-          item.answersInfo.push(correctObj)
+        let isHasAns = answers && answers.includes(optItem.id)
+        if (isHasAns && item.type !== 'sort') { // 排序题的answer答案在自己题目内部处理
+          item.answersInfo.push(correctObj) // 添加回答的参数
         }
       })
     })
@@ -188,7 +191,7 @@ function dealSaveRecord ({
     if (curSortInfo && curSortInfo.length) {
       params.value = curSortInfo
     } else {
-      dataIsEmpty = false
+      dataIsEmpty = true
     }
   } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
     let curOralInfo = oralAnswerInfo[subject.id]
@@ -223,7 +226,6 @@ function dealSaveRecord ({
     let noOptionID = !params.options_id || !params.options_id.length
     if (noOptionID) dataIsEmpty = true
   }
-  console.log('xxx params', params)
   return { isEmpty: dataIsEmpty, params }
 }
 

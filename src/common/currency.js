@@ -18,6 +18,7 @@ export const METHODS = {
     else if (type === 'essay') typeTip = '问答题'
     else if (type === 'mandarin') typeTip = '普通话'
     else if (type === 'englishspoken') typeTip = '英语口语能力'
+    else if (type === 'sort') typeTip = '排序题'
     return typeTip
   }
 }
@@ -56,6 +57,18 @@ export const DEPENCE = {
     let curOralObj = oralAnswerInfo[subjectId]
     let flag = true
     if (curOralObj && curOralObj.value) flag = false
+    return flag
+  },
+  checkSortSubject (subject) {
+    let mode = subject.extra.score_rules // 匹配的规则
+    let flag = 'none'
+    if (mode === 'exact') {
+      let isSuccess = subject.options.every(item => item.is_true) // 匹配所有是否为true
+      if (isSuccess) flag = 'success'
+    } else if (mode === 'contain') {
+      let isSuccess = subject.options.some(item => item.is_true) // 匹配部分是否为true
+      if (isSuccess) flag = 'warning'
+    }
     return flag
   },
   checkMedaiObjIsEmpty (mediaObj) {

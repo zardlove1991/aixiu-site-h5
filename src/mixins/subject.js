@@ -177,9 +177,12 @@ export default {
       let subject = this.currentSubjectInfo
       try {
         await this.addSelectActiveFlag(selectIndex)
-        // 保存答题记录 这边不处理多选 多选checkboxrecord提交
-        if (subject.type !== 'checkbox') {
+        // 保存答题记录 这边主要针对单选题和判断题 自动保存
+        if (['judge', 'radio'].includes(subject.type)) {
           await this.saveAnswerRecord(subject)
+        } else if (subject.type === 'checkbox') {
+          // 多选题目更改下当前题目回答的状态
+          this.changeSubjectAnswerInfo({ subject })
         }
       } catch (err) {
         console.log(err)

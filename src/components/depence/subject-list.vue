@@ -4,7 +4,7 @@
     <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
       <div v-for="(item,index) in row" :key="item.key"
            class="item normal"
-           :class="[{ disabled: haveDone(item) }, setActiveClass(item), addClass(item)]"
+           :class="[{ disabled: haveDone(item) }, addClass(item), setActiveClass(item)]"
            @click.stop= "selectSubject(item)">
         {{showSubjectIndex(rowIndex,index)}}
       </div>
@@ -128,6 +128,11 @@ export default {
       } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
         let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
         isDid && (className = 'success')
+      } else if (subject.type === 'sort') {
+        let flag = DEPENCE.checkSortSubject(subject)
+        if (flag === 'none') className = 'error'
+        else if (flag === 'success') className = 'success'
+        else if (flag === 'warning') className = 'warning'
       } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
         if (correntInfo.length === answers.length && isAllMatch) {
@@ -165,31 +170,66 @@ export default {
         @include bg-color('bgColor');
         @include font-color('titleColor');
         @include border('all',1px,solid,'tipColor');
+        &.analysisActive{
+          @include bg-color('titleColor');
+          @include font-color('bgColor');
+        }
+        &.examActive{
+          @include bg-color('titleColor');
+          @include font-color('bgColor');
+        }
       }
       &.disabled{
         @include bg-color('bgGrayColor');
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
+        &.analysisActive{
+          @include bg-color('disabledColor');
+          @include font-color('bgColor');
+        }
+        &.examActive{
+          @include bg-color('disabledColor');
+          @include font-color('bgColor');
+        }
       }
       &.success{
         @include bg-color('bgColor');
         @include font-color('themeColor');
         @include border('all',1px,solid,'themeColor');
+        &.analysisActive{
+          @include bg-color('themeColor');
+          @include font-color('bgColor');
+        }
+        &.examActive{
+          @include bg-color('themeColor');
+          @include font-color('bgColor');
+        }
       }
       &.error{
         @include bg-color('bgColor');
         @include font-color('errorColor');
         @include border('all',1px,solid,'errorColor');
+        &.analysisActive{
+          @include bg-color('errorColor');
+          @include font-color('bgColor');
+        }
+        &.examActive{
+          @include bg-color('errorColor');
+          @include font-color('bgColor');
+        }
       }
-      &.analysisActive{
-        @include bg-color('activeColor');
-        @include font-color('bgColor');
-        @include border('all',1px,solid,'activeColor');
-      }
-      &.examActive{
-        @include bg-color('themeColor');
-        @include font-color('bgColor');
-        @include border('all',1px,solid,'themeColor');
+      &.warning{
+        @include bg-color('bgColor');
+        @include font-color('warningColor');
+        @include border('all',1px,solid,'warningColor');
+        &.analysisActive{
+          @include bg-color('warningColor');
+          @include font-color('bgColor');
+        }
+        &.examActive{
+          @include bg-color('warningColor');
+          @include font-color('bgColor');
+        }
       }
     }
   }

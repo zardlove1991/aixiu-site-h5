@@ -3,7 +3,7 @@
     <!--试题概览数据-->
     <div class="subject-item-wrap" ref="subjectItemWrap">
       <div class="item" ref="subjectItem"
-           :class="[{active: curIndex == index}, addClass(item)]"
+           :class="[addClass(item), {active: curIndex == index}]"
            v-for="(item,index) in list" :key="index"
            @click.stop="changeSubjectIndex(index)"
       >
@@ -92,6 +92,11 @@ export default {
       } else if (['englishspoken', 'mandarin'].includes(subject.type)) { // 判断是否回答了语音题目
         let isDid = !DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
         isDid ? className = 'success' : className = 'disabled'
+      } else if (subject.type === 'sort') {
+        let flag = DEPENCE.checkSortSubject(subject)
+        if (flag === 'none') className = 'error'
+        else if (flag === 'success') className = 'success'
+        else if (flag === 'warning') className = 'warning'
       } else if (!answers.length || !correntInfo.length) {
         className = 'disabled'
       } else {
@@ -165,6 +170,10 @@ export default {
         .essay-tip{
           @include font-color('themeColor');
         }
+        &.active{
+          @include bg-color('themeColor');
+          @include font-color('bgColor');
+        }
       }
       &.error{
         @include bg-color('bgColor');
@@ -172,6 +181,10 @@ export default {
         @include border('all',1px,solid,'errorColor');
         .essay-tip{
           @include font-color('errorColor');
+        }
+        &.active{
+          @include bg-color('errorColor');
+          @include font-color('bgColor');
         }
       }
       &.disabled{
@@ -181,13 +194,21 @@ export default {
         .essay-tip{
           @include font-color('disabledColor');
         }
+        &.active{
+          @include bg-color('disabledColor');
+          @include font-color('bgColor');
+        }
       }
-      &.active{
-        @include bg-color('activeColor');
-        @include font-color('bgColor');
-        @include border('all',1px,solid,'activeColor');
+      &.warning{
+        @include bg-color('bgColor');
+        @include font-color('warningColor');
+        @include border('all',1px,solid,'warningColor');
         .essay-tip{
-          @include font-color('activeColor');
+          @include font-color('warningColor');
+        }
+        &.active{
+          @include bg-color('warningColor');
+          @include font-color('bgColor');
         }
       }
     }

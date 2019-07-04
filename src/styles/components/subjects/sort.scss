@@ -1,6 +1,9 @@
 @import "@/styles/index.scss";
 /* 题目自带样式 */
 .subject-sort-wrap{
+  .subjec-drag-wrap{
+    -webkit-tap-highlight-color: transparent;
+  }
   /* 父级自带样式 */
   .subject-select-wrap{
     .select-tip-wrap{
@@ -21,7 +24,7 @@
         line-height: px2rem(40px);
         .sort-icon{
           line-height: 1;
-          @include font-dpr(15px);
+          @include font-dpr(20px);
           @include font-color('descColor');
         }
       }
