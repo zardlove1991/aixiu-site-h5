@@ -62,12 +62,14 @@ export const DEPENCE = {
   checkSortSubject (subject) {
     let mode = subject.extra.score_rules // 匹配的规则
     let flag = 'none'
-    if (mode === 'exact') {
-      let isSuccess = subject.options.every(item => item.is_true) // 匹配所有是否为true
-      if (isSuccess) flag = 'success'
-    } else if (mode === 'contain') {
-      let isSuccess = subject.options.some(item => item.is_true) // 匹配部分是否为true
-      if (isSuccess) flag = 'warning'
+    let allMatchLen = subject.options.filter(item => item.is_true).length // 匹配所有是否为true
+    let optionLen = subject.options.length
+    if (mode === 'exact' && allMatchLen === optionLen) {
+       flag = 'success'
+    } else if (mode === 'contain' && allMatchLen) {
+      flag = 'warning'
+      // 全匹配为正确
+      if (allMatchLen === optionLen) flag = 'success'
     }
     return flag
   },
