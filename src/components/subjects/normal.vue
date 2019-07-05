@@ -22,7 +22,7 @@
     </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
-      <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+      <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
       <!--音频播放-->
       <my-audio
         v-if="mediaKey=='audio' && annexMedia(media)"
@@ -41,7 +41,7 @@
         <div class="select-desc">{{optItem.name}}</div>
       </div>
       <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-        <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
+        <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
         <!--音频播放-->
         <my-audio
           v-if="mediaKey=='audio' && annexMedia(media)"
