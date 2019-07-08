@@ -71,7 +71,7 @@
         <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p>
       </div>
       <!--得分区域-->
-      <div class="sort-score" v-if="data.sort_answer.score">{{`${data.sort_answer.score}分`}}</div>
+      <div class="sort-score" v-if="data.sort_answer && data.sort_answer.score">{{`${data.sort_answer.score}分`}}</div>
     </div>
   </div>
 </template>

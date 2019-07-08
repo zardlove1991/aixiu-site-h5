@@ -65,7 +65,7 @@ export const DEPENCE = {
     let allMatchLen = subject.options.filter(item => item.is_true).length // 匹配所有是否为true
     let optionLen = subject.options.length
     if (mode === 'exact' && allMatchLen === optionLen) {
-       flag = 'success'
+      flag = 'success'
     } else if (mode === 'contain' && allMatchLen) {
       flag = 'warning'
       // 全匹配为正确

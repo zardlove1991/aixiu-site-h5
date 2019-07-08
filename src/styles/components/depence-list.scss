@@ -152,7 +152,7 @@
       box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
       @include bg-color('bgColor');
       &.iphonex-h{
-        height: px2rem(160px);
+        // height: px2rem(160px);
       }
       .prev-wrap,.next-wrap{
         display: flex;
@@ -210,14 +210,18 @@
         width: px2rem(120px);
         height: px2rem(120px);
         .btn-record-option-shadow{
-          position: relative;
-          top: px2rem(-50px);
           width: 100%;
           height: 100%;
           border-radius: 50%;
+          transform: translateY(-25px);
           box-shadow: 0 0 px2rem(20px) rgba(0,0,0,0.05);
-          z-index: -1;
           @include bg-color('bgColor');
+          .btn-record-optin-thumb{
+            width: px2rem(150px);
+            height: px2rem(100px);
+            transform: translate(-10px, 15px);
+            @include bg-color('bgColor');
+          }
         }
         .btn-record-option{
           position: absolute;
