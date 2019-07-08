@@ -72,16 +72,18 @@
         </div>
         <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
-          v-show="_dealShowBtn('record')">
+          v-if="_dealShowBtn('record')">
           <!--内部阴影层-->
-          <div class="btn-record-option-shadow"></div>
+          <div class="btn-record-option-shadow">
+            <div class="btn-record-optin-thumb"></div>
+          </div>
           <!--当前操作层-->
           <div class="btn-record-option">
             <my-record record-type="touch" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
         <!--填空题和排序题的确认按钮操作-->
-        <div class="btn-confrim-wrap" v-show="_dealShowBtn('confirm')">
+        <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
           <!--内部阴影层-->
           <div class="btn-confrim-shadow"></div>
           <!--按钮层-->
