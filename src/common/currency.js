@@ -19,6 +19,9 @@ export const METHODS = {
     else if (type === 'mandarin') typeTip = '普通话'
     else if (type === 'englishspoken') typeTip = '英语口语能力'
     else if (type === 'sort') typeTip = '排序题'
+    else if (type === 'singleblank') typeTip = '填空题'
+    else if (type === 'mulitblank') typeTip = '多元填空'
+    else if (type === 'optionblank') typeTip = '选词填空'
     return typeTip
   }
 }
@@ -72,6 +75,56 @@ export const DEPENCE = {
       if (allMatchLen === optionLen) flag = 'success'
     }
     return flag
+  },
+  checkBlankSubject (subject) {
+    let myAnswer = subject.answer // 我自己的答案
+    let answer = subject.extra.answer // 设置的答案
+    let params = { result: [], state: 'error' }
+    // 处理匹配
+    let dealMatch = (arr, val) => {
+      let flag = 'error'
+      // 检查答案
+      let isFind = false
+      for (let i = 0; i < arr.length; i++) {
+        let curAnswer = arr[i]
+        if (curAnswer.rules === 'exact' && val === curAnswer.answer) {
+          flag = 'success'
+          isFind = true
+        } else if (curAnswer.rules === 'contain' && curAnswer.answer.includes(val)) {
+          flag = 'warning'
+          isFind = true
+        }
+        // 是否中断循环
+        if (isFind) break
+      }
+      return flag
+    }
+    let dealFullMach = (arr) => {
+      let flag = 'error'
+      // 对比自己数组中的第一个状态是否全部相同
+      let isSuccss = arr.every(state => (state === arr[0] && state !== 'error'))
+      let isWarning = arr.some(state => ['success', 'warning'].includes(state))
+      if (isSuccss) flag = 'success'
+      else if (isWarning) flag = 'warning'
+      return flag
+    }
+    // 没有答案返回空
+    if (!myAnswer.length) return params
+    // 处理提醒
+    if (subject.type === 'singleblank') {
+      let val = myAnswer.join('')
+      myAnswer.forEach(item => {
+        params.result.push(dealMatch(answer, val))
+      })
+    } else if (subject.type === 'mulitblank') {
+      myAnswer.forEach((val, index) => {
+        let matchArr = answer[index] // 找到每个分组的数据
+        params.result.push(dealMatch(matchArr, val))
+      })
+    }
+    // 处理总共的状态
+    params.state = dealFullMach(params.result)
+    return params
   },
   checkMedaiObjIsEmpty (mediaObj) {
     let flag = true

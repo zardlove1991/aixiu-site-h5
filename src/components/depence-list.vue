@@ -12,10 +12,13 @@
     <!--主体试题渲染-->
     <div class="qtnlist-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
-        <template v-if="index === currentSubjectIndex">
-          <!--每个题型内容渲染-->
-          <subject-content :data="item" :mode="renderType"></subject-content>
-        </template>
+        <!--每个题型内容渲染-->
+        <subject-content
+          v-if="index === currentSubjectIndex"
+          :data="item"
+          :mode="renderType"
+          :key="item.id">
+        </subject-content>
       </div>
     </div>
     <!--题号情况展示-->
@@ -286,7 +289,7 @@ export default {
       if (flag === 'record') {
         filterTypeArr = ['englishspoken', 'mandarin']
       } else if (flag === 'confirm') {
-        filterTypeArr = ['sort']
+        filterTypeArr = ['sort', 'singleblank', 'mulitblank', 'optionblank']
       }
       return (filterTypeArr.includes(curSubject.type) && renderType === 'exam')
     },

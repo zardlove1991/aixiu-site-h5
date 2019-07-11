@@ -25,6 +25,12 @@
       :data="data"
       :mode="mode">
     </sort-subject>
+    <!--单项/多项填空-->
+    <blank-subject
+      v-else-if="['singleblank', 'mulitblank'].includes(data.type)"
+      :data="data"
+      :mode="mode">
+    </blank-subject>
   </div>
 </template>
 
@@ -32,6 +38,7 @@
 import VoiceSubject from '@/components/subjects/voice'
 import EssaySubject from '@/components/subjects/essay'
 import SortSubject from '@/components/subjects/sort'
+import BlankSubject from '@/components/subjects/blank'
 import NormalSubject from '@/components/subjects/normal'
 import SubjectMixin from '@/mixins/subject'
 
@@ -54,7 +61,8 @@ export default {
     VoiceSubject,
     EssaySubject,
     NormalSubject,
-    SortSubject
+    SortSubject,
+    BlankSubject
   }
 }
 </script>

@@ -133,6 +133,9 @@ export default {
         if (flag === 'none') className = 'error'
         else if (flag === 'success') className = 'success'
         else if (flag === 'warning') className = 'warning'
+      } else if (['singleblank', 'mulitblank'].includes(subject.type)) { // 判断是否回答了语音题目
+        let { state } = DEPENCE.checkBlankSubject(subject)
+        className = state
       } else if (answers.length && correntInfo.length) { // 判断正常数据是否有回答记录
         let isAllMatch = correntInfo.every(item => answers.includes(item.id))
         if (correntInfo.length === answers.length && isAllMatch) {

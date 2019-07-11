@@ -18,6 +18,7 @@ const state = {
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
   oralAnswerInfo: {}, // 保存语音问答题中的信息
   sortAnswerInfo: {}, // 保存排序的题目的信息
+  blankAnswerInfo: {}, // 保存所有类型的填空题信息
   curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
 }
 
@@ -81,6 +82,7 @@ const getters = {
   essayAnswerInfo: state => state.essayAnswerInfo,
   oralAnswerInfo: state => state.oralAnswerInfo,
   sortAnswerInfo: state => state.sortAnswerInfo,
+  blankAnswerInfo: state => state.blankAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos
 }
 
@@ -121,6 +123,9 @@ const mutations = {
   SET_ORAL_ANSWER_INFO (state, payload) {
     state.oralAnswerInfo = Object.assign({}, payload)
   },
+  SET_BLANK_ANSWER_INFO (state, payload) {
+    state.blankAnswerInfo = Object.assign({}, payload)
+  },
   SET_SORT_ANSWER_INFO (state, payload) {
     state.sortAnswerInfo = Object.assign({}, payload)
   },
@@ -133,8 +138,10 @@ const mutations = {
 function dealInitExamList ({ list, renderType }) {
   let tempEassyAnswerInfo = {} // 临时保存当前问答题信息
   let tempOralAnswerInfo = {} // 临时保存语音问答题的数据
+  let tempBlankAnswerInfo = {} // 临时保存的填空提数据
   // 处理列表
   list.forEach((subject, index) => {
+    let curType = subject.type
     subject.options.forEach((item, itemIdx) => {
       // 做答题数据兼容 选项数据全部转换成字符串
       let answers = subject.answer && subject.answer.map(id => String(id))
@@ -151,21 +158,33 @@ function dealInitExamList ({ list, renderType }) {
       }
     })
     // 初始化为问答题的基础提交数据对象
-    if (subject.type === 'essay') {
+    if (curType === 'essay') {
       let essayData = subject.essay_answer || { text: '', image: [], audio: [], video: [] }
       // 赋值数据
       tempEassyAnswerInfo[subject.id] = essayData
-    } else if (['mandarin', 'englishspoken'].includes(subject.type)) {
+    } else if (['mandarin', 'englishspoken'].includes(curType)) {
       let oralData = subject.oral_answer || { score: '', value: null, content: null }
       // 赋值数据
       tempOralAnswerInfo[subject.id] = oralData
+    } else if (['singleblank', 'mulitblank', 'optionblank'].includes(curType)) {
+      let answer = subject.answer
+      // 分别处理数据
+      let result = []
+      answer.forEach(item => {
+        if (['singleblank', 'mulitblank'].includes(curType)) {
+          result.push(item)
+        }
+      })
+      // 赋值数据
+      tempBlankAnswerInfo[subject.id] = result
     }
   })
   // 返回数据
   return {
     examList: list,
     eassyInfo: tempEassyAnswerInfo,
-    oralInfo: tempOralAnswerInfo
+    oralInfo: tempOralAnswerInfo,
+    blankInfo: tempBlankAnswerInfo
   }
 }
 
@@ -174,7 +193,8 @@ function dealSaveRecord ({
   subject,
   essayAnswerInfo,
   oralAnswerInfo,
-  sortAnswerInfo
+  sortAnswerInfo,
+  blankAnswerInfo
 }, optionFlag) {
   let dataIsEmpty = false
   let params = { question_id: subject.id }
@@ -200,6 +220,11 @@ function dealSaveRecord ({
     } else {
       dataIsEmpty = true
     }
+  } else if (['singleblank', 'mulitblank', 'optionblank'].includes(subject.type)) {
+    let curBlankInfo = blankAnswerInfo[subject.id]
+    if (!curBlankInfo || !curBlankInfo.length) dataIsEmpty = true
+    else if (['singleblank', 'mulitblank'].includes(subject.type)) params.text = curBlankInfo
+    else if (subject.type === 'optionblank') params.value = curBlankInfo
   } else {
     // 这边针对判断题、单选题、多选题做处理
     let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
@@ -253,11 +278,12 @@ const actions = {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
           // 处理列表的初始化操作
-          let { examList, eassyInfo, oralInfo } = dealInitExamList({ list, renderType })
+          let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType })
           // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', examList)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
+          commit('SET_BLANK_ANSWER_INFO', blankInfo)
           // 这边初始化调用判断当前题目是否已做
           list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject }))
         } else {
@@ -451,12 +477,14 @@ const actions = {
       let essayAnswerInfo = state.essayAnswerInfo
       let oralAnswerInfo = state.oralAnswerInfo
       let sortAnswerInfo = state.sortAnswerInfo
+      let blankAnswerInfo = state.blankAnswerInfo
       // 通过整理参数的方法判断盖提是否为空
       let result = dealSaveRecord({
         subject,
         essayAnswerInfo,
         oralAnswerInfo,
-        sortAnswerInfo
+        sortAnswerInfo,
+        blankAnswerInfo
       }, optionFlag)
       // 更改状态
       let { isEmpty } = result
@@ -524,7 +552,7 @@ const actions = {
     // 只有考试的采取记录多选的提交
     let submitTypeArr = [
       'checkbox', 'essay', 'englishspoken', 'mandarin',
-      'sort'
+      'sort', 'singleblank', 'mulitblank'
     ]
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
       // 触发保存答题记录操作
