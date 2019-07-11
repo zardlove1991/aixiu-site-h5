@@ -31,6 +31,12 @@
       :data="data"
       :mode="mode">
     </blank-subject>
+    <!--排序题的区域-->
+    <select-blank-subject
+      v-else-if="data.type === 'optionblank'"
+      :data="data"
+      :mode="mode">
+    </select-blank-subject>
   </div>
 </template>
 
@@ -39,6 +45,7 @@ import VoiceSubject from '@/components/subjects/voice'
 import EssaySubject from '@/components/subjects/essay'
 import SortSubject from '@/components/subjects/sort'
 import BlankSubject from '@/components/subjects/blank'
+import SelectBlankSubject from '@/components/subjects/select-blank'
 import NormalSubject from '@/components/subjects/normal'
 import SubjectMixin from '@/mixins/subject'
 
@@ -62,7 +69,8 @@ export default {
     EssaySubject,
     NormalSubject,
     SortSubject,
-    BlankSubject
+    BlankSubject,
+    SelectBlankSubject
   }
 }
 </script>

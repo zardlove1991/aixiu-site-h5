@@ -83,7 +83,7 @@ import SubItemMixin from '@/mixins/subject-item'
 import vueDraggable from 'vuedraggable'
 
 export default {
-  name: 'essay-subject',
+  name: 'sort-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
   data () {
     return {

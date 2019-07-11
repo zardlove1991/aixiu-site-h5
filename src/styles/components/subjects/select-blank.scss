@@ -1,0 +1,123 @@
+@import "@/styles/index.scss";
+
+.subject-select-blank-wrap{
+  .select-blank-options-wrap{
+    display: flex;
+    flex-wrap: wrap;
+    padding:px2rem(70px) px2rem(43px) px2rem(50px) px2rem(30px);
+    .blank-options-item-wrap{
+      position: relative;
+      padding: 0 px2rem(26px);
+      border-radius: px2rem(6px);
+      height: px2rem(64px);
+      line-height: px2rem(64px);
+      box-sizing: border-box;
+      margin-right: px2rem(20px);
+      @include border('all', 1px, solid, 'lineColor');
+      @include font-dpr(15px);
+      @include font-color('tipColor');
+      .options-item-name{
+        line-height: 1;
+      }
+      .option-item-tip-wrap{
+        position: absolute;
+        right:0;
+        bottom:0;
+        width:0px;
+        height:0px;
+        border-radius: 0 px2rem(6px) px2rem(6px) 0;
+        border: px2rem(16px) solid rgba(0,0,0,0);
+        .item-tip-icon{
+          position: absolute;
+          right: px2rem(-22px);
+          bottom:px2rem(-22px);
+          line-height: 1;
+          @include font-dpr(10px);
+          @include font-color('bgColor');
+        }
+      }
+      &.success{
+        @include font-color('themeColor');
+        @include border('all', 1px, solid, 'themeColor');
+        .option-item-tip-wrap{
+          border-right: px2rem(16px) solid $themeColor;
+          border-bottom: px2rem(16px) solid $themeColor;
+        }
+      }
+      &.error{
+        @include font-color('errorColor');
+        @include border('all', 1px, solid, 'errorColor');
+        .option-item-tip-wrap{
+          border-right: px2rem(16px) solid $errorColor;
+          border-bottom: px2rem(16px) solid $errorColor;
+        }
+      }
+    }
+  }
+  .answerinfo-wrap{
+    position: relative;
+    .correct-answer{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: px2rem(30px) 0  0 px2rem(30px);
+      @include border('top',1px,solid,'lineColor');
+      .correct-tip-title{
+        line-height: 1;
+        margin-bottom: px2rem(30px);
+        @include font-dpr(14px);
+        @include font-color('titleColor');
+      }
+      .correct-answer-item-wrap{
+        .correct-answer-item{
+          display: flex;
+          align-items: center;
+          margin-bottom: px2rem(30px);
+          &:last-child{
+            margin-bottom: px2rem(10px);
+          }
+          .answer-item-index{
+            width: px2rem(30px);
+            height: px2rem(30px);
+            line-height: px2rem(31px);
+            border-radius: 50%;
+            text-align: center;
+            margin-right: px2rem(20px);
+            @include font-dpr(12px);
+            @include font-color('descColor');
+            @include border('all', 1px, solid, 'descColor');
+          }
+          .answer-item-title{
+            line-height: 1;
+            margin-right: px2rem(30px);
+            @include font-color('tipColor');
+            @include font-dpr(14px);
+          }
+          .answer-item-score{
+            line-height: 1;
+            @include font-color('descColor');
+            @include font-dpr(14px);
+          }
+        }
+      }
+    }
+    .answer-analysis{
+      border-top: none !important;
+    }
+    .blank-score{
+      position: absolute;
+      top:0;
+      right: px2rem(40px);
+      width: px2rem(76px);
+      height: px2rem(80px);
+      padding-top: px2rem(10px);
+      text-align: center;
+      box-sizing: border-box;
+      background-position: center;
+      background-repeat: no-repeat;
+      @include font-dpr(13px);
+      @include font-color('bgColor');
+      @include img-retina('~@/assets/common/score_flag@2x.png','~@/assets/common/score_flag@3x.png', 100%, 100%);
+    }
+  }
+}

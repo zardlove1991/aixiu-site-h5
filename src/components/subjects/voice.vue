@@ -101,7 +101,7 @@ import SubItemMixin from '@/mixins/subject-item'
 import SubjectMixin from '@/mixins/subject'
 
 export default {
-  name: 'essay-subject',
+  name: 'voice-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
   data () {
     return {

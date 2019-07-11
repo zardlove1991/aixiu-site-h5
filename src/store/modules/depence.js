@@ -168,15 +168,8 @@ function dealInitExamList ({ list, renderType }) {
       tempOralAnswerInfo[subject.id] = oralData
     } else if (['singleblank', 'mulitblank', 'optionblank'].includes(curType)) {
       let answer = subject.answer
-      // 分别处理数据
-      let result = []
-      answer.forEach(item => {
-        if (['singleblank', 'mulitblank'].includes(curType)) {
-          result.push(item)
-        }
-      })
       // 赋值数据
-      tempBlankAnswerInfo[subject.id] = result
+      tempBlankAnswerInfo[subject.id] = [...answer]
     }
   })
   // 返回数据
@@ -223,7 +216,7 @@ function dealSaveRecord ({
   } else if (['singleblank', 'mulitblank', 'optionblank'].includes(subject.type)) {
     let curBlankInfo = blankAnswerInfo[subject.id]
     if (!curBlankInfo || !curBlankInfo.length) dataIsEmpty = true
-    else if (['singleblank', 'mulitblank'].includes(subject.type)) params.text = curBlankInfo
+    if (['singleblank', 'mulitblank'].includes(subject.type)) params.text = curBlankInfo
     else if (subject.type === 'optionblank') params.value = curBlankInfo
   } else {
     // 这边针对判断题、单选题、多选题做处理
@@ -535,7 +528,7 @@ const actions = {
         else item.active = false
         return item
       })
-    } else if (subjectInfo.type === 'checkbox') {
+    } else if (['checkbox', 'optionblank'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = !item.active
         return item
@@ -552,7 +545,7 @@ const actions = {
     // 只有考试的采取记录多选的提交
     let submitTypeArr = [
       'checkbox', 'essay', 'englishspoken', 'mandarin',
-      'sort', 'singleblank', 'mulitblank'
+      'sort', 'singleblank', 'mulitblank', 'optionblank'
     ]
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
       // 触发保存答题记录操作

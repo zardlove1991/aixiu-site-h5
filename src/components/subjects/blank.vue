@@ -76,7 +76,7 @@ import SubjectMixin from '@/mixins/subject'
 import SubItemMixin from '@/mixins/subject-item'
 
 export default {
-  name: 'essay-subject',
+  name: 'blank-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
   data () {
     return {
@@ -188,6 +188,9 @@ export default {
       let answerArr = this.answerArr
       // 选择下一个需要聚焦的元素
       let nextFoucs = (index) => {
+        let value = target.value
+        if (!value) return
+        // 跳转
         let inputElArr = this.inputElArr
         let nextEl = inputElArr[Number(index) + 1]
         if (nextEl) nextEl.focus()

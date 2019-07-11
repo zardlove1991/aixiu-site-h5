@@ -80,7 +80,7 @@ import SubjectMixin from '@/mixins/subject'
 import SubItemMixin from '@/mixins/subject-item'
 
 export default {
-  name: 'essay-subject',
+  name: 'normal-subject',
   mixins: [ SubItemMixin, SubjectMixin ]
 }
 </script>

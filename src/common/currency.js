@@ -126,6 +126,40 @@ export const DEPENCE = {
     params.state = dealFullMach(params.result)
     return params
   },
+  checkOptBlankSubject (subject) {
+    let params = { result: [], state: 'error' }
+    let underlineReg = /_{3,}/g
+    // 匹配解析的数组
+    let matchMode = subject.extra.score_rules
+    let blankArr = subject.title.match(underlineReg)
+    let options = [...subject.options]
+    // 处理匹配
+    let dealMatch = (arr) => {
+      let temp = []
+      // 设置数组
+      let correctOptions = options.sort(({extra: a}, {extra: b}) => (a.space - b.space)) // 排序为正确顺序
+      arr.forEach((answerId, answerIdx) => {
+        let flag = 'error'
+        let curOption = correctOptions[answerIdx]
+        if (answerId === curOption.id) flag = 'success'
+        temp.push(flag)
+      })
+      return temp
+    }
+    params.result = dealMatch(subject.answer)
+    // 区分总状态
+    let successArr = params.result.filter(state => state === 'success')
+    let isAllMach = successArr.length === blankArr.length
+    if (matchMode === 'contain' && successArr.length) {
+      params.state = 'warning'
+      // 判断是否全队
+      if (isAllMach) params.state = 'success'
+    } else if (matchMode === 'exact' && isAllMach) {
+      params.state = 'success'
+    }
+    console.log('当前处理的解析信息', params)
+    return params
+  },
   checkMedaiObjIsEmpty (mediaObj) {
     let flag = true
     for (let key in mediaObj) {
