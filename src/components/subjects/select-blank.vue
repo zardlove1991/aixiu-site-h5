@@ -46,7 +46,7 @@
           <div class="correct-answer-item" v-for="(item, index) in analysisAnswer" :key="index">
             <span class="answer-item-index">{{index+1}}</span>
             <span class="answer-item-title">{{item.name}}</span>
-            <span class="answer-item-score" v-show="item.extra.score">{{`(${item.extra.score})分`}}</span>
+            <span class="answer-item-score" v-show="item.score">{{`(${item.score})分`}}</span>
           </div>
         </div>
       </div>
