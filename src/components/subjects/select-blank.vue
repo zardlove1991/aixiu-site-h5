@@ -115,9 +115,7 @@ export default {
       // 初始化答案解析 根据空格位置排序
       if (mode === 'analysis') {
         let sortOptions = [...data.options].sort(({ extra: a }, { extra: b }) => a.space - b.space)
-        let otherAnsArr = sortOptions.filter(({ extra }) => extra.space < 0) // 没有设置选项的答案
-        let correntAnsArr = sortOptions.filter(({ extra }) => extra.space >= 0) // 有选项的答案
-        this.analysisAnswer = correntAnsArr.concat(otherAnsArr)
+        this.analysisAnswer = sortOptions.filter(({ extra }) => extra.space >= 0) // 有选项的答案
       }
       // 处理富文本的title解析
       this.dealRichTitle()
