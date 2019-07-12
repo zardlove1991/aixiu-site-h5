@@ -21,7 +21,7 @@
       }
       .option-item-tip-wrap{
         position: absolute;
-        right:0;
+        right:px2rem(-2px);
         bottom:0;
         width:0px;
         height:0px;
@@ -29,11 +29,14 @@
         border: px2rem(16px) solid rgba(0,0,0,0);
         .item-tip-icon{
           position: absolute;
-          right: px2rem(-22px);
-          bottom:px2rem(-22px);
+          right: px2rem(-20px);
+          bottom:px2rem(-20px);
           line-height: 1;
           @include font-dpr(10px);
           @include font-color('bgColor');
+          .tip-icon-success{
+            transform: rotate(-7deg);
+          }
         }
       }
       &.success{

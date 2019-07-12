@@ -20,8 +20,8 @@
         <span class="options-item-name">{{optItem.name}}</span>
         <!--箭头提醒-->
         <div class="option-item-tip-wrap" v-if="mode === 'analysis'">
-          <!-- <i v-if="optItem.active" class="examfont item-tip-icon">&#xe71c;</i>
-          <i v-else class="examfont item-tip-icon">&#xe71b;</i> -->
+          <i v-if="optItem.active" class="examfont item-tip-icon">&#xe720;</i>
+          <i v-else class="examfont item-tip-icon tip-icon-success">&#xe71d;</i>
         </div>
       </div>
     </div>
