@@ -20,8 +20,8 @@
         <span class="options-item-name">{{optItem.name}}</span>
         <!--箭头提醒-->
         <div class="option-item-tip-wrap" v-if="mode === 'analysis'">
-          <i v-if="optItem.active" class="examfont item-tip-icon">&#xe720;</i>
-          <i v-else class="examfont item-tip-icon tip-icon-success">&#xe71d;</i>
+          <i v-if="optItem.active" class="examfont item-tip-icon tip-icon-success">&#xe720;</i>
+          <i v-else class="examfont item-tip-icon">&#xe71d;</i>
         </div>
       </div>
     </div>
@@ -114,7 +114,10 @@ export default {
       let mode = this.mode
       // 初始化答案解析 根据空格位置排序
       if (mode === 'analysis') {
-        this.analysisAnswer = [...data.options].sort(({ extra: a }, { extra: b }) => a.space - b.space)
+        let sortOptions = [...data.options].sort(({ extra: a }, { extra: b }) => a.space - b.space)
+        let otherAnsArr = sortOptions.filter(({ extra }) => extra.space < 0) // 没有设置选项的答案
+        let correntAnsArr = sortOptions.filter(({ extra }) => extra.space >= 0) // 有选项的答案
+        this.analysisAnswer = correntAnsArr.concat(otherAnsArr)
       }
       // 处理富文本的title解析
       this.dealRichTitle()

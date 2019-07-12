@@ -92,6 +92,7 @@ export default {
     }
   },
   created () {
+    this.inputTimer = null
     this.inputElArr = [] // 保存所有的input元素对象
     this.answerArr = [...this.curAnswer] // 回答保存的信息
     this.initInfo()
@@ -183,7 +184,6 @@ export default {
       let dataset = target.dataset
       let data = this.data
       // 处理输入
-      let timer = null
       let renderStyle = data.extra.style
       let answerArr = this.answerArr
       // 选择下一个需要聚焦的元素
@@ -196,8 +196,8 @@ export default {
         if (nextEl) nextEl.focus()
       }
       // 处理多次操作
-      if (timer) clearTimeout(timer)
-      timer = setTimeout(() => {
+      if (this.inputTimer) clearTimeout(this.inputTimer)
+      this.inputTimer = setTimeout(() => {
         let index = dataset.index
         let value = target.value
         if (renderStyle === 'underline') {

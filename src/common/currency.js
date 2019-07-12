@@ -136,12 +136,12 @@ export const DEPENCE = {
     // 处理匹配
     let dealMatch = (arr) => {
       let temp = []
-      // 设置数组
-      let correctOptions = options.sort(({extra: a}, {extra: b}) => (a.space - b.space)) // 排序为正确顺序
+      // 将选项排序为正确顺序并且把为其它不属于答案的过滤掉匹配正确答案
+      let correctOptions = options.sort(({extra: a}, {extra: b}) => (a.space - b.space)).filter(({extra}) => extra.space >= 0)
       arr.forEach((answerId, answerIdx) => {
         let flag = 'error'
         let curOption = correctOptions[answerIdx]
-        if (answerId === curOption.id) flag = 'success'
+        if (curOption && answerId === curOption.id) flag = 'success'
         temp.push(flag)
       })
       return temp

@@ -34,9 +34,9 @@
           line-height: 1;
           @include font-dpr(10px);
           @include font-color('bgColor');
-          .tip-icon-success{
-            transform: rotate(-7deg);
-          }
+        }
+        .tip-icon-success{
+          transform: rotate(-7deg);
         }
       }
       &.success{
