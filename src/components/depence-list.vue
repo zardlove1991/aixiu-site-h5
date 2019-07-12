@@ -71,7 +71,7 @@
         </div>
         <!--中间操作区域-->
         <div class="btn-record-option-wrap"
-          v-show="isShowReordBtn">
+          v-if="isShowReordBtn">
           <!--内部阴影层-->
           <div class="btn-record-option-shadow"></div>
           <!--当前操作层-->
