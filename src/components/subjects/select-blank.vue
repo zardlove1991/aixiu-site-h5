@@ -134,6 +134,8 @@ export default {
       })
       // 最终赋值
       this.newTitle = this._dealHtmlLine(originTitle)
+      // 初始化初始化数组长度
+      this.blankFillArr = new Array(matchArr.length)
     },
     addListener () {
       this.$nextTick(() => {
@@ -184,7 +186,8 @@ export default {
       if (this.mode === 'analysis') return // 解析模式不能点击
       let data = this.data
       let blankAnswerInfo = this.blankAnswerInfo
-      let curData = blankAnswerInfo[data.id]
+      // 这边判断初始化使用长度
+      let curData = blankAnswerInfo[data.id].length ? [...blankAnswerInfo[data.id]] : this.blankFillArr
       // 设置点击元素样式
       let isActive = optItem.active
       let inputElInfoArr = this.inputElInfoArr // 当前的元素
@@ -218,6 +221,7 @@ export default {
         return curItem ? curItem.name : ''
       }))
       // 更改sotre的状态
+      blankAnswerInfo[data.id] = curData
       this.setBlankAnswerInfo(blankAnswerInfo)
       this.changeOptionState(optIndex)
     },
@@ -245,9 +249,9 @@ export default {
         console.log('---> 执行了上次状态重置 !!!', id)
         let optIndex = this.data.options.findIndex(item => item.id === id)
         this.changeOptionState(optIndex)
-        // 重置下索引
-        this.fillIndex = -1
       }
+      // 重置下索引
+      this.fillIndex = -1
     },
     dealTemplteAnalysis () {
       let answerArr = this.answerArr
