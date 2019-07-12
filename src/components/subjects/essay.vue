@@ -33,26 +33,6 @@
       <!--视频播放-->
       <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
-    <!--每个选择项-->
-    <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
-      <!--每个选择项描述-->
-      <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
-        <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
-        <div class="select-desc">{{optItem.name}}</div>
-      </div>
-      <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
-        <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
-        <!--音频播放-->
-        <my-audio
-          v-if="mediaKey=='audio' && annexMedia(media)"
-          class="my-audio"
-          :limit-info="{ isLimit: false }"
-          :src="annexMedia(media)">
-        </my-audio>
-        <!--视频播放-->
-        <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
-      </div>
-    </div>
     <!--题目的内容区域-->
     <template v-if="essayTempAnswerInfo">
       <h4 class="title-tip">问答</h4>

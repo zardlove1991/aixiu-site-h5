@@ -36,7 +36,7 @@
     <!--每个选择项-->
     <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
       <!--每个选择项描述-->
-      <div class="select-tip-wrap" @touchstart.prevent="selectTouchStart(optIndex)" @touchend="selectTouchEnd(optIndex)">
+      <div class="select-tip-wrap" @click.stop="selectTouchEnd(optIndex)">
         <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
         <div class="select-desc">{{optItem.name}}</div>
       </div>

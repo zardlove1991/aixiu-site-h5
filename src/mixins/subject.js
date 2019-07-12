@@ -235,15 +235,14 @@ export default {
         this.isShowOpsModel = false
       }, 520)
     },
-    selectTouchStart (selectIndex) {
-      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = '#f9f9f9'
-    },
     selectTouchEnd (selectIndex) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = ''
-      // 调用选择答案
-      this.selectAnswer(selectIndex)
+      selectEl.style.backgroundColor = '#f9f9f9'
+      setTimeout(() => {
+        selectEl.style.backgroundColor = ''
+        // 调用选择答案
+        this.selectAnswer(selectIndex)
+      }, 100)
     },
     _triggerFileUpload () {
       let fileInputEl = this.$refs.uploadFileInput

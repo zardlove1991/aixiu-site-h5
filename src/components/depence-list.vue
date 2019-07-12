@@ -71,9 +71,11 @@
         </div>
         <!--中间操作区域-->
         <div class="btn-record-option-wrap"
-          v-show="isShowReordBtn">
+          v-if="isShowReordBtn">
           <!--内部阴影层-->
-          <div class="btn-record-option-shadow"></div>
+          <div class="btn-record-option-shadow">
+            <div class="btn-record-optin-thumb"></div>
+          </div>
           <!--当前操作层-->
           <div class="btn-record-option">
             <my-record record-type="touch" @finish="_dealRoalAudio"></my-record>
