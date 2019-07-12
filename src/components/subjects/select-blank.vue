@@ -14,7 +14,7 @@
     <!--当前的选项数据-->
     <div class="select-blank-options-wrap">
       <div class="blank-options-item-wrap"
-        v-for="(optItem,optIndex) in data.options" :key='optIndex'
+        v-for="(optItem,optIndex) in selfOptions" :key='optIndex'
         :class="{ 'success': optItem.active, 'error': mode === 'analysis' && optItem.error}"
         @click.stop="dealOptionClick(optItem, optIndex)">
         <span class="options-item-name">{{optItem.name}}</span>
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { Toast } from 'mint-ui'
 import { mapGetters, mapMutations } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import StyleConfig from '@/styles/theme/default.scss'
@@ -80,7 +81,8 @@ export default {
   data () {
     return {
       newTitle: '',
-      analysisAnswer: []
+      analysisAnswer: [],
+      selfOptions: []
     }
   },
   computed: {
@@ -91,9 +93,10 @@ export default {
     }
   },
   created () {
-    this.fillIndex = 0 // 初始化选择填充的索引
+    this.fillIndex = -1 // 初始化选择填充的索引
     this.inputElInfoArr = [] // 保存所有的input元素对象
     this.answerArr = [...this.curAnswer] // 回答保存的信息
+    this.selfOptions = [...this.data.options] // 自定以保存opitons的内容
     this.initInfo()
   },
   mounted () {
@@ -173,6 +176,8 @@ export default {
         color: '',
         id: id || ''
       })
+      // 这边更改下当前填充的状态
+      inputElInfoArr[index].fill = false
     },
     dealOptionClick (optItem, optIndex) {
       if (this.mode === 'analysis') return // 解析模式不能点击
@@ -183,6 +188,8 @@ export default {
       let isActive = optItem.active
       let inputElInfoArr = this.inputElInfoArr // 当前的元素
       let { inputEl, fillIndex } = this._findFillInfo(optItem)
+      let isPass = this.checkIsCanBlank(fillIndex, isActive)
+      if (!isPass) return
       // 判断是否有选择操作的索引
       this.checkFillIndex()
       // 处理正常流程
@@ -211,11 +218,24 @@ export default {
       }))
       // 更改sotre的状态
       this.setBlankAnswerInfo(blankAnswerInfo)
-      this.selectAnswer(optIndex)
+      this.changeOptionState(optIndex)
+    },
+    checkIsCanBlank (fillIndex, isActive) {
+      let isPass = true
+      let selectIndex = this.fillIndex
+      // 判断是否已经全部填空了给予提醒
+      if (fillIndex < 0) {
+        Toast('已经全部填充了哦,点击选项替换答案~')
+        isPass = false
+      } else if (selectIndex > -1 && isActive) {
+        Toast('当前选项不可填充~')
+        isPass = false
+      }
+      return isPass
     },
     checkFillIndex () {
       let fillIndex = this.fillIndex
-      if (!fillIndex) return
+      if (fillIndex < 0) return
       let inputInfo = this.inputElInfoArr[fillIndex]
       let { el } = inputInfo
       let { id } = el.dataset // 当点击空的时候是没有ID的 有值的时候才有ID
@@ -223,10 +243,10 @@ export default {
       if (id) {
         console.log('---> 执行了上次状态重置 !!!', id)
         let optIndex = this.data.options.findIndex(item => item.id === id)
-        this.selectAnswer(optIndex)
+        this.changeOptionState(optIndex)
+        // 重置下索引
+        this.fillIndex = -1
       }
-      // 重置下索引
-      this.fillIndex = 0
     },
     dealTemplteAnalysis () {
       let answerArr = this.answerArr
@@ -259,6 +279,16 @@ export default {
         })
       })
     },
+    changeOptionState (selectIndex) {
+      let selfOptions = [...this.selfOptions]
+      let subject = this.data
+      selfOptions.forEach((item, index) => {
+        if (index === selectIndex) item.active = !item.active
+      })
+      // 这边去触发下题目答题变更
+      this.selfOptions = selfOptions
+      this.changeSubjectAnswerInfo({ subject })
+    },
     _getUnderlineTemplate (params) {
       let { index } = params // 每个input索引
       let placeTemplate = this._getReplaceTemplate(index)
@@ -276,19 +306,15 @@ export default {
       let fillIndex = 0
       let selectIndex = this.fillIndex
       let { active, id } = optItem
-      console.log('---> 执行状态数组', inputElInfoArr)
+      console.log('---> 当前点击的索引选择', selectIndex)
       // 判断是否有选择的索引
-      if (selectIndex) {
+      if (selectIndex > 0) {
         fillIndex = selectIndex
       } else if (!active) { // 判断是选中还是未选中
         // 判断是否需要重置选择
         let isAllFill = inputElInfoArr.every(item => item.fill)
         if (isAllFill) {
-          fillIndex = 0
-          inputElInfoArr = inputElInfoArr.map(item => {
-            item.fill = false
-            return item
-          })
+          fillIndex = -1
           console.log('---> 重置状态数组', inputElInfoArr)
         } else {
           fillIndex = inputElInfoArr.findIndex(item => !item.fill)
@@ -302,7 +328,7 @@ export default {
       console.log('更新状态', active, '当前更改选项的索引', fillIndex, 'ID', id)
       // 返回数据
       return {
-        inputEl: inputElInfoArr[fillIndex].el,
+        inputEl: fillIndex >= 0 ? inputElInfoArr[fillIndex].el : null,
         fillIndex: fillIndex
       }
     },

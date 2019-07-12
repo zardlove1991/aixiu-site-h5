@@ -516,7 +516,7 @@ const actions = {
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
     let index = state.currentSubjectIndex
     let selectIndex = payload
-    let examList = state.examList
+    let examList = [...state.examList]
     let subjectInfo = examList[index]
     let renderType = state.renderType
     // 如果是解析的话直接不可以添加选项状态
@@ -528,7 +528,7 @@ const actions = {
         else item.active = false
         return item
       })
-    } else if (['checkbox', 'optionblank'].includes(subjectInfo.type)) {
+    } else if (['checkbox'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = !item.active
         return item
@@ -548,6 +548,7 @@ const actions = {
       'sort', 'singleblank', 'mulitblank', 'optionblank'
     ]
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
+      console.log('保存答案的时候最后一题的信息', subject)
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }

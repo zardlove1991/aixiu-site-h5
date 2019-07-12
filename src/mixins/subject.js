@@ -182,7 +182,7 @@ export default {
         // 保存答题记录 这边主要针对单选题和判断题 自动保存
         if (['judge', 'radio'].includes(subject.type)) {
           await this.saveAnswerRecord(subject)
-        } else if (['checkbox', 'optionblank'].includes(subject.type)) {
+        } else if (['checkbox'].includes(subject.type)) {
           // 多选题目更改下当前题目回答的状态
           this.changeSubjectAnswerInfo({ subject })
         }
@@ -231,15 +231,14 @@ export default {
         this.isShowOpsModel = false
       }, 520)
     },
-    selectTouchStart (selectIndex) {
-      let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = '#f9f9f9'
-    },
     selectTouchEnd (selectIndex) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
-      selectEl.style.backgroundColor = ''
-      // 调用选择答案
-      this.selectAnswer(selectIndex)
+      selectEl.style.backgroundColor = '#f9f9f9'
+      setTimeout(() => {
+        selectEl.style.backgroundColor = ''
+        // 调用选择答案
+        this.selectAnswer(selectIndex)
+      }, 100)
     },
     _triggerFileUpload () {
       let fileInputEl = this.$refs.uploadFileInput
