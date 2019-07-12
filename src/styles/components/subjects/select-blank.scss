@@ -12,7 +12,7 @@
       height: px2rem(64px);
       line-height: px2rem(64px);
       box-sizing: border-box;
-      margin-right: px2rem(20px);
+      margin:0 px2rem(20px) px2rem(20px) 0;
       @include border('all', 1px, solid, 'lineColor');
       @include font-dpr(15px);
       @include font-color('tipColor');

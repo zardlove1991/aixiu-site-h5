@@ -197,6 +197,7 @@ export default {
       }
       // 处理多次操作
       if (this.inputTimer) clearTimeout(this.inputTimer)
+      let delayTime = renderStyle === 'underline' ? 100 : 800
       this.inputTimer = setTimeout(() => {
         let index = dataset.index
         let value = target.value
@@ -219,7 +220,7 @@ export default {
         blankAnswerInfo[data.id] = answerArr
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
         this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
-      }, 900)
+      }, delayTime)
     },
     _getUnderlineTemplate (params) {
       let data = this.data
