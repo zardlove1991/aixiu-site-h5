@@ -90,7 +90,7 @@ export const DEPENCE = {
         if (curAnswer.rules === 'exact' && val === curAnswer.answer) {
           flag = 'success'
           isFind = true
-        } else if (curAnswer.rules === 'contain' && curAnswer.answer.includes(val)) {
+        } else if (curAnswer.rules === 'contain' && val.includes(curAnswer.answer)) {
           flag = 'warning'
           isFind = true
         }
@@ -102,7 +102,7 @@ export const DEPENCE = {
     let dealFullMach = (arr) => {
       let flag = 'error'
       // 对比自己数组中的第一个状态是否全部相同
-      let isSuccss = arr.every(state => (state === arr[0] && state !== 'error'))
+      let isSuccss = arr.every(state => ['success', 'warning'].includes(state))
       let isWarning = arr.some(state => ['success', 'warning'].includes(state))
       if (isSuccss) flag = 'success'
       else if (isWarning) flag = 'warning'

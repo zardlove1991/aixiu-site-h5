@@ -29,10 +29,10 @@
         border: px2rem(16px) solid rgba(0,0,0,0);
         .item-tip-icon{
           position: absolute;
-          right: px2rem(-20px);
+          right: px2rem(-18px);
           bottom:px2rem(-20px);
           line-height: 1;
-          @include font-dpr(10px);
+          @include font-dpr(11px);
           @include font-color('bgColor');
         }
         .tip-icon-success{

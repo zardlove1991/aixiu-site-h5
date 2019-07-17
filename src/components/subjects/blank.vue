@@ -36,9 +36,9 @@
         <template v-if="analysisAnswer.length"
           v-for="(group, index) in analysisAnswer">
           <div class="single-asnitem-wrap" :key="index"
-            v-if="group.length === 1 && data.type === 'singleblank'">
+            v-if="group.length && data.type === 'singleblank'">
             <span class="single-title-tip">答案:</span>
-            <span class="single-answer-tip">{{group[0].answer}}</span>
+            <span class="single-answer-tip">{{group | joinSingleVal }}</span>
           </div>
           <!--特殊处理一个答案的情况-->
           <div class="mulite-asnitem-wrap" :key="index" v-else>
@@ -104,6 +104,12 @@ export default {
     curAnswer (data) {
       // 当前答案更新的时候更新下保存的答案的数组
       this.answerArr = [...data]
+    }
+  },
+  filters: {
+    joinSingleVal (arr) {
+      let newArr = arr.map(item => item.answer)
+      return newArr.join('、')
     }
   },
   methods: {
@@ -233,8 +239,8 @@ export default {
       if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
       else length = analysisAnswer.length
       // 计算长度
-      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 5)
-      let inputStyle = `width:${50 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:#333333; text-align:center; outline:none;`
+      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 8)
+      let inputStyle = `width:${50 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;`
       let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
       if (mode === 'analysis') {
         let color = this._checkGroupState(index)
@@ -248,8 +254,8 @@ export default {
       let { index } = params
       // 拿到答案的值
       let curStr = this.curAnswer[0]
-      let value = curStr ? curStr[index] : ''
-      let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: #333333;`
+      let value = curStr ? (curStr[index] || '') : ''
+      let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: ${StyleConfig.theme};`
       let inputTemp = `<input style="${inputStyle}" class="text-input" data-index="${index}" value="${value}" maxlength="1" />`
       if (mode === 'analysis') {
         let color = this._checkGroupState(0)

@@ -46,7 +46,7 @@
           <div class="correct-answer-item" v-for="(item, index) in analysisAnswer" :key="index">
             <span class="answer-item-index">{{index+1}}</span>
             <span class="answer-item-title">{{item.name}}</span>
-            <span class="answer-item-score" v-show="item.score">{{`(${item.score})分`}}</span>
+            <span class="answer-item-score" v-show="item.score">{{`(${item.score}分)`}}</span>
           </div>
         </div>
       </div>
@@ -303,7 +303,7 @@ export default {
     },
     _getReplaceTemplate (index) {
       let clickMethod = this.dealSelectClick
-      let borderStyle = `margin:0 auto;border:1px solid #999; width:15px;height:15px;border-radius:50%;line-height:16px;text-align:center;font-size:12px;color:#999;`
+      let borderStyle = `position:relative;top:-2px;margin:0 auto;border:1px solid #999; width:15px;height:15px;border-radius:50%;line-height:16px;text-align:center;font-size:12px;color:#999;`
       return `<div data-option="input-empty"  data-index="${index}" onclick='${clickMethod}' style="${borderStyle}">${Number(index) + 1}</div>`
     },
     _findFillInfo (optItem) {
