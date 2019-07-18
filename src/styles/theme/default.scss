@@ -16,7 +16,7 @@ $tipColor: #666;
 $descColor: #999;
 $descColorOne: #808080;
 $errorColor: #FF564D;
-$activeColor: #FFAB26;
+$warningColor: #FFAB26;
 $disabledColor: #AFAFAF;
 $disabledColorOne: #ccc;
 // 边框颜色
@@ -39,7 +39,7 @@ $defaultColorMap: (
   tipBgColor:$tipBgColor,
   tipBgColorOne: $tipBgColorOne,
   errorColor: $errorColor,
-  activeColor: $activeColor,
+  warningColor: $warningColor,
   disabledColor: $disabledColor,
   disabledColorOne: $disabledColorOne,
   borderColor: $borderColor,
@@ -52,3 +52,10 @@ $defaultColorMap: (
   audioBgTwo: $audioBgTwo,
   audioProgressBar: $audioProgressBar
 )
+
+// 导出变量
+:export {
+  theme: $themeColor;
+  error: $errorColor;
+  desc: $descColor;
+}

@@ -18,6 +18,10 @@ export const METHODS = {
     else if (type === 'essay') typeTip = '问答题'
     else if (type === 'mandarin') typeTip = '普通话'
     else if (type === 'englishspoken') typeTip = '英语口语能力'
+    else if (type === 'sort') typeTip = '排序题'
+    else if (type === 'singleblank') typeTip = '填空题'
+    else if (type === 'mulitblank') typeTip = '多元填空'
+    else if (type === 'optionblank') typeTip = '选词填空'
     return typeTip
   }
 }
@@ -57,6 +61,104 @@ export const DEPENCE = {
     let flag = true
     if (curOralObj && curOralObj.value) flag = false
     return flag
+  },
+  checkSortSubject (subject) {
+    let mode = subject.extra.score_rules // 匹配的规则
+    let flag = 'none'
+    let allMatchLen = subject.options.filter(item => item.is_true).length // 匹配所有是否为true
+    let optionLen = subject.options.length
+    if (mode === 'exact' && allMatchLen === optionLen) {
+      flag = 'success'
+    } else if (mode === 'contain' && allMatchLen) {
+      flag = 'warning'
+      // 全匹配为正确
+      if (allMatchLen === optionLen) flag = 'success'
+    }
+    return flag
+  },
+  checkBlankSubject (subject) {
+    let myAnswer = subject.answer // 我自己的答案
+    let answer = subject.extra.answer // 设置的答案
+    let params = { result: [], state: 'error' }
+    // 处理匹配
+    let dealMatch = (arr, val) => {
+      let flag = 'error'
+      // 检查答案
+      let isFind = false
+      for (let i = 0; i < arr.length; i++) {
+        let curAnswer = arr[i]
+        if (curAnswer.rules === 'exact' && val === curAnswer.answer) {
+          flag = 'success'
+          isFind = true
+        } else if (curAnswer.rules === 'contain' && val.includes(curAnswer.answer)) {
+          flag = 'warning'
+          isFind = true
+        }
+        // 是否中断循环
+        if (isFind) break
+      }
+      return flag
+    }
+    let dealFullMach = (arr) => {
+      let flag = 'error'
+      // 对比自己数组中的第一个状态是否全部相同
+      let isSuccss = arr.every(state => ['success', 'warning'].includes(state))
+      let isWarning = arr.some(state => ['success', 'warning'].includes(state))
+      if (isSuccss) flag = 'success'
+      else if (isWarning) flag = 'warning'
+      return flag
+    }
+    // 没有答案返回空
+    if (!myAnswer.length) return params
+    // 处理提醒
+    if (subject.type === 'singleblank') {
+      let val = myAnswer.join('')
+      myAnswer.forEach(item => {
+        params.result.push(dealMatch(answer, val))
+      })
+    } else if (subject.type === 'mulitblank') {
+      myAnswer.forEach((val, index) => {
+        let matchArr = answer[index] // 找到每个分组的数据
+        params.result.push(dealMatch(matchArr, val))
+      })
+    }
+    // 处理总共的状态
+    params.state = dealFullMach(params.result)
+    return params
+  },
+  checkOptBlankSubject (subject) {
+    let params = { result: [], state: 'error' }
+    let underlineReg = /_{3,}/g
+    // 匹配解析的数组
+    let matchMode = subject.extra.score_rules
+    let blankArr = subject.title.match(underlineReg)
+    let options = [...subject.options]
+    // 处理匹配
+    let dealMatch = (arr) => {
+      let temp = []
+      // 将选项排序为正确顺序并且把为其它不属于答案的过滤掉匹配正确答案
+      let correctOptions = options.sort(({extra: a}, {extra: b}) => (a.space - b.space)).filter(({extra}) => extra.space >= 0)
+      arr.forEach((answerId, answerIdx) => {
+        let flag = 'error'
+        let curOption = correctOptions[answerIdx]
+        if (curOption && answerId === curOption.id) flag = 'success'
+        temp.push(flag)
+      })
+      return temp
+    }
+    params.result = dealMatch(subject.answer)
+    // 区分总状态
+    let successArr = params.result.filter(state => state === 'success')
+    let isAllMach = successArr.length === blankArr.length
+    if (matchMode === 'contain' && successArr.length) {
+      params.state = 'warning'
+      // 判断是否全队
+      if (isAllMach) params.state = 'success'
+    } else if (matchMode === 'exact' && isAllMach) {
+      params.state = 'success'
+    }
+    console.log('当前处理的解析信息', params)
+    return params
   },
   checkMedaiObjIsEmpty (mediaObj) {
     let flag = true

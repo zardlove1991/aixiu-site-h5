@@ -19,12 +19,33 @@
       :data="data"
       :mode="mode">
     </voice-subject>
+    <!--排序题的区域-->
+    <sort-subject
+      v-else-if="data.type === 'sort'"
+      :data="data"
+      :mode="mode">
+    </sort-subject>
+    <!--单项/多项填空-->
+    <blank-subject
+      v-else-if="['singleblank', 'mulitblank'].includes(data.type)"
+      :data="data"
+      :mode="mode">
+    </blank-subject>
+    <!--排序题的区域-->
+    <select-blank-subject
+      v-else-if="data.type === 'optionblank'"
+      :data="data"
+      :mode="mode">
+    </select-blank-subject>
   </div>
 </template>
 
 <script>
 import VoiceSubject from '@/components/subjects/voice'
 import EssaySubject from '@/components/subjects/essay'
+import SortSubject from '@/components/subjects/sort'
+import BlankSubject from '@/components/subjects/blank'
+import SelectBlankSubject from '@/components/subjects/select-blank'
 import NormalSubject from '@/components/subjects/normal'
 import SubjectMixin from '@/mixins/subject'
 
@@ -46,7 +67,10 @@ export default {
   components: {
     VoiceSubject,
     EssaySubject,
-    NormalSubject
+    NormalSubject,
+    SortSubject,
+    BlankSubject,
+    SelectBlankSubject
   }
 }
 </script>

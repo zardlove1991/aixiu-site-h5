@@ -38,29 +38,29 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'essayAnswerInfo', 'currentSubjectInfo', 'isShowModelThumb',
-      'renderType', 'examList', 'currentSubjectIndex', 'isShowSubjectList',
-      'oralAnswerInfo'
-    ])
+      'renderType', 'examList', 'currentSubjectIndex', 'oralAnswerInfo',
+      'subjectAnswerInfo'
+    ]),
+    isDidCurSubject () { // 当前题目是否回答过
+      let allAnswerState = this.subjectAnswerInfo
+      let subject = this.currentSubjectInfo
+      return allAnswerState[subject.id]
+    }
   },
   watch: {
     currentSubjectIndex (newIndex, oldIndex) {
       let renderType = this.renderType
+      let subjectAnswerInfo = this.subjectAnswerInfo
       let subject = this.examList[oldIndex]
-      let isActive = subject.options.some(item => item.active)
-      let isAnswerd = subject.answer && subject.answer.length
       let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
       // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
       if (renderType === 'exam') {
-        let isDidRecord = !isActive && !isAnswerd && !isPrevIndex
-        let isShowModel = isDidRecord
-        // 特殊类型走检查
-        if (['essay', 'englishspoken', 'mandarin'].includes(subject.type)) {
-          isShowModel = this._checkSubjectEmpty(subject)
-        }
+        // 上一题没有做答的时候
+        let isShowModel = !subjectAnswerInfo[subject.id] && !isPrevIndex
         // 这边针对问答题的判断需要重新判断模态框的展示
         if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
       }
-      // 检查是否有特殊类型提醒的提交操作: 问答、多选
+      // 检查是否有特殊类型提醒的提交操作
       this.sendSaveRecordOption(subject)
       // 清空当前页面的视频组件信息
       if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
@@ -72,6 +72,8 @@ export default {
       essayAnswerInfo[currentSubjectInfo.id] = newAnwer
       // 直接更改store数据
       this.setEssayAnswerInfo(essayAnswerInfo)
+      // 这边去触发下题目答题变更
+      this.changeSubjectAnswerInfo({ subject: currentSubjectInfo })
     }
   },
   created () {
@@ -177,9 +179,12 @@ export default {
       let subject = this.currentSubjectInfo
       try {
         await this.addSelectActiveFlag(selectIndex)
-        // 保存答题记录 这边不处理多选 多选checkboxrecord提交
-        if (subject.type !== 'checkbox') {
+        // 保存答题记录 这边主要针对单选题和判断题 自动保存
+        if (['judge', 'radio'].includes(subject.type)) {
           await this.saveAnswerRecord(subject)
+        } else if (['checkbox'].includes(subject.type)) {
+          // 多选题目更改下当前题目回答的状态
+          this.changeSubjectAnswerInfo({ subject })
         }
       } catch (err) {
         console.log(err)
@@ -220,15 +225,6 @@ export default {
         return null
       }
     },
-    toggetSubjectList () {
-      let state = this.isShowSubjectList
-      // 提交改变
-      this.setSubjectListShow(!state)
-    },
-    dealExamHeaderSelect ({subject, index}) {
-      this.toggetSubjectList()
-      this.changeSubjectIndex(index)
-    },
     showOpsModel () {
       this.isShowOpsModel = true
       setTimeout(() => {
@@ -265,7 +261,7 @@ export default {
       oralAnswerInfo[curSubject.id] = { value: e }
       this.setOralAnswerInfo(oralAnswerInfo)
       // 这边去触发下题目答题变更
-      this.changeSubjectAnswerInfo(curSubject)
+      this.changeSubjectAnswerInfo({ subject: curSubject })
     },
     _dealEssayFromValue (params) {
       // 防止多次处理
@@ -286,7 +282,7 @@ export default {
         }
         // 更新当前数据对象
         this.essayTempAnswerInfo = Object.assign({}, essayTempAnswerInfo)
-      }, 200)
+      }, 300)
     },
     _setTempEssayAnswerInfo () {
       let currentSubjectInfo = this.currentSubjectInfo
@@ -322,17 +318,6 @@ export default {
     },
     // 检查当前媒体对象是否为空
     _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
-    _checkSubjectEmpty (subject) {
-      let flag = false
-      let essayAnswerInfo = this.essayAnswerInfo // 问答题的书
-      let oralAnswerInfo = this.oralAnswerInfo // mixin中的数据
-      if (subject.type === 'essay') {
-        flag = DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)
-      } else if (['englishspoken', 'mandarin'].includes(subject.type)) {
-        flag = DEPENCE.checkRoralEmpty(oralAnswerInfo, subject.id)
-      }
-      return flag
-    },
     _dealHtmlLine (str) {
       if (!str || (str && !str.indexOf('\n'))) return
       return str.replace(/\n/g, '<br/>')

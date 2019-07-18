@@ -48,6 +48,10 @@
               <span class="title">回答正确</span>
               <span class="desc">{{`${answerCardInfo.answer_num.right_answer_num}题`}}</span>
             </div>
+            <div class="row" v-show="answerCardInfo.answer_num.half_answer_num">
+              <span class="title">半对半错</span>
+              <span class="desc">{{`${answerCardInfo.answer_num.half_answer_num}题`}}</span>
+            </div>
             <div class="row">
               <span class="title">答题用时</span>
               <span class="desc">{{examTimeObj.examTime}}</span>

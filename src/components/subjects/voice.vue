@@ -6,11 +6,6 @@
         <span>{{data.typeTip}}</span>
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
       </h3>
-      <!--当前题目进度提示-->
-      <div v-show="mode === 'exam'" class="subject-tip-wrap" @click.stop="toggetSubjectList">
-        <div class="tip-img"></div>
-        <div class="tip-count">{{`${currentSubjectIndex+1}/${examList.length}`}}</div>
-      </div>
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay'"
@@ -90,7 +85,7 @@
         <p class="content" v-else>暂无解析内容~</p>
         <!--目前还没有类别和正确率 暂时隐藏-->
         <div class="exam-types" v-show="data.point && data.point.length">
-          <span class="tip">考点</span>
+          <span class="tip">知识点</span>
           <span class="type" v-for="item in data.point" :key="item.id">{{item.name}}</span>
         </div>
         <!-- <p class="percent">{{`正确率: ${data.correct_percent ? Math.round(data.correct_percent) : 0}%`}}</p> -->
@@ -106,7 +101,7 @@ import SubItemMixin from '@/mixins/subject-item'
 import SubjectMixin from '@/mixins/subject'
 
 export default {
-  name: 'essay-subject',
+  name: 'voice-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
   data () {
     return {

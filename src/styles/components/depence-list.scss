@@ -144,7 +144,7 @@
       right: 0;
       bottom: 0;
       padding: px2rem(20px) px2rem(80px) 0;
-      height: px2rem(140px);
+      height: px2rem(130px);
       display: flex;
       justify-content: space-between;
       pointer-events: auto;
@@ -152,7 +152,7 @@
       box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
       @include bg-color('bgColor');
       &.iphonex-h{
-        height: px2rem(160px);
+        // height: px2rem(160px);
       }
       .prev-wrap,.next-wrap{
         display: flex;
@@ -232,6 +232,45 @@
           padding-top: px2rem(4px);
           border-radius: 50%;
           @include bg-color('bgColor');
+        }
+      }
+      .btn-confrim-wrap{
+        position: relative;
+        .btn-confrim-shadow{
+          width: px2rem(240px);
+          height: px2rem(100px);
+          border-radius: px2rem(24px);
+          transform: translateY(-35%);
+          box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
+          z-index: -2;
+          @include bg-color('bgColor');
+        }
+        .btn-confrim-content{
+          position: absolute;
+          top: px2rem(-20px);
+          left: px2rem(-10px);
+          display: flex;
+          justify-content: center;
+          width: px2rem(260px);
+          height: px2rem(100px);
+          @include bg-color('bgColor');
+          .btn-confrim-option{
+            position: relative;
+            left: px2rem(-2px);
+            width: px2rem(200px);
+            height: px2rem(68px);
+            border-radius: px2rem(34px);
+            text-align: center;
+            line-height: px2rem(68px);
+            pointer-events: auto;
+            @include font-dpr(14px);
+            @include font-color('bgColor');
+            @include bg-color('themeColor');
+            &.disabled{
+              pointer-events: none;
+              @include bg-color('disabledColorOne');
+            }
+          }
         }
       }
     }
