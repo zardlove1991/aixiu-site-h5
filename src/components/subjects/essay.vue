@@ -116,7 +116,7 @@
           <p class="content" v-else>暂无解析内容~</p>
           <!--目前还没有类别和正确率 暂时隐藏-->
           <div class="exam-types" v-show="data.point && data.point.length">
-            <span class="tip">考点</span>
+            <span class="tip">知识点</span>
             <span class="type" v-for="item in data.point" :key="item.id">{{item.name}}</span>
           </div>
         </div>
