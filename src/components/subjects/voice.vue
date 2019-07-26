@@ -54,10 +54,9 @@
           </el-tooltip>
         </div>
         <!--跟读文本的正文内容-->
-        <p class="voice-words-tip"
-          v-if="curOralInfo.content.words.length"
-          v-html="_dealFollowText()">
-        </p>
+        <template v-if="curOralInfo.content && curOralInfo.content.words.length">
+          <p class="voice-words-tip" v-html="_dealFollowText()"> </p>
+        </template>
         <!--没有解析的全部为空-->
         <p class="voice-words-tip error" v-else>{{data.extra.follow_text}}</p>
       </template>

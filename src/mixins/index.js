@@ -24,7 +24,8 @@ export default {
         console.log('执行微信webview重载浏览器页面 ！！！')
         // 重载页面
         setTimeout(() => {
-          window.location.assign(to.fullPath)
+          // window.location.assign(to.fullPath)
+          next({ to: to.fullPath, replace: true })
         }, 100)
       } else {
         // 继续显示组件
