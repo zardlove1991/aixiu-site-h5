@@ -465,7 +465,6 @@ export default {
       height: px2rem(39px);
       background-position: center;
       background-repeat: no-repeat;
-      z-index: -1;
       @include img-retina('~@/assets/audio/audio_bubble@2x.png','~@/assets/audio/audio_bubble@3x.png', 100%, 100%);
     }
     .audio-content{
