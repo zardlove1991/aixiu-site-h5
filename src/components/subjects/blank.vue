@@ -7,7 +7,7 @@
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
       </h3>
     </div>
-    <p class="subject-title" v-if="newTitle">
+    <p class="subject-title" v-if="newTitle" style="overflow:hidden;">
       <span>{{`${currentSubjectIndex+1}.`}}</span>
       <span ref="newTitleHtml" v-html="newTitle"></span>
     </p>
@@ -239,12 +239,12 @@ export default {
       if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
       else length = analysisAnswer.length
       // 计算长度
-      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 8)
-      let inputStyle = `width:${50 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;`
+      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
+      let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;`
       let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
       if (mode === 'analysis') {
         let color = this._checkGroupState(index)
-        inputStyle = `width:${50 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;`
+        inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;`
         inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
       }
       return inputTemp
