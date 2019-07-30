@@ -160,6 +160,7 @@ export default {
       this.toggleSubmitModel()
       try {
         await this.sendSaveRecordOption(subject) // 检查最后一题的提交
+        await this.unlockCorse() // 解锁短书课程
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
@@ -198,6 +199,7 @@ export default {
     },
     ...mapActions('depence', {
       endExam: 'END_EXAM',
+      unlockCorse: 'UNLOCK_COURSE',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
     })
