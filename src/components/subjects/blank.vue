@@ -240,11 +240,11 @@ export default {
       else length = analysisAnswer.length
       // 计算长度
       let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
-      let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;`
+      let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
       let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
       if (mode === 'analysis') {
         let color = this._checkGroupState(index)
-        inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;`
+        inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;border-radius:0;`
         inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
       }
       return inputTemp
