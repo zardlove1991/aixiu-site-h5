@@ -481,19 +481,22 @@ const actions = {
       }, optionFlag)
       // 更改状态
       let { isEmpty } = result
-      if (isEmpty) {
-        subjectAnswerInfo[subject.id] = false
+      if (isEmpty) subjectAnswerInfo[subject.id] = false
+      else subjectAnswerInfo[subject.id] = true
+      // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
+      if (optionFlag === 'check-answer') {
+        // 处理当多个更新时候的多次请求
+        if (this.changeAnswerTimer) clearTimeout(this.changeAnswerTimer)
+        this.changeAnswerTimer = setTimeout(() => {
+          // 更新当前的回答题目的信息
+          commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
+          // 返回数据
+          resolve(result)
+        }, 300)
       } else {
-        subjectAnswerInfo[subject.id] = true
-      }
-      // 处理当多个更新时候的多次请求
-      if (this.changeAnswerTimer) clearTimeout(this.changeAnswerTimer)
-      this.changeAnswerTimer = setTimeout(() => {
-        // 更新当前的回答题目的信息
-        commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
-        // 返回数剧
+        // 返回数据
         resolve(result)
-      }, 300)
+      }
     })
   },
   CHANGE_CURRENT_SUBJECT_INDEX ({state, commit}, payload) {
@@ -548,7 +551,6 @@ const actions = {
       'sort', 'singleblank', 'mulitblank', 'optionblank'
     ]
     if (submitTypeArr.includes(subjectType) && renderType === 'exam') {
-      console.log('保存答案的时候最后一题的信息', subject)
       // 触发保存答题记录操作
       return dispatch('SAVE_ANSWER_RECORD', subject)
     }

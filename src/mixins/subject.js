@@ -128,11 +128,6 @@ export default {
       let isWx = isWeixnBrowser()
       if (isWx) {
         let recordEl = this.$refs['myRecord']
-        let parent = this.$parent
-        while (!recordEl && parent) { // 如果第一次找不到，则往父级查询
-          recordEl = parent.$refs['myRecord']
-          parent = parent.$parent
-        }
         recordEl.initRecord() // 调用初始化方法
       } else {
         this._triggerFileUpload()

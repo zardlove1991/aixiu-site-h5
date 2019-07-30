@@ -37,6 +37,7 @@
           <textarea class="content" placeholder="请输入答案" maxlength="300"
             :value = "essayTempAnswerInfo.text"
             @input="uploadText"
+            @blur="dealKeyboard"
             v-show="renderType === 'exam'">
           </textarea>
         </div>
@@ -153,18 +154,30 @@
         </div>
       </div>
     </template>
+    <!--引入录音组件-->
+    <my-record ref="myRecord" @finish="_dealEssayFromValue"></my-record>
   </div>
 </template>
 
 <script>
 import SubItemMixin from '@/mixins/subject-item'
 import SubjectMixin from '@/mixins/subject'
+import MyRecord from '@/components/depence/record'
+
 export default {
   name: 'essay-subject',
   mixins: [ SubItemMixin, SubjectMixin ],
+  components: { MyRecord },
   created () {
     // 赋值当前问答题临时对象 -> 调用mixin的方法
     this._setTempEssayAnswerInfo()
+  },
+  methods: {
+    dealKeyboard () {
+      // 兼容滚动视图代码
+      document.body.scrollTop = 0
+      window.scrollTo(0, 0)
+    }
   }
 }
 </script>

@@ -113,8 +113,6 @@
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
-      <!--引入录音组件-->
-      <my-record ref="myRecord" @finish="_dealEssayFromValue"></my-record>
     </div>
   </div>
 </template>

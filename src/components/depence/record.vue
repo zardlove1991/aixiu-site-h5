@@ -439,161 +439,171 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
-
-.record-audio-wrap{
-  position: absolute;
+.record-total-template-wrap{
+  position: fixed;
+  top:0;
   left:0;
+  right:0;
   bottom: 0;
-  width: 100%;
-  height: px2rem(300px);
-  pointer-events: auto;
-  @include bg-color('bgColor');
+  pointer-events: none;
   z-index: 10;
-  box-shadow: 0 px2rem(-5px) px2rem(5px) rgba(156, 156, 156, 0.1);
-  .audio-tip{
+  .record-audio-wrap{
+    position: absolute;
+    left:0;
+    bottom: 0;
     width: 100%;
-    padding: px2rem(34px) 0 px2rem(30px);
-    line-height: 1;
-    text-align: center;
-    @include font-dpr(14px);
-    @include font-color('descColor');
-  }
-  .all-btn-wrap{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    .record-reset-wrap,.record-confirm-wrap{
-      padding-top: px2rem(30px);
-      .btn{
-        width: px2rem(60px);
-        height: px2rem(60px);
-        border-radius: 50%;
-        margin-bottom: px2rem(58px);
-        background-repeat: no-repeat;
-        background-position: center;
-        @include bg-color('themeColor');
-        @include img-retina('~@/assets/common/record_reset@2x.png', '~@/assets/common/record_reset@3x.png', px2rem(28px),px2rem(28px));
-      }
-      .tip{
-        line-height: 1;
-        @include font-dpr(14px);
-        @include font-color('descColor');
-      }
+    height: px2rem(300px);
+    pointer-events: auto;
+    @include bg-color('bgColor');
+    box-shadow: 0 px2rem(-5px) px2rem(5px) rgba(156, 156, 156, 0.1);
+    pointer-events: auto;
+    z-index: 100;
+    .audio-tip{
+      width: 100%;
+      padding: px2rem(34px) 0 px2rem(30px);
+      line-height: 1;
+      text-align: center;
+      @include font-dpr(14px);
+      @include font-color('descColor');
     }
-    .record-confirm-wrap{
-      .btn{
-        background-position: center;
-        @include img-retina('~@/assets/common/record_correct@2x.png', '~@/assets/common/record_correct@3x.png', px2rem(30px), px2rem(20px));
-      }
-    }
-    .record-play-wrap{
+    .all-btn-wrap{
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0 px2rem(120px);
-      .record-btn-wrap{
-        position: relative;
-        width: px2rem(120px);
-        height: px2rem(120px);
-        margin-bottom: px2rem(28px);
-        .record-paly-bg{
-          position: absolute;
-          left: 0;
-          top: 0;
+      justify-content: center;
+      width: 100%;
+      .record-reset-wrap,.record-confirm-wrap{
+        padding-top: px2rem(30px);
+        .btn{
+          width: px2rem(60px);
+          height: px2rem(60px);
+          border-radius: 50%;
+          margin-bottom: px2rem(58px);
+          background-repeat: no-repeat;
+          background-position: center;
+          @include bg-color('themeColor');
+          @include img-retina('~@/assets/common/record_reset@2x.png', '~@/assets/common/record_reset@3x.png', px2rem(28px),px2rem(28px));
+        }
+        .tip{
+          line-height: 1;
+          @include font-dpr(14px);
+          @include font-color('descColor');
+        }
+      }
+      .record-confirm-wrap{
+        .btn{
+          background-position: center;
+          @include img-retina('~@/assets/common/record_correct@2x.png', '~@/assets/common/record_correct@3x.png', px2rem(30px), px2rem(20px));
+        }
+      }
+      .record-play-wrap{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 px2rem(120px);
+        .record-btn-wrap{
+          position: relative;
           width: px2rem(120px);
           height: px2rem(120px);
-          opacity:0.2;
-          border-radius:50%;
-          @include bg-color('themeColor');
-          &.animation{
-            animation: scaleAudioBg 0.8s linear infinite alternate;
+          margin-bottom: px2rem(28px);
+          .record-paly-bg{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: px2rem(120px);
+            height: px2rem(120px);
+            opacity:0.2;
+            border-radius:50%;
+            @include bg-color('themeColor');
+            &.animation{
+              animation: scaleAudioBg 0.8s linear infinite alternate;
+            }
           }
-        }
-        .record-paly-btn{
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background-repeat: no-repeat;
-          background-position:center;
-          @include bg-color('themeColor');
-          @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
-          &.record-stop{
-            background-position: px2rem(50px) center;
-            @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
-          }
-          &.record-start{
+          .record-paly-btn{
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-repeat: no-repeat;
             background-position:center;
-            @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
+            @include bg-color('themeColor');
+            @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
+            &.record-stop{
+              background-position: px2rem(50px) center;
+              @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
+            }
+            &.record-start{
+              background-position:center;
+              @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(32px), px2rem(32px));
+            }
           }
         }
-      }
-      .time,.tip{
-        line-height: 1;
-        @include font-dpr(14px);
-        @include font-color('descColor');
-        .hige{
-          font-style: normal;
-          @include font-color('themeColor');
+        .time,.tip{
+          line-height: 1;
+          @include font-dpr(14px);
+          @include font-color('descColor');
+          .hige{
+            font-style: normal;
+            @include font-color('themeColor');
+          }
         }
       }
     }
-  }
-  .close-bg{
-    position: absolute;
-    top: px2rem(10px);
-    right:0;
-    width: px2rem(60px);
-    height: px2rem(60px);
-    background-position: center;
-    background-repeat: no-repeat;
-    @include img-retina('~@/assets/common/close_1@2x.png', '~@/assets/common/close_1@3x.png',px2rem(30px),px2rem(30px));
-  }
-}
-.record-touch-wrap{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  .hide-progress{
-    opacity: 0 !important;
-  }
-  .record-play-wrap{
-    position: absolute;
-    top: 50%;
-    left:50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 84%;
-    height: 84%;
-    border-radius: 50%;
-    transform: translate3d(-49%, -49%, 0);
-    @include bg-color('themeColor');
-    .record-play-bg{
-      width: 100%;
-      height: 100%;
+    .close-bg{
+      position: absolute;
+      top: px2rem(10px);
+      right:0;
+      width: px2rem(60px);
+      height: px2rem(60px);
       background-position: center;
       background-repeat: no-repeat;
-      @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
-      &.record-stop{
-        background-position: px2rem(34px) center;
-        @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
-      }
-      &.record-start{
-        background-position:center;
-        @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(28px), px2rem(28px));
-      }
+      @include img-retina('~@/assets/common/close_1@2x.png', '~@/assets/common/close_1@3x.png',px2rem(30px),px2rem(30px));
     }
   }
-  .record-play-tip{
-    position: absolute;
-    top: 100%;
-    padding-top: px2rem(12px);
-    line-height: px2rem(26px);
-    @include font-dpr(12px);
-    @include font-color('descColor');
+  .record-touch-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    .hide-progress{
+      opacity: 0 !important;
+    }
+    .record-play-wrap{
+      position: absolute;
+      top: 50%;
+      left:50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 84%;
+      height: 84%;
+      border-radius: 50%;
+      transform: translate3d(-49%, -49%, 0);
+      @include bg-color('themeColor');
+      .record-play-bg{
+        width: 100%;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        @include img-retina('~@/assets/common/record_icon@2x.png', '~@/assets/common/record_icon@3x.png', px2rem(32px), px2rem(44px));
+        &.record-stop{
+          background-position: px2rem(34px) center;
+          @include img-retina('~@/assets/common/record_play@2x.png', '~@/assets/common/record_play@3x.png', px2rem(32px), px2rem(36px));
+        }
+        &.record-start{
+          background-position:center;
+          @include img-retina('~@/assets/common/record_pause@2x.png', '~@/assets/common/record_pause@3x.png', px2rem(28px), px2rem(28px));
+        }
+      }
+    }
+    .record-play-tip{
+      position: absolute;
+      top: 100%;
+      padding-top: px2rem(12px);
+      line-height: px2rem(26px);
+      @include font-dpr(12px);
+      @include font-color('descColor');
+    }
   }
 }
 
