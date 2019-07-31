@@ -1,6 +1,6 @@
 <template lang="html">
   <!--录音容器包裹-->
-  <div class="record-total-template-wrap">
+  <div class="record-total-template-wrap" :class="{ 'touch-layout':recordType !== 'pop' }">
     <!--弹层录音区域-->
     <transition name="up" mode="out-in">
       <!--录音包裹-->
@@ -447,6 +447,9 @@ export default {
   bottom: 0;
   pointer-events: none;
   z-index: 10;
+  &.touch-layout{
+    position: absolute;
+  }
   .record-audio-wrap{
     position: absolute;
     left:0;
