@@ -82,7 +82,7 @@
           </div>
           <!--当前操作层-->
           <div class="btn-record-option">
-            <my-record record-type="touch" @finish="_dealRoalAudio"></my-record>
+            <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
         <!--填空题和排序题的确认按钮操作-->

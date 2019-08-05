@@ -155,7 +155,7 @@
       </div>
     </template>
     <!--引入录音组件-->
-    <my-record ref="myRecord" @finish="_dealEssayFromValue"></my-record>
+    <my-record ref="myRecord" @start="_resetCurPageRecord" @finish="_dealEssayFromValue"></my-record>
   </div>
 </template>
 
