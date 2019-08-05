@@ -316,6 +316,15 @@ export default {
       let delta = rowNums - data.length % rowNums
       return delta === rowNums ? 0 : delta
     },
+    // 重置音频录音
+    _resetCurPageRecord () {
+      const ALLRECORDS = ['myRecord', 'voiceRecord'].map(id => this.$refs[id])
+      console.log('当前所有的音频元素', ALLRECORDS)
+      // 监听当前页面摧毁监听
+      this.$on('hook:beforeDestroy', () => {
+        ALLRECORDS.forEach(el => el && el.closeAudioRecoder())
+      })
+    },
     // 检查当前媒体对象是否为空
     _checkMedaiObjIsEmpty: (mediaObj) => DEPENCE.checkMedaiObjIsEmpty(mediaObj),
     _dealHtmlLine (str) {
