@@ -661,6 +661,13 @@ const actions = {
       curSubjectVideos.push(video)
     }
     commit('SET_CURSUBJECT_VIDEOS', curSubjectVideos)
+  },
+  UNLOCK_COURSE ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let params = { id: state.examId }
+      // 开始请求数据
+      API.unlockCourse({ params }).then(res => resolve()).catch(err => reject(err))
+    })
   }
 }
 

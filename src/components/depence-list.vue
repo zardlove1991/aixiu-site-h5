@@ -225,6 +225,7 @@ export default {
       // 提交试卷
       try {
         await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        await this.unlockCorse() // 解锁短书课程
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -298,7 +299,8 @@ export default {
       getExamList: 'GET_EXAMLIST',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
-      endExam: 'END_EXAM'
+      endExam: 'END_EXAM',
+      unlockCorse: 'UNLOCK_COURSE'
     })
   }
 }
