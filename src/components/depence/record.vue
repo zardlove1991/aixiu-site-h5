@@ -1,6 +1,6 @@
 <template lang="html">
   <!--录音容器包裹-->
-  <div class="record-total-template-wrap">
+  <div class="record-total-template-wrap" :class="{ 'touch-layout':recordType !== 'pop' }">
     <!--弹层录音区域-->
     <transition name="up" mode="out-in">
       <!--录音包裹-->
@@ -244,6 +244,8 @@ export default {
             }
           })
         }
+        // 发送点击录音事件
+        _this.$emit('start')
         // 调用微信录音
         WX.execute('startRecord', {
           success () {
@@ -259,6 +261,14 @@ export default {
             toastInstance.close()
             // 取消授权的时候去处理
             _this.$toast({message: '初始化录音失败', duration: 1500})
+          },
+          fail () {
+            console.log('提前语音startRecord失败 ！！！')
+            // 失败的时候在去调用一次录音(这边会出现一次假死状态)
+            _this.$wx.stopRecord()
+            setTimeout(() => {
+              _this.initRecord()
+            }, 1000)
           }
         })
       }
@@ -417,10 +427,10 @@ export default {
       }
       // 清除当前计时的timer
       if (this.recoderTimer) {
-        clearInterval(this.recoderTimer)
-        this.recoderTimer = null
         console.log('关闭或重置的时候清除录音状态 !!!')
         this.$wx.stopRecord()
+        clearInterval(this.recoderTimer)
+        this.recoderTimer = null
       }
       // 清除当前计时的timer
       if (this.playRecoderTimer) clearInterval(this.playRecoderTimer)
@@ -447,6 +457,9 @@ export default {
   bottom: 0;
   pointer-events: none;
   z-index: 10;
+  &.touch-layout{
+    position: absolute;
+  }
   .record-audio-wrap{
     position: absolute;
     left:0;

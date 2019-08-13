@@ -25,7 +25,8 @@ let configUrl = {
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
   getExamDetail: 'client/examination/{id}',
   getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
-  setSubjectFavorInfo: 'client/examination/collection' // 设置题目的收藏
+  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
+  unlockCourse: 'client/examination/submitted' // 解锁课程
 }
 
 export default {
@@ -46,5 +47,6 @@ export default {
   getExamDetailsList: config => createAPI(configUrl.getExamDetailsList, 'get', config, API_FLAG),
   submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
-  startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG)
+  startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
+  unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG)
 }
