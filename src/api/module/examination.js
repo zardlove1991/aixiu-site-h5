@@ -1,4 +1,4 @@
-import { createAPI } from '@/api'
+import { createAPI, creataUser } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -12,6 +12,8 @@ let QCloundUrl = {
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
+  getSmartCityUser: 'member/signature', // 智慧城市登录
+  getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
   getWeixinInfo: 'client/wechat/js/sign', // 获得微信公众号信息
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
@@ -30,6 +32,8 @@ let configUrl = {
 }
 
 export default {
+  getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
+  getXiuzanUser: config => creataUser(configUrl.getXiuzanUser, 'GET', config, API_FLAG),
   getTencentToken: config => createAPI(configUrl.getTencentToken, 'GET', config, API_FLAG),
   getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),
   getQcloudVideoInfo: config => createAPI(configUrl.getQcloudVideoInfo, 'GET', config, API_FLAG),

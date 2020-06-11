@@ -1,17 +1,19 @@
 import axios from 'axios'
 import apiConfig from './config'
+import { oauth } from '@/utils/userinfo'
+import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
 const instance = axios.create({
   timeout: apiConfig.timeout
 })
-
 // 请求前添加的过滤器
 instance.interceptors.request.use((config) => {
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
+  config.params.member = STORAGE.get('userinfo')
   return config
 }, error => Promise.reject(error))
 
@@ -42,11 +44,18 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
+  if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
+    STORAGE.clear()
+    oauth((res) => {
+      window.$vue.$route.replace(window.$vue.$route.fullPath)
+    })
+  }
   let curErrorCode = data.error || data.error_code
   let curErrorMsg = data.message || data.error_message
   dealError({ code: curErrorCode, msg: curErrorMsg })
   // 判断是否当前是否过期
   if (data.error_code > 0) {
+    console.log('data.error_code', data.error_code)
     data.status = res.status
     if (data.error_code === 403) {
       return Promise.reject(data)
@@ -60,7 +69,6 @@ instance.interceptors.response.use((res, xhr) => {
   let res = error.response
   console.log('error 接口请求错误信息', error)
   if (res) {
-    console.log('error res', res)
     if (res.data) {
       let curErrorCode = res.data.error || res.data.error_code
       let curErrorMsg = res.data.message || res.data.error_message
@@ -106,6 +114,16 @@ const getUrl = (url, config = {}, api = 'API') => {
 }
 
 export const createAPI = (url, method, config = {}, api) => {
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
+export const creataUser = (url, method, config = {}, api) => {
+  api = 'USER'
   return instance({
     url: getUrl(url, config, api),
     method,

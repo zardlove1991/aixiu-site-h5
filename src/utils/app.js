@@ -36,6 +36,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['API41']
       break
     }
+    case 'USER': {
+      host = globalConfig['USER']
+      break
+    }
     default: {
       host = globalConfig['API']
     }

@@ -44,24 +44,7 @@ export default {
   methods: {
     async initWeixinInfo () {
       // 调用微信信息认证
-      try {
-        let originUrl = window.location.href
-        let url = originUrl.includes('#') ? originUrl.split('#')[0] : originUrl
-        // IOS只需要认证第一次页面的地址的url
-        if (!window.entryUrl) window.entryUrl = url
-        if (isIOSsystem()) url = window.entryUrl
-        // 请求签名
-        let weinxinInfo = await this.getWeixinInfo({ url })
-        // 判断有appid的时候采取执行认证
-        if (weinxinInfo.appId) {
-          // 配置微信信息
-          wx.config(weinxinInfo)
-          // 执行错误操作
-          wx.error()
-        }
-      } catch (err) {
-        console.log('mixin中初始化微信的方法报错', err)
-      }
+      console.log(123)
     },
     initReirectParams () {
       let redirectParams = this.redirectParams || {}

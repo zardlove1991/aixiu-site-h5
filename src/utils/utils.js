@@ -135,6 +135,22 @@ let vender = (() => {
   return false
 })()
 
+/*
+ * 获取随机串
+ * */
+
+export const randomNum = (len) => {
+  var salt = ''
+  for (var i = 0; i < len; i++) {
+    let tmp = parseInt(Math.floor(Math.random() * 10))
+    if (!tmp) {
+      tmp = '2'
+    }
+    salt += tmp
+  }
+  return salt
+}
+
 /* 添加style前缀 */
 export function prefixStyle (style) {
   console.log('** 浏览器CSS厂商标识 **', vender)
