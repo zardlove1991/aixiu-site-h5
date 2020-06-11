@@ -13,7 +13,9 @@ instance.interceptors.request.use((config) => {
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
-  config.params.member = STORAGE.get('userinfo')
+  if (STORAGE.get('userinfo')) {
+    config.params.member = STORAGE.get('userinfo')
+  }
   return config
 }, error => Promise.reject(error))
 
@@ -47,7 +49,7 @@ instance.interceptors.response.use((res, xhr) => {
   if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
     STORAGE.clear()
     oauth((res) => {
-      window.$vue.$route.replace(window.$vue.$route.fullPath)
+      window.location.reload()
     })
   }
   let curErrorCode = data.error || data.error_code

@@ -25,7 +25,7 @@ let wechat = {
     }).then((res) => {
       if (res && res.id) {
         STORAGE.set('userinfo', res)
-        console.log(STORAGE.get('userinfo'), 'userinfo')
+        cbk(res)
       }
     })
   }
@@ -33,7 +33,7 @@ let wechat = {
 
 export const oauth = (cbk) => {
   wechat.authorize((code, info) => {
-    if (code > 0) {
+    if (code > 0 && !STORAGE.get('userinfo')) {
       wechat.h5Signature(info, cbk)
     }
   })
