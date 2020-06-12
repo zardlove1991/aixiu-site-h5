@@ -6,8 +6,6 @@ let wechat = {
   authorize: (cbk) => {
     let host = 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize'
     let url = host + '?appid=dingoajqqxk2c5i3afixco&redirect_uri=http://xzh5.hoge.cn/bridge/index.html?backUrl=' + encodeURIComponent(window.location.href) + '&response_type=code&scope=snsapi_login&state=' + randomNum(6)
-    console.log(url)
-    console.log(escape(window.location.href))
     if (window.$vue.$route.query.code) {
       cbk(1, window.$vue.$route.query.code)
     } else {
