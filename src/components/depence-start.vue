@@ -25,7 +25,6 @@
               <div class="title">测评时长</div>
             </div>
           </div>
-
           <div class="row">
             <div class="row-icon row-juanzi"></div>
             <div>
@@ -33,7 +32,6 @@
               <div class="title">试题数量</div>
             </div>
           </div>
-          
           <!-- <div class="row">
             <span class="title">考试难度</span>
             <div class="desc-wrap">
