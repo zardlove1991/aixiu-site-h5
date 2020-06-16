@@ -20,7 +20,6 @@
         </div>
       </div>
       <!--进度条展示-->
-      
     </div>
     <!--交卷的弹窗-->
     <my-model
@@ -240,7 +239,6 @@ export default {
           align-items: center;
         }
       }
-      
       .right-wrap{
         margin-right: px2rem(37px);
         .subject-tip-wrap{
