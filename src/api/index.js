@@ -16,6 +16,9 @@ instance.interceptors.request.use((config) => {
   if (STORAGE.get('userinfo')) {
     config.params.member = STORAGE.get('userinfo')
   }
+  if (STORAGE.get('guid')) {
+    config.params.guid = STORAGE.get('guid')
+  }
   return config
 }, error => Promise.reject(error))
 
@@ -46,7 +49,7 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
+  if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorCode === 'EXPIRE_SIGNATURE' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
     STORAGE.clear()
     oauth((res) => {
       window.location.reload()

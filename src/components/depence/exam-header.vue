@@ -4,22 +4,23 @@
       <!--主体内容展示-->
       <div class="header-content">
         <div class="left-wrap">
-          <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
+          <div class="subject-tip-wrap" @click.stop="$emit('showlist')">
+            <div class="progress-bar-wrap" ref="headerProgressBar">
+                <div class="progress" ref="headerProgress"></div>
+              </div>
+            <div class="tip-count">
+              <span class="current-num">{{currentIndex}} </span><span class="list-num"> / {{list.length}}</span>
+            </div>
+          </div>
         </div>
         <div class="right-wrap">
           <!--当前题目进度提示-->
-          <div class="subject-tip-wrap" @click.stop="$emit('showlist')">
-            <div class="tip-img"></div>
-            <div class="tip-count">{{`${currentIndex}/${list.length}`}}</div>
-          </div>
           <div class="line"></div>
           <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div>
         </div>
       </div>
       <!--进度条展示-->
-      <div class="progress-bar-wrap" ref="headerProgressBar">
-        <div class="progress" ref="headerProgress"></div>
-      </div>
+      
     </div>
     <!--交卷的弹窗-->
     <my-model
@@ -234,7 +235,12 @@ export default {
           @include font-dpr(14px);
           @include font-color('tipColor');
         }
+        .subject-tip-wrap{
+          display: flex;
+          align-items: center;
+        }
       }
+      
       .right-wrap{
         margin-right: px2rem(37px);
         .subject-tip-wrap{
@@ -272,18 +278,17 @@ export default {
       }
     }
     .progress-bar-wrap{
-      position: absolute;
-      left:0;
-      right: 0;
-      bottom: 0;
-      height: px2rem(2px);
+      position: relative;
+      height: px2rem(8px);
+      width:px2rem(140px);
+      margin-right:px2rem(22px);
       @include bg-color('lineColor');
       .progress{
         position: absolute;
         top: 0;
         left:0;
         width: 0;
-        height: px2rem(4px);
+        height: px2rem(8px);
         @include bg-color('themeColor');
       }
     }
@@ -313,6 +318,10 @@ export default {
     .desc{
       text-align: center;
     }
+  }
+  .list-num{
+    color:#3f3f3f;
+    display:inline-block;
   }
 }
 </style>

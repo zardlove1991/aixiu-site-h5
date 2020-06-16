@@ -68,9 +68,7 @@
         <div class="prev-wrap"
           :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
           @click.stop="changeSubjectIndex('sub')">
-          <div class="prev-arrow-wrap">
-            <i class="examfont prev-arrow">&#xe713;</i>
-          </div>
+          上一题
           <!-- <div class="prev-text">上一题</div> -->
         </div>
         <!--语音问答题录音按钮区域-->
@@ -101,15 +99,11 @@
           v-show="!isShowSubmitBtn"
           :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
           @click.stop="changeSubjectIndex('add')">
-          <div class="next-arrow-wrap">
-            <i class="examfont next-arrow">&#xe713;</i>
-          </div>
+           下一题
           <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-          <div class="next-arrow-wrap">
-            <i class="examfont next-submit">&#xe718;</i>
-          </div>
+            下一题
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
@@ -233,7 +227,6 @@ export default {
           query: { ...redirectParams }
         })
       } catch (err) {
-        console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },

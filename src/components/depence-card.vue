@@ -95,6 +95,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
+import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 
 export default {
@@ -149,8 +150,8 @@ export default {
       let examId = this.id
       try {
         // 请求试卷和答题卡信息
-        await this.getExamDetail({id: examId})
-        await this.getAnswerCardInfo({id: examId})
+        await this.getExamDetail({id: examId, guid: STORAGE.get('guid')})
+        await this.getAnswerCardInfo({id: examId, guid: STORAGE.get('guid')})
         // 判断当前用户考试是否在进行中
         let examInfo = this.examInfo
         if (examInfo.person_status === 2) this.isShowOpsPage = true

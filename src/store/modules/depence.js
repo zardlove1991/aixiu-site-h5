@@ -336,7 +336,9 @@ const actions = {
   START_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId || payload.id
-      let params = {}
+      let params = {
+        guid: STORAGE.get('guid')
+      }
       // 添加重新开始考试的接口
       if (payload.restart) params.restart = 1
       // 开始请求数据

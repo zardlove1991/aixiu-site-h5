@@ -51,7 +51,7 @@
           </div>
         </div>
         <!--底部-->
-        <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div>
+        <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
     </div>
     <!--底部按钮-->
@@ -59,7 +59,7 @@
     <button class="start-exambtn" @click.stop="goExamPage">开始答题</button>
     </div>
     <!--底部已考按钮组-->
-    <div v-else class="reset-exam-btns" :class="{'center': !examInfo.restart}">
+    <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
       <button class="show" @click.stop="jumpGradePage">查看成绩</button>
     </div>
@@ -69,6 +69,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
+import STORAGE from '@/utils/storage'
 import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
@@ -100,6 +101,7 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
+        STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
       }
@@ -324,7 +326,6 @@ export default {
     padding: 0 px2rem(30px) px2rem(30px);
     width: 100%;
     box-sizing: border-box;
-    @include bg-color('tipBgColor');
     &.center{
       justify-content: center;
     }

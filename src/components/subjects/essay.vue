@@ -1,11 +1,10 @@
 <template lang="html">
   <div class="subject-essay-wrap">
     <!--题目的标题-->
-    <div class="subject-type-wrap">
-      <h3 class="subject-type">
-        <span>{{data.typeTip}}</span>
+    <div class="subject-type-wrap" v-if="mode === 'analysis' && data.type === 'essay' && data.remark.score">
+      <!-- <h3 class="subject-type">
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
-      </h3>
+      </h3> -->
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
@@ -14,6 +13,7 @@
     <p class="subject-title">
       <span>{{`${currentSubjectIndex+1}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
     </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
@@ -30,11 +30,10 @@
     </div>
     <!--题目的内容区域-->
     <template v-if="essayTempAnswerInfo">
-      <h4 class="title-tip">问答</h4>
       <!--表单编辑区域-->
       <div class="from-wrap">
         <div class="content-wrap" v-show="renderType === 'exam'">
-          <textarea class="content" placeholder="请输入答案" maxlength="300"
+          <textarea class="content" placeholder="点击输入你的答案" maxlength="300"
             :value = "essayTempAnswerInfo.text"
             @input="uploadText"
             @blur="dealKeyboard"
