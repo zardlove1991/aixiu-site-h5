@@ -57,14 +57,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        flex: 0 0 px2rem(54px);
-        width: px2rem(54px);
-        height: px2rem(54px);
+        width: px2rem(40px);
+        height: px2rem(40px);
         border-radius: 50%;
+        border:1px solid #cccccc;
         margin-right: px2rem(40px);
-        @include font-dpr(14px);
         @include bg-color('bgColor');
-        @extend .box-shadow;
         &.active{
           @include font-color('bgColor');
           @include bg-color('themeColor');

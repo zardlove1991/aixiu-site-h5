@@ -14,7 +14,10 @@ img{
 .box-shadow{
   box-shadow: 0 0 px2rem(30px) rgba(0,0,0,0.1);
 }
-
+.all-score{
+  color:#3f3f3f;
+  font-size:px2rem(24px);
+}
 // 去除所有滚动条显示
 ::-webkit-scrollbar {
   width: 0 !important ;

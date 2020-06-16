@@ -1,11 +1,10 @@
 <template lang="html">
   <div class="subject-noraml-wrap">
     <!--题目的标题-->
-    <div class="subject-type-wrap">
-      <h3 class="subject-type">
-        <span>{{data.typeTip}}</span>
-        <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
-      </h3>
+    <div class="subject-type-wrap" v-if="mode === 'analysis' && data.type === 'essay' && data.remark.score">
+      <!-- <h3 class="subject-type">
+        <span></span>
+      </h3> -->
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
@@ -14,6 +13,7 @@
     <p class="subject-title">
       <span>{{`${currentSubjectIndex+1}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
     </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
@@ -32,8 +32,8 @@
     <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
       <!--每个选择项描述-->
       <div class="select-tip-wrap" @click.stop="selectTouchEnd(optIndex)">
-        <div class="select-tip" :class="{active: optItem.active , error: optItem.error}">{{optItem.selectTip}}</div>
-        <div class="select-desc">{{optItem.name}}</div>
+        <div class="select-tip" :class="{active: optItem.active , error: optItem.error}"></div>
+        <div class="select-desc">{{optItem.selectTip}}. {{optItem.name}}</div>
       </div>
       <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
         <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
