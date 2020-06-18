@@ -68,12 +68,18 @@
         </div>
       </div>
     </div>
+    <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+      立即交卷
+    </div>
     <!--题号情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
+    <div class="answer-list-info" v-show="isShowSubjectList" >
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->
-          <div class="title">答题卡</div>
+          <div class="title">
+            <div class="title-name">答题卡</div>
+            <div class="title-closr" @click.stop="toggetSubjectList">x</div>
+          </div>
           <!--答题列表-->
           <div class="info-list-wrap">
             <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
