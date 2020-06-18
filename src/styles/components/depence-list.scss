@@ -1,5 +1,7 @@
 @import "@/styles/index.scss";
-
+.denpncelist-page{
+  @include bg-color('bgColor');
+}
 .denpncelist-wrap{
   position: relative;
   width: 100%;
