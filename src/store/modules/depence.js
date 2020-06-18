@@ -252,12 +252,10 @@ const actions = {
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
-
       if (!id) {
         Toast('没有试题ID,请求出错')
         return
       }
-
       let params = {
         examination_id: id,
         page: pageNum || 1,
@@ -520,10 +518,9 @@ const actions = {
     commit('SET_CURRENT_SUBJECT_INDEX', index)
   },
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
-    let index = state.currentSubjectIndex
-    let selectIndex = payload
+    let selectIndex = payload.selectIndex
     let examList = [...state.examList]
-    let subjectInfo = examList[index]
+    let subjectInfo = examList[payload.index - 1]
     let renderType = state.renderType
     // 如果是解析的话直接不可以添加选项状态
     if (renderType === 'analysis') return
@@ -540,7 +537,7 @@ const actions = {
         return item
       })
     }
-    examList.splice(index, 1, subjectInfo)
+    examList.splice(payload.index - 1, 1, subjectInfo)
     // 更新试题列表
     commit('SET_EXAMLIST', examList)
   },

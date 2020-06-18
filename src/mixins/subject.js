@@ -175,10 +175,14 @@ export default {
         console.log(err)
       }
     },
-    async selectAnswer (selectIndex) {
-      let subject = this.currentSubjectInfo
+    async selectAnswer (selectIndex, index) {
+      let subject = this.examList[index - 1]
       try {
-        await this.addSelectActiveFlag(selectIndex)
+        let data = {
+          'selectIndex': selectIndex,
+          'index': index
+        }
+        await this.addSelectActiveFlag(data)
         // 保存答题记录 这边主要针对单选题和判断题 自动保存
         if (['judge', 'radio'].includes(subject.type)) {
           await this.saveAnswerRecord(subject)
@@ -231,13 +235,13 @@ export default {
         this.isShowOpsModel = false
       }, 520)
     },
-    selectTouchEnd (selectIndex) {
+    selectTouchEnd (selectIndex, index) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
       selectEl.style.backgroundColor = '#f9f9f9'
       setTimeout(() => {
         selectEl.style.backgroundColor = ''
         // 调用选择答案
-        this.selectAnswer(selectIndex)
+        this.selectAnswer(selectIndex, index)
       }, 100)
     },
     _triggerFileUpload () {
