@@ -21,46 +21,6 @@
         </subject-content>
       </div>
     </div>
-    <!--题号情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
-      <transition name="up" mode="out-in">
-        <div class="info-wrap"  v-show="isShowSubjectList">
-          <!--头部标题-->
-          <div class="title">题号</div>
-          <!--答题列表-->
-          <div class="info-list-wrap">
-            <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
-          </div>
-        </div>
-      </transition>
-    </div>
-    <!--跳转成绩单页面-->
-    <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
-      <div class="bg"></div>
-      <div class="tip">成绩单</div>
-    </div>
-    <!--试题中断弹窗-->
-    <my-model
-      :show="isShowSuspendModel"
-      :isLock="true"
-      doneText="重新考试"
-      cancelText="放弃并交卷"
-      @confirm="confirmSuspendModel"
-      @cancel="cancelSuspendModel">
-      <div class="suspend-model" slot="content">
-        <div class="tip-bg"></div>
-        <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
-      </div>
-    </my-model>
-    <!--当前未做答题目弹窗-->
-    <transition name="fade" mode="out-in">
-      <div class="answer-ops-model" v-show="isShowOpsModel">
-        <div class="ops-bg"></div>
-        <div class="ops-tip">跳过本题,可稍后作答</div>
-      </div>
-    </transition>
-    <!--遮罩包裹-->
     <div class="fixed-btn-wrap">
       <!--底部跳转按钮-->
       <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
@@ -103,11 +63,51 @@
           <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-            下一题
+            立即交卷
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
     </div>
+    <!--题号情况展示-->
+    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
+      <transition name="up" mode="out-in">
+        <div class="info-wrap"  v-show="isShowSubjectList">
+          <!--头部标题-->
+          <div class="title">题号</div>
+          <!--答题列表-->
+          <div class="info-list-wrap">
+            <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
+          </div>
+        </div>
+      </transition>
+    </div>
+    <!--跳转成绩单页面-->
+    <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">
+      <div class="bg"></div>
+      <div class="tip">成绩单</div>
+    </div>
+    <!--试题中断弹窗-->
+    <my-model
+      :show="isShowSuspendModel"
+      :isLock="true"
+      doneText="重新考试"
+      cancelText="放弃并交卷"
+      @confirm="confirmSuspendModel"
+      @cancel="cancelSuspendModel">
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">Ops，考试中断了</div>
+        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
+      </div>
+    </my-model>
+    <!--当前未做答题目弹窗-->
+    <transition name="fade" mode="out-in">
+      <div class="answer-ops-model" v-show="isShowOpsModel">
+        <div class="ops-bg"></div>
+        <div class="ops-tip">跳过本题,可稍后作答</div>
+      </div>
+    </transition>
+    <!--遮罩包裹-->
   </div>
 </template>
 

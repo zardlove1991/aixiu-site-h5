@@ -55,6 +55,7 @@
       box-sizing: border-box;
       .select-tip{
         display: flex;
+        position:relative;
         justify-content: center;
         align-items: center;
         width: px2rem(40px);
@@ -65,11 +66,52 @@
         @include bg-color('bgColor');
         &.active{
           @include font-color('bgColor');
-          @include bg-color('themeColor');
+          &:after{
+            content: '';
+            width:px2rem(20px);
+            height:px2rem(20px);
+            border-radius:50%;
+            -webkit-border-radius:50%;
+            -moz-border-radius:50%;
+            -ms-border-radius:50%;
+            -o-border-radius:50%;
+            @include bg-color('themeColor');
+          }
         }
         &.error{
           @include font-color('bgColor');
           @include bg-color('errorColor');
+        }
+      }
+      .select-tip-checkbox{
+        width:px2rem(40px);
+        height:px2rem(40px);
+        border:1px solid #cccccc;
+        border-radius:5px;
+        -webkit-border-radius:5px;
+        -moz-border-radius:5px;
+        -ms-border-radius:5px;
+        -o-border-radius:5px;
+        margin-right: px2rem(40px);
+        &.active{
+          @include bg-color('themeColor');
+          color:#fff;
+          position:relative;
+          text-align: center;
+          &:after{
+            content:'';
+            position: absolute;
+            left:50%;
+            top:50%;
+            margin-left:px2rem(-9px);
+            margin-top:px2rem(-9px);
+            width:px2rem(18px);
+            height:px2rem(18px);
+            line-height:px2rem(40px);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            @include img-retina('~@/assets/common/duihao@2x.png','~@/assets/common/duihao@3x.png', 100%,100%);
+          }
         }
       }
       .select-desc{

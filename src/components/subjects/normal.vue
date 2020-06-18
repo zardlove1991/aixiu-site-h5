@@ -32,7 +32,8 @@
     <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
       <!--每个选择项描述-->
       <div class="select-tip-wrap" @click.stop="selectTouchEnd(optIndex)">
-        <div class="select-tip" :class="{active: optItem.active , error: optItem.error}"></div>
+        <div class="select-tip" v-if="data.type === 'radio'" :class="{active: optItem.active , error: optItem.error}"></div>
+        <div class="select-tip-checkbox" v-if="data.type === 'checkbox'" :class="{active: optItem.active , error: optItem.error}"></div>
         <div class="select-desc">{{optItem.selectTip}}. {{optItem.name}}</div>
       </div>
       <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
