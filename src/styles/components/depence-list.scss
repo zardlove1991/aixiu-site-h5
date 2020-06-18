@@ -53,15 +53,13 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: px2rem(900px);
+      height: px2rem(420px);
       .title{
-        padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
         box-sizing: border-box;
-        border-radius: px2rem(10px) px2rem(10px) 0 0;
+        font-size:px2rem(28px);
+        padding:px2rem(40px) px2rem(44px) 0;
         @include bg-color('bgColor');
-        @include font-dpr(15px);
         @include font-color('tipColor');
-        @include border('bottom',1px,solid,'lineColor');
       }
       .info-list-wrap{
         width: 100%;

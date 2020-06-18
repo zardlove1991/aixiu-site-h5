@@ -73,7 +73,7 @@
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->
-          <div class="title">题号</div>
+          <div class="title">答题卡</div>
           <!--答题列表-->
           <div class="info-list-wrap">
             <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>

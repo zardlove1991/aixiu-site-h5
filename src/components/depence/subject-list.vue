@@ -180,21 +180,22 @@ export default {
           @include font-color('bgColor');
         }
         &.examActive{
-          @include bg-color('titleColor');
-          @include font-color('bgColor');
+          @include border('all',1px,solid,'themeColor');
+          @include font-color('themeColor');
+          @include bg-color('bgColor');
         }
       }
       &.disabled{
-        @include bg-color('bgGrayColor');
+        @include bg-color('bgColor');
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
         &.analysisActive{
-          @include bg-color('disabledColor');
-          @include font-color('bgColor');
+          @include bg-color('bgColor');
+          @include font-color('disabledColor');
         }
         &.examActive{
-          @include bg-color('disabledColor');
-          @include font-color('bgColor');
+          @include bg-color('bgColor');
+          @include font-color('themeColor');
         }
       }
       &.success{

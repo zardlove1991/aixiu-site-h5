@@ -16,7 +16,7 @@
         <div class="right-wrap">
           <!--当前题目进度提示-->
           <!-- <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div> -->
-          <div>答题卡</div>
+          <div @click.stop="$emit('showlist')">答题卡</div>
         </div>
       </div>
       <!--进度条展示-->
