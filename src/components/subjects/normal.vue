@@ -2,16 +2,13 @@
   <div class="subject-noraml-wrap">
     <!--题目的标题-->
     <div class="subject-type-wrap" v-if="mode === 'analysis' && data.type === 'essay' && data.remark.score">
-      <!-- <h3 class="subject-type">
-        <span></span>
-      </h3> -->
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
         class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
     </div>
     <p class="subject-title">
-      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span>{{`${data.index}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
       <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
     </p>

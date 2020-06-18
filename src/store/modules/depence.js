@@ -26,6 +26,7 @@ const getters = {
   examList (state) {
     let list = state.examList
     list.map((item, index) => {
+      item.index = index + 1
       item.typeTip = METHODS.getSubjetType(item.type)
       // 添加一个正确信息选项的对象
       item.correntInfo = []

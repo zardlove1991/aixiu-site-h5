@@ -20,8 +20,7 @@ export default {
 
 <style lang="scss">
 #app{
-  width: 100%;
-  height: 100vh;
+  height: calc(100vh - 40px);
   overflow: scroll;
   -webkit-overflow-scrolling:touch;
   &.hide{

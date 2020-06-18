@@ -140,10 +140,17 @@ export default {
       let examId = this.id
       let redirectParams = this.redirectParams
       // 去往查看考试概况页面
-      this.$router.push({
-        path: `/depencelist/${examId}`,
-        query: { rtp: 'exam', ...redirectParams }
-      })
+      if (this.examInfo.limit.is_page_submit) {
+        this.$router.push({
+          path: `/alllist/${examId}`,
+          query: { rtp: 'exam', ...redirectParams }
+        })
+      } else {
+        this.$router.push({
+          path: `/depencelist/${examId}`,
+          query: { rtp: 'exam', ...redirectParams }
+        })
+      }
     },
     jumpGradePage () {
       let examId = this.id

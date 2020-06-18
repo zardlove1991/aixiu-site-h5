@@ -8,9 +8,17 @@
     position: relative;
     width: 100%;
     min-height: calc(100% - 50px);
+    padding-bottom:px2rem(40px);
     box-sizing: border-box;
+    @include bg-color('bgColor');
+    border-radius: px2rem(10px);
+    -webkit-border-radius: px2rem(10px);
+    -moz-border-radius: px2rem(10px);
+    -ms-border-radius: px2rem(10px);
+    -o-border-radius: px2rem(10px);
     .list-item-wrap{
       width: 100%;
+      margin-bottom:px2rem(20px);
       @include font-dpr(16px);
       @include font-color('titleColor');
     }
@@ -139,6 +147,22 @@
       @include font-color('activeColor');
     }
   }
+  .sumbit-area{
+    @include bg-color('themeColor');
+    width:px2rem(305px);
+    height:px2rem(90px);
+    text-align: center;
+    color:#fff;
+    line-height:px2rem(90px);
+    margin:px2rem(50px) auto;
+    margin-bottom:0;
+    font-size:px2rem(32px);
+    border-radius:5px ;
+    -webkit-border-radius:5px ;
+    -moz-border-radius:5px ;
+    -ms-border-radius:5px ;
+    -o-border-radius:5px ;
+}
   .sumbit-btn{
     width:100%;
     @include font-color('themeColor');
