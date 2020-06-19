@@ -442,7 +442,7 @@ const actions = {
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
-        API.saveSubjectRecords({ query: { id }, data }),
+        API.saveSubjectRecords({ query: { id }, data })
         // API.submitExam({ query: { id } })
       ]).then(([saveInfo, submitInfo]) => {
         // 结束
