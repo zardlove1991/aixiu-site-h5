@@ -11,7 +11,7 @@
         class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
     </div>
     <p class="subject-title">
-      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span>{{`${data.index}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
       <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
     </p>

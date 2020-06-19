@@ -63,7 +63,7 @@ export default {
       // 检查是否有特殊类型提醒的提交操作
       this.sendSaveRecordOption(subject)
       // 清空当前页面的视频组件信息
-      if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
+      if (this.curSubjectVideo && this.curSubjectVideos.length) this.setCurSubjectVideos([])
     },
     essayTempAnswerInfo (newAnwer) {
       console.log('当前问答题触发的临时提交数据', newAnwer)

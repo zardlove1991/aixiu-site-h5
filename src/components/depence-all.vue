@@ -1,13 +1,13 @@
 <template lang="html">
   <div class="denpncelist-wrap" v-if="examList.length">
     <!--头部组件-->
-    <!-- <exam-header v-if="renderType === 'exam'"
+    <exam-header v-if="renderType === 'exam'"
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
       @timeup="toggleSuspendModel"
       @showlist="toggetSubjectList">
-    </exam-header> -->
+    </exam-header>
     <!--主体试题渲染-->
     <div class="qtnlist-wrap">
       <div class="list-item-wrap" v-for="item in examList" :key="item.id">
@@ -99,8 +99,8 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos',
-      'isShowSubjectList'
+      'examId', 'examInfo', 'curSubjectVideos', 'answerList',
+      'isShowSubjectList', 'subjectAnswerInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -161,7 +161,6 @@ export default {
       // 提交试卷
       try {
         await this.sendSaveRecordOption(subject) // 检查多选考试的提交
-        await this.unlockCorse() // 解锁短书课程
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -181,6 +180,7 @@ export default {
       })
     },
     submitExam () {
+      this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     toggleSuspendModel () {
@@ -206,14 +206,13 @@ export default {
       }
     },
     checkAnswerMaxQuestionId () {
-      let examInfo = this.examInfo
-      let answerMaxQuestionId = examInfo.answer_max_question_id
       let renderType = this.renderType
       // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam' && answerMaxQuestionId) {
+      if (renderType === 'exam') {
         let list = this.examList
-        let index = list.findIndex(item => item.id === answerMaxQuestionId)
-        if (index >= 0) this.changeSubjectIndex(index)
+        list.forEach((item, index) => {
+          this.changeSubjectIndex(index)
+        })
       }
     },
     _dealShowBtn (flag) {
@@ -232,6 +231,7 @@ export default {
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',

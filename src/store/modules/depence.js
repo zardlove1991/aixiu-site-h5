@@ -16,6 +16,7 @@ const state = {
   isShowModelThumb: false, // 判断界面是否有弹窗展示
   isShowSubjectList: false, // 是否显示考试答题缩率展示
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
+  answerList: [], // 全部答题信息
   oralAnswerInfo: {}, // 保存语音问答题中的信息
   sortAnswerInfo: {}, // 保存排序的题目的信息
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
@@ -81,6 +82,7 @@ const getters = {
   isShowModelThumb: state => state.isShowModelThumb,
   isShowSubjectList: state => state.isShowSubjectList,
   essayAnswerInfo: state => state.essayAnswerInfo,
+  answerList: state => state.answerList,
   oralAnswerInfo: state => state.oralAnswerInfo,
   sortAnswerInfo: state => state.sortAnswerInfo,
   blankAnswerInfo: state => state.blankAnswerInfo,
@@ -88,6 +90,19 @@ const getters = {
 }
 
 const mutations = {
+  SET_ANSWER_LIST (state, payload) {
+    let list = state.answerList
+    let show = true
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].question_id === payload.question_id && list[i].options_id) {
+        list[i] = payload
+        show = false
+      }
+    }
+    if (show && payload.question_id && payload.options_id) {
+      list.push(payload)
+    }
+  },
   SET_RENDER_TYPE (state, payload = 'exam') {
     state.renderType = payload
   },
@@ -119,6 +134,23 @@ const mutations = {
     state.currentSubjectIndex = payload
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
+    let list = state.answerList
+    let show = true
+    for (let key in payload) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].question_id === key) {
+          list[i].value = payload[key]
+          show = false
+        }
+      }
+      if (show) {
+        let params = {
+          'question_id': key,
+          'values': payload[key]
+        }
+        list.push(params)
+      }
+    }
     state.essayAnswerInfo = Object.assign({}, payload)
   },
   SET_ORAL_ANSWER_INFO (state, payload) {
@@ -411,7 +443,7 @@ const actions = {
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
         API.saveSubjectRecords({ query: { id }, data }),
-        API.submitExam({ query: { id } })
+        // API.submitExam({ query: { id } })
       ]).then(([saveInfo, submitInfo]) => {
         // 结束
         Indicator.close()
@@ -481,6 +513,7 @@ const actions = {
         blankAnswerInfo
       }, optionFlag)
       // 更改状态
+      // commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
       if (isEmpty) subjectAnswerInfo[subject.id] = false
       else subjectAnswerInfo[subject.id] = true
@@ -491,6 +524,7 @@ const actions = {
         this.changeAnswerTimer = setTimeout(() => {
           // 更新当前的回答题目的信息
           commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
+          commit('SET_ANSWER_LIST', result.params)
           // 返回数据
           resolve(result)
         }, 300)
