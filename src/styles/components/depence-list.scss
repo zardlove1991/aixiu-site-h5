@@ -3,9 +3,8 @@
   @include bg-color('bgColor');
 }
 .denpncelist-wrap{
-  position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 34px);
   .qtnlist-wrap{
     position: relative;
     width: 100%;
@@ -171,7 +170,7 @@
     text-align:center;
     position:absolute;
     left:0;
-    bottom:px2rem(90px);
+    bottom:px2rem(94px);
     font-size:px2rem(32px);
   }
   .fixed-btn-wrap{

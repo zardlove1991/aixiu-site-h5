@@ -1,6 +1,9 @@
 <template lang="html">
   <div class="exam-header-wrap">
-    <div class="header-info-wrap">
+    <div class="time-wrap">
+      <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
+    </div>
+    <div class="header-info-wrap" v-if="type == 'list'">
       <!--主体内容展示-->
       <div class="header-content">
         <div class="left-wrap">
@@ -57,6 +60,10 @@ import { formatTimeBySec } from '@/utils/utils'
 export default {
   name: 'exam-header',
   props: {
+    type: {
+      type: String,
+      default: () => {return 'list'}
+    },
     list: {
       type: Array,
       default: () => []
@@ -211,11 +218,24 @@ export default {
 
 .exam-header-wrap{
   width: 100%;
-  height: px2rem(100px);
+  .time-wrap{
+    position:absolute;
+    right:0;
+    bottom:50px;
+    @include bg-color('themeColor');
+    border-radius: px2rem(30px) 0 0 px2rem(30px);
+    padding-left:px2em(20px);
+    padding-right:px2rem(10px);
+    color:#fff;
+    height:px2rem(64px);
+    line-height:px2rem(64px);
+    font-size:px2rem(28px);
+    z-index:100;
+  }
   .header-info-wrap{
     position: relative;
     width: 100%;
-    height: 100%;
+    padding-top:px2rem(40px);
     .header-content{
       display: flex;
       align-items: center;

@@ -23,6 +23,7 @@ export default {
   height: calc(100vh - 40px);
   overflow: scroll;
   -webkit-overflow-scrolling:touch;
+  border-radius: 12px;
   &.hide{
     overflow: hidden;
   }

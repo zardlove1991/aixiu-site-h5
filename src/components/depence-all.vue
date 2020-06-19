@@ -3,6 +3,7 @@
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
+      type="all"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
       @timeup="toggleSuspendModel"
