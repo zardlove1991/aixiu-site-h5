@@ -1,11 +1,16 @@
 @import "@/styles/index.scss";
 .denpncelist-wrap{
   width: 100%;
-  min-height: calc(100vh - 34px);
   .denpncelist-page{
     @include bg-color('bgColor');
     height:100%;
-  }
+    min-height: calc(100vh - 34px);
+    border-radius:10px ;
+    -webkit-border-radius:10px ;
+    -moz-border-radius:10px ;
+    -ms-border-radius:10px ;
+    -o-border-radius:10px ;
+}
   .tip-btn{
     width:px2rem(305px);
     height:px2rem(90px);
@@ -47,11 +52,11 @@
     overflow: scroll;
     box-sizing: border-box;
     @include bg-color('bgColor');
-    border-radius: px2rem(10px);
-    -webkit-border-radius: px2rem(10px);
-    -moz-border-radius: px2rem(10px);
-    -ms-border-radius: px2rem(10px);
-    -o-border-radius: px2rem(10px);
+    border-radius: px2rem(20px);
+    -webkit-border-radius: px2rem(20px);
+    -moz-border-radius: px2rem(20px);
+    -ms-border-radius: px2rem(20px);
+    -o-border-radius: px2rem(20px);
     .list-item-wrap{
       width: 100%;
       margin-bottom:px2rem(20px);
