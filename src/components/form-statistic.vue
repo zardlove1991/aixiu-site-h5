@@ -251,6 +251,7 @@ $font-weight: 400;
             .btn{
                 width: 75px;
                 height: 29px;
+                text-align: center;
                 border: 1px solid #dbdbdb;
                 font-size: 12px;
                 font-family: $font-family;
