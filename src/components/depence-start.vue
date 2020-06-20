@@ -1,9 +1,9 @@
 <template lang="html">
   <!--当前开始考试页面-->
-  <div class="depence-start-wrap" v-if="examInfo">
+  <div class="depence-start-wrap depence-wrap" v-if="examInfo">
     <div class="header-top" v-if="examInfo.person_status !== 0">
       <div class="end-tips">测评已提交</div>
-      <div class="to-score">查看测评结果</div>
+      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <div class="header-normal" v-else>
       <div class="end-tips">答题规范:每个用户最多提交一次</div>
@@ -103,6 +103,12 @@ export default {
     this.initStartInfo()
   },
   methods: {
+    toStatistic () {
+      let examId = this.id
+      this.$router.push({
+        path: `/statistic/${examId}`
+      })
+    },
     async initStartInfo () {
       let examId = this.id
       try {

@@ -4,9 +4,9 @@
     <div class="header-tip flex-v-center flex-between">
         <span class="icon-wrap flex-v-center">
             <i class="tips-icon"></i>
-            <span class="tips-title">表单已填写</span>
+            <span class="tips-title">测评已提交</span>
         </span>
-        <a :href="backurl" class="back-btn">返回表单页</a>
+        <div @click="backUrl" class="back-btn">返回试题页</div>
     </div>
     <div class="header-bg">
         <div class="title">表单统计结果</div>
@@ -88,7 +88,6 @@ export default {
   props: ['params'],
   data () {
     return {
-      backurl: '',
       showType: 'pie',
       colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
@@ -98,6 +97,12 @@ export default {
     }
   },
   methods: {
+    backUrl () {
+      let examId = this.$route.params.id
+      this.$router.push({
+        path: `/depencestart/${examId}`
+      })
+    },
     async getResultData () {
       const member = decodeURIComponent(this.params.member)
       const id = this.params.id
@@ -129,7 +134,6 @@ export default {
   },
   created () {
     this.getResultData()
-    this.backurl = this.params.backurl
   }
 }
 </script>

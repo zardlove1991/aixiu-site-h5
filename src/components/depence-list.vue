@@ -1,5 +1,6 @@
 <template lang="html">
-  <div class="denpncelist-wrap denpncelist-page" v-if="examList.length">
+  <div class="denpncelist-wrap depence-wrap" v-if="examList.length">
+    <div class="denpncelist-page">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
@@ -124,6 +125,7 @@
       </div>
     </transition>
     <!--遮罩包裹-->
+    </div>
   </div>
 </template>
 

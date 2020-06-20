@@ -20,12 +20,14 @@ export default {
 
 <style lang="scss">
 #app{
-  height: calc(100vh - 40px);
+  height: 100vh;
   overflow: scroll;
   -webkit-overflow-scrolling:touch;
-  border-radius: 12px;
   &.hide{
     overflow: hidden;
   }
+}
+*{
+  box-sizing: border-box;
 }
 </style>

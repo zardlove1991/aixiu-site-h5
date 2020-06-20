@@ -42,6 +42,19 @@ let router = new Router({
       }
     },
     {
+      path: '/statistic/:id',
+      name: 'statistic',
+      component: getComponent('form-statistic'),
+      props: (route) => ({
+        id: route.params.id, // 传入需要请求当前试卷的ID
+        redirect: route.query.redirect, // 小程序传入的重定向地址
+        delta: route.query.delta // 小程序需要回退的页面层级
+      }),
+      meta: {
+        title: '加载中...'
+      }
+    },
+    {
       path: '/depencecard/:id',
       name: 'depencecard',
       component: getComponent('depence-card'),

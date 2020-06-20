@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="denpncelist-wrap" v-if="examList.length">
+  <div class="denpncelist-wrap depence-wrap" v-if="examList.length">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
@@ -10,7 +10,7 @@
       @showlist="toggetSubjectList">
     </exam-header>
     <!--主体试题渲染-->
-    <div class="qtnlist-wrap">
+    <div class="alllist-wrap">
       <div class="list-item-wrap" v-for="item in examList" :key="item.id">
         <!--每个题型内容渲染-->
         <subject-content
@@ -19,10 +19,11 @@
           :key="item.id">
         </subject-content>
       </div>
+      
     </div>
     <div class="sumbit-area" @click.stop="submitExam">
-      交卷
-    </div>
+        交卷
+      </div>
     <!--题号情况展示-->
     <!--跳转成绩单页面-->
     <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">

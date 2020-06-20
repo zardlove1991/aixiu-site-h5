@@ -3,6 +3,9 @@
 @import './base/animations.scss'; // 引入公共动画
 
 body{
+  background-color: #fff;;
+}
+.depence-wrap{
   background-color:#1F52E7;
   padding:px2rem(34px);
   background-repeat: no-repeat;
