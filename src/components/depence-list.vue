@@ -5,7 +5,7 @@
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
-      @timeup="toggleSuspendModel"
+      @timeup="endTime"
       @showlist="toggetSubjectList">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
@@ -94,6 +94,16 @@
     </div>
     <!--试题中断弹窗-->
     <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip-btn">查看分数</div>
+      </div>
+    </my-model>
+    <my-model
       :show="isShowSuspendModel"
       :isLock="true"
       doneText="重新考试"
@@ -150,6 +160,7 @@ export default {
     return {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
+      isShowSuspendModels: false,
       isShowSubmitModel: false
     }
   },
@@ -225,7 +236,6 @@ export default {
       // 提交试卷
       try {
         await this.sendSaveRecordOption(subject) // 检查多选考试的提交
-        await this.unlockCorse() // 解锁短书课程
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -246,6 +256,9 @@ export default {
     },
     submitExam () {
       this.isShowSubmitModel = true
+    },
+    endTime () {
+      this.isShowSuspendModels = !this.isShowSuspendModels
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel

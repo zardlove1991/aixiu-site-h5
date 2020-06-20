@@ -6,7 +6,7 @@
       type="all"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
-      @timeup="toggleSuspendModel"
+      @timeup="endTime"
       @showlist="toggetSubjectList">
     </exam-header>
     <!--主体试题渲染-->
@@ -41,6 +41,16 @@
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
         <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
+      </div>
+    </my-model>
+    <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip-btn">查看分数</div>
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->
@@ -87,6 +97,7 @@ export default {
     return {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
+      isShowSuspendModels: false,
       isShowSubmitModel: false
     }
   },
@@ -181,8 +192,12 @@ export default {
       })
     },
     submitExam () {
+      console.log(this.answerList)
       this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
+    },
+    endTime () {
+      this.isShowSuspendModels = !this.isShowSuspendModels
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel

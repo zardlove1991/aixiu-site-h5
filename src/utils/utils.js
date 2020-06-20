@@ -113,6 +113,87 @@ export const setPlatCssInclude = () => {
   window.document.documentElement.setAttribute('data-theme', theme)
 }
 
+export const getFontsize = () => {
+// 初始值
+  const defaultDpr = 1
+  //   const dpr = window.devicePixelRatio
+  const dpr = Number(document.getElementsByTagName('html')[0].getAttribute('data-dpr'))
+  const width = screen.width
+  let htmlStyle = ''
+  let bodyStyle = ''
+  // dpr倍数
+  const difference = dpr / defaultDpr
+  // 计算
+  if (difference === 1 || difference === 2 || difference === 3) {
+    const defaultMinSize = 20 * difference
+    const defaultMaxSize = 33.75 * difference
+    const defaultCoefficient = 0.0625 * difference
+    htmlStyle = getFontSize(width, defaultMinSize, defaultMaxSize, defaultCoefficient)
+    bodyStyle = difference * 12
+  } else {
+    htmlStyle = getFontSize(width, 20, 33.75, 0.0625)
+    bodyStyle = 12
+  }
+  return { bodyStyle, htmlStyle }
+}
+
+/**
+
+ * 通过手机屏幕dpr和手机宽度来确定font-size的值
+
+ * @param {int} width
+
+ * @param {int} defaultMinSize
+
+ * @param {int} defaultMaxSize
+
+ * @param {int} defaultCoefficient
+
+ * @returns {String}
+
+ */
+
+function getFontSize (width, defaultMinSize, defaultMaxSize, defaultCoefficient) {
+  let style = 0
+  // 屏幕宽度需要在320-540之间进行计算
+  if (width < 320) {
+    style = defaultMinSize
+  } else if (width > 540) {
+    style = defaultMaxSize
+  } else {
+    const difference = width - 320
+
+    const fontsize = defaultMinSize + difference * defaultCoefficient
+
+    style = fontsize
+  }
+  return style
+}
+
+export const mobileDevice = () => {
+  const mbldevice = navigator.userAgent.toLowerCase()
+  if (/iphone|ipod|ipad/gi.test(mbldevice)) {
+    return 'iOS'
+  } else if (/android/gi.test(mbldevice)) {
+    return 'Android'
+  } else {
+    return 'Other'
+  }
+}
+
+export const windowTitle = (title) => {
+  window.document.title = title
+  if (mobileDevice() === 'iOS') {
+    const hackIframe = document.createElement('iframe')
+    hackIframe.style.display = 'none'
+    hackIframe.src = '//h5.ixiuzan.cn/p/Tplglobal/images/favicon.ico?random=' + Math.random()
+    document.body.appendChild(hackIframe)
+    setTimeout(function () {
+      document.body.removeChild(hackIframe)
+    }, 300)
+  }
+}
+
 // 创建一个自动根据浏览器来添加CSS前缀
 let elementStyle = document.createElement('div').style
 let vender = (() => {

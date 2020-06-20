@@ -1,0 +1,450 @@
+<template>
+  <div class="form-statistic-wrap">
+    <!--头部提示-->
+    <div class="header-tip flex-v-center flex-between">
+        <span class="icon-wrap flex-v-center">
+            <i class="tips-icon"></i>
+            <span class="tips-title">表单已填写</span>
+        </span>
+        <a :href="backurl" class="back-btn">返回表单页</a>
+    </div>
+    <div class="header-bg">
+        <div class="title">表单统计结果</div>
+        <div class="submit-num" v-if="feedback.showTotal !== 0">
+            当前提交数：{{feedback.total_submit}}
+        </div>
+    </div>
+    <div class="content">
+        <div class="operate-wrap flex-v-center">
+            <span class="btn btn-left xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+            @click="showType = 'pie'">饼状图</span>
+            <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+            @click="showType = 'line'">柱状图</span>
+        </div>
+        <div class="option-wrap" v-for="(item, key) in optionData" :key="key" :class="{'is-first': key === 0}">
+            <div v-if="isChoiceOption(item.form_type)">
+                <div class="title-wrap">
+                    <span class="title">{{key + 1}}、{{item.title}}</span>
+                    <span class="option-num">({{item.value.length}}个选项)</span>
+                </div>
+                <div v-if="showType === 'pie'">
+                    <pie classify='pie' :data-array="item.value" :color-data="colorData" :el="item.form_type + key"></pie>
+                </div>
+                <ul v-if="item.value.length">
+                    <li class="choice-item flex-v-center" v-for="(val, index) in item.value" :key="index"
+                    :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
+                        <div class="option-content flex-v-center">
+                            <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
+                            <el-radio v-else v-model="checkRadio" :label="val.is_choose" disabled class="radio-box" ></el-radio>
+                            <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
+                            <span class="text-content">{{val.name}}</span>
+                            <!-- 柱状图 进度条-->
+                            <div class="progress-wrap" v-if="showType !== 'pie'">
+                                <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
+                            </div>
+                        </div>
+                        <span class="option-percent" :class="`is-${showType}`">
+                            <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
+                            <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.sum}人`}}</span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div v-else>
+                <div class="title-wrap">
+                    <span class="title">{{key + 1}}、{{item.title}}</span>
+                </div>
+                <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
+                    <el-image
+                        class="img-list"
+                        v-for="(pic, k) in item.srcList" :key="k"
+                        :src="pic"
+                        :preview-src-list="item.srcList"
+                        fit="cover"
+                        :class="{'is-multiply-pic': item.srcList.length > 3}">
+                    </el-image>
+                </div>
+                <div class="answer-wrap" v-else>
+                    <i class="answer-icon">答</i>
+                    <span class="answer-content" :class="{'is-no-answer': item.answer.length == 0}">
+                        {{item.answer ? item.answer : '未填写'}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Pie from './StatisticPie'
+import { windowTitle, getUrlParam } from '../utils/utils'
+
+export default {
+  name: 'form-statistic',
+  components: {
+    Pie
+  },
+  props: ['params'],
+  data () {
+    return {
+      backurl: '',
+      showType: 'pie',
+      colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
+        '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
+      checkRadio: 1,
+      feedback: {},
+      optionData: []
+    }
+  },
+  methods: {
+    async getResultData () {
+      const member = decodeURIComponent(this.params.member)
+      const id = this.params.id
+      const params = { id, mark: 'biaodan', member }
+      const { feedback, component } = await this.$request('yun_result.statistic.formStatistic', { params })
+      component.map((item) => {
+        if (item.form_type === 'picture') {
+          if (item.answer instanceof Array) {
+            item.srcList = item.answer.map((val) => `${val.host}${val.filename}`)
+          } else {
+            item.srcList = item.answer instanceof Object ? new Array(`${item.answer.host}${item.answer.filename}`) : []
+          }
+          item.answer = item.srcList.length === 0 ? '' : item.srcList
+        }
+      })
+      const link = feedback.submit_rules.length ? feedback.submit_rules.link : ''
+      const showTotal = getUrlParam('is_display_total', link)
+      const statisticType = getUrlParam('options_statistic_type', link) || 'number'
+      this.feedback = { ...feedback, ...{ showTotal, statisticType } }
+      this.optionData = component
+      windowTitle(this.feedback.title || '')
+    },
+    isCheckBox (val) {
+      return ['checkbox', 'multiple', 'pictureMultiple'].includes(val)
+    },
+    isChoiceOption (val) {
+      return ['checkbox', 'multiple', 'pictureMultiple', 'radio', 'pictureRadio'].includes(val)
+    }
+  },
+  created () {
+    this.getResultData()
+    this.backurl = this.params.backurl
+  }
+}
+</script>
+
+<style lang="scss">
+$primary-color: #ff6a45;
+$font-color: #333;
+$font-family: PingFangSC-Regular,PingFang SC;
+$font-weight: 400;
+
+.d-flex{
+    display: flex !important;
+}
+.flex-v-center{
+    display: flex !important;
+    align-items: center;
+}
+.flex-h-center{
+    display: flex !important;
+    justify-content: center;
+}
+.flex-between{
+    display: flex !important;
+    justify-content: space-between;
+}
+
+.form-statistic-wrap{
+    font-family: $font-family;
+    i, span{
+        display: inline-block;
+    }
+    .header-tip{
+        width: 100%;
+        height: 40px;
+        background:#fff1ed;
+        color: $primary-color;
+        padding: 0 10px 0 21px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        .icon-wrap {
+            vertical-align: middle;
+        }
+        .tips-icon{
+            width: .45rem;
+            height: .45rem;
+            background: url('http://xzh5.hoge.cn/pre/marketing/images/form_tip_icon@3x.png') no-repeat left center;
+            background-size: .45rem;
+        }
+        .tips-title{
+            font-size: 14px;
+            font-weight: $font-weight;
+            color: $primary-color;
+            margin-left: 7px;
+        }
+        .back-btn{
+            color: $primary-color;
+            padding: 3.5px 7px;
+            border: 1.2px solid $primary-color;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+    }
+    .header-bg{
+        width: 100%;
+        height: 120px;
+        background: $primary-color;
+        background: url(http://xzh5.hoge.cn/pre/marketing/images/form_header_bg@2x.png) no-repeat center;
+        background-position-y: -5px;
+        background-size: 375px 120px;
+        position: relative;
+        margin-top: 40px;
+        padding: 0;
+        .title{
+            font-size: 20px;
+            font-family: PingFangSC-Medium,PingFang SC;
+            font-weight: 500;
+            color: #fff;
+            line-height: 28px;
+            position: absolute;
+            top: 35px;
+            left: 22px;
+        }
+        .submit-num{
+            height: 20px;
+            font-size: 14px;
+            font-family: $font-family;
+            font-weight: $font-weight;
+            color: #fff;
+            line-height: 20px;
+            position: absolute;
+            margin-top: 9px;
+            top: 60px;
+            left: 22px;
+        }
+    }
+    .content{
+        padding: 15px;
+        .operate-wrap{
+            .btn{
+                width: 75px;
+                height: 29px;
+                border: 1px solid #dbdbdb;
+                font-size: 12px;
+                font-family: $font-family;
+                font-weight: $font-weight;
+                color: #666;
+                line-height: 29px;
+                &.btn-left{
+                    border-radius: 2px 0px 0px 2px;
+                }
+                &.btn-right{
+                    border-radius: 0px 2px 2px 0px;
+                    border-left: none;
+                }
+            }
+            .iconbingzhuangtu:before, .iconshuju:before{
+                font-size: 16px;
+                margin: 0 1px 0 6px;
+                color: #ccc;
+            }
+            .is-active{
+                background: $primary-color;
+                color: #fff;
+                border-color: $primary-color;
+                &.btn-right{
+                    margin-left: -1px;
+                }
+                &.iconbingzhuangtu:before, &.iconshuju:before{
+                    color: #fff;
+                }
+            }
+        }
+        .option-wrap{
+            ul{
+                padding: 0;
+                margin: 0;
+            }
+            margin-top: 40px;
+            &.is-first{
+                margin-top: 21px;
+            }
+            .title-wrap{
+                color: $font-color;
+                font-family: $font-family;
+                font-weight: $font-weight;
+                line-height: 23px;
+                margin-bottom: 8px;
+                .title{
+                    font-size: 16px;
+                }
+                .option-num{
+                    color: #999;
+                    font-size: 13px;
+                    margin-left: 7px;
+                }
+            }
+            .choice-item{
+                font-size: 15px;
+                font-family: $font-family;
+                font-weight: 500;;
+                color: $font-color;
+                line-height: 45px;
+                position: relative;
+                margin-bottom: 30px;
+                .check-box, .radio-box{
+                    margin-right: 10px;
+                    .el-radio__input.is-disabled+span.el-radio__label{
+                        display: none;
+                    }
+                    .el-radio__inner, .el-checkbox__inner{
+                        width: 19px;
+                        height: 19px;
+                        background: #fbfbfb;
+                        border-color: #ccc;
+                    }
+                    .el-checkbox__inner{
+                        &::after{
+                            width: 7px;
+                            height: 11px;
+                            color: #ccc;
+                            top: 0px;
+                            left: 4px;
+                            border-width: 1.5px;
+                        }
+                    }
+                    .el-radio__inner{
+                        &::after{
+                            width: 8px;
+                            height: 8px;
+                            color: #ccc;
+                        }
+                    }
+                    .el-checkbox, .el-checkbox__input{
+                        position: absolute;
+                    }
+                    &.el-checkbox{
+                        height: 19px;
+                        width: 19px;
+                        position: relative;
+                    }
+                }
+                .option-content{
+                    flex: 1;
+                    position: relative;
+                    .option-img{
+                        width: 45px;
+                        height: 45px;
+                        object-fit: cover;
+                        margin-right: 10px;
+                    }
+                    .text-content{
+                        color: $font-color;
+                        word-break: break-word;
+                        font-size: 15px;
+                        line-height: 22px;
+                        flex: 1;
+                    }
+                }
+                .option-percent{
+                    margin-left: 19px;
+                    &.is-pie{
+                        display: flex;
+                        align-items: center;
+                    }
+                    &.is-line{
+                        line-height: 1;
+                        align-self: flex-end;
+                        transform: translateY(15px);
+                    }
+                }
+                .icon-percent{
+                    width: 7px;
+                    height: 7px;
+                    font-size: 14px;
+                    margin-right: 6px;
+                    border-radius: 1px;
+                }
+                .progress-wrap{
+                    margin-left: 29px;
+                    width: calc(100% - 29px);
+                    height: 3px;
+                    background: #fff6f4;
+                    border-radius: 3px;
+                    position: absolute;
+                    bottom: -10px;
+                    box-sizing: border-box;
+                    .starck-bar{
+                        background: $primary-color;
+                        height: 3px;
+                        border-radius: 3px;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                    }
+                }
+                &.no-img{
+                    margin-bottom: 15px;
+                }
+                &.is-show-line{
+                    .check-box, .radio-box{
+                        transform: translateY(5px);
+                    }
+                }
+            }
+            .picture-wrap{
+                margin-left: 25px;
+                .img-list{
+                    width: 100px;
+                    height: 100px;
+                    margin-right: 10px;
+                    &:nth-child(3n){
+                        margin-right: 0;
+                    }
+                    &.is-multiply-pic{
+                        margin-bottom: 10px;
+                    }
+                }
+                .el-image-viewer__btn{
+                    display: flex;
+                }
+            }
+            .answer-wrap{
+                position: relative;
+                width: 100%;
+                font-family: $font-family;
+                font-weight: $font-weight;
+                .answer-icon{
+                    width: 15px;
+                    height: 15px;
+                    background: $primary-color;
+                    color: #fff;
+                    border-radius: 2px;
+                    font-size: 10px;
+                    text-align: center;
+                    line-height: 15px;
+                    position: absolute;
+                    top: 4px;
+                    font-style: normal;
+                }
+                .answer-content{
+                    width: 314px;
+                    font-size: 15px;
+                    color: $font-color;
+                    line-height: 22px;
+                    margin-left: 27px;
+                    word-break: break-all;
+                    &.is-no-answer{
+                        color: rgba(51, 51, 51, 0.3);
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

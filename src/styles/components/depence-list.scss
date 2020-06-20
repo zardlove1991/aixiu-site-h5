@@ -5,6 +5,22 @@
 .denpncelist-wrap{
   width: 100%;
   min-height: calc(100vh - 34px);
+  .tip-btn{
+    width:px2rem(305px);
+    height:px2rem(90px);
+    line-height: px2rem(90px);
+    text-align: center;
+    color:#fff;
+    @include bg-color('themeColor');
+    @include font-dpr(16px);
+    margin:0 auto;
+    margin-top:px2rem(80px);
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
   .qtnlist-wrap{
     position: relative;
     width: 100%;

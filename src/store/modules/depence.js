@@ -93,15 +93,23 @@ const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = true
-    for (let i = 0; i < list.length; i++) {
-      if (list[i].question_id === payload.question_id && list[i].options_id) {
-        list[i] = payload
-        show = false
+    if (list && list[0]) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].question_id === payload.question_id && list[i].options_id) {
+          list[i].options_id = payload.options_id
+          show = false
+        }
+        if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
+          list.push(payload)
+        }
       }
+    } else {
+      list.push({
+        'question_id': payload.question_id,
+        'options_id': payload.options_id
+      })
     }
-    if (show && payload.question_id && payload.options_id) {
-      list.push(payload)
-    }
+    console.log(state.answerList, 'SET_ANSWER_LIST')
   },
   SET_RENDER_TYPE (state, payload = 'exam') {
     state.renderType = payload
@@ -135,21 +143,21 @@ const mutations = {
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
     let list = state.answerList
-    let show = true
     for (let key in payload) {
-      for (let i = 0; i < list.length; i++) {
-        if (list[i].question_id === key) {
-          list[i].value = payload[key]
-          show = false
+      if (list && list[0]) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].question_id === key) {
+            list[i].value = payload[key]
+          }
         }
-      }
-      if (show) {
+      } else {
         let params = {
           'question_id': key,
-          'values': payload[key]
+          'value': payload[key]
         }
         list.push(params)
       }
+      state.subjectAnswerInfo[key] = true
     }
     state.essayAnswerInfo = Object.assign({}, payload)
   },
@@ -222,6 +230,7 @@ function dealSaveRecord ({
   sortAnswerInfo,
   blankAnswerInfo
 }, optionFlag) {
+  console.log(subject)
   let dataIsEmpty = false
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
@@ -414,41 +423,20 @@ const actions = {
   SAVE_ANSWER_RECORDS ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId
-      let examList = state.examList
+      let examList = state.answerList
       let data = {
         params: []
       }
-      // 开始遍历当前答题的数据
-      examList.forEach(subject => {
-        let tempObj = {
-          question_id: subject.id,
-          options_id: []
-        }
-        let answers = subject.answer // 是否存放已有的选项ID
-        if (answers && answers.length) tempObj.options_id = answers
-
-        subject.options.forEach(item => {
-          let optionArr = tempObj.options_id
-          if (item.active && !optionArr.includes(item.id)) {
-            optionArr.push(item.id)
-          }
-        })
-
-        let optionsLength = tempObj.options_id.length
-        // 判断是否只有一个选项
-        if (optionsLength === 1) tempObj.options_id = Number(tempObj.options_id.join(''))
-        if (optionsLength) data.params.push(tempObj)
-      })
+      data.params = examList
+      console.log(state, 'SAVE_ANSWER_RECORDS')
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
         API.saveSubjectRecords({ query: { id }, data })
-        // API.submitExam({ query: { id } })
-      ]).then(([saveInfo, submitInfo]) => {
+      ]).then((saveInfo) => {
         // 结束
         Indicator.close()
-        if (saveInfo.success === 1 && submitInfo.success === 1) {
-          Toast('提交试卷成功')
+        if (saveInfo[0].success === 1) {
           resolve()
         } else {
           throw new Error('error')

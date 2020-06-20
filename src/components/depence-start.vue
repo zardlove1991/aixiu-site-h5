@@ -1,6 +1,13 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap" v-if="examInfo">
+    <div class="header-top" v-if="examInfo.person_status !== 0">
+      <div class="end-tips">测评已提交</div>
+      <div class="to-score">查看测评结果</div>
+    </div>
+    <div class="header-normal" v-else>
+      <div class="end-tips">答题规范:每个用户最多提交一次</div>
+    </div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap" v-if="examInfo.indexpic">
       <template>
@@ -55,14 +62,15 @@
       </div>
     </div>
     <!--底部按钮-->
-    <div class="btn-area" v-if ="examInfo.person_status === 0">
-    <button class="start-exambtn" @click.stop="goExamPage">开始答题</button>
+    <div class="btn-area" >
+      <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">开始答题</button>
+      <button class="end-exambtn" v-else>开始答题</button>
     </div>
     <!--底部已考按钮组-->
-    <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
+    <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
       <button class="show" @click.stop="jumpGradePage">查看成绩</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -185,10 +193,56 @@ export default {
   align-items: center;
   width: 100%;
   height: 100vh;
+  margin-top:px2rem(60px);
   background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  .header-top{
+    background-color:#FFF1ED;
+    z-index: 1;
+    height:px2rem(90px);
+    display:flex;
+    flex:1;
+    align-items: center;
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;
+    color:#FF6A45;
+    padding-left:px2rem(43px);
+    padding-right:px2rem(20px);
+    font-size:px2rem(28px);
+    box-sizing: border-box;
+    .end-tips{
+      flex:1;
+    }
+    .to-score{
+      height:px2rem(54px);
+      line-height:px2rem(54px);
+      text-align:center;
+      width:px2rem(200px);
+      border:1px solid #FF6A45;
+      border-radius: 27px;
+    }
+  }
+  .header-normal{
+    background: rgba(0,0,0,0.50);
+    z-index: 1;
+    height:px2rem(90px);
+    display:flex;
+    flex:1;
+    align-items: center;
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;
+    color:#fff;
+    padding-left:px2rem(43px);
+    padding-right:px2rem(20px);
+    font-size:px2rem(28px);
+    box-sizing: border-box;
+  }
   .header-wrap{
     position: relative;
     width: 100%;
@@ -326,6 +380,18 @@ export default {
     @include font-dpr(16px);
     @include font-color('bgColor');
     @include bg-color('themeColor')
+  }
+  .end-exambtn{
+    flex:1;
+    border-radius: px2rem(8px);
+    margin:0 px2rem(30px);
+    height: px2rem(90px);
+    line-height: px2rem(90px);
+    text-align: center;
+    border: none;
+    background-color:#CCC;
+    @include font-dpr(16px);
+    @include font-color('bgColor');
   }
   .reset-exam-btns{
     display: flex;

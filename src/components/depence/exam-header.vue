@@ -3,7 +3,7 @@
     <div class="time-wrap">
       <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
     </div>
-    <div class="header-info-wrap" v-if="type == 'list'">
+    <div class="header-info-wrap" v-if="type === 'list'">
       <!--主体内容展示-->
       <div class="header-content">
         <div class="left-wrap">
@@ -62,7 +62,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: () => {return 'list'}
+      default: () => 'list'
     },
     list: {
       type: Array,
@@ -103,12 +103,15 @@ export default {
     unDoSubjectLength () {
       let subjectAnswerInfo = this.subjectAnswerInfo
       let list = this.list
+      console.log(this.subjectAnswerInfo, 'unDoSubjectLength')
+      console.log(list)
       let count = Object.values(subjectAnswerInfo).filter(state => state).length
       return (list.length - count)
     }
   },
   watch: {
     percent (newVal) {
+      console.log(newVal)
       if (newVal) this._moveProgressBtn()
     }
   },
@@ -163,18 +166,13 @@ export default {
     async confirmSubmitModel () {
       let examId = this.examId
       let subject = this.currentSubjectInfo
-      let redirectParams = this.redirectParams
       this.toggleSubmitModel()
       try {
         await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
         // 跳转去答题卡页面
         this.$router.replace({
-          path: `/depencecard/${examId}`,
-          query: {
-            redirect: redirectParams.redirect,
-            delta: redirectParams.delta
-          }
+          path: `/depencestart/${examId}`
         })
       } catch (err) {
         console.log(err)
@@ -195,9 +193,11 @@ export default {
       }
     },
     _moveProgressBtn () {
-      let maxOffsetW = this.$refs.headerProgressBar.clientWidth
-      let offsetWidth = maxOffsetW * this.percent
-      this._offset(offsetWidth)
+      if (this.$refs.headerProgressBar && this.$refs.headerProgressBar.clientWidth) {
+        let maxOffsetW = this.$refs.headerProgressBar.clientWidth
+        let offsetWidth = maxOffsetW * this.percent
+        this._offset(offsetWidth)
+      }
     },
     _offset (offsetWidth) {
       let headerProgressEl = this.$refs.headerProgress
@@ -235,7 +235,8 @@ export default {
   .header-info-wrap{
     position: relative;
     width: 100%;
-    padding-top:px2rem(40px);
+    height: 100%;
+    height:px2rem(100px);
     .header-content{
       display: flex;
       align-items: center;
