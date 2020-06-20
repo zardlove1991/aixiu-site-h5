@@ -22,16 +22,16 @@
             @click="showType = 'line'">柱状图</span>
         </div>
         <div class="option-wrap" v-for="(item, key) in optionData" :key="key" :class="{'is-first': key === 0}">
-            <div v-if="isChoiceOption(item.form_type)">
+            <div v-if="isChoiceOption(item.type)">
                 <div class="title-wrap">
                     <span class="title">{{key + 1}}、{{item.title}}</span>
-                    <span class="option-num">({{item.value.length}}个选项)</span>
+                    <span class="option-num">({{item.options.length}}个选项)</span>
                 </div>
                 <div v-if="showType === 'pie'">
-                    <pie classify='pie' :data-array="item.value" :color-data="colorData" :el="item.form_type + key"></pie>
+                  <pie classify='pie' :data-array="item.value" :color-data="colorData" :el="item.form_type + key"></pie>
                 </div>
-                <ul v-if="item.value.length">
-                    <li class="choice-item flex-v-center" v-for="(val, index) in item.value" :key="index"
+                <ul v-if="item.options.length">
+                    <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
                     :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
                         <div class="option-content flex-v-center">
                             <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
@@ -78,6 +78,7 @@
 
 <script>
 import Pie from './StatisticPie'
+import API from '@/api/module/examination'
 import { windowTitle, getUrlParam } from '../utils/utils'
 
 export default {
@@ -97,6 +98,18 @@ export default {
     }
   },
   methods: {
+    getExamList () {
+      let id = this.$route.params.id
+      let params = {
+        examination_id: id,
+        page: 1,
+        count: 100
+      }
+      API.getExamDetailsList({params}).then((res) => {
+        console.log(res.data)
+        this.optionData = res.data
+      })
+    },
     backUrl () {
       let examId = this.$route.params.id
       this.$router.push({
@@ -133,7 +146,7 @@ export default {
     }
   },
   created () {
-    this.getResultData()
+    this.getExamList()
   }
 }
 </script>

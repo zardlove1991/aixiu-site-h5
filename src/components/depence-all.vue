@@ -19,7 +19,6 @@
           :key="item.id">
         </subject-content>
       </div>
-      
     </div>
     <div class="sumbit-area" @click.stop="submitExam">
         交卷
