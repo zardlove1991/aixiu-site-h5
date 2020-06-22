@@ -71,6 +71,16 @@
       <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">开始答题</button>
       <button class="end-exambtn" v-else>开始答题</button>
     </div>
+    <my-model
+      :show="App"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="app-bg"></div>
+        <div class="tip">请在{{examInfo.limit.default_download_app}}App内参与活动</div>
+        <div class="tip-btn" @click.stop="goDownload(examInfo.limit.download_link)">去下载</div>
+      </div>
+    </my-model>
     <!--底部已考按钮组-->
     <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
@@ -86,6 +96,7 @@ import STORAGE from '@/utils/storage'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
+import MyModel from './depence/model'
 
 export default {
   mixins: [mixins],
@@ -102,6 +113,7 @@ export default {
       }
     }
   },
+  components: { MyModel },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo'])
   },
@@ -109,6 +121,9 @@ export default {
     this.initStartInfo()
   },
   methods: {
+    goDownload (url) {
+      window.location.href = utl
+    },
     toStatistic () {
       let examId = this.id
       this.$router.push({
@@ -121,7 +136,7 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
-        console.log(this.examInfo.limit.source)
+        console.log(this.examInfo.limit)
         if (this.examInfo.limit && this.examInfo.limit.source) {
           if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
             this.App = true
@@ -368,7 +383,7 @@ export default {
           background-repeat: no-repeat;
         }
         .row-naozhong{
-          @include img-retina('~@/assets/common/naozhong@2x.png','~@/assets/common/naozhong@3x.png', 100%, 100%);
+          @include img-retina('~@/assets/common/row_click@2x.png','~@/assets/common/row_click@3x.png', 100%, 100%);
         }
         .row-juanzi{
           @include img-retina('~@/assets/common/juanzi@2x.png','~@/assets/common/juanzi@3x.png', 100%, 100%);
@@ -449,6 +464,48 @@ export default {
       @include font-color('bgColor');
       @include bg-color('themeColor');
       @include border('all', px2rem(1px), solid, 'themeColor');
+    }
+  }
+  .suspend-model{
+    padding:px2rem(49px) px2rem(51px) px2rem(41px);
+    box-sizing: border-box;
+    .app-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/Bitmap@2x.png","~@/assets/common/Bitmap@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      font-weight: bold;
+      text-align: center;
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
+    }
+    .desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .tip-btn{
+      width:px2rem(305px);
+      height:px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      color:#fff;
+      background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include font-dpr(16px);
+      margin:0 auto;
+      margin-top:px2rem;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -ms-border-radius: 5px;
+      -o-border-radius: 5px;
     }
   }
 }
