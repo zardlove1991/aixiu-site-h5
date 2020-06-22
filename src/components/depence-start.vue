@@ -26,6 +26,7 @@
           <div class="title">{{examInfo.title}}</div>
         </div>
         <div class="exam-time">
+          <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div class="body-wrap">
@@ -233,6 +234,14 @@ export default {
     @include font-dpr(15px);
     color:#fff;
     margin-bottom:px2rem(87px);
+    display:Flex;
+    align-items:center;
+  }
+  .icon-time{
+    width:px2rem(34px);
+    height:px2rem(34px);
+    margin-right:px2rem(20px);
+    @include img-retina('~@/assets/common/timeInfo@2x.png','~@/assets/common/timeInfo@3x.png', 100%, 100%);
   }
   .header-top{
     background-color:#FFF1ED;
