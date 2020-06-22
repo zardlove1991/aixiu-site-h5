@@ -1,7 +1,9 @@
 <template lang="html">
   <div class="exam-header-wrap">
     <div class="time-wrap">
-      <div class="time">{{timeTip ? timeTip : '初始化...'}}</div>
+      <div class="time">
+        <div class="time-icon"></div>
+        {{timeTip ? timeTip : '初始化...'}}</div>
     </div>
     <div class="header-info-wrap" v-if="type === 'list'">
       <!--主体内容展示-->
@@ -54,7 +56,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import MyModel from './model'
-import { DEPENCE } from '@/common/currency'
+// import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
 
 export default {
@@ -142,27 +144,25 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    async confirmGiveupModel () {
-      let subject = this.currentSubjectInfo
-      let redirectParams = this.redirectParams
-      let examId = this.examId
+    // async confirmGiveupModel () {
+    //   let subject = this.currentSubjectInfo
+    //   let examId = this.examId
 
-      try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
-        await this.endExam() // 提交试卷
-        // 跳转去答题卡页面
-        this.$router.replace({
-          path: `/depencecard/${examId}`,
-          query: {
-            redirect: redirectParams.redirect,
-            delta: redirectParams.delta
-          }
-        })
-      } catch (err) {
-        console.log(err)
-        DEPENCE.dealErrorType({ examId, redirectParams }, err)
-      }
-    },
+    //   try {
+    //     await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+    //     await this.endExam() // 提交试卷
+    //     // 跳转去答题卡页面
+    //     this.$router.replace({
+    //       path: `/depencecard/${examId}`,
+    //       query: {
+    //         delta: redirectParams.delta
+    //       }
+    //     })
+    //   } catch (err) {
+    //     console.log(err)
+    //     DEPENCE.dealErrorType({ examId, redirectParams }, err)
+    //   }
+    // },
     async confirmSubmitModel () {
       let examId = this.examId
       let subject = this.currentSubjectInfo
@@ -176,7 +176,7 @@ export default {
         })
       } catch (err) {
         console.log(err)
-        DEPENCE.dealErrorType({ examId, redirectParams }, err)
+        // DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
     toggleSubmitModel () {

@@ -68,10 +68,11 @@
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
+      <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+        立即交卷
+      </div>
     </div>
-    <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
-      立即交卷
-    </div>
+    
     <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" >
       <transition name="up" mode="out-in">

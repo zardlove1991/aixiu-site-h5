@@ -15,15 +15,14 @@
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
       <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
-      <!--音频播放-->
-      <my-audio
+      <!--音频播放 视频播放-->
+      <!-- <my-audio
         v-if="mediaKey=='audio' && annexMedia(media)"
         class="my-audio"
         :limit-info="{ isLimit: false }"
         :src="annexMedia(media)">
       </my-audio>
-      <!--视频播放-->
-      <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+      <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video> -->
     </div>
     <!--每个选择项-->
     <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
@@ -35,15 +34,14 @@
       </div>
       <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
         <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
-        <!--音频播放-->
-        <my-audio
+        <!--音频播放 视频播放-->
+        <!-- <my-audio
           v-if="mediaKey=='audio' && annexMedia(media)"
           class="my-audio"
           :limit-info="{ isLimit: false }"
           :src="annexMedia(media)">
         </my-audio>
-        <!--视频播放-->
-        <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+        <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video> -->
       </div>
     </div>
     <!--题目解析选项-->

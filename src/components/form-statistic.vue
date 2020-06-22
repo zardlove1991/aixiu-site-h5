@@ -45,7 +45,7 @@
                         </div>
                         <span class="option-percent" :class="`is-${showType}`">
                             <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
-                            <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.sum}人`}}</span>
+                            <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
                         </span>
                     </li>
                 </ul>

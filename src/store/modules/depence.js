@@ -93,18 +93,22 @@ const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = true
+    console.log(list, 'bedore_SET_ANSWER_LIST')
     if (list && list[0]) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].question_id === payload.question_id && list[i].options_id) {
           list[i].options_id = payload.options_id
           show = false
         }
-        if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
-          list.push(payload)
-        }
+      }
+      if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
+        console.log(222)
+        console.log(payload)
+        list.push(payload)
+        console.log(list)
       }
     } else {
-      list.push({
+      list.push(...{
         'question_id': payload.question_id,
         'options_id': payload.options_id
       })
@@ -133,6 +137,8 @@ const mutations = {
     state.redirectParams = payload
   },
   SET_EXAM_DETAIL (state, payload) {
+    payload.start_time = payload.start_time.substring(5, payload.start_time.length)
+    payload.end_time = payload.end_time.substring(5, payload.end_time.length)
     state.examInfo = payload
   },
   SET_SUBJECT_ANSWER_INFO (state, payload) {
@@ -144,11 +150,13 @@ const mutations = {
   SET_ESSAY_ANSWER_INFO (state, payload) {
     let list = state.answerList
     for (let key in payload) {
+      console.log(key)
       if (list && list[0]) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].question_id === key) {
             list[i].value = payload[key]
           }
+          console.log(list[i])
         }
       } else {
         let params = {
@@ -157,6 +165,7 @@ const mutations = {
         }
         list.push(params)
       }
+      console.log(list, 'SET_ESSAY_ANSWER_INFO')
       state.subjectAnswerInfo[key] = true
     }
     state.essayAnswerInfo = Object.assign({}, payload)

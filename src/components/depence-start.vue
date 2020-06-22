@@ -6,7 +6,9 @@
       <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <div class="header-normal" v-else>
-      <div class="end-tips">答题规范:每个用户最多提交一次</div>
+      <div class="end-tips">
+        <div class="end-tangan"></div>
+        答题规范:每个用户最多提交一次</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap" v-if="examInfo.indexpic">
@@ -22,6 +24,9 @@
         <!--头部-->
         <div class="header-desc">
           <div class="title">{{examInfo.title}}</div>
+        </div>
+        <div class="exam-time">
+          {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div class="body-wrap">
           <!--信息展示-->
@@ -122,7 +127,7 @@ export default {
     },
     async startReExam () {
       let examId = this.id
-      let redirectParams = this.redirectParams
+      // let redirectParams = this.redirectParams
       Indicator.open({ spinnerType: 'fading-circle' })
       try {
         await this.getAnswerCardInfo({id: examId})
@@ -135,8 +140,7 @@ export default {
             path: `/depencelist/${examId}`,
             query: {
               rtp: 'exam',
-              restart: 'need',
-              ...redirectParams
+              restart: 'need'
             }
           })
         } else {
@@ -152,27 +156,26 @@ export default {
     },
     goExamPage () {
       let examId = this.id
-      let redirectParams = this.redirectParams
+      // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
-      if (this.examInfo.limit.is_page_submit) {
+      if (!this.examInfo.limit.is_page_submit) {
         this.$router.push({
           path: `/alllist/${examId}`,
-          query: { rtp: 'exam', ...redirectParams }
+          query: { rtp: 'exam' }
         })
       } else {
         this.$router.push({
           path: `/depencelist/${examId}`,
-          query: { rtp: 'exam', ...redirectParams }
+          query: { rtp: 'exam' }
         })
       }
     },
     jumpGradePage () {
       let examId = this.id
-      let redirectParams = this.redirectParams // mixin中的公共属性
+      // let redirectParams = this.redirectParams // mixin中的公共属性
       // 跳转去往答题卡页面
       this.$router.push({
-        path: `/depencecard/${examId}`,
-        query: { ...redirectParams }
+        path: `/depencecard/${examId}`
       })
     },
     _getStarNum (level) {
@@ -199,11 +202,16 @@ export default {
   align-items: center;
   width: 100%;
   height: 100vh;
-  margin-top:px2rem(60px);
+  padding-top:px2rem(80px);
   background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  .exam-time{
+    @include font-dpr(15px);
+    color:#fff;
+    margin-bottom:px2rem(87px);
+  }
   .header-top{
     background-color:#FFF1ED;
     z-index: 1;
@@ -218,11 +226,8 @@ export default {
     color:#FF6A45;
     padding-left:px2rem(43px);
     padding-right:px2rem(20px);
-    font-size:px2rem(28px);
+    @include font-dpr(14px);
     box-sizing: border-box;
-    .end-tips{
-      flex:1;
-    }
     .to-score{
       height:px2rem(54px);
       line-height:px2rem(54px);
@@ -232,10 +237,21 @@ export default {
       border-radius: 27px;
     }
   }
+  .end-tips{
+    flex:1;
+    display:flex;
+    align-items: center;
+  }
+  .end-tangan{
+    width:px2rem(36px);
+    height:px2rem(36px);
+    margin-right:px2rem(20px);
+    @include img-retina('~@/assets/common/gantan@2x.png','~@/assets/common/gantan@3x.png', 100%, 100%);
+  }
   .header-normal{
     background: rgba(0,0,0,0.50);
     z-index: 1;
-    height:px2rem(90px);
+    height:px2rem(80px);
     display:flex;
     flex:1;
     align-items: center;
@@ -246,7 +262,7 @@ export default {
     color:#fff;
     padding-left:px2rem(43px);
     padding-right:px2rem(20px);
-    font-size:px2rem(28px);
+    @include font-dpr(14px);
     box-sizing: border-box;
   }
   .header-wrap{
@@ -270,20 +286,19 @@ export default {
   }
   .content-wrap{
     position: relative;
-    padding:0 px2rem(30px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
       box-sizing: border-box;
       // @include bg-color('bgColor');
       .header-desc{
+        margin:px2rem(26px) 0;
         .title{
           line-height: px2rem(68px);
-          padding:px2rem(26px) 0;
           font-family:SourceHanSansCN-Medium;
           font-weight: bold;
           display:block;
-          font-size:px2rem(52px);
+          @include font-dpr(26px);
           color:#fff;
           @include line-overflow(2);
         }
@@ -307,10 +322,10 @@ export default {
             margin:0 px2rem(21px);
           }
           .title{
-            font-size:px2rem(28px);
+            @include font-dpr(14px);
           }
           .desc{
-            font-size:px2rem(32px);
+            @include font-dpr(16px);
             margin-bottom:px2rem(22px);
           }
           .title,.desc{

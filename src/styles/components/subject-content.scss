@@ -39,15 +39,15 @@
       margin-top: px2rem(39px);
     }
     .my-img{
-      width: auto;
+      width: 100%;
       max-width: 100%;
-      max-height: px2rem(300px);
-      object-fit: contain;
+      height: px2rem(320px);
+      object-fit: cover;
     }
   }
   .subject-select-wrap{
     margin-top: px2rem(40px);
-    padding:0 px2rem(43px) 0 px2rem(30px);
+    padding:0 px2rem(30px);
     box-sizing: border-box;
     .select-tip-wrap{
       display: flex;
