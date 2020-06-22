@@ -18,7 +18,7 @@
     line-height: px2rem(90px);
     text-align: center;
     color:#fff;
-    @include bg-color('themeColor');
+    background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
     @include font-dpr(16px);
     margin:0 auto;
     margin-top:px2rem;
@@ -146,15 +146,23 @@
       background-repeat: no-repeat;
       background-position: center;
     }
+    .end-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/endTime@2x.png","~@/assets/common/endTime@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     .tip,.desc{
       line-height: 1;
     }
     .tip{
       font-weight: bold;
-      padding: px2rem(30px) 0;
       text-align: center;
-      @include font-dpr(16px);
-      @include font-color('titleColor');
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
     }
     .desc{
       @include font-dpr(14px);
