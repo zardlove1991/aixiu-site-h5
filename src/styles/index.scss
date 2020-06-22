@@ -8,6 +8,7 @@ body{
 .depence-wrap{
   background-color:#1F52E7;
   padding:px2rem(34px);
+  padding-top:px2rem(80px);
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
