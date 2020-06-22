@@ -83,7 +83,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 
@@ -94,6 +94,7 @@ export default {
   },
   data () {
     return {
+      App: false,
       starMap: {
         easy: 0,
         middle: 2,
@@ -120,6 +121,12 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
+        console.log(this.examInfo.limit.source)
+        if (this.examInfo.limit && this.examInfo.limit.source) {
+          if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
+            this.App = true
+          }
+        }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)

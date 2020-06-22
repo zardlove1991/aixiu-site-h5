@@ -54,12 +54,6 @@
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->
-    <transition name="fade" mode="out-in">
-      <div class="answer-ops-model" v-show="isShowOpsModel">
-        <div class="ops-bg"></div>
-        <div class="ops-tip">跳过本题,可稍后作答</div>
-      </div>
-    </transition>
     <!--遮罩包裹-->
   </div>
 </template>

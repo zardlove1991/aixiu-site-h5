@@ -72,7 +72,6 @@
         立即交卷
       </div>
     </div>
-    
     <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" >
       <transition name="up" mode="out-in">
