@@ -136,12 +136,11 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
-        console.log(this.examInfo.limit)
-        if (this.examInfo.limit && this.examInfo.limit.source) {
-          if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
-            this.App = true
-          }
-        }
+        // if (this.examInfo.limit && this.examInfo.limit.source) {
+        //   if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
+        //     this.App = true
+        //   }
+        // }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
