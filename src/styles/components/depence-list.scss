@@ -96,14 +96,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 99;
+    z-index: 101;
     background: rgba(0,0,0,0.5);
     .info-wrap{
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: px2rem(420px);
+      z-index: 101;
       .title{
         box-sizing: border-box;
         font-size:px2rem(28px);

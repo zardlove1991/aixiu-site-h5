@@ -159,7 +159,7 @@ export default {
   .row-wrap{
     display: flex;
     justify-content: flex-start;
-    padding-top: px2rem(36px);
+    padding-top: px2rem(40px);
     &:last-child{
       margin-bottom: 0;
     }
