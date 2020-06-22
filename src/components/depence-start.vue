@@ -122,7 +122,7 @@ export default {
   },
   methods: {
     goDownload (url) {
-      window.location.href = utl
+      window.location.href = url
     },
     toStatistic () {
       let examId = this.id
