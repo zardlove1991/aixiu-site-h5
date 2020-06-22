@@ -234,7 +234,7 @@ export default {
     @include font-dpr(15px);
     color:#fff;
     margin-bottom:px2rem(87px);
-    display:Flex;
+    display:flex;
     align-items:center;
   }
   .icon-time{
