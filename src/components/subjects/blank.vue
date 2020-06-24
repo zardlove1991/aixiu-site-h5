@@ -8,9 +8,14 @@
       </h3>
     </div>
     <p class="subject-title" v-if="newTitle" style="overflow:hidden;">
-      <span>{{`${currentSubjectIndex+1}.`}}</span>
+       <span>{{`${data.index}.`}}</span>
       <span ref="newTitleHtml" v-html="newTitle"></span>
     </p>
+    <!-- <p class="subject-title">
+      <span>{{`${data.index}.`}}</span>
+      <span v-html="_dealHtmlLine(data.title)"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
+    </p> -->
     <!--题干的媒体数据-->
     <!--题目解析选项-->
     <div class="answerinfo-wrap" v-if="mode === 'analysis'">
