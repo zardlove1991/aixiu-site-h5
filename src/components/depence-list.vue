@@ -45,16 +45,14 @@
           </div>
         </div>
         <!--填空题和排序题的确认按钮操作-->
-        <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
-          <!--内部阴影层-->
+        <!-- <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
           <div class="btn-confrim-shadow"></div>
-          <!--按钮层-->
           <div class="btn-confrim-content">
             <div class="btn-confrim-option"
               :class="{ 'disabled': !isDidCurSubject }"
               @click.stop="dealConfrimOption">确认</div>
           </div>
-        </div>
+        </div> -->
         <!--下一题按钮-->
         <div class="next-wrap"
           v-show="!isShowSubmitBtn"
