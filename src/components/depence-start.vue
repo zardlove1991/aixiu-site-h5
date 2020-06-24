@@ -3,7 +3,7 @@
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
     <div class="header-top" v-if="examInfo.person_status !== 0">
       <div class="end-tips">测评已提交</div>
-      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
+      <!-- <div class="to-score" @click.stop="toStatistic">查看测评结果</div> -->
     </div>
     <div class="header-normal" v-else>
       <div class="end-tips">
