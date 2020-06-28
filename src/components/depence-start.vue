@@ -293,8 +293,9 @@ export default {
   }
   .header-wrap{
     position: relative;
-    width: 100%;
+    width: 100vw;
     height: px2rem(420px);
+    margin-left:px2rem(-34px);
     overflow: hidden;
     .bg{
       width: 100%;
