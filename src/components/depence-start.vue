@@ -94,7 +94,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle, getPlat } from '@/utils/utils'
+import { setBrowserTitle, setTheme } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
@@ -137,19 +137,7 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
-        console.log(getPlat())
-        console.log(this.examInfo.limit.color_scheme.content)
-        if (this.examInfo.limit.color_scheme && this.examInfo.limit.color_scheme.content) {
-          let content = this.examInfo.limit.color_scheme.content
-          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--borderGray', content.button_border)
-        }
-        // if (this.examInfo.limit && this.examInfo.limit.source) {
-        //   if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
-        //     this.App = true
-        //   }
-        // }
+        setTheme(this.id)
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
@@ -434,9 +422,9 @@ export default {
     line-height: px2rem(90px);
     text-align: center;
     border: none;
+    color:#fff;
     @include font-dpr(16px);
-    @include font-color('bgColor');
-    @include bg-color('themeColor')
+    @include bg-color('btnColor')
   }
   .end-exambtn{
     flex:1;

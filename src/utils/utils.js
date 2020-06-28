@@ -16,7 +16,7 @@ export const setTheme = (id) => {
   // let id = this.$route.params.id
   API.getExamDetail({ query: { id } }).then(res => {
     let info = res
-    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.name === 'diy') {
+    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
       let content = info.limit.color_scheme.content
       document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
       document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
