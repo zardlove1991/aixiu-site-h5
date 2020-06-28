@@ -63,9 +63,9 @@
         border-radius: 50%;
         border:1px solid #cccccc;
         margin-right: px2rem(40px);
-        @include bg-color('bgColor');
+        background-color: #fff;
         &.active{
-          @include font-color('bgColor');
+          background-color: #fff;
           &:after{
             content: '';
             width:px2rem(20px);

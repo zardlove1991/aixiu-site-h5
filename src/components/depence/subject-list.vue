@@ -172,7 +172,7 @@ export default {
       margin-left: px2rem(40px);
       @include font-dpr(16px);
       &.normal{
-        @include bg-color('bgColor');
+        background-color:#fff;
         @include font-color('titleColor');
         @include border('all',1px,solid,'tipColor');
         &.analysisActive{
@@ -182,11 +182,11 @@ export default {
         &.examActive{
           @include border('all',1px,solid,'themeColor');
           @include font-color('themeColor');
-          @include bg-color('bgColor');
+          background-color:#fff;
         }
       }
       &.disabled{
-        @include bg-color('bgColor');
+        background-color:#fff;
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
         &.analysisActive{

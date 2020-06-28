@@ -11,9 +11,9 @@
         答题规范:每个用户最多提交一次</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap" v-if="examInfo.indexpic">
+    <div class="header-wrap" v-if="examInfo.limit.backgroud.indexpic">
       <template>
-        <img :src="examInfo.indexpic" class="bg" />
+        <img :src="examInfo.limit.backgroud.indexpic" class="bg" />
         <!--透明遮罩-->
       </template>
       <!--默认的背景图片-->
@@ -138,6 +138,13 @@ export default {
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         console.log(getPlat())
+        console.log(this.examInfo.limit.color_scheme.content)
+        if (this.examInfo.limit.color_scheme && this.examInfo.limit.color_scheme.content) {
+          let content = this.examInfo.limit.color_scheme.content
+          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--borderGray', content.button_border)
+        }
         // if (this.examInfo.limit && this.examInfo.limit.source) {
         //   if (this.examInfo.limit.source.indexOf(getPlat()) < 0) {
         //     this.App = true
@@ -415,11 +422,9 @@ export default {
     }
   }
   .btn-area{
-    position:absolute;
-    bottom:px2rem(52px);
-    left:0;
     display:flex;
     width:100%;
+    margin-top:px2rem(354px);
   }
   .start-exambtn{
     flex:1;

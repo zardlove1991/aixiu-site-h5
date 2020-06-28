@@ -5,12 +5,26 @@ import {
   qcloudSettingDev,
   qcloudSetting
 } from '@/config/upload'
+import API from '@/api/module/examination'
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
  * @param  {[string]} format [时间格式，支持的格式自定义，需在该方法中配置]
  * @return {[string]}        [转化后的时间格式]
  */
+export const setTheme = (id) => {
+  // let id = this.$route.params.id
+  API.getExamDetail({ query: { id } }).then(res => {
+    let info = res
+    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.name === 'diy') {
+      let content = info.limit.color_scheme.content
+      document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+      document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+      document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+    }
+  })
+}
+
 export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false) => {
   let _format = function (num) {
     if (num < 10) {

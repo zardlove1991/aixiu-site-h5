@@ -2,10 +2,10 @@
 .denpncelist-wrap{
   width: 100%;
   .denpncelist-page{
-    @include bg-color('bgColor');
     height:100%;
     min-height: calc(100vh - 34px);
     border-radius:10px ;
+    background-color:#fff;
     position: relative;
     -webkit-border-radius:10px ;
     -moz-border-radius:10px ;
@@ -33,7 +33,7 @@
     width: 100%;
     padding-bottom:px2rem(40px);
     box-sizing: border-box;
-    @include bg-color('bgColor');
+    background-color:#fff;
     border-radius: px2rem(10px);
     -webkit-border-radius: px2rem(10px);
     -moz-border-radius: px2rem(10px);
@@ -110,7 +110,7 @@
         display:flex;
         align-items: center;
         padding:px2rem(40px) px2rem(44px) 0;
-        @include bg-color('bgColor');
+        background-color:#fff;
         @include font-color('tipColor');
       }
       .title-name{
@@ -128,9 +128,9 @@
         -webkit-overflow-scrolling:touch;
         box-sizing: border-box;
         padding-bottom: px2rem(36px);
-        @include bg-color('bgColor');
+        background-color: #fff;
         .list-wrap{
-          @include bg-color('bgColor');
+          background-color: #fff;
         }
       }
     }
@@ -179,7 +179,7 @@
     box-shadow: 0 0 px2rem(30px) rgba(184, 184, 184, 0.3);
     border-radius: px2rem(8px);
     text-align: center;
-    @include bg-color('bgColor');
+    background-color:#fff;
     .ops-bg{
       position: absolute;
       left:50%;
@@ -229,7 +229,7 @@
       pointer-events: auto;
       margin-bottom:px2rem(60px);
       box-sizing: border-box;
-      @include bg-color('bgColor');
+      background-color:#fff;
       &.iphonex-h{
         // height: px2rem(160px);
       }

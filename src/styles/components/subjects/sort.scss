@@ -18,7 +18,7 @@
     .select-tip-wrap{
       position: relative;
       .select-tip{
-        @include bg-color('lineColor');
+        background-color:#fff;
       }
       .select-desc{
         max-width: 75%;

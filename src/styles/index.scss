@@ -6,8 +6,9 @@ body{
   background-color: #fff;;
 }
 .depence-wrap{
-  background-color:#1F52E7;
+  @include bg-color('bgColor');
   padding:px2rem(34px);
+  overflow:scroll;
   padding-top:px2rem(80px);
   background-repeat: no-repeat;
   background-position: center;

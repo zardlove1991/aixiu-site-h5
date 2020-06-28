@@ -222,7 +222,7 @@ export default {
     position:absolute;
     right:0;
     bottom:50px;
-    @include bg-color('themeColor');
+    @include bg-color('bgColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
     padding-left:px2em(20px);
     padding-right:px2rem(10px);
