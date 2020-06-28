@@ -238,7 +238,8 @@
         height:px2rem(90px);
         line-height:px2rem(90px);
         text-align: center;
-        color:#F6B242;
+        @include font-color('descColor');
+        @include border('all',1px,solid,'descColor');
         font-size:px2rem(32px);
         border-radius:5px;
         -webkit-border-radius:5px;
@@ -248,17 +249,18 @@
         margin-right:px2rem(20px);
       }
       .next-wrap{
-        background-image: linear-gradient(-135deg, #00D1AA 0%, #00CFC6 100%);
         height:px2rem(90px);
         line-height:px2rem(90px);
         text-align: center;
         color:#fff;
+        @include bg-color('btnColor');
         font-size:px2rem(32px);
         border-radius: 5px;
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
         -ms-border-radius: 5px;
         -o-border-radius: 5px;
+
 }
       .prev-wrap,.next-wrap{
         display: flex;
