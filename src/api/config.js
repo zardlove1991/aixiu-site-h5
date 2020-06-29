@@ -1,9 +1,9 @@
 const protocol = window.location.protocol
 
 export default {
-  'USER': protocol + '//member-test.aihoge.com/',
+  'USER': protocol + '//member-pre.aihoge.com/',
   'API': protocol + '//core-v3d.ddapp.com/api/',
-  'API41': protocol + '//examinationapi-test.aihoge.com/api/',
+  'API41': protocol + '//examinationapi-pre.aihoge.com/api/',
   'PHPAPI': protocol + '//clientapi-v3d.ddapp.com/api/',
   'EXAMAPI': protocol + '//examinationapi-pre.aihoge.com/api/',
   'ONLINE_EXAM_API': protocol + '//examinationapi.aihoge.com/api/',
