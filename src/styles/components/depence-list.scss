@@ -52,7 +52,7 @@
     height: 100vh;
     overflow: scroll;
     box-sizing: border-box;
-    @include bg-color('bgColor');
+    background-color:#fff;
     border-radius: px2rem(20px);
     -webkit-border-radius: px2rem(20px);
     -moz-border-radius: px2rem(20px);
@@ -75,7 +75,7 @@
     height: px2rem(70px);
     border-radius: px2rem(35px) 0 0 px2rem(35px);
     box-shadow: 0 0 px2rem(35px) rgba(201, 201, 201, 0.3);
-    @include bg-color('bgColor');
+    background-color: #fff;
     z-index: 10;
     .bg{
       width: px2rem(36px);
