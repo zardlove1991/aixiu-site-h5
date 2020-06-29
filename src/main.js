@@ -17,8 +17,11 @@ router.afterEach(route => {
   let routerTitle = query && query.title ? query.title : route.meta.title
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
-  let id = router.currentRoute.params.id
-  setTheme(id)
+  let name = router.currentRoute.name
+  if (name !== 'depencestart') {
+    let id = router.currentRoute.params.id
+    setTheme(id)
+  }
 })
 
 /* eslint-disable no-new */

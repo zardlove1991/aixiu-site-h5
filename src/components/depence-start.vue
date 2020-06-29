@@ -94,7 +94,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle, setTheme } from '@/utils/utils'
+import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
@@ -137,7 +137,14 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
-        setTheme(this.id)
+        let info = this.examInfo
+        if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
+          let content = info.limit.color_scheme.content
+          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+        }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
@@ -167,7 +174,6 @@ export default {
         // 结束loading
         Indicator.close()
       } catch (err) {
-        console.log(err)
         // 结束loading
         Indicator.close()
       }
