@@ -5,7 +5,7 @@ import STORAGE from '@/utils/storage'
 let wechat = {
   authorize: (cbk) => {
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5-ceshi.aihoge.com/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=snsapi_userinfo&state=' + randomNum(6)
+    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=snsapi_userinfo&state=' + randomNum(6)
     if (window.$vue.$route.query.code) {
       cbk(1, window.$vue.$route.query.code)
     } else {
