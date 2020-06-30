@@ -146,6 +146,9 @@ const mutations = {
     } else {
       payload.timeStatus = 0
     }
+    if (payload.limit.background && payload.limit.background.indexpic) {
+      payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
+    }
     payload.start_time = payload.start_time.substring(5, payload.start_time.length)
     payload.end_time = payload.end_time.substring(5, payload.end_time.length)
     state.examInfo = payload

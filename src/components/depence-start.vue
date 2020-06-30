@@ -11,9 +11,9 @@
         答题规范:每个用户最多提交一次</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap" v-if="examInfo.indexpic">
+    <div class="header-wrap" v-if="examInfo.limit.background.indexpic">
       <template>
-        <img :src="examInfo.limit.backgroud.host + examInfo.limit.backgroud.filename" class="bg" />
+        <img :src="examInfo.limit.background.indexpic.url" class="bg" />
         <!--透明遮罩-->
       </template>
       <!--默认的背景图片-->
