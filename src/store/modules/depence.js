@@ -423,7 +423,7 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
-      var datas= {
+      var datas = {
         id: id,
         mark: 'examination',
         title: '',
