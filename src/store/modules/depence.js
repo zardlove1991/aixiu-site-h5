@@ -319,6 +319,7 @@ const actions = {
         Toast('没有试题ID,请求出错')
         return
       }
+      
       let params = {
         examination_id: id,
         page: pageNum || 1,
@@ -359,6 +360,19 @@ const actions = {
     return new Promise((resolve, reject) => {
       let { id } = payload
       // 开始请求数据
+      var datas = {
+        param: {
+          data: [{
+            id: id,
+            mark: 'examination',
+            title: '',
+            member_id: STORAGE.get('userinfo').id,
+            create_time: new Date().getTime()}]
+        }
+      }
+      API.setClick({params: datas}).then(res => {
+        console.log(res)
+      })
       Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamDetail({ query: { id } }).then(res => {
         Indicator.close() // 结束

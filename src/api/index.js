@@ -16,11 +16,13 @@ instance.interceptors.request.use((config) => {
   if (config.url.indexOf('setSubmit') > -1) {
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
   }
-  if (STORAGE.get('userinfo')) {
-    config.params.member = STORAGE.get('userinfo')
-  }
-  if (STORAGE.get('guid')) {
-    config.params.guid = STORAGE.get('guid')
+  if (config.url.indexOf('setClick') < 0) {
+    if (STORAGE.get('userinfo')) {
+      config.params.member = STORAGE.get('userinfo')
+    }
+    if (STORAGE.get('guid')) {
+      config.params.guid = STORAGE.get('guid')
+    }
   }
   return config
 }, error => Promise.reject(error))

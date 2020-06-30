@@ -13,6 +13,7 @@ let QCloundUrl = {
 let configUrl = {
   ...QCloundUrl,
   sumbitUV: 'setSubmit', // 提交次数
+  setClick: 'setClick', // click
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
@@ -34,6 +35,7 @@ let configUrl = {
 }
 
 export default {
+  setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
   getXiuzanUser: config => creataUser(configUrl.getXiuzanUser, 'GET', config, API_FLAG),
