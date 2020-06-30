@@ -311,6 +311,7 @@ function dealSaveRecord ({
 }
 
 const actions = {
+
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
@@ -422,6 +423,16 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
+      var datas= {
+        id: id,
+        mark: 'examination',
+        title: '',
+        member: STORAGE.get('userinfo'),
+        create_time: new Date().getTime()
+      }
+      API.sumbitUV({data: datas}).then(res => {
+        console.log(res)
+      })
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息

@@ -13,6 +13,9 @@ instance.interceptors.request.use((config) => {
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
+  if (config.url.indexOf('setSubmit') > -1) {
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+  }
   if (STORAGE.get('userinfo')) {
     config.params.member = STORAGE.get('userinfo')
   }
@@ -119,6 +122,16 @@ const getUrl = (url, config = {}, api = 'API') => {
 }
 
 export const createAPI = (url, method, config = {}, api) => {
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
+export const createSumbit = (url, method, config = {}, api) => {
+  api = 'sumbitAPI'
   return instance({
     url: getUrl(url, config, api),
     method,

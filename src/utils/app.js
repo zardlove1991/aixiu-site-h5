@@ -40,6 +40,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['USER']
       break
     }
+    case 'sumbitAPI': {
+      host = globalConfig['sumbitAPI']
+      break
+    }
     default: {
       host = globalConfig['API']
     }
