@@ -226,7 +226,7 @@ export default {
       let mode = this.mode
       let { index } = params // 每个input索引
       let analysisAnswer = data.extra.answer[index]
-      if (data.extra.answer[index]){
+      if (data.extra.answer[index]) {
         let value = this.curAnswer[index] || ''
         // 正常填空状态
         let length = 0

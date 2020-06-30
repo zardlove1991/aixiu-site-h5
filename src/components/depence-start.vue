@@ -1,7 +1,7 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
-    <div class="header-top" v-if="examInfo.person_status !== 0">
+    <div class="header-top" v-if="examInfo.person_status !== 0 && examInfo.person_status !== null">
       <div class="end-tips">测评已提交</div>
       <!-- <div class="to-score" @click.stop="toStatistic">查看测评结果</div> -->
     </div>
@@ -68,7 +68,11 @@
       </div>
     </div>
     <!--底部按钮-->
-    <div class="btn-area" >
+    <div class="btn-area" v-if="examInfo.timeStatus !== 0">
+      <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
+      <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+    </div>
+    <div class="btn-area" v-else>
       <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">开始答题</button>
       <button class="end-exambtn" v-else>开始答题</button>
     </div>
