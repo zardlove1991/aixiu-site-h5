@@ -25,7 +25,7 @@
         <div class="header-desc">
           <div class="title">{{examInfo.title}}</div>
         </div>
-        <div class="exam-time">
+        <div class="exam-time" v-if="examInfo.limit.is_time_show == 1">
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
