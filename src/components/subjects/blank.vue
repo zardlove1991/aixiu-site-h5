@@ -129,10 +129,8 @@ export default {
       // 匹配解析的数组
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
-      console.log('当前匹配的数组', matchArr)
       matchArr.forEach((val, index) => {
         let template = ''
-        console.log(val)
         // 处理不同填空的形式的渲染
         if (renderStyle === 'underline') {
           template = this._getUnderlineTemplate({ index })
@@ -143,6 +141,7 @@ export default {
         originTitle = originTitle.replace(val, template)
       })
       // 最终赋值
+      console.log(originTitle)
       this.newTitle = this._dealHtmlLine(originTitle)
     },
     addListener () {
@@ -227,21 +226,23 @@ export default {
       let mode = this.mode
       let { index } = params // 每个input索引
       let analysisAnswer = data.extra.answer[index]
-      let value = this.curAnswer[index] || ''
-      // 正常填空状态
-      let length = 0
-      if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
-      else length = analysisAnswer.length
-      // 计算长度
-      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
-      let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
-      let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
-      if (mode === 'analysis') {
-        let color = this._checkGroupState(index)
-        inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;border-radius:0;`
-        inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+      if (data.extra.answer[index]){
+        let value = this.curAnswer[index] || ''
+        // 正常填空状态
+        let length = 0
+        if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
+        else length = analysisAnswer.length
+        // 计算长度
+        let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
+        let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
+        let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+        if (mode === 'analysis') {
+          let color = this._checkGroupState(index)
+          inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;border-radius:0;`
+          inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+        }
+        return inputTemp
       }
-      return inputTemp
     },
     _getTextboxTemplate (params) {
       let mode = this.mode
