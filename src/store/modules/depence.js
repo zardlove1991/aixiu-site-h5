@@ -137,6 +137,15 @@ const mutations = {
     state.redirectParams = payload
   },
   SET_EXAM_DETAIL (state, payload) {
+    payload.time = payload.start_time
+    payload.times = payload.end_time
+    if (new Date(payload.time).getTime() > new Date().getTime()) {
+      payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
+    } else if (new Date(payload.times).getTime() < new Date().getTime()) {
+      payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
+    } else {
+      payload.timeStatus = 0
+    }
     payload.start_time = payload.start_time.substring(5, payload.start_time.length)
     payload.end_time = payload.end_time.substring(5, payload.end_time.length)
     state.examInfo = payload
