@@ -9,9 +9,18 @@
         <div @click="backUrl" class="back-btn">返回试题页</div>
     </div>
     <div class="header-bg">
-        <div class="title">表单统计结果</div>
-        <div class="submit-num" v-if="feedback.showTotal !== 0">
-            当前提交数：{{feedback.total_submit}}
+        <div class="exam-statInfo">
+            <div class="score-line">
+                <div class="score-area">
+                    <div class="my-score">89分</div>
+                    <div class="my-text">答对29题</div>
+                </div>
+                <div class="num-area">
+                    <div class="my-text rank-area">总分排名12名</div>
+                    <div class="my-text">交卷排名12名</div>
+                </div>
+            </div>
+            <div class="score-tips">付出总是有回报的！加油吧</div>
         </div>
     </div>
     <div class="content">
@@ -152,6 +161,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/styles/index.scss";
 $primary-color: #ff6a45;
 $font-color: #333;
 $font-family: PingFangSC-Regular,PingFang SC;
@@ -178,6 +188,17 @@ $font-weight: 400;
     i, span{
         display: inline-block;
     }
+    .my-score{
+        font-size:px2rem(72px);
+        line-height:px2rem(72px);
+        color:#FF6A45;
+        margin-bottom:px2rem(20px);
+    }
+    .my-text{
+        color:#666;
+        font-size:px2rem(30px);
+        line-height:px2rem(30px);
+    }
     .header-tip{
         width: 100%;
         height: 40px;
@@ -185,9 +206,6 @@ $font-weight: 400;
         color: $primary-color;
         padding: 0 10px 0 21px;
         box-sizing: border-box;
-        position: fixed;
-        top: 0;
-        left: 0;
         z-index: 2;
         .icon-wrap {
             vertical-align: middle;
@@ -195,7 +213,6 @@ $font-weight: 400;
         .tips-icon{
             width: .45rem;
             height: .45rem;
-            background: url('http://xzh5.hoge.cn/pre/marketing/images/form_tip_icon@3x.png') no-repeat left center;
             background-size: .45rem;
         }
         .tips-title{
@@ -214,14 +231,39 @@ $font-weight: 400;
     }
     .header-bg{
         width: 100%;
-        height: 120px;
-        background: $primary-color;
-        background: url(http://xzh5.hoge.cn/pre/marketing/images/form_header_bg@2x.png) no-repeat center;
-        background-position-y: -5px;
-        background-size: 375px 120px;
+        height: px2rem(315px);
+        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%, 100%);
+        background-repeat: no-repeat;
         position: relative;
-        margin-top: 40px;
         padding: 0;
+        padding-top:px2rem(78px);
+        .exam-statInfo{
+            margin:0 px2rem(28px);
+            height:px2rem(290px);
+            background-color:#fff;
+            box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
+            border-radius: 5px;
+            padding:px2rem(50px);
+
+        }
+        .score-tips{
+            margin-top:px2rem(48px);
+        }
+        .score-line{
+            display:flex;
+            align-items: center;
+            text-align:center;
+        }
+        .rank-area{
+            margin-bottom:px2rem(38px);
+        }
+        .score-area{
+            flex:1;
+            border-right:1px solid #DBDBDB;
+        }
+        .num-area{
+            flex:1;
+        }
         .title{
             font-size: 20px;
             font-family: PingFangSC-Medium,PingFang SC;
@@ -247,6 +289,7 @@ $font-weight: 400;
     }
     .content{
         padding: 15px;
+        margin-top:px2rem(78px);
         .operate-wrap{
             .btn{
                 width: 75px;
