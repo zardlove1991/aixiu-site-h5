@@ -319,7 +319,6 @@ const actions = {
         Toast('没有试题ID,请求出错')
         return
       }
-      
       let params = {
         examination_id: id,
         page: pageNum || 1,
