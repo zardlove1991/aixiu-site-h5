@@ -2,85 +2,89 @@
   <div class="form-statistic-wrap">
     <!--头部提示-->
     <div class="header-tip flex-v-center flex-between">
-        <span class="icon-wrap flex-v-center">
-            <i class="tips-icon"></i>
-            <span class="tips-title">测评已提交</span>
-        </span>
-        <div @click="backUrl" class="back-btn">返回试题页</div>
+      <span class="icon-wrap flex-v-center">
+        <i class="tips-icon"></i>
+        <span class="tips-title">测评已提交</span>
+      </span>
+      <div @click="backUrl" class="back-btn">返回试题页</div>
     </div>
     <div class="header-bg">
-        <div class="exam-statInfo">
-            <div class="score-line">
-                <div class="score-area">
-                    <div class="my-score">89分</div>
-                    <div class="my-text">答对29题</div>
-                </div>
-                <div class="num-area">
-                    <div class="my-text rank-area">总分排名12名</div>
-                    <div class="my-text">交卷排名12名</div>
-                </div>
-            </div>
-            <div class="score-tips">付出总是有回报的！加油吧</div>
+      <div class="exam-statInfo">
+        <div class="score-line">
+          <div class="score-area">
+            <div class="my-score">89分</div>
+            <div class="my-text">答对29题</div>
+          </div>
+          <div class="num-area">
+            <div class="my-text rank-area">总分排名12名</div>
+            <div class="my-text">交卷排名12名</div>
+          </div>
         </div>
+        <div class="score-tips">付出总是有回报的！加油吧</div>
+      </div>
     </div>
     <div class="content">
-        <div class="operate-wrap flex-v-center">
-            <span class="btn btn-left xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
-            @click="showType = 'pie'">饼状图</span>
-            <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
-            @click="showType = 'line'">柱状图</span>
+      <div class="operate-wrap flex-v-center">
+        <span class="btn btn-left xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+        @click="showType = 'pie'">饼状图</span>
+        <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+        @click="showType = 'line'">柱状图</span>
+      </div>
+      <div class="option-wrap" v-for="(item, key) in optionData" :key="key" :class="{'is-first': key === 0}">
+        <div v-if="isChoiceOption(item.type)">
+          <div class="title-wrap">
+            <span class="title">{{key + 1}}、{{item.title}}</span>
+            <span class="option-num">({{item.options.length}}个选项)</span>
+          </div>
+          <div v-if="showType === 'pie' && item.options">
+            <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
+          </div>
+          <ul v-if="item.options.length">
+            <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
+            :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
+              <div class="option-content flex-v-center">
+                  <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
+                  <el-radio v-else v-model="checkRadio" :label="val.is_choose" disabled class="radio-box" ></el-radio>
+                  <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
+                  <span class="text-content">{{val.name}}</span>
+                  <!-- 柱状图 进度条-->
+                  <div class="progress-wrap" v-if="showType !== 'pie'">
+                      <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
+                  </div>
+              </div>
+              <span class="option-percent" :class="`is-${showType}`">
+                  <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
+                  <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
+              </span>
+            </li>
+          </ul>
         </div>
-        <div class="option-wrap" v-for="(item, key) in optionData" :key="key" :class="{'is-first': key === 0}">
-            <div v-if="isChoiceOption(item.type)">
-                <div class="title-wrap">
-                    <span class="title">{{key + 1}}、{{item.title}}</span>
-                    <span class="option-num">({{item.options.length}}个选项)</span>
-                </div>
-                <div v-if="showType === 'pie'">
-                  <pie classify='pie' :data-array="item.value" :color-data="colorData" :el="item.form_type + key"></pie>
-                </div>
-                <ul v-if="item.options.length">
-                    <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
-                    :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
-                        <div class="option-content flex-v-center">
-                            <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
-                            <el-radio v-else v-model="checkRadio" :label="val.is_choose" disabled class="radio-box" ></el-radio>
-                            <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
-                            <span class="text-content">{{val.name}}</span>
-                            <!-- 柱状图 进度条-->
-                            <div class="progress-wrap" v-if="showType !== 'pie'">
-                                <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
-                            </div>
-                        </div>
-                        <span class="option-percent" :class="`is-${showType}`">
-                            <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
-                            <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
-                        </span>
-                    </li>
-                </ul>
-            </div>
-            <div v-else>
-                <div class="title-wrap">
-                    <span class="title">{{key + 1}}、{{item.title}}</span>
-                </div>
-                <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
-                    <el-image
-                        class="img-list"
-                        v-for="(pic, k) in item.srcList" :key="k"
-                        :src="pic"
-                        :preview-src-list="item.srcList"
-                        fit="cover"
-                        :class="{'is-multiply-pic': item.srcList.length > 3}">
-                    </el-image>
-                </div>
-                <div class="answer-wrap" v-else>
-                    <i class="answer-icon">答</i>
-                    <span class="answer-content" :class="{'is-no-answer': item.answer.length == 0}">
-                        {{item.answer ? item.answer : '未填写'}}
-                    </span>
-                </div>
-            </div>
+        <div v-else>
+          <div class="title-wrap">
+              <span class="title">{{key + 1}}、{{item.title}}</span>
+          </div>
+          <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
+            <el-image
+                class="img-list"
+                v-for="(pic, k) in item.srcList" :key="k"
+                :src="pic"
+                :preview-src-list="item.srcList"
+                fit="cover"
+                :class="{'is-multiply-pic': item.srcList.length > 3}">
+            </el-image>
+          </div>
+          <div class="answer-wrap" v-else>
+            <i class="answer-icon">答</i>
+            <span class="answer-content" :class="{'is-no-answer': item.answer.length == 0}">
+                {{item.answer ? item.answer : '未填写'}}
+            </span>
+          </div>
         </div>
+        <div class="standard-answer">
+          <div class="true-answer-title">正确答案：<span>A</span></div>
+          <div>答案解析：简单来说，现在世界是平的，一场好的活动策划也已经不能单靠内部的力量，需要连接到更多开放资源。</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -115,8 +119,19 @@ export default {
         count: 100
       }
       API.getExamDetailsList({params}).then((res) => {
-        console.log(res.data)
-        this.optionData = res.data
+        console.log('getExamDetailsList', res.data)
+        let data = res.data
+        if (data) {
+          data.forEach(item => {
+            let options = item.options
+            if (options) {
+              options.map(opt => {
+                opt.percent = opt.answer_counts
+              })
+            }
+          })
+        }
+        this.optionData = data
       })
     },
     backUrl () {
@@ -505,6 +520,16 @@ $font-weight: 400;
                     }
                 }
             }
+        }
+        .standard-answer {
+          background-color: #FFF6F4;
+          padding: 15px;
+          font-size: 14px;
+          color: #333333;
+          letter-spacing: 0.2px;
+          .true-answer-title {
+            margin-bottom: 20px;
+          }
         }
     }
 }
