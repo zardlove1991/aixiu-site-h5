@@ -20,7 +20,7 @@ const allOptions = {
       },
       series: [{
         type: 'pie',
-        radius: ['30%', '70%'],
+        radius: ['30%', '60%'],
         center: ['50%', '50%'],
         minAngle: 6,
         itemStyle: {
@@ -31,9 +31,6 @@ const allOptions = {
           }
         },
         label: {
-        //   formatter: (val) => {
-        //     return val.name.length > 5 ? `${val.name.substr(0, 5)}...(${val.percent}%)` : `${val.name}(${val.percent}%)`
-        //   },
           formatter: (text) => {
             const percent = text.percent.toFixed(0) + '%'
             return text.name.length > 5 ? `${text.name.substr(0, 5)}...(${percent})` : `${text.name}(${percent})`

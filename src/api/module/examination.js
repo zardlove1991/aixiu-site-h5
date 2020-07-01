@@ -21,6 +21,7 @@ let configUrl = {
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
+  getExamDetailsStatistics: 'client/examination/statistics',
   getErrorList: 'client/examination/mistakes', // 获得错题列表
   getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
   getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
@@ -54,6 +55,7 @@ export default {
   getErrorList: config => createAPI(configUrl.getErrorList, 'get', config, API_FLAG),
   getLatestErrorList: config => createAPI(configUrl.getLatestErrorList, 'get', config, API_FLAG),
   getExamDetailsList: config => createAPI(configUrl.getExamDetailsList, 'get', config, API_FLAG),
+  getExamDetailsStatistics: config => createAPI(configUrl.getExamDetailsStatistics, 'get', config, API_FLAG),
   submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),

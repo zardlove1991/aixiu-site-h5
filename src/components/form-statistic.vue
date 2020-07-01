@@ -12,12 +12,12 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">89分</div>
-            <div class="my-text">答对29题</div>
+            <div class="my-score">{{optionData.score}}分</div>
+            <div class="my-text">答对{{optionData.correct_num}}题</div>
           </div>
           <div class="num-area">
-            <div class="my-text rank-area">总分排名12名</div>
-            <div class="my-text">交卷排名12名</div>
+            <div class="my-text rank-area">总分排名{{optionData.score_ranking}}名</div>
+            <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
           </div>
         </div>
         <div class="score-tips">付出总是有回报的！加油吧</div>
@@ -30,11 +30,11 @@
         <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
       </div>
-      <div class="option-wrap" v-for="(item, key) in optionData" :key="key" :class="{'is-first': key === 0}">
+      <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
             <span class="title">{{key + 1}}、{{item.title}}</span>
-            <span class="option-num">({{item.options.length}}个选项)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
           <div v-if="showType === 'pie' && item.options">
             <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
@@ -46,7 +46,7 @@
                   <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
                   <el-radio v-else v-model="checkRadio" :label="val.is_choose" disabled class="radio-box" ></el-radio>
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
-                  <span class="text-content">{{val.name}}</span>
+                  <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
                   <div class="progress-wrap" v-if="showType !== 'pie'">
                       <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
@@ -54,7 +54,7 @@
               </div>
               <span class="option-percent" :class="`is-${showType}`">
                   <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
-                  <span>{{feedback.statisticType === 'percent' ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
+                  <span>{{(val.percent || val.percent === 0) ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
               </span>
             </li>
           </ul>
@@ -81,8 +81,8 @@
           </div>
         </div>
         <div class="standard-answer">
-          <div class="true-answer-title">正确答案：<span>A</span></div>
-          <div>答案解析：简单来说，现在世界是平的，一场好的活动策划也已经不能单靠内部的力量，需要连接到更多开放资源。</div>
+          <div class="true-answer-title">正确答案：<span>{{item.trueOption}}</span></div>
+          <div>答案解析：{{item.analysis}}</div>
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@
 <script>
 import Pie from './StatisticPie'
 import API from '@/api/module/examination'
-import { windowTitle, getUrlParam } from '../utils/utils'
+// import { windowTitle, getUrlParam } from '../utils/utils'
 
 export default {
   name: 'form-statistic',
@@ -107,32 +107,58 @@ export default {
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
       checkRadio: 1,
       feedback: {},
-      optionData: []
+      optionData: {},
+      radioIndex: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+      typeOptions: {
+        radio: '单选题',
+        singleblank: '填空题',
+        checkbox: '多选题'
+      }
     }
   },
   methods: {
     getExamList () {
       let id = this.$route.params.id
-      let params = {
-        examination_id: id,
-        page: 1,
-        count: 100
-      }
-      API.getExamDetailsList({params}).then((res) => {
-        console.log('getExamDetailsList', res.data)
-        let data = res.data
-        if (data) {
-          data.forEach(item => {
+      API.getExamDetailsStatistics({params: {id}}).then(res => {
+        this.optionData = res
+        let questions = res.questions
+        if (questions) {
+          questions.forEach(item => {
             let options = item.options
+            let trueOpt = ''
             if (options) {
-              options.map(opt => {
-                opt.percent = opt.answer_counts
+              options.map((opt, index) => {
+                console.log('xxxx', opt.choose_percent)
+                opt.percent = opt.choose_percent
+                if (opt.is_true === 1) {
+                  trueOpt = this.radioIndex[index]
+                }
               })
             }
+            item.trueOption = trueOpt
           })
         }
-        this.optionData = data
       })
+      // let params = {
+      //   examination_id: id,
+      //   page: 1,
+      //   count: 100
+      // }
+      // API.getExamDetailsList({params}).then((res) => {
+      //   console.log('getExamDetailsList', res.data)
+      //   let data = res.data
+      //   if (data) {
+      //     data.forEach(item => {
+      //       let options = item.options
+      //       if (options) {
+      //         options.map(opt => {
+      //           opt.percent = opt.answer_counts
+      //         })
+      //       }
+      //     })
+      //   }
+      //   this.optionData = data
+      // })
     },
     backUrl () {
       let examId = this.$route.params.id
@@ -140,6 +166,7 @@ export default {
         path: `/depencestart/${examId}`
       })
     },
+    /*
     async getResultData () {
       const member = decodeURIComponent(this.params.member)
       const id = this.params.id
@@ -162,6 +189,7 @@ export default {
       this.optionData = component
       windowTitle(this.feedback.title || '')
     },
+    */
     isCheckBox (val) {
       return ['checkbox', 'multiple', 'pictureMultiple'].includes(val)
     },
@@ -363,6 +391,10 @@ $font-weight: 400;
                     color: #999;
                     font-size: 13px;
                     margin-left: 7px;
+                    .my-score {
+                      font-size: 13px;
+                      color: #ff6a45;
+                    }
                 }
             }
             .choice-item{
