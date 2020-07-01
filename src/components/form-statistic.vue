@@ -39,12 +39,12 @@
           <div v-if="showType === 'pie' && item.options">
             <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
-          <ul v-if="item.options.length">
+          <ul v-if="item.options && item.options.length">
             <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
               <div class="option-content flex-v-center">
-                  <el-checkbox v-if="isCheckBox(item.form_type)" :checked="val.is_choose === 1" disabled class="check-box"></el-checkbox>
-                  <el-radio v-else v-model="checkRadio" :label="val.is_choose" disabled class="radio-box" ></el-radio>
+                  <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox>
+                  <el-radio v-else v-model="val.isCheckedId" :label="val.id" disabled class="radio-box" ></el-radio>
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
@@ -58,10 +58,15 @@
               </span>
             </li>
           </ul>
+          <div class="standard-answer">
+            <div class="true-answer-title">正确答案：<span>{{item.trueOption}}</span></div>
+            <div>答案解析：{{item.analysis}}</div>
+          </div>
         </div>
         <div v-else>
           <div class="title-wrap">
-              <span class="title">{{key + 1}}、{{item.title}}</span>
+            <span class="title">{{key + 1}}、{{item.title}}</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
             <el-image
@@ -75,14 +80,18 @@
           </div>
           <div class="answer-wrap" v-else>
             <i class="answer-icon">答</i>
-            <span class="answer-content" :class="{'is-no-answer': item.answer.length == 0}">
-                {{item.answer ? item.answer : '未填写'}}
+            <span class="answer-content" :class="{'is-no-answer': item.value.length == 0}">
+                <span v-if="item.value.length == 0">未填写</span>
+                <span v-for="(val, index) in item.value" :key="index">{{val}}</span>
             </span>
+            <div class="standard-answer" v-show="item.extra && item.extra.answer">
+              <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
+                正确答案<span v-if="item.extra.answer.length > 1">{{index + 1}}</span>：
+                <span>{{aw.answer}}</span>
+              </div>
+              <div>答案解析：{{item.analysis}}</div>
+            </div>
           </div>
-        </div>
-        <div class="standard-answer">
-          <div class="true-answer-title">正确答案：<span>{{item.trueOption}}</span></div>
-          <div>答案解析：{{item.analysis}}</div>
         </div>
       </div>
     </div>
@@ -105,7 +114,6 @@ export default {
       showType: 'pie',
       colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
-      checkRadio: 1,
       feedback: {},
       optionData: {},
       radioIndex: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
@@ -125,12 +133,18 @@ export default {
         if (questions) {
           questions.forEach(item => {
             let options = item.options
+            let checkedValue = item.value
             let trueOpt = ''
             if (options) {
               options.map((opt, index) => {
+                let isChecked = checkedValue.includes(opt.id)
+                opt.isChecked = isChecked
+                if (isChecked) {
+                  opt.isCheckedId = opt.id
+                }
                 opt.percent = opt.choose_percent
                 if (opt.is_true === 1) {
-                  trueOpt = this.radioIndex[index]
+                  trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
               })
             }

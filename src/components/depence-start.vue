@@ -1,14 +1,14 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
-    <div class="header-top" v-if="examInfo.person_status !== 0 && examInfo.person_status !== null">
-      <div class="end-tips">测评已提交</div>
-      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
-    </div>
-    <div class="header-normal" v-else>
+    <div class="header-normal" v-if="examInfo.person_status === 0">
       <div class="end-tips">
         <div class="end-tangan"></div>
         答题规范:每个用户最多提交一次</div>
+    </div>
+    <div class="header-top" v-else>
+      <div class="end-tips">测评已提交</div>
+      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap" v-if="examInfo.limit.background.indexpic">
