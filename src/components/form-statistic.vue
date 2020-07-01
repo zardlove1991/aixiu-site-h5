@@ -128,7 +128,6 @@ export default {
             let trueOpt = ''
             if (options) {
               options.map((opt, index) => {
-                console.log('xxxx', opt.choose_percent)
                 opt.percent = opt.choose_percent
                 if (opt.is_true === 1) {
                   trueOpt = this.radioIndex[index]
