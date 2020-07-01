@@ -2,7 +2,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { METHODS, DEPENCE } from '@/common/currency'
-import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
+import { getEnglishChar, dealAnnexObject, randomNum } from '@/utils/utils'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -366,7 +366,11 @@ const actions = {
             mark: 'examination',
             title: '',
             member_id: STORAGE.get('userinfo').id,
-            create_time: new Date().getTime()}]
+            // create_time: new Date().getTime(),
+            start_time: new Date().getTime(),
+            from: null,
+            hash: randomNum(13)
+          }]
         }
       }
       API.setClick({params: datas}).then(res => {
