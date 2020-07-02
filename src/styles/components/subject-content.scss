@@ -75,7 +75,7 @@
             -moz-border-radius:50%;
             -ms-border-radius:50%;
             -o-border-radius:50%;
-            @include bg-color('themeColor');
+            background-color:#04BE02;
           }
         }
         &.error{
