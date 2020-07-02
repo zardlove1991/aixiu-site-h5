@@ -54,7 +54,7 @@
               </div>
               <span class="option-percent" :class="`is-${showType}`">
                   <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
-                  <span>{{(val.percent || val.percent === 0) ? `${val.percent}%` : `${val.answer_counts}人`}}</span>
+                  <span>{{(val.showPercent || val.showPercent === 0) ? `${val.showPercent}%` : `${val.answer_counts}人`}}</span>
               </span>
             </li>
           </ul>
@@ -142,7 +142,8 @@ export default {
                 if (isChecked) {
                   opt.isCheckedId = opt.id
                 }
-                opt.percent = opt.choose_percent
+                opt.percent = opt.answer_counts
+                opt.showPercent = ((opt.answer_counts / item.counts) * 100).toFixed(2)
                 if (opt.is_true === 1) {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
@@ -241,6 +242,7 @@ $font-weight: 400;
 
 .form-statistic-wrap{
     font-family: $font-family;
+    background-color:#fff;
     i, span{
         display: inline-block;
     }
