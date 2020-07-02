@@ -189,7 +189,7 @@ export default {
     this.initList()
   },
   methods: {
-     toStatistic () {
+    toStatistic () {
       let examId = this.id
       this.$router.push({
         path: `/statistic/${examId}`
