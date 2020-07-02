@@ -11,9 +11,9 @@
       <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap" v-if="examInfo.limit.background.indexpic">
+    <div class="header-wrap" v-if="examInfo.indexpic">
       <template>
-        <img :src="examInfo.limit.background.indexpic.url" class="bg" />
+        <img :src="examInfo.indexpic.url" class="bg" />
         <!--透明遮罩-->
       </template>
       <!--默认的背景图片-->
