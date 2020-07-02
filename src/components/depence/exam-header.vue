@@ -307,7 +307,7 @@ export default {
         left:0;
         width: 0;
         height: px2rem(8px);
-        @include bg-color('themeColor');
+        background-color:#25C17C;
       }
     }
   }

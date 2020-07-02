@@ -94,7 +94,7 @@
         -o-border-radius:5px;
         margin-right: px2rem(40px);
         &.active{
-          @include bg-color('themeColor');
+          background-color: #25C17C;
           color:#fff;
           position:relative;
           text-align: center;
