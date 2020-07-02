@@ -74,7 +74,7 @@
     </div>
     <div class="btn-area" v-else>
       <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">开始答题</button>
-      <button class="end-exambtn" v-else>开始答题</button>
+      <button class="end-exambtn" v-else>{{examInfo.limit.button}}</button>
     </div>
     <my-model
       :show="App"
