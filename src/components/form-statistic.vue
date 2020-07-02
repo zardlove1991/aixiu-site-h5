@@ -48,7 +48,7 @@
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
-                  <div class="progress-wrap" v-if="showType !== 'pie' || item.type === 'checkbox'">
+                  <div class="progress-wrap" v-if="showType !== 'pie'">
                       <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
                   </div>
               </div>
@@ -143,7 +143,11 @@ export default {
                   opt.isCheckedId = opt.id
                 }
                 opt.percent = opt.answer_counts
-                opt.showPercent = ((opt.answer_counts / item.counts) * 100).toFixed(2)
+                if (item.content > 0) {
+                  opt.showPercent = ((opt.answer_counts / item.counts) * 100).toFixed(2)
+                } else {
+                  opt.showPercent = 0
+                }
                 if (opt.is_true === 1) {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
