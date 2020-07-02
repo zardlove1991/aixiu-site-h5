@@ -127,8 +127,11 @@ export default {
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
       // 匹配解析的数组
+      console.log(renderStyle)
+      console.log(originTitle)
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
+      console.log(matchArr, 'textboxReg')
       matchArr.forEach((val, index) => {
         let template = ''
         // 处理不同填空的形式的渲染

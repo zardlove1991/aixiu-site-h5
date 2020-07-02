@@ -228,6 +228,7 @@ export default {
 
 .depence-start-wrap{
   align-items: center;
+  position:relative;
   width: 100%;
   height: 100vh;
   padding-top:px2rem(80px);
@@ -423,7 +424,7 @@ export default {
   .btn-area{
     display:flex;
     width:100%;
-    position:fixed;
+    position:absolute;
     left:0;
     bottom:px2rem(30px);
   }
