@@ -425,7 +425,7 @@ export default {
     width:100%;
     position:fixed;
     left:0;
-    bottom:px2rem(20px);
+    bottom:px2rem(30px);
   }
   .start-exambtn{
     flex:1;
