@@ -423,7 +423,9 @@ export default {
   .btn-area{
     display:flex;
     width:100%;
-    margin-top:px2rem(354px);
+    position:fixed;
+    left:0;
+    bottom:px2rem(20px);
   }
   .start-exambtn{
     flex:1;
