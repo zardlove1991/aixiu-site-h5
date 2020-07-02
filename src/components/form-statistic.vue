@@ -421,7 +421,6 @@ $font-weight: 400;
                 font-family: $font-family;
                 font-weight: 500;;
                 color: $font-color;
-                line-height: 45px;
                 position: relative;
                 margin-bottom: 30px;
                 .check-box, .radio-box{
@@ -483,6 +482,9 @@ $font-weight: 400;
                     &.is-pie{
                         display: flex;
                         align-items: center;
+                        position:absolute;
+                        right:0;
+                        top:px2rem(5px);
                     }
                     &.is-line{
                         line-height: 1;
@@ -517,6 +519,7 @@ $font-weight: 400;
                 }
                 &.no-img{
                     margin-bottom: 15px;
+                    padding-right:40px;
                 }
                 &.is-show-line{
                     .check-box, .radio-box{
