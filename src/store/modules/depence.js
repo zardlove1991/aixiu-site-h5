@@ -371,7 +371,7 @@ const actions = {
             title: '',
             member_id: STORAGE.get('userinfo').id,
             // create_time: new Date().getTime(),
-            start_time: (new Date().getTime()) / 1000,
+            start_time: parseInt((new Date().getTime()) / 1000),
             from: null,
             hash: randomNum(13)
           }]
