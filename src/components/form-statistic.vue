@@ -36,7 +36,7 @@
             <span class="title">{{key + 1}}、{{item.title}}</span>
             <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
-          <div v-if="showType === 'pie' && item.options">
+          <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
             <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
@@ -48,7 +48,7 @@
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
-                  <div class="progress-wrap" v-if="showType !== 'pie'">
+                  <div class="progress-wrap" v-if="showType !== 'pie' || item.type === 'checkbox'">
                       <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
                   </div>
               </div>
