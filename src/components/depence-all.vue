@@ -50,7 +50,7 @@
       <div class="suspend-model" slot="content">
         <div class="end-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
-        <div class="tip-btn">查看分数</div>
+        <div class="tip-btn" @click.stop="toStatistic">查看分数</div>
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->
@@ -120,6 +120,12 @@ export default {
     this.initList()
   },
   methods: {
+     toStatistic () {
+      let examId = this.id
+      this.$router.push({
+        path: `/statistic/${examId}`
+      })
+    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
