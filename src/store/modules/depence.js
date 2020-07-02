@@ -315,7 +315,6 @@ function dealSaveRecord ({
 }
 
 const actions = {
-
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload

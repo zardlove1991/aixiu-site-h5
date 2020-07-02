@@ -31,7 +31,6 @@ function dealError ({code, msg}) {
   const route = window.$vue.$route
   let query = route.query
   let params = route.params
-
   if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
