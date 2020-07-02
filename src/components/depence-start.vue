@@ -311,7 +311,7 @@ export default {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(4px);
+      // filter: blur(4px);
     }
     .indexpic-bg{
       width: 100%;
