@@ -33,7 +33,7 @@
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、{{item.title}}</span>
+            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
             <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
           <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
@@ -65,7 +65,7 @@
         </div>
         <div v-else>
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、{{item.title}}</span>
+            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
             <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
@@ -405,6 +405,7 @@ $font-weight: 400;
                 margin-bottom: 8px;
                 .title{
                     font-size: 16px;
+                    display:flex;
                 }
                 .option-num{
                     color: #999;
