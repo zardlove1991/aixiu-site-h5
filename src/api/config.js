@@ -1,7 +1,7 @@
 const protocol = window.location.protocol
 
 export default {
-  'sumbitAPI': protocol + '//result.v2.aihoge.com/',
+  'sumbitAPI': protocol + '//result-pre.v2.aihoge.com/',
   'USER': protocol + '//member-pre.aihoge.com/',
   'API': protocol + '//core-v3d.ddapp.com/api/',
   'API41': protocol + '//examinationapi-pre.aihoge.com/api/',
