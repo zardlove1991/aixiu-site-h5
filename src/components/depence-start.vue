@@ -73,8 +73,8 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
     </div>
     <div class="btn-area" v-else>
-      <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">{{examInfo.limit.button}}</button>
-      <button class="end-exambtn" v-else>{{examInfo.limit.button}}</button>
+      <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
     </div>
     <my-model
       :show="App"
