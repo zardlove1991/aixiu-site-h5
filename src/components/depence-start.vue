@@ -4,10 +4,14 @@
     <div class="header-normal" v-if="examInfo.person_status === 0">
       <div class="end-tips">
         <div class="end-tangan"></div>
-        答题规范:每个用户最多提交一次</div>
+        答题规范:每个用户最多提交一次
+      </div>
     </div>
     <div class="header-top" v-else>
-      <div class="end-tips">测评已提交</div>
+      <div class="end-tips">
+        <i class="tips-icon"></i>
+        <span class="tips-msg">测评已提交</span>
+      </div>
       <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
@@ -253,7 +257,7 @@ export default {
     background-color:#FFF1ED;
     z-index: 1;
     height:px2rem(90px);
-    display:flex;
+    display: flex;
     flex:1;
     align-items: center;
     position: absolute;
@@ -265,6 +269,18 @@ export default {
     padding-right:px2rem(20px);
     @include font-dpr(14px);
     box-sizing: border-box;
+    .tips-icon {
+      display: inline-block;
+      width: px2rem(36px);
+      height: px2rem(36px);
+      background-size: px2rem(36px);
+      margin-right: 7px;
+      @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
+    }
+    .tips-msg {
+      line-height: 14px;
+      @include font-dpr(14px);
+    }
     .to-score{
       height:px2rem(54px);
       line-height:px2rem(54px);
@@ -278,12 +294,6 @@ export default {
     flex:1;
     display:flex;
     align-items: center;
-  }
-  .end-tangan{
-    width:px2rem(36px);
-    height:px2rem(36px);
-    margin-right:px2rem(20px);
-    @include img-retina('~@/assets/common/gantan@2x.png','~@/assets/common/gantan@3x.png', 100%, 100%);
   }
   .header-normal{
     background: rgba(0,0,0,0.50);
@@ -301,6 +311,13 @@ export default {
     padding-right:px2rem(20px);
     @include font-dpr(14px);
     box-sizing: border-box;
+    .end-tangan {
+      width:px2rem(36px);
+      height:px2rem(36px);
+      background-size: px2rem(36px);
+      margin-right:px2rem(20px);
+      @include img-retina('~@/assets/common/gantan@2x.png','~@/assets/common/gantan@3x.png', 100%, 100%);
+    }
   }
   .header-wrap{
     position: relative;
