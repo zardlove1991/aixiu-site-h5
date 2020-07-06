@@ -50,6 +50,12 @@
         <div class="desc">试题已做完，确认交卷吗？</div>
       </div>
     </my-model>
+    <div class="submit-success-mask" v-show="isSubmitSuccess">
+      <div class="submit-success">
+        <div class="submit-success-icon"></div>
+        <div class="submit-success-tips">提交成功，页面正在跳转...</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,7 +89,8 @@ export default {
     return {
       isShowSubjectList: false,
       isShowSubmitModel: false,
-      timeTip: null
+      timeTip: null,
+      isSubmitSuccess: false
     }
   },
   components: {
@@ -170,10 +177,14 @@ export default {
       try {
         await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
-        // 跳转去答题卡页面
-        this.$router.replace({
-          path: `/depencestart/${examId}`
-        })
+        this.isSubmitSuccess = true
+        setTimeout(() => {
+          this.isSubmitSuccess = false
+          // 跳转去答题卡页面
+          this.$router.replace({
+            path: `/depencestart/${examId}`
+          })
+        }, 1000)
       } catch (err) {
         console.log(err)
         // DEPENCE.dealErrorType({ examId, redirectParams }, err)
@@ -308,6 +319,53 @@ export default {
         width: 0;
         height: px2rem(8px);
         background-color:#25C17C;
+      }
+    }
+  }
+  .submit-success-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    .submit-success {
+      box-sizing: border-box;
+      width: px2rem(520px);
+      height: px2rem(168px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: px2rem(2px);
+      text-align: center;
+      box-shadow: 0px 0px 11px 0px rgba(0,0,0,0.21);
+      padding: px2rem( 40px, 75px);
+      background-color: #FFFFFF;
+      .submit-success-icon {
+        display: inline-block;
+        width: px2rem(42px);
+        height: px2rem(42px);
+        background-size: px2rem(42px);
+        -webkit-animation: circle 5s infinite linear;
+        @include img-retina("~@/assets/common/loading@2x.png","~@/assets/common/loading@3x.png", 100%, 100%);
+      }
+      @-webkit-keyframes circle {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(+360deg);
+        }
+      }
+      .submit-success-tips {
+        margin-top: px2rem(20px);
+        font-size: 16px;
+        color: #333333;
       }
     }
   }
