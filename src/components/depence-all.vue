@@ -192,7 +192,7 @@ export default {
       })
     },
     submitExam () {
-      console.log(this.answerList)
+      // console.log(this.answerList)
       this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
