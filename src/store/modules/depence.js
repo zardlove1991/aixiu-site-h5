@@ -133,17 +133,13 @@ const mutations = {
   SET_EXAM_DETAIL (state, payload) {
     payload.time = payload.start_time
     payload.times = payload.end_time
-    if (new Date(payload.time).getTime() > new Date().getTime()) {
+    if (new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
       payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
-    } else if (new Date(payload.times).getTime() < new Date().getTime()) {
+    } else if (new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
       payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
     } else {
       payload.timeStatus = 0
     }
-    console.log('xxxxxxxx',
-      '开始时间' + new Date(payload.time).getTime(),
-      '结束时间' + new Date(payload.times).getTime(),
-      '系统时间=' + new Date().getTime(), 'payload=' + payload.timeStatus)
     if (payload.indexpic) {
       payload.indexpic.url = payload.indexpic.host + payload.indexpic.filename
     }
