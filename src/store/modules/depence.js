@@ -362,28 +362,28 @@ const actions = {
     return new Promise((resolve, reject) => {
       let { id } = payload
       // 开始请求数据
-      var datas = {
-        param: {
-          data: [{
-            id: id,
-            mark: 'examination',
-            title: '',
-            member_id: STORAGE.get('userinfo').id,
-            // create_time: new Date().getTime(),
-            start_time: parseInt((new Date().getTime()) / 1000),
-            from: null,
-            hash: randomNum(13)
-          }]
-        }
-      }
-      API.setClick({params: datas}).then(res => {
-        console.log(res)
-      })
       Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamDetail({ query: { id } }).then(res => {
         Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
+        var datas = {
+          param: {
+            data: [{
+              id: id,
+              mark: 'examination',
+              title: info.title,
+              member_id: STORAGE.get('userinfo').id,
+              // create_time: new Date().getTime(),
+              start_time: parseInt((new Date().getTime()) / 1000),
+              from: null,
+              hash: randomNum(13)
+            }]
+          }
+        }
+        API.setClick({params: datas}).then(res => {
+          console.log(res)
+        })
         resolve()
       }).catch(err => {
         Indicator.close() // 结束
