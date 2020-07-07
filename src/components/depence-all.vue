@@ -122,6 +122,7 @@ export default {
   },
   methods: {
     toStatistic () {
+      this.isShowSuspendModels = false
       let examId = this.id
       this.$router.push({
         path: `/statistic/${examId}`
