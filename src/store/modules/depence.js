@@ -102,16 +102,10 @@ const mutations = {
         }
       }
       if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
-        console.log(222)
-        console.log(payload)
         list.push(payload)
-        console.log(list)
       }
     } else {
-      list.push(...{
-        'question_id': payload.question_id,
-        'options_id': payload.options_id
-      })
+      list.push(payload)
     }
     console.log(state.answerList, 'SET_ANSWER_LIST')
   },
@@ -255,7 +249,6 @@ function dealSaveRecord ({
   sortAnswerInfo,
   blankAnswerInfo
 }, optionFlag) {
-  console.log(subject)
   let dataIsEmpty = false
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
@@ -283,7 +276,7 @@ function dealSaveRecord ({
   } else if (['singleblank', 'mulitblank', 'optionblank'].includes(subject.type)) {
     let curBlankInfo = blankAnswerInfo[subject.id]
     if (!curBlankInfo || !curBlankInfo.length) dataIsEmpty = true
-    if (['singleblank', 'mulitblank'].includes(subject.type)) params.text = curBlankInfo
+    if (['singleblank', 'mulitblank'].includes(subject.type)) params.options_id = curBlankInfo
     else if (subject.type === 'optionblank') params.value = curBlankInfo
   } else {
     // 这边针对判断题、单选题、多选题做处理
@@ -553,6 +546,7 @@ const actions = {
         blankAnswerInfo
       }, optionFlag)
       // 更改状态
+      // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
       if (isEmpty) subjectAnswerInfo[subject.id] = false

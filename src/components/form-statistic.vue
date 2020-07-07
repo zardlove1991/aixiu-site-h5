@@ -116,7 +116,15 @@ export default {
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
       feedback: {},
       optionData: {},
-      radioIndex: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+      radioIndex: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+        'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG',
+        'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ',
+        'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
+        'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG',
+        'BH', 'BI', 'BJ', 'BK', 'BL', 'BM', 'BN', 'BO', 'BP', 'BQ',
+        'BR', 'BS', 'BT', 'BU', 'BV', 'BW', 'BX', 'BY', 'BZ'],
       typeOptions: {
         radio: '单选题',
         singleblank: '填空题',
@@ -268,9 +276,10 @@ $font-weight: 400;
             vertical-align: middle;
         }
         .tips-icon{
-            width: .45rem;
-            height: .45rem;
-            background-size: .45rem;
+          width: px2rem(36px);
+          height: px2rem(36px);
+          background-size: px2rem(36px);
+          @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
         }
         .tips-title{
             font-size: 14px;
