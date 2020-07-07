@@ -133,6 +133,9 @@ export default {
       let limitTime = this.examInfo.limit_time
       this.duration = this.list[0].remain_time
       let timeFun = () => {
+        if (this.duration === 2) {
+          this.$emit('notimeup')
+        }
         if (this.duration < 0) {
           clearInterval(this.timer)
           this.$emit('timeup') // 发送考试时间到的事件

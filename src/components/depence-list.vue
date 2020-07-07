@@ -265,6 +265,7 @@ export default {
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels
+      this.endExam()
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel

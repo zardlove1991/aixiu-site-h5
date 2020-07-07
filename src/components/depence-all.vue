@@ -7,6 +7,7 @@
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
       @timeup="endTime"
+      @notimeup="noEndTime"
       @showlist="toggetSubjectList">
     </exam-header>
     <!--主体试题渲染-->
@@ -196,8 +197,12 @@ export default {
       this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
+    noEndTime () {
+      this.saveAnswerRecords(this.answerList)
+    },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels
+      this.endExam()
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
