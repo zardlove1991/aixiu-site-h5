@@ -436,6 +436,7 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
+      /*
       var datas = {
         id: id,
         mark: 'examination',
@@ -446,6 +447,7 @@ const actions = {
       API.sumbitUV({data: datas}).then(res => {
         console.log(res)
       })
+      */
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
