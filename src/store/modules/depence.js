@@ -140,6 +140,10 @@ const mutations = {
     } else {
       payload.timeStatus = 0
     }
+    console.log('xxxxxxxx',
+      '开始时间' + new Date(payload.time).getTime(),
+      '结束时间' + new Date(payload.times).getTime(),
+      '系统时间=' + new Date().getTime(), 'payload=' + payload.timeStatus)
     if (payload.indexpic) {
       payload.indexpic.url = payload.indexpic.host + payload.indexpic.filename
     }
