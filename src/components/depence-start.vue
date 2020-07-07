@@ -77,7 +77,7 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
     </div>
     <div class="btn-area" v-else>
-      <button class="start-exambtn" @click.stop="goExamPage" v-if ="examInfo.person_status === 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" @click.stop="isShowPassword()" v-if ="examInfo.person_status === 0">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
     </div>
     <my-model
@@ -95,10 +95,19 @@
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
       <button class="show" @click.stop="jumpGradePage">查看成绩</button>
     </div> -->
+    <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
+      <div class="password-limit-wrap" @click.stop>
+        <div class="password-limit-title">请输入密码参与答题</div>
+        <input class="password-limit" placeholder='请输入密码' v-model="password" type="text" />
+        <div class="password-tips">{{passwordTips}}</div>
+        <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
@@ -119,7 +128,10 @@ export default {
         easy: 0,
         middle: 2,
         hard: 4
-      }
+      },
+      password: '',
+      visitPasswordLimit: false,
+      passwordTips: ''
     }
   },
   components: { MyModel },
@@ -184,6 +196,36 @@ export default {
       } catch (err) {
         // 结束loading
         Indicator.close()
+      }
+    },
+    isShowPassword () {
+      let limit = this.examInfo.limit.visit_password_limit
+      if (limit && limit === 1) {
+        this.visitPasswordLimit = true
+      } else {
+        this.goExamPage()
+      }
+    },
+    hiddenPasswordLimit () {
+      this.visitPasswordLimit = false
+      this.passwordTips = ''
+      this.password = ''
+    },
+    onCommitPassword () {
+      if (!this.password) {
+        this.passwordTips = '请输入密码'
+      } else {
+        // 发送请求校验密码是否正确
+        let examId = this.id
+        API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
+          this.hiddenPasswordLimit()
+          this.goExamPage()
+        }).catch(err => {
+          // console.log(err)
+          if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
+            this.passwordTips = err.error_message
+          }
+        })
       }
     },
     goExamPage () {
@@ -539,6 +581,65 @@ export default {
       -moz-border-radius: 5px;
       -ms-border-radius: 5px;
       -o-border-radius: 5px;
+    }
+  }
+  .password-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    .password-limit-wrap {
+      box-sizing: border-box;
+      width: px2rem(600px);
+      height: px2rem(490px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: px2rem(8px);
+      background-color: #fff;
+      .password-limit-title {
+        font-weight: 500;
+        font-size: px2rem(34px);
+        color: #333333;
+        margin-bottom: px2rem(60px);
+      }
+      .password-limit {
+        width: px2rem(540px);
+        height: px2rem(90px);
+        padding: px2rem(27px) px2rem(38px);
+        border-radius: px2rem(8px);
+        border: 1px solid #DBDBDB;
+        font-size: px2rem(34px);
+        margin-bottom: px2rem(10px);
+        &::placeholder {
+          color: #999999;
+        }
+      }
+      .password-tips {
+        color: red;
+        width: px2rem(540px);
+        height: px2rem(30px);
+        text-align: left;
+        line-height: px2rem(30px);
+        font-size: px2rem(28px);
+        margin-bottom: px2rem(30px);
+      }
+      .password-limit-surebtn {
+        width: px2rem(305px);
+        height: px2rem(90px);
+        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        border-radius: px2rem(12px);
+        font-size: px2rem(34px);
+        color: #fff;
+        border: 0;
+      }
     }
   }
 }

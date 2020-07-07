@@ -82,20 +82,19 @@ instance.interceptors.response.use((res, xhr) => {
       let curErrorCode = res.data.error || res.data.error_code
       let curErrorMsg = res.data.message || res.data.error_message
       dealError({ code: curErrorCode, msg: curErrorMsg })
+    }
+    let errorDataObj = error.response.data
+    if (errorDataObj && errorDataObj.error_code) {
+      rej = {
+        error_code: errorDataObj.error_code,
+        error_message: errorDataObj.error_message,
+        status: error.response.status
+      }
     } else {
-      let errorDataObj = error.response.data
-      if (errorDataObj && errorDataObj.error_code) {
-        rej = {
-          error_code: errorDataObj.error_code,
-          error_message: errorDataObj.error_message,
-          status: error.response.status
-        }
-      } else {
-        rej = {
-          error_code: error.response.data,
-          error_message: error.response.statusText,
-          status: error.response.status
-        }
+      rej = {
+        error_code: error.response.data,
+        error_message: error.response.statusText,
+        status: error.response.status
       }
     }
   } else {
