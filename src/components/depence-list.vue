@@ -7,6 +7,7 @@
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
       @timeup="endTime"
+      @notimeup="noEndTime"
       @showlist="toggetSubjectList">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
@@ -174,7 +175,7 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos',
+      'examId', 'examInfo', 'curSubjectVideos', 'answerList',
       'isShowSubjectList'
     ]),
     isShowSubmitBtn () {
@@ -262,7 +263,11 @@ export default {
       })
     },
     submitExam () {
+      this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
+    },
+    noEndTime () {
+      this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels
@@ -317,6 +322,7 @@ export default {
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
