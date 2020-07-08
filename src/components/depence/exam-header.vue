@@ -56,6 +56,14 @@
         <div class="submit-success-tips">提交成功，页面正在跳转...</div>
       </div>
     </div>
+    <div class="submit-success-mask" v-show="isPopSubmitSuccess">
+      <div class="pop-submit-success">
+        <div class="pop-icon"></div>
+        <div class="pop-title">{{ pop.title ? pop.title : '提交成功' }}</div>
+        <div class="pop-content">{{ pop.content ? pop.content : '试题提交成功，感谢您的答题' }}</div>
+        <button class="pop-btn" @click.stop="pageToStart()">知道了</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,7 +98,9 @@ export default {
       isShowSubjectList: false,
       isShowSubmitModel: false,
       timeTip: null,
-      isSubmitSuccess: false
+      isSubmitSuccess: false,
+      isPopSubmitSuccess: false,
+      pop: {}
     }
   },
   components: {
@@ -174,24 +184,43 @@ export default {
     //   }
     // },
     async confirmSubmitModel () {
-      let examId = this.examId
       let subject = this.currentSubjectInfo
       this.toggleSubmitModel()
       try {
         await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
-        this.isSubmitSuccess = true
-        setTimeout(() => {
-          this.isSubmitSuccess = false
+        let rules = this.examInfo.limit.submit_rules
+        if (rules) {
+          let { link, result, pop } = rules
+          if (link) {
+            this.isSubmitSuccess = true
+            setTimeout(() => {
+              this.isSubmitSuccess = false
+              window.location.href = link
+            }, 1000)
+          } else if (result) {
+            let examId = this.examId
+            this.$router.replace({
+              path: `/statistic/${examId}`
+            })
+          } else if (pop) {
+            this.isPopSubmitSuccess = true
+            this.pop = pop
+          }
+        } else {
           // 跳转去答题卡页面
-          this.$router.replace({
-            path: `/depencestart/${examId}`
-          })
-        }, 1000)
+          this.pageToStart()
+        }
       } catch (err) {
         console.log(err)
         // DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
+    },
+    pageToStart () {
+      let examId = this.examId
+      this.$router.replace({
+        path: `/depencestart/${examId}`
+      })
     },
     toggleSubmitModel () {
       if (this.showSubmitModel) {
@@ -369,6 +398,44 @@ export default {
         margin-top: px2rem(20px);
         font-size: 16px;
         color: #333333;
+      }
+    }
+    .pop-submit-success {
+      box-sizing: border-box;
+      width: px2rem(600px);
+      height: px2rem(650px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: px2rem(8px);
+      text-align: center;
+      background-color: #FFFFFF;
+      .pop-icon {
+        display: inline-block;
+        width: px2rem(221px);
+        height: px2rem(193px);
+        background-size:  px2rem(221px) px2rem(193px);
+        @include img-retina("~@/assets/common/answer-pop@2x.png","~@/assets/common/answer-pop@3x.png", 100%, 100%);
+      }
+      .pop-title {
+        color: #666666;
+        font-size: px2rem(30px);
+      }
+      .pop-content {
+        color: #999999;
+        font-size: px2rem(28px);
+        margin-top: px2rem(36px);
+        margin-bottom: px2rem(50px);
+      }
+      .pop-btn {
+        width: px2rem(305px);
+        height: px2rem(90px);
+        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        border-radius: px2rem(12px);
+        font-size: px2rem(34px);
+        color: #fff;
+        border: 0;
       }
     }
   }

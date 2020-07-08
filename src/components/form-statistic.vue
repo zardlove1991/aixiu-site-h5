@@ -20,7 +20,7 @@
             <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
           </div>
         </div>
-        <div class="score-tips">付出总是有回报的！加油吧</div>
+        <div class="score-tips">{{statMsg}}</div>
       </div>
     </div>
     <div class="content">
@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import STORAGE from '@/utils/storage'
 import Pie from './StatisticPie'
 import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
@@ -129,13 +130,54 @@ export default {
         radio: '单选题',
         singleblank: '填空题',
         checkbox: '多选题'
-      }
+      },
+      statMsg: ''
     }
   },
   methods: {
+    initStatInfo (score, correctNum, total) {
+      if (!score || (!correctNum && correctNum !== 0) || !total) {
+        this.statMsg = '是不是开小差了？'
+        return
+      }
+      let statInfo = STORAGE.get('statInfo')
+      if (statInfo && statInfo.type && statInfo.data) {
+        let { type, data } = statInfo
+        // type是score表示不同的得分不同文案,correct代表不同正确率不同文案
+        if (type === 'score') {
+          let msg = ''
+          for (let i = 0; i < data.length; i++) {
+            if (score > data[i].start && score <= data[i].end) {
+              msg = data[i].text
+              break
+            }
+          }
+          this.statMsg = msg
+        } else if (type === 'correct') {
+          let msg = ''
+          let correct = parseInt(correctNum / total * 100)
+          for (let i = 0; i < data.length; i++) {
+            if (correct > data[i].start && correct <= data[i].end) {
+              msg = data[i].text
+              break
+            }
+          }
+          this.statMsg = msg
+        }
+      } else {
+        if (score >= 80) {
+          this.statMsg = '付出总是有回报的！'
+        } else if (score >= 30) {
+          this.statMsg = '是不是开小差了？'
+        } else if (score >= 0) {
+          this.statMsg = '很遗憾哦，还需要继续努力'
+        }
+      }
+    },
     getExamList () {
       let id = this.$route.params.id
       API.getExamDetailsStatistics({params: {id}}).then(res => {
+        this.initStatInfo(res.score, res.correct_num, res.questions.length)
         this.optionData = res
         let questions = res.questions
         if (questions) {

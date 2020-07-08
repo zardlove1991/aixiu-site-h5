@@ -165,6 +165,9 @@ export default {
           document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
           document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
         }
+        if (info.limit && info.limit.submit_rules && info.limit.submit_rules.result) {
+          STORAGE.set('statInfo', info.limit.submit_rules.result)
+        }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
