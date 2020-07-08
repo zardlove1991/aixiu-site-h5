@@ -151,7 +151,6 @@ export default {
         await this.getAnswerCardInfo({id: examId, guid: STORAGE.get('guid')})
         // 判断当前用户考试是否在进行中
         let examInfo = this.examInfo
-        console.log(examInfo)
         if (examInfo.person_status === 2) this.isShowOpsPage = true
         // 判断是让底部按钮居中 根据显示的条件判断当前按钮的个数在设置样式
         let isPassExam = this._dealState(1)
