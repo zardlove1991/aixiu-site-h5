@@ -147,7 +147,7 @@ export default {
         if (type === 'score') {
           let msg = ''
           for (let i = 0; i < data.length; i++) {
-            if (score > data[i].start && score <= data[i].end) {
+            if (score >= data[i].start && score <= data[i].end) {
               msg = data[i].text
               break
             }
@@ -157,7 +157,7 @@ export default {
           let msg = ''
           let correct = parseInt(correctNum / total * 100)
           for (let i = 0; i < data.length; i++) {
-            if (correct > data[i].start && correct <= data[i].end) {
+            if (correct >= data[i].start && correct <= data[i].end) {
               msg = data[i].text
               break
             }
@@ -165,12 +165,12 @@ export default {
           this.statMsg = msg
         }
       } else {
-        if (score >= 80) {
-          this.statMsg = '付出总是有回报的！'
-        } else if (score >= 30) {
+        if (score <= 59) {
           this.statMsg = '是不是开小差了？'
-        } else if (score >= 0) {
-          this.statMsg = '很遗憾哦，还需要继续努力'
+        } else if (score <= 79) {
+          this.statMsg = '合格了，继续努力吧'
+        } else {
+          this.statMsg = '付出总是有回报的！'
         }
       }
     },
