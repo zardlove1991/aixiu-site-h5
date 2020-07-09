@@ -50,26 +50,24 @@
         <div class="desc">试题已做完，确认交卷吗？</div>
       </div>
     </my-model>
-    <div class="submit-success-mask" v-show="isSubmitSuccess">
-      <div class="submit-success">
-        <div class="submit-success-icon"></div>
-        <div class="submit-success-tips">提交成功，页面正在跳转...</div>
-      </div>
-    </div>
-    <div class="submit-success-mask" v-show="isPopSubmitSuccess">
-      <div class="pop-submit-success">
-        <div class="pop-icon"></div>
-        <div class="pop-title">{{ pop.title ? pop.title : '提交成功' }}</div>
-        <div class="pop-content">{{ pop.content ? pop.content : '试题提交成功，感谢您的答题' }}</div>
-        <button class="pop-btn" @click.stop="pageToStart()">知道了</button>
-      </div>
-    </div>
+    <link-dialog :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
+    <pop-dialog :show="isPopSubmitSuccess" :pop="pop" @confirm="pageToStart()"></pop-dialog>
+    <luck-draw-dialog
+      :show="isLuckSubmitSuccess"
+      :isLuckDraw="isLuckDraw"
+      :luckDrawTips="luckDrawTips"
+      @cancel="pageToStart()"
+      @confirm="pageToStart()">
+    </luck-draw-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import MyModel from './model'
+import LinkDialog from '../dialog/link-dialog'
+import PopDialog from '../dialog/pop-dialog'
+import LuckDrawDialog from '../dialog/luck-draw-dialog'
 // import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
 
@@ -98,13 +96,16 @@ export default {
       isShowSubjectList: false,
       isShowSubmitModel: false,
       timeTip: null,
-      isSubmitSuccess: false,
-      isPopSubmitSuccess: false,
-      pop: {}
+      isSubmitSuccess: false, // 外链弹窗显隐
+      isPopSubmitSuccess: false, // 弹窗显隐
+      pop: {}, // 弹窗显示内容
+      isLuckSubmitSuccess: false, // 抽奖页显隐
+      isLuckDraw: false, // 是否是有资格抽奖
+      luckDrawTips: ['很遗憾，测验未合格', '错过了抽奖机会'] // 抽奖提示内容 ['恭喜你，答题优秀', '获得抽奖机会']
     }
   },
   components: {
-    MyModel
+    MyModel, PopDialog, LinkDialog, LuckDrawDialog
   },
   computed: {
     ...mapGetters('depence', [
@@ -351,91 +352,6 @@ export default {
         width: 0;
         height: px2rem(8px);
         background-color:#25C17C;
-      }
-    }
-  }
-  .submit-success-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    .submit-success {
-      box-sizing: border-box;
-      width: px2rem(520px);
-      height: px2rem(168px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: px2rem(2px);
-      text-align: center;
-      box-shadow: 0px 0px 11px 0px rgba(0,0,0,0.21);
-      padding: px2rem( 40px, 75px);
-      background-color: #FFFFFF;
-      .submit-success-icon {
-        display: inline-block;
-        width: px2rem(42px);
-        height: px2rem(42px);
-        background-size: px2rem(42px);
-        -webkit-animation: circle 5s infinite linear;
-        @include img-retina("~@/assets/common/loading@2x.png","~@/assets/common/loading@3x.png", 100%, 100%);
-      }
-      @-webkit-keyframes circle {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(+360deg);
-        }
-      }
-      .submit-success-tips {
-        margin-top: px2rem(20px);
-        font-size: 16px;
-        color: #333333;
-      }
-    }
-    .pop-submit-success {
-      box-sizing: border-box;
-      width: px2rem(600px);
-      height: px2rem(650px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: px2rem(8px);
-      text-align: center;
-      background-color: #FFFFFF;
-      .pop-icon {
-        display: inline-block;
-        width: px2rem(221px);
-        height: px2rem(193px);
-        background-size:  px2rem(221px) px2rem(193px);
-        @include img-retina("~@/assets/common/answer-pop@2x.png","~@/assets/common/answer-pop@3x.png", 100%, 100%);
-      }
-      .pop-title {
-        color: #666666;
-        font-size: px2rem(30px);
-      }
-      .pop-content {
-        color: #999999;
-        font-size: px2rem(28px);
-        margin-top: px2rem(36px);
-        margin-bottom: px2rem(50px);
-      }
-      .pop-btn {
-        width: px2rem(305px);
-        height: px2rem(90px);
-        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-        border-radius: px2rem(12px);
-        font-size: px2rem(34px);
-        color: #fff;
-        border: 0;
       }
     }
   }
