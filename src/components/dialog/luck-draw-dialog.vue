@@ -5,8 +5,8 @@
         <span v-for="(item, index) in luckDrawTips" :key="index">{{item}}<br /></span>
       </div>
       <div :class="['luck-base-icon', isLuckDraw ? 'luck-icon' : 'noluck-icon']"></div>
-      <div v-if="isLuckDraw" class="luck-base-btn luck-btn"></div>
-      <div v-else class="luck-base-btn noluck-btn" @click.stop="confirm()"></div>
+      <div v-if="isLuckDraw" class="luck-base-btn luck-btn" @click.stop="confirm()"></div>
+      <div v-else class="luck-base-btn noluck-btn" @click.stop="cancel()"></div>
       <div class="close-btn" @click.stop="cancel()"></div>
     </div>
   </div>
