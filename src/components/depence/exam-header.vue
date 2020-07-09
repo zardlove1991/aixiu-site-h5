@@ -57,7 +57,7 @@
       :isLuckDraw="isLuckDraw"
       :luckDrawTips="luckDrawTips"
       @cancel="pageToStart()"
-      @confirm="pageToStart()">
+      @confirm="pageToLuckDraw()">
     </luck-draw-dialog>
   </div>
 </template>
@@ -101,7 +101,7 @@ export default {
       pop: {}, // 弹窗显示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isLuckDraw: false, // 是否是有资格抽奖
-      luckDrawTips: ['很遗憾，测验未合格', '错过了抽奖机会'] // 抽奖提示内容 ['恭喜你，答题优秀', '获得抽奖机会']
+      luckDrawTips: [] // 抽奖提示内容
     }
   },
   components: {
@@ -112,7 +112,7 @@ export default {
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
       'essayAnswerInfo', 'oralAnswerInfo',
-      'subjectAnswerInfo'
+      'subjectAnswerInfo', 'luckDrawLink'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -190,10 +190,21 @@ export default {
       try {
         await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
+        clearInterval(this.timer)
         let rules = this.examInfo.limit.submit_rules
         if (rules) {
-          let { link, result, pop } = rules
-          if (link) {
+          let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
+          if (isOpenRaffle && isOpenRaffle !== 0) {
+            // 抽奖
+            this.isLuckSubmitSuccess = true
+            if (this.luckDrawLink) {
+              this.isLuckDraw = true
+              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+            } else {
+              this.isLuckDraw = false
+              this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+            }
+          } else if (link) {
             this.isSubmitSuccess = true
             setTimeout(() => {
               this.isSubmitSuccess = false
@@ -207,6 +218,9 @@ export default {
           } else if (pop) {
             this.isPopSubmitSuccess = true
             this.pop = pop
+          } else {
+            // 跳转去答题卡页面
+            this.pageToStart()
           }
         } else {
           // 跳转去答题卡页面
@@ -215,6 +229,16 @@ export default {
       } catch (err) {
         console.log(err)
         // DEPENCE.dealErrorType({ examId, redirectParams }, err)
+      }
+    },
+    pageToLuckDraw () {
+      let link = this.luckDrawLink
+      if (link) {
+        this.isLuckSubmitSuccess = false
+        window.location.href = link
+        this.setLuckDrawLink('')
+      } else {
+        this.isLuckSubmitSuccess = false
       }
     },
     pageToStart () {
@@ -251,7 +275,8 @@ export default {
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
-      checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
+      checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
+      setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
     })
   }
 }

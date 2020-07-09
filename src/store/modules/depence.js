@@ -20,7 +20,8 @@ const state = {
   oralAnswerInfo: {}, // 保存语音问答题中的信息
   sortAnswerInfo: {}, // 保存排序的题目的信息
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
-  curSubjectVideos: [] // 当前题目下的所有视频组件信息 用来统一控制视频状态
+  curSubjectVideos: [], // 当前题目下的所有视频组件信息 用来统一控制视频状态
+  luckDrawLink: null
 }
 
 const getters = {
@@ -86,7 +87,8 @@ const getters = {
   oralAnswerInfo: state => state.oralAnswerInfo,
   sortAnswerInfo: state => state.sortAnswerInfo,
   blankAnswerInfo: state => state.blankAnswerInfo,
-  curSubjectVideos: state => state.curSubjectVideos
+  curSubjectVideos: state => state.curSubjectVideos,
+  luckDrawLink: state => state.luckDrawLink
 }
 
 const mutations = {
@@ -108,6 +110,9 @@ const mutations = {
       list.push(payload)
     }
     console.log(state.answerList, 'SET_ANSWER_LIST')
+  },
+  SET_LUCK_DRAW_LINK (state, payload) {
+    state.luckDrawLink = payload
   },
   SET_RENDER_TYPE (state, payload = 'exam') {
     state.renderType = payload
@@ -455,6 +460,10 @@ const actions = {
         // 结束
         Indicator.close()
         if (res.success === 1) {
+          let raffle = res.raffle
+          if (raffle && raffle.raffle_url) {
+            commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
+          }
           resolve()
         } else {
           throw new Error({error_message: '结束考试出错'})
