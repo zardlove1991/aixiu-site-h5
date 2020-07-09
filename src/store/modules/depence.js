@@ -2,7 +2,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { METHODS, DEPENCE } from '@/common/currency'
-import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
+import { getEnglishChar, dealAnnexObject, randomNum } from '@/utils/utils'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -16,6 +16,7 @@ const state = {
   isShowModelThumb: false, // 判断界面是否有弹窗展示
   isShowSubjectList: false, // 是否显示考试答题缩率展示
   essayAnswerInfo: {}, // 保存试题中的问答题表单信息
+  answerList: [], // 全部答题信息
   oralAnswerInfo: {}, // 保存语音问答题中的信息
   sortAnswerInfo: {}, // 保存排序的题目的信息
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
@@ -26,6 +27,7 @@ const getters = {
   examList (state) {
     let list = state.examList
     list.map((item, index) => {
+      item.index = index + 1
       item.typeTip = METHODS.getSubjetType(item.type)
       // 添加一个正确信息选项的对象
       item.correntInfo = []
@@ -80,6 +82,7 @@ const getters = {
   isShowModelThumb: state => state.isShowModelThumb,
   isShowSubjectList: state => state.isShowSubjectList,
   essayAnswerInfo: state => state.essayAnswerInfo,
+  answerList: state => state.answerList,
   oralAnswerInfo: state => state.oralAnswerInfo,
   sortAnswerInfo: state => state.sortAnswerInfo,
   blankAnswerInfo: state => state.blankAnswerInfo,
@@ -87,6 +90,25 @@ const getters = {
 }
 
 const mutations = {
+  SET_ANSWER_LIST (state, payload) {
+    let list = state.answerList
+    let show = true
+    console.log(list, 'bedore_SET_ANSWER_LIST')
+    if (list && list[0]) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].question_id === payload.question_id && list[i].options_id) {
+          list[i].options_id = payload.options_id
+          show = false
+        }
+      }
+      if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
+        list.push(payload)
+      }
+    } else {
+      list.push(payload)
+    }
+    console.log(state.answerList, 'SET_ANSWER_LIST')
+  },
   SET_RENDER_TYPE (state, payload = 'exam') {
     state.renderType = payload
   },
@@ -109,6 +131,24 @@ const mutations = {
     state.redirectParams = payload
   },
   SET_EXAM_DETAIL (state, payload) {
+    payload.time = payload.start_time
+    payload.times = payload.end_time
+    if (new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
+      payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
+    } else if (new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
+      payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
+    } else {
+      payload.timeStatus = 0
+    }
+    if (payload.indexpic) {
+      payload.indexpic.url = payload.indexpic.host + payload.indexpic.filename
+    }
+    if (payload.limit.background && payload.limit.background.indexpic) {
+      payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
+      window.document.getElementById('app').style.backgroundImage = 'url(' + payload.limit.background.indexpic.url + ')'
+    }
+    payload.start_time = payload.start_time.substring(5, payload.start_time.length)
+    payload.end_time = payload.end_time.substring(5, payload.end_time.length)
     state.examInfo = payload
   },
   SET_SUBJECT_ANSWER_INFO (state, payload) {
@@ -118,6 +158,26 @@ const mutations = {
     state.currentSubjectIndex = payload
   },
   SET_ESSAY_ANSWER_INFO (state, payload) {
+    let list = state.answerList
+    for (let key in payload) {
+      console.log(key)
+      if (list && list[0]) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].question_id === key) {
+            list[i].value = payload[key]
+          }
+          console.log(list[i])
+        }
+      } else {
+        let params = {
+          'question_id': key,
+          'value': payload[key]
+        }
+        list.push(params)
+      }
+      console.log(list, 'SET_ESSAY_ANSWER_INFO')
+      state.subjectAnswerInfo[key] = true
+    }
     state.essayAnswerInfo = Object.assign({}, payload)
   },
   SET_ORAL_ANSWER_INFO (state, payload) {
@@ -216,7 +276,7 @@ function dealSaveRecord ({
   } else if (['singleblank', 'mulitblank', 'optionblank'].includes(subject.type)) {
     let curBlankInfo = blankAnswerInfo[subject.id]
     if (!curBlankInfo || !curBlankInfo.length) dataIsEmpty = true
-    if (['singleblank', 'mulitblank'].includes(subject.type)) params.text = curBlankInfo
+    if (['singleblank', 'mulitblank'].includes(subject.type)) params.options_id = curBlankInfo
     else if (subject.type === 'optionblank') params.value = curBlankInfo
   } else {
     // 这边针对判断题、单选题、多选题做处理
@@ -251,12 +311,10 @@ const actions = {
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
-
       if (!id) {
         Toast('没有试题ID,请求出错')
         return
       }
-
       let params = {
         examination_id: id,
         page: pageNum || 1,
@@ -302,6 +360,23 @@ const actions = {
         Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
+        var datas = {
+          param: {
+            data: [{
+              id: id,
+              mark: 'examination',
+              title: info.title,
+              member_id: STORAGE.get('userinfo').id,
+              // create_time: new Date().getTime(),
+              start_time: parseInt((new Date().getTime()) / 1000),
+              from: null,
+              hash: randomNum(13)
+            }]
+          }
+        }
+        API.setClick({params: datas}).then(res => {
+          console.log(res)
+        })
         resolve()
       }).catch(err => {
         Indicator.close() // 结束
@@ -336,7 +411,9 @@ const actions = {
   START_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId || payload.id
-      let params = {}
+      let params = {
+        guid: STORAGE.get('guid')
+      }
       // 添加重新开始考试的接口
       if (payload.restart) params.restart = 1
       // 开始请求数据
@@ -359,6 +436,18 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
+      /*
+      var datas = {
+        id: id,
+        mark: 'examination',
+        title: '',
+        member: STORAGE.get('userinfo'),
+        create_time: new Date().getTime()
+      }
+      API.sumbitUV({data: datas}).then(res => {
+        console.log(res)
+      })
+      */
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
@@ -381,41 +470,20 @@ const actions = {
   SAVE_ANSWER_RECORDS ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let id = state.examId
-      let examList = state.examList
+      let examList = state.answerList
       let data = {
         params: []
       }
-      // 开始遍历当前答题的数据
-      examList.forEach(subject => {
-        let tempObj = {
-          question_id: subject.id,
-          options_id: []
-        }
-        let answers = subject.answer // 是否存放已有的选项ID
-        if (answers && answers.length) tempObj.options_id = answers
-
-        subject.options.forEach(item => {
-          let optionArr = tempObj.options_id
-          if (item.active && !optionArr.includes(item.id)) {
-            optionArr.push(item.id)
-          }
-        })
-
-        let optionsLength = tempObj.options_id.length
-        // 判断是否只有一个选项
-        if (optionsLength === 1) tempObj.options_id = Number(tempObj.options_id.join(''))
-        if (optionsLength) data.params.push(tempObj)
-      })
+      data.params = examList
+      console.log(state, 'SAVE_ANSWER_RECORDS')
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
-        API.saveSubjectRecords({ query: { id }, data }),
-        API.submitExam({ query: { id } })
-      ]).then(([saveInfo, submitInfo]) => {
+        API.saveSubjectRecords({ query: { id }, data })
+      ]).then((saveInfo) => {
         // 结束
         Indicator.close()
-        if (saveInfo.success === 1 && submitInfo.success === 1) {
-          Toast('提交试卷成功')
+        if (saveInfo[0].success === 1) {
           resolve()
         } else {
           throw new Error('error')
@@ -480,6 +548,8 @@ const actions = {
         blankAnswerInfo
       }, optionFlag)
       // 更改状态
+      // console.log('xxxx', result, optionFlag)
+      // commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
       if (isEmpty) subjectAnswerInfo[subject.id] = false
       else subjectAnswerInfo[subject.id] = true
@@ -490,6 +560,7 @@ const actions = {
         this.changeAnswerTimer = setTimeout(() => {
           // 更新当前的回答题目的信息
           commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
+          commit('SET_ANSWER_LIST', result.params)
           // 返回数据
           resolve(result)
         }, 300)
@@ -517,10 +588,9 @@ const actions = {
     commit('SET_CURRENT_SUBJECT_INDEX', index)
   },
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
-    let index = state.currentSubjectIndex
-    let selectIndex = payload
+    let selectIndex = payload.selectIndex
     let examList = [...state.examList]
-    let subjectInfo = examList[index]
+    let subjectInfo = examList[payload.index - 1]
     let renderType = state.renderType
     // 如果是解析的话直接不可以添加选项状态
     if (renderType === 'analysis') return
@@ -537,7 +607,7 @@ const actions = {
         return item
       })
     }
-    examList.splice(index, 1, subjectInfo)
+    examList.splice(payload.index - 1, 1, subjectInfo)
     // 更新试题列表
     commit('SET_EXAMLIST', examList)
   },

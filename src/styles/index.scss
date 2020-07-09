@@ -3,7 +3,16 @@
 @import './base/animations.scss'; // 引入公共动画
 
 body{
-  @include bg_color('bgColor');
+  background-color: #fff;;
+}
+.depence-wrap{
+  @include bg-color('bgColor');
+  padding:px2rem(34px);
+  overflow:scroll;
+  padding-top:px2rem(80px);
+  background-repeat: no-repeat;
+  background-position: center;
+  @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
 }
 img{
   width:100%;
@@ -14,7 +23,10 @@ img{
 .box-shadow{
   box-shadow: 0 0 px2rem(30px) rgba(0,0,0,0.1);
 }
-
+.all-score{
+  color:#3f3f3f;
+  font-size:px2rem(24px);
+}
 // 去除所有滚动条显示
 ::-webkit-scrollbar {
   width: 0 !important ;

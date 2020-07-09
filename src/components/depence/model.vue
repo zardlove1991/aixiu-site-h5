@@ -88,7 +88,7 @@ export default {
     min-width: px2rem(560px);
     border-radius: px2rem(8px);
     pointer-events: auto;
-    @include bg-color('bgColor');
+    background-color:#fff;
     .btn-wrap{
       display: flex;
       width: 100%;

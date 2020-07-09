@@ -1,11 +1,13 @@
 <template lang="html">
-  <div class="denpncelist-wrap" v-if="examList.length">
+  <div class="denpncelist-wrap depence-wrap" v-if="examList.length">
+    <div class="denpncelist-page">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
-      @timeup="toggleSuspendModel"
+      @timeup="endTime"
+      @notimeup="noEndTime"
       @showlist="toggetSubjectList">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
@@ -21,12 +23,63 @@
         </subject-content>
       </div>
     </div>
+    <div class="fixed-btn-wrap">
+      <!--底部跳转按钮-->
+      <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
+        <!--上一题按钮-->
+        <div class="prev-wrap"
+          :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
+          @click.stop="changeSubjectIndex('sub')">
+          上一题
+          <!-- <div class="prev-text">上一题</div> -->
+        </div>
+        <!--语音问答题录音按钮区域-->
+        <div class="btn-record-option-wrap"
+          v-if="_dealShowBtn('record')">
+          <!--内部阴影层-->
+          <div class="btn-record-option-shadow">
+            <div class="btn-record-optin-thumb"></div>
+          </div>
+          <!--当前操作层-->
+          <div class="btn-record-option">
+            <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
+          </div>
+        </div>
+        <!--填空题和排序题的确认按钮操作-->
+        <!-- <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
+          <div class="btn-confrim-shadow"></div>
+          <div class="btn-confrim-content">
+            <div class="btn-confrim-option"
+              :class="{ 'disabled': !isDidCurSubject }"
+              @click.stop="dealConfrimOption">确认</div>
+          </div>
+        </div> -->
+        <!--下一题按钮-->
+        <div class="next-wrap"
+          v-show="!isShowSubmitBtn"
+          :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
+          @click.stop="changeSubjectIndex('add')">
+           下一题
+          <!-- <div class="next-text">下一题</div> -->
+        </div>
+        <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
+            立即交卷
+          <!-- <div class="next-text">交卷</div> -->
+        </div>
+      </div>
+      <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+        立即交卷
+      </div>
+    </div>
     <!--题号情况展示-->
-    <div class="answer-list-info" v-show="isShowSubjectList" @click.stop="toggetSubjectList">
+    <div class="answer-list-info" v-show="isShowSubjectList" >
       <transition name="up" mode="out-in">
         <div class="info-wrap"  v-show="isShowSubjectList">
           <!--头部标题-->
-          <div class="title">题号</div>
+          <div class="title">
+            <div class="title-name">答题卡</div>
+            <div class="title-closr" @click.stop="toggetSubjectList">x</div>
+          </div>
           <!--答题列表-->
           <div class="info-list-wrap">
             <subject-list v-if="isShowSubjectList" :list='examList' :curIndex="currentSubjectIndex" @select="dealExamHeaderSelect"></subject-list>
@@ -40,6 +93,16 @@
       <div class="tip">成绩单</div>
     </div>
     <!--试题中断弹窗-->
+    <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip-btn" @click.stop="toStatistic">查看分数</div>
+      </div>
+    </my-model>
     <my-model
       :show="isShowSuspendModel"
       :isLock="true"
@@ -61,58 +124,6 @@
       </div>
     </transition>
     <!--遮罩包裹-->
-    <div class="fixed-btn-wrap">
-      <!--底部跳转按钮-->
-      <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
-        <!--上一题按钮-->
-        <div class="prev-wrap"
-          :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
-          @click.stop="changeSubjectIndex('sub')">
-          <div class="prev-arrow-wrap">
-            <i class="examfont prev-arrow">&#xe713;</i>
-          </div>
-          <!-- <div class="prev-text">上一题</div> -->
-        </div>
-        <!--语音问答题录音按钮区域-->
-        <div class="btn-record-option-wrap"
-          v-if="_dealShowBtn('record')">
-          <!--内部阴影层-->
-          <div class="btn-record-option-shadow">
-            <div class="btn-record-optin-thumb"></div>
-          </div>
-          <!--当前操作层-->
-          <div class="btn-record-option">
-            <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
-          </div>
-        </div>
-        <!--填空题和排序题的确认按钮操作-->
-        <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
-          <!--内部阴影层-->
-          <div class="btn-confrim-shadow"></div>
-          <!--按钮层-->
-          <div class="btn-confrim-content">
-            <div class="btn-confrim-option"
-              :class="{ 'disabled': !isDidCurSubject }"
-              @click.stop="dealConfrimOption">确认</div>
-          </div>
-        </div>
-        <!--下一题按钮-->
-        <div class="next-wrap"
-          v-show="!isShowSubmitBtn"
-          :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
-          @click.stop="changeSubjectIndex('add')">
-          <div class="next-arrow-wrap">
-            <i class="examfont next-arrow">&#xe713;</i>
-          </div>
-          <!-- <div class="next-text">下一题</div> -->
-        </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-          <div class="next-arrow-wrap">
-            <i class="examfont next-submit">&#xe718;</i>
-          </div>
-          <!-- <div class="next-text">交卷</div> -->
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -150,6 +161,7 @@ export default {
     return {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
+      isShowSuspendModels: false,
       isShowSubmitModel: false
     }
   },
@@ -163,7 +175,7 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos',
+      'examId', 'examInfo', 'curSubjectVideos', 'answerList',
       'isShowSubjectList'
     ]),
     isShowSubmitBtn () {
@@ -178,6 +190,13 @@ export default {
     this.initList()
   },
   methods: {
+    toStatistic () {
+      this.isShowSuspendModels = false
+      let examId = this.id
+      this.$router.push({
+        path: `/statistic/${examId}`
+      })
+    },
     async initList () {
       let examId = this.id
       let rtp = this.rtp
@@ -225,7 +244,6 @@ export default {
       // 提交试卷
       try {
         await this.sendSaveRecordOption(subject) // 检查多选考试的提交
-        await this.unlockCorse() // 解锁短书课程
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -233,7 +251,6 @@ export default {
           query: { ...redirectParams }
         })
       } catch (err) {
-        console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
@@ -246,7 +263,15 @@ export default {
       })
     },
     submitExam () {
+      this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
+    },
+    noEndTime () {
+      this.saveAnswerRecords(this.answerList)
+    },
+    endTime () {
+      this.isShowSuspendModels = !this.isShowSuspendModels
+      this.endExam()
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
@@ -297,6 +322,7 @@ export default {
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',

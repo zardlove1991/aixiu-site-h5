@@ -159,7 +159,7 @@ export default {
   .row-wrap{
     display: flex;
     justify-content: flex-start;
-    padding-top: px2rem(36px);
+    padding-top: px2rem(40px);
     &:last-child{
       margin-bottom: 0;
     }
@@ -172,7 +172,7 @@ export default {
       margin-left: px2rem(40px);
       @include font-dpr(16px);
       &.normal{
-        @include bg-color('bgColor');
+        background-color:#fff;
         @include font-color('titleColor');
         @include border('all',1px,solid,'tipColor');
         &.analysisActive{
@@ -180,21 +180,22 @@ export default {
           @include font-color('bgColor');
         }
         &.examActive{
-          @include bg-color('titleColor');
-          @include font-color('bgColor');
+          @include border('all',1px,solid,'themeColor');
+          @include font-color('themeColor');
+          background-color:#fff;
         }
       }
       &.disabled{
-        @include bg-color('bgGrayColor');
+        background-color:#fff;
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
         &.analysisActive{
-          @include bg-color('disabledColor');
-          @include font-color('bgColor');
+          @include bg-color('bgColor');
+          @include font-color('disabledColor');
         }
         &.examActive{
-          @include bg-color('disabledColor');
-          @include font-color('bgColor');
+          @include bg-color('bgColor');
+          @include font-color('themeColor');
         }
       }
       &.success{

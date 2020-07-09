@@ -1,23 +1,23 @@
 <template lang="html">
   <div class="subject-essay-wrap">
     <!--题目的标题-->
-    <div class="subject-type-wrap">
-      <h3 class="subject-type">
-        <span>{{data.typeTip}}</span>
+    <div class="subject-type-wrap" v-if="mode === 'analysis' && data.type === 'essay' && data.remark.score">
+      <!-- <h3 class="subject-type">
         <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
-      </h3>
+      </h3> -->
       <!--问答题批阅得分提醒-->
       <div
         v-show="mode === 'analysis' && data.type === 'essay' && data.remark.score"
         class="essay-audio-score">{{`得${data.remark.score}分`}}</div>
     </div>
     <p class="subject-title">
-      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span>{{`${data.index}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
     </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
-      <img v-if="mediaKey=='image' && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+      <img v-if="mediaKey=='image' && media && media.length" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
       <!--音频播放-->
       <my-audio
         v-if="mediaKey=='audio' && annexMedia(media)"
@@ -30,11 +30,10 @@
     </div>
     <!--题目的内容区域-->
     <template v-if="essayTempAnswerInfo">
-      <h4 class="title-tip">问答</h4>
       <!--表单编辑区域-->
       <div class="from-wrap">
         <div class="content-wrap" v-show="renderType === 'exam'">
-          <textarea class="content" placeholder="请输入答案" maxlength="300"
+          <textarea class="content" placeholder="点击输入你的答案" maxlength="300"
             :value = "essayTempAnswerInfo.text"
             @input="uploadText"
             @blur="dealKeyboard"
@@ -46,68 +45,6 @@
           <span v-show="_checkMedaiObjIsEmpty(essayTempAnswerInfo)">当前没有回答信息哦~</span>
           <span v-show="essayTempAnswerInfo.text">{{essayTempAnswerInfo.text}}</span>
         </p>
-        <!--上传的媒体展示区域-->
-        <div class="upload-media-wrap">
-          <div class="images-wrap" v-if="essayTempAnswerInfo.image.length">
-            <div class="single-image-wrap" v-for="(item,index) in essayTempAnswerInfo.image" :key="index">
-              <img :src="item" @click.stop="_setPreviewState" preview-nav-enable="false" class="eassy-image" v-preview="item"/>
-              <!--删除图标-->
-              <div class="delete-icon"
-                v-show="renderType === 'exam'"
-                @click.stop="deleteUploadData(index,'image')">
-              </div>
-            </div>
-            <!--空白填充的个数-->
-            <div class="single-image-wrap" v-for="item in _getEmptyDivNum(4, essayTempAnswerInfo.image)" :key="`empty_${item}`"></div>
-          </div>
-          <!--音频播放-->
-          <div class="eassy-audio-wrap" v-if="essayTempAnswerInfo.audio.length">
-            <my-audio class="eassy-audio" :src="essayTempAnswerInfo.audio[0]"></my-audio>
-            <!--删除图标-->
-            <div class="delete-icon"
-              v-show="renderType === 'exam'"
-              @click.stop="deleteUploadData(0, 'audio')">
-            </div>
-          </div>
-          <!--视频播放-->
-          <div class="eassy-video-wrap" v-if="essayTempAnswerInfo.video.length">
-            <my-video class="eassy-video"
-              :poster="essayTempAnswerInfo.video[0].cover"
-              :src="essayTempAnswerInfo.video[0].src">
-            </my-video>
-            <!--删除图标-->
-            <div class="delete-icon"
-              v-show="mode === 'exam'"
-              @click.stop="deleteUploadData(0, 'video')">
-            </div>
-          </div>
-        </div>
-        <!--上传区域-->
-        <div class="upload-option-wrap" v-show="mode === 'exam'">
-          <div class="upload-img"
-            v-show="['unlimit','image'].includes(data.mode)"
-            :class="{'disabled': essayTempAnswerInfo && (essayTempAnswerInfo.image.length > 8)}"
-            @click.stop='uploadImg'>
-            <i class="examfont icon-image"></i>
-          </div>
-          <div class="upload-audio"
-            v-show="['unlimit','audio'].includes(data.mode)"
-            :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.audio.length}"
-            @click.stop="uploadAudio">
-            <i class="examfont icon-audio"></i>
-          </div>
-          <div class="upload-video"
-            v-show="['unlimit','video'].includes(data.mode)"
-            :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.video.length}"
-            @click.stop="uploadVideo"
-            >
-            <i class="examfont icon-video"></i>
-          </div>
-          <!--原生上传操作-->
-          <input type="file"
-            ref="uploadFileInput" name="filte" class="file-input"
-            @change="fileUpload"/>
-        </div>
       </div>
       <!--答案解析-->
       <div class="answerinfo-wrap" v-if="mode === 'analysis'">
@@ -134,18 +71,18 @@
             <span v-show="data.remark.content.text">{{data.remark.content.text}}</span>
           </p>
           <!--图片展示-->
-          <div class="mark-img-wrap" v-if="data.remark.content.image.length">
+          <div class="mark-img-wrap" v-if="data.remark.content.image && data.remark.content.image.length">
             <img :src="src" class="mark-img"
               @click.stop="_setPreviewState"
               v-preview="src" preview-nav-enable="false"
               v-for="(src, index) in data.remark.content.image" :key="index"/>
           </div>
           <!--音频播放-->
-          <div class="mark-audio-wrap" v-if="data.remark.content.audio.length">
+          <div class="mark-audio-wrap" v-if="data.remark.content.audio && data.remark.content.audio.length">
             <my-audio  class="mark-audio" :src="data.remark.content.audio[0]"></my-audio>
           </div>
           <!--视频播放-->
-          <div class="mark-video-wrap" v-if="data.remark.content.video.length">
+          <div class="mark-video-wrap" v-if="data.remark.content.video && data.remark.content.video.length">
             <my-video class="mark-video"
               :poster="data.remark.content.video[0].cover"
               :src="data.remark.content.video[0].src">

@@ -1,17 +1,66 @@
 @import "@/styles/index.scss";
-
 .denpncelist-wrap{
-  position: relative;
   width: 100%;
-  min-height: 100vh;
+  .denpncelist-page{
+    height:100%;
+    min-height: calc(100vh - 34px);
+    border-radius:10px ;
+    background-color:#fff;
+    position: relative;
+    -webkit-border-radius:10px ;
+    -moz-border-radius:10px ;
+    -ms-border-radius:10px ;
+    -o-border-radius:10px ;
+}
+  .tip-btn{
+    width:px2rem(305px);
+    height:px2rem(90px);
+    line-height: px2rem(90px);
+    text-align: center;
+    color:#fff;
+    background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+    @include font-dpr(16px);
+    margin:0 auto;
+    margin-top:px2rem;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
   .qtnlist-wrap{
     position: relative;
     width: 100%;
-    min-height: calc(100% - 50px);
-    padding-bottom: px2rem(170px);
+    padding-bottom:px2rem(40px);
     box-sizing: border-box;
+    background-color:#fff;
+    border-radius: px2rem(10px);
+    -webkit-border-radius: px2rem(10px);
+    -moz-border-radius: px2rem(10px);
+    -ms-border-radius: px2rem(10px);
+    -o-border-radius: px2rem(10px);
     .list-item-wrap{
       width: 100%;
+      margin-bottom:px2rem(20px);
+      @include font-dpr(16px);
+      @include font-color('titleColor');
+    }
+  }
+  .alllist-wrap{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: scroll;
+    box-sizing: border-box;
+    background-color:#fff;
+    border-radius: px2rem(20px);
+    -webkit-border-radius: px2rem(20px);
+    -moz-border-radius: px2rem(20px);
+    -ms-border-radius: px2rem(20px);
+    -o-border-radius: px2rem(20px);
+    .list-item-wrap{
+      width: 100%;
+      margin-bottom:px2rem(20px);
       @include font-dpr(16px);
       @include font-color('titleColor');
     }
@@ -26,7 +75,7 @@
     height: px2rem(70px);
     border-radius: px2rem(35px) 0 0 px2rem(35px);
     box-shadow: 0 0 px2rem(35px) rgba(201, 201, 201, 0.3);
-    @include bg-color('bgColor');
+    background-color: #fff;
     z-index: 10;
     .bg{
       width: px2rem(36px);
@@ -47,22 +96,30 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 99;
+    z-index: 101;
     background: rgba(0,0,0,0.5);
     .info-wrap{
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: px2rem(900px);
+      z-index: 101;
       .title{
-        padding: px2rem(30px) 0  px2rem(30px) px2rem(40px);
         box-sizing: border-box;
-        border-radius: px2rem(10px) px2rem(10px) 0 0;
-        @include bg-color('bgColor');
-        @include font-dpr(15px);
+        font-size:px2rem(28px);
+        display:flex;
+        align-items: center;
+        padding:px2rem(40px) px2rem(44px) 0;
+        background-color:#fff;
         @include font-color('tipColor');
-        @include border('bottom',1px,solid,'lineColor');
+      }
+      .title-name{
+        flex:1;
+      }
+      .title-close{
+        color:#979797;
+        padding:0 px2rem(10px);
+        font-size:px2rem(12px);
       }
       .info-list-wrap{
         width: 100%;
@@ -71,9 +128,9 @@
         -webkit-overflow-scrolling:touch;
         box-sizing: border-box;
         padding-bottom: px2rem(36px);
-        @include bg-color('bgColor');
+        background-color: #fff;
         .list-wrap{
-          @include bg-color('bgColor');
+          background-color: #fff;
         }
       }
     }
@@ -89,15 +146,23 @@
       background-repeat: no-repeat;
       background-position: center;
     }
+    .end-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/endTime@2x.png","~@/assets/common/endTime@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     .tip,.desc{
       line-height: 1;
     }
     .tip{
       font-weight: bold;
-      padding: px2rem(30px) 0;
       text-align: center;
-      @include font-dpr(16px);
-      @include font-color('titleColor');
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
     }
     .desc{
       @include font-dpr(14px);
@@ -114,7 +179,7 @@
     box-shadow: 0 0 px2rem(30px) rgba(184, 184, 184, 0.3);
     border-radius: px2rem(8px);
     text-align: center;
-    @include bg-color('bgColor');
+    background-color:#fff;
     .ops-bg{
       position: absolute;
       left:50%;
@@ -132,30 +197,74 @@
       @include font-color('activeColor');
     }
   }
+  .sumbit-area{
+    @include bg-color('themeColor');
+    width:px2rem(305px);
+    height:px2rem(90px);
+    text-align: center;
+    color:#fff;
+    line-height:px2rem(90px);
+    margin:px2rem(50px) auto;
+    margin-bottom:0;
+    font-size:px2rem(32px);
+    border-radius:5px ;
+    -webkit-border-radius:5px ;
+    -moz-border-radius:5px ;
+    -ms-border-radius:5px ;
+    -o-border-radius:5px ;
+  }
+  .sumbit-btn{
+    width:100%;
+    @include font-color('themeColor');
+    text-align:center;
+    margin-bottom:px2rem(60px);
+    font-size:px2rem(32px);
+  }
   .fixed-btn-wrap{
-    position: absolute;
-    top:0;
-    width: 100%;
-    min-height: 100.1%;
-    pointer-events: none;
+    padding:0 px2rem(30px);
+    margin-top:px2rem(100px);
     .btn-wrap{
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: px2rem(20px) px2rem(80px) 0;
-      height: px2rem(130px);
       display: flex;
       justify-content: space-between;
       pointer-events: auto;
+      margin-bottom:px2rem(60px);
       box-sizing: border-box;
-      box-shadow: 0 px2rem(-8px) px2rem(20px) rgba(0,0,0,0.03);
-      @include bg-color('bgColor');
+      background-color:#fff;
       &.iphonex-h{
         // height: px2rem(160px);
       }
+      .prev-wrap{
+        border:1px solid #FEBB4E;
+        height:px2rem(90px);
+        line-height:px2rem(90px);
+        text-align: center;
+        @include font-color('descColor');
+        @include border('all',1px,solid,'descColor');
+        font-size:px2rem(32px);
+        border-radius:5px;
+        -webkit-border-radius:5px;
+        -moz-border-radius:5px;
+        -ms-border-radius:5px;
+        -o-border-radius:5px;
+        margin-right:px2rem(20px);
+      }
+      .next-wrap{
+        height:px2rem(90px);
+        line-height:px2rem(90px);
+        text-align: center;
+        color:#fff;
+        @include bg-color('btnColor');
+        font-size:px2rem(32px);
+        border-radius: 5px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -ms-border-radius: 5px;
+        -o-border-radius: 5px;
+
+}
       .prev-wrap,.next-wrap{
         display: flex;
+        flex:1;
         flex-direction: column;
         align-items: center;
         pointer-events: auto;
@@ -205,6 +314,7 @@
           }
         }
       }
+      
       .btn-record-option-wrap{
         position: relative;
         width: px2rem(120px);
