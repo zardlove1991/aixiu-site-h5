@@ -86,8 +86,8 @@
       :showBtn="false">
       <div class="suspend-model" slot="content">
         <div class="app-bg"></div>
-        <div class="tip">请在{{examInfo.limit.default_download_app}}App内参与活动</div>
-        <div class="tip-btn" @click.stop="goDownload(examInfo.limit.download_link)">去下载</div>
+        <div class="tip">请在{{limitSource}}App内参与活动</div>
+        <div class="tip-btn" @click.stop="goDownload()">去下载</div>
       </div>
     </my-model>
     <!--底部已考按钮组-->
@@ -124,6 +124,8 @@ export default {
   data () {
     return {
       App: false,
+      appDownloadUrl: '',
+      limitSource: '',
       starMap: {
         easy: 0,
         middle: 2,
@@ -142,8 +144,10 @@ export default {
     this.initStartInfo()
   },
   methods: {
-    goDownload (url) {
-      window.location.href = url
+    goDownload () {
+      if (this.appDownloadUrl) {
+        window.location.href = this.appDownloadUrl
+      }
     },
     toStatistic () {
       let examId = this.id
@@ -206,7 +210,19 @@ export default {
       if (limit && limit === 1) {
         this.visitPasswordLimit = true
       } else {
-        this.goExamPage()
+        // check
+        let examId = this.id
+        API.checkPassword({query: { id: examId }}).then((res) => {
+          if (res && res.limit_source && res.app_download_link) {
+            this.App = true
+            this.appDownloadUrl = res.app_download_link
+            this.limitSource = res.limit_source
+          } else {
+            this.goExamPage()
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       }
     },
     hiddenPasswordLimit () {
