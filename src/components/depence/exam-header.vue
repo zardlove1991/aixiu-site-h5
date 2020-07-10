@@ -208,7 +208,7 @@ export default {
             this.isSubmitSuccess = true
             setTimeout(() => {
               this.isSubmitSuccess = false
-              window.location.href = link
+              window.location.href = link.url
             }, 1000)
           } else if (result) {
             let examId = this.examId
