@@ -207,7 +207,7 @@ export default {
     },
     isShowPassword () {
       let limit = this.examInfo.limit.visit_password_limit
-      if (limit && limit === 1) {
+      if (limit) {
         this.visitPasswordLimit = true
       } else {
         // check

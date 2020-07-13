@@ -58,7 +58,7 @@
               </span>
             </li>
           </ul>
-          <div class="standard-answer">
+          <div class="standard-answer" v-show="displayTrueAnswer">
             <div class="true-answer-title">正确答案：<span>{{item.trueOption}}</span></div>
             <div>答案解析：{{item.analysis}}</div>
           </div>
@@ -84,7 +84,7 @@
                 <span v-if="item.value.length == 0">未填写</span>
                 <span v-for="(val, index) in item.value" :key="index">{{val}}</span>
             </span>
-            <div class="standard-answer" v-show="item.extra && item.extra.answer">
+            <div class="standard-answer" v-show="displayTrueAnswer && item.extra && item.extra.answer">
               <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
                 正确答案<span v-if="item.extra.answer.length > 1">{{index + 1}}</span>：
                 <span>{{aw.answer}}</span>
@@ -103,6 +103,7 @@ import STORAGE from '@/utils/storage'
 import Pie from './StatisticPie'
 import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'form-statistic',
@@ -131,8 +132,14 @@ export default {
         singleblank: '填空题',
         checkbox: '多选题'
       },
-      statMsg: ''
+      statMsg: '',
+      displayTrueAnswer: false
     }
+  },
+  computed: {
+    ...mapGetters('depence', [
+      'examInfo'
+    ])
   },
   methods: {
     initStatInfo (score, correctNum, total) {
@@ -174,8 +181,22 @@ export default {
         }
       }
     },
+    async initPage (id) {
+      if (!this.examInfo) {
+        // 获取试卷详情
+        await this.getExamDetail({ id })
+      }
+      if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
+        let displayTrueAnswer = this.examInfo.limit.submit_rules.display_true_answer
+        // let displayTrueAnswer = 1
+        if (displayTrueAnswer && displayTrueAnswer === 1) {
+          this.displayTrueAnswer = true
+        }
+      }
+    },
     getExamList () {
       let id = this.$route.params.id
+      this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
         this.initStatInfo(res.score, res.correct_num, res.questions.length)
         this.optionData = res
@@ -258,7 +279,10 @@ export default {
     },
     isChoiceOption (val) {
       return ['checkbox', 'multiple', 'pictureMultiple', 'radio', 'pictureRadio'].includes(val)
-    }
+    },
+    ...mapActions('depence', {
+      getExamDetail: 'GET_EXAM_DETAIL'
+    })
   },
   created () {
     this.getExamList()
