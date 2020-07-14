@@ -22,8 +22,8 @@
       </div>
     </div>
     <div class="sumbit-area" @click.stop="submitExam">
-        交卷
-      </div>
+      {{examInfo.limit.submit_text || '交卷'}}
+    </div>
     <!--题号情况展示-->
     <!--跳转成绩单页面-->
     <div class="grade-tip-wrap" v-if="renderType === 'analysis'" @click.stop="jumpToGradePage">

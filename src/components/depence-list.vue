@@ -63,12 +63,12 @@
           <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-            立即交卷
+          {{examInfo.limit.submit_text || '立即交卷'}}
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
       <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
-        立即交卷
+        {{examInfo.limit.submit_text || '立即交卷'}}
       </div>
     </div>
     <!--题号情况展示-->
