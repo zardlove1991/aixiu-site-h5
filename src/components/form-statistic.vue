@@ -94,6 +94,11 @@
           </div>
         </div>
       </div>
+      <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
+        <div class="luck-pop-icon">
+          <div class="luck-pop-tips">点击抽奖</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -133,12 +138,13 @@ export default {
         checkbox: '多选题'
       },
       statMsg: '',
-      displayTrueAnswer: false
+      displayTrueAnswer: false,
+      raffleUrl: ''
     }
   },
   computed: {
     ...mapGetters('depence', [
-      'examInfo'
+      'examInfo', 'luckDrawLink'
     ])
   },
   methods: {
@@ -196,7 +202,14 @@ export default {
         await this.getExamDetail({ id })
       }
       if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
-        let displayTrueAnswer = this.examInfo.limit.submit_rules.display_true_answer
+        let submitRules = this.examInfo.limit.submit_rules
+        let raffleUrl = submitRules.raffle_url
+        if (raffleUrl) {
+          this.raffleUrl = raffleUrl
+        } else {
+          this.raffleUrl = ''
+        }
+        let displayTrueAnswer = submitRules.display_true_answer
         // let displayTrueAnswer = 1
         if (displayTrueAnswer && displayTrueAnswer === 1) {
           this.displayTrueAnswer = true
@@ -258,6 +271,12 @@ export default {
       this.$router.push({
         path: `/depencestart/${examId}`
       })
+    },
+    pageToLuckDraw () {
+      let link = this.raffleUrl
+      if (link) {
+        window.location.href = link
+      }
     },
     /*
     async getResultData () {
@@ -663,6 +682,27 @@ $font-weight: 400;
           letter-spacing: 0.2px;
           .true-answer-title {
             margin-bottom: 20px;
+          }
+        }
+        .luck-pop {
+          position: fixed;
+          right: px2rem(20px);
+          bottom: px2rem(100px);
+          .luck-pop-icon {
+            width: px2rem(160px);
+            height: px2rem(226px);
+            @include img-retina('~@/assets/common/luck-draw-pop@2x.png','~@/assets/common/luck-draw-pop@3x.png', 100%, 100%);
+            background-repeat: no-repeat;
+            position: relative;
+            .luck-pop-tips {
+              position: absolute;
+              bottom: px2rem(50px);
+              left: 0;
+              right: 0;
+              text-align: center;
+              @include font-dpr(12px);
+              color: #fff;
+            }
           }
         }
     }
