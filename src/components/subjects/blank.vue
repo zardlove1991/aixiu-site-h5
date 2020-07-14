@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="subject-single-blank-wrap">
+  <div class="subject-single-blank-wrap" :id="'subject-single-black-' + data.id">
     <!--题目的标题-->
     <div class="subject-type-wrap">
       <h3 class="subject-type">
@@ -127,11 +127,11 @@ export default {
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
       // 匹配解析的数组
-      console.log(renderStyle)
-      console.log(originTitle)
+      // console.log(renderStyle)
+      // console.log(originTitle)
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
-      console.log(matchArr, 'textboxReg')
+      // console.log(matchArr, 'textboxReg')
       matchArr.forEach((val, index) => {
         let template = ''
         // 处理不同填空的形式的渲染
@@ -144,12 +144,13 @@ export default {
         originTitle = originTitle.replace(val, template)
       })
       // 最终赋值
-      console.log(originTitle)
+      // console.log(originTitle)
       this.newTitle = this._dealHtmlLine(originTitle)
     },
     addListener () {
       this.$nextTick(() => {
-        let targets = document.getElementsByClassName('text-input')
+        let newt = document.getElementById('subject-single-black-' + this.data.id).getElementsByClassName('text-input')
+        let targets = newt
         let dealKeyboard = (source) => {
           let { type } = source
           if (type === 'focus') {
@@ -168,7 +169,7 @@ export default {
           target.addEventListener('focus', dealKeyboard, false)
           target.addEventListener('blur', dealKeyboard, false)
           target.addEventListener('input', this.dealInput, false)
-          // 使用销毁函数钩子催婚事件
+          // 使用销毁函数钩子摧毁事件
           this.$on('hook:beforeDestroy', () => {
             target.removeEventListener('focus', dealKeyboard, false)
             target.removeEventListener('blur', dealKeyboard, false)
@@ -217,7 +218,7 @@ export default {
             nextFoucs(index) // 自动跳转下一个文本框
           }
         }
-        console.log('xxx 最终传送的值', this.answerArr)
+        // console.log('xxx 最终传送的值', this.answerArr)
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
