@@ -159,6 +159,9 @@ export default {
               break
             }
           }
+          if (msg === '') {
+            msg = this.getTipMsg(score)
+          }
           this.statMsg = msg
         } else if (type === 'correct') {
           let msg = ''
@@ -169,16 +172,22 @@ export default {
               break
             }
           }
+          if (msg === '') {
+            msg = this.getTipMsg(correct)
+          }
           this.statMsg = msg
         }
       } else {
-        if (score <= 59) {
-          this.statMsg = '是不是开小差了？'
-        } else if (score <= 79) {
-          this.statMsg = '合格了，继续努力吧'
-        } else {
-          this.statMsg = '付出总是有回报的！'
-        }
+        this.statMsg = this.getTipMsg()
+      }
+    },
+    getTipMsg (score) {
+      if (score <= 59) {
+        return '是不是开小差了？'
+      } else if (score <= 79) {
+        return '合格了，继续努力吧'
+      } else {
+        return '付出总是有回报的！'
       }
     },
     async initPage (id) {
