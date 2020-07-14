@@ -95,10 +95,10 @@ const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = true
-    console.log(list, 'bedore_SET_ANSWER_LIST')
+    // console.log(list, 'bedore_SET_ANSWER_LIST')
     if (list && list[0]) {
       for (let i = 0; i < list.length; i++) {
-        if (list[i].question_id === payload.question_id && list[i].options_id) {
+        if (list[i].options_id && list[i].question_id === payload.question_id) {
           list[i].options_id = payload.options_id
           show = false
         }
