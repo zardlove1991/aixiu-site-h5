@@ -213,7 +213,7 @@ export default {
         // check
         let examId = this.id
         API.checkPassword({query: { id: examId }}).then((res) => {
-          if (res && res.limit_source && res.app_download_link) {
+          if (res && (res.limit_source || res.app_download_link)) {
             this.App = true
             this.appDownloadUrl = res.app_download_link
             this.limitSource = res.limit_source
