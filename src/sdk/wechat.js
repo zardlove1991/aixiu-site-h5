@@ -4,9 +4,6 @@ import STORAGE from '@/utils/storage'
 
 let wechat = {
   authorize: (cbk, scope) => {
-    if (!scope) {
-      scope = 'snsapi_userinfo'
-    }
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     if (window.$vue.$route.query.code) {
@@ -15,12 +12,12 @@ let wechat = {
       window.location.href = url
     }
   },
-  async h5Signature (info, cbk) {
+  async h5Signature (info, cbk, scope) {
     let params = {
       code: info,
       appid: 'wx63a3a30d3880a56e',
       sign: 'wechat',
-      scope: 'snsapi_userinfo',
+      scope,
       mark: 'marketing'
     }
     API.getXiuzanUser({
@@ -45,9 +42,12 @@ export const oauth = (cbk) => {
       if (res.limit && res.limit.source_limit && res.limit.source_limit.scope_limit) {
         scope = res.limit.source_limit.scope_limit
       }
+      if (!scope) {
+        scope = 'snsapi_userinfo'
+      }
       wechat.authorize((code, info) => {
         if (code > 0 && !STORAGE.get('userinfo')) {
-          wechat.h5Signature(info, cbk)
+          wechat.h5Signature(info, cbk, scope)
         }
       }, scope)
     })
