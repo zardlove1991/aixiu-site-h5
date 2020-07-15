@@ -4,6 +4,7 @@ export default {
   'sumbitAPI': protocol + '//result-pre.aihoge.com/',
   'USER': protocol + '//member-pre.aihoge.com/',
   'API': protocol + '//core-v3d.ddapp.com/api/',
+  'OPEN': protocol + '//examinationapi-pre.aihoge.com/',
   'API41': protocol + '//examinationapi-pre.aihoge.com/api/',
   'PHPAPI': protocol + '//clientapi-v3d.ddapp.com/api/',
   'EXAMAPI': protocol + '//examinationapi-pre.aihoge.com/api/',

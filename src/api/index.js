@@ -149,3 +149,13 @@ export const creataUser = (url, method, config = {}, api) => {
     ...config
   })
 }
+
+export const createOpen = (url, method, config = {}, api) => {
+  api = 'OPEN'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}

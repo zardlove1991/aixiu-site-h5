@@ -44,6 +44,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['sumbitAPI']
       break
     }
+    case 'OPEN': {
+      host = globalConfig['OPEN']
+      break
+    }
     default: {
       host = globalConfig['API']
     }
