@@ -12,8 +12,8 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{parseFloat(optionData.score)}}分</div>
-            <div class="my-text">答对{{optionData.correct_num}}题</div>
+            <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
+            <div class="my-text">答对{{optionData.correct_num ? optionData.correct_num : 0}}题</div>
           </div>
           <div class="num-area">
             <div class="my-text rank-area">总分排名{{optionData.score_ranking}}名</div>
