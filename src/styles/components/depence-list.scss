@@ -49,8 +49,9 @@
   .alllist-wrap{
     position: relative;
     width: 100%;
-    height: 100vh;
-    overflow: scroll;
+    min-height: calc(100vh - 90px - 45px);
+    // overflow: scroll;
+    padding: px2rem(20px) 0;
     box-sizing: border-box;
     background-color:#fff;
     border-radius: px2rem(20px);
@@ -198,13 +199,13 @@
     }
   }
   .sumbit-area{
-    @include bg-color('themeColor');
+    @include bg-color('btnColor');
+    color: #fff;
     width:px2rem(305px);
-    height:px2rem(90px);
+    height: 45px;
     text-align: center;
-    color:#fff;
-    line-height:px2rem(90px);
-    margin:px2rem(50px) auto;
+    line-height: 45px;
+    margin: 30px auto;
     margin-bottom:0;
     font-size:px2rem(32px);
     border-radius:5px ;
@@ -215,7 +216,8 @@
   }
   .sumbit-btn{
     width:100%;
-    @include font-color('themeColor');
+    // @include font-color('themeColor');   
+    @include font-color('btnColor');
     text-align:center;
     margin-bottom:px2rem(60px);
     font-size:px2rem(32px);
