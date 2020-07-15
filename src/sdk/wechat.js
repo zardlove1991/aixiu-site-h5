@@ -42,7 +42,9 @@ export const oauth = (cbk) => {
       if (res.limit && res.limit.source_limit && res.limit.source_limit.scope_limit) {
         scope = res.limit.source_limit.scope_limit
       }
-      if (!scope) {
+      if (scope && scope === 'base') {
+        scope = 'snsapi_base'
+      } else {
         scope = 'snsapi_userinfo'
       }
       wechat.authorize((code, info) => {

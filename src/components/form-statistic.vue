@@ -171,14 +171,14 @@ export default {
           this.statMsg = msg
         } else if (type === 'correct') {
           let msg = ''
-          let correct = parseInt(correctNum / total * 100)
           for (let i = 0; i < data.length; i++) {
-            if (correct >= data[i].start && correct <= data[i].end) {
+            if (correctNum >= data[i].start && correctNum <= data[i].end) {
               msg = data[i].text
               break
             }
           }
           if (msg === '') {
+            let correct = parseInt(correctNum / total * 100)
             msg = this.getTipMsg(correct)
           }
           this.statMsg = msg
