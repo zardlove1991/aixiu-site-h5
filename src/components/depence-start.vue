@@ -1,13 +1,14 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
-    <div class="header-normal" v-if="examInfo.person_status === 0">
+    <div class="header-normal" v-show="examInfo.person_status === 0">
       <div class="end-tips">
         <div class="end-tangan"></div>
         答题规范:每个用户最多提交一次
       </div>
     </div>
-    <div class="header-top" v-else>
+    <div class="header-top"
+      v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">测评已提交</span>
