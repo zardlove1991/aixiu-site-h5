@@ -12,7 +12,7 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{optionData.score}}分</div>
+            <div class="my-score">{{parseFloat(optionData.score)}}分</div>
             <div class="my-text">答对{{optionData.correct_num}}题</div>
           </div>
           <div class="num-area">
@@ -34,7 +34,7 @@
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score ? parseFloat(item.total_score) : 0 }}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
           </div>
           <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
             <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
@@ -66,7 +66,7 @@
         <div v-else>
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
             <el-image
