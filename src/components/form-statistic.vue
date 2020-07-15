@@ -118,7 +118,7 @@ export default {
   props: ['params'],
   data () {
     return {
-      showType: 'pie',
+      showType: 'line',
       colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
       feedback: {},
