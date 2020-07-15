@@ -34,7 +34,7 @@
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score ? parseFloat(item.total_score) : 0 }}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
           </div>
           <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
             <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
@@ -360,10 +360,11 @@ $font-weight: 400;
     }
     .header-tip{
         width: 100%;
-        height: 40px;
+        height:px2rem(80px);
         background:#fff1ed;
         color: $primary-color;
-        padding: 0 10px 0 21px;
+        padding-left:px2rem(43px);
+        padding-right:px2rem(20px);
         box-sizing: border-box;
         z-index: 2;
         .icon-wrap {
@@ -376,7 +377,7 @@ $font-weight: 400;
           @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
         }
         .tips-title{
-            font-size: 14px;
+            @include font-dpr(14px);
             font-weight: $font-weight;
             color: $primary-color;
             margin-left: 7px;
