@@ -329,7 +329,7 @@ export default {
   .header-top{
     background-color:#FFF1ED;
     z-index: 1;
-    height:px2rem(90px);
+    height:px2rem(80px);
     display: flex;
     flex:1;
     align-items: center;

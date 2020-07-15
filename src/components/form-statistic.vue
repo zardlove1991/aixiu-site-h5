@@ -36,8 +36,8 @@
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
             <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
           </div>
-          <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
-            <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
+          <div v-if="showType === 'pie' && item.pieData && item.type === 'radio'">
+            <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
             <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
@@ -49,7 +49,7 @@
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
                   <div class="progress-wrap" v-if="showType !== 'pie'">
-                      <span class="starck-bar" :style="{ width: val.choose_percent ? val.choose_percent + '%' : '0%'}"></span>
+                    <span class="starck-bar" :style="{ width: val.choose_percent ? val.choose_percent + '%' : '0%'}"></span>
                   </div>
               </div>
               <span class="option-percent" :class="`is-${showType}`">
@@ -228,20 +228,38 @@ export default {
             let options = item.options
             let checkedValue = item.value
             let trueOpt = ''
+            let pieData = []
             if (options) {
+              let allPercent = 0
+              let noPercent = 0
               options.map((opt, index) => {
                 let isChecked = checkedValue.includes(opt.id)
+                let percent = opt.choose_percent
                 opt.isChecked = isChecked
                 if (isChecked) {
                   opt.isCheckedId = opt.id
                 }
-                opt.percent = opt.answer_counts
+                allPercent += percent
                 if (opt.is_true === 1) {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
+                pieData.push({
+                  name: options.name,
+                  percent
+                })
               })
+              if (allPercent < 100) {
+                noPercent = 100 - allPercent
+              }
+              if (noPercent !== 0) {
+                pieData.push({
+                  name: '未选',
+                  percent: noPercent
+                })
+              }
             }
             item.trueOption = trueOpt
+            item.pieData = pieData
           })
         }
       })

@@ -288,10 +288,11 @@ export default {
 .exam-header-wrap{
   width: 100%;
   .time-wrap{
-    position:absolute;
+    // position:absolute;
+    position: fixed;
     right:0;
     bottom:50px;
-    @include bg-color('bgColor');
+    @include bg-color('btnColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
     padding-left:px2em(20px);
     padding-right:px2rem(10px);
