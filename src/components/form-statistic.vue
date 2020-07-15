@@ -48,9 +48,9 @@
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
-                  <div class="progress-wrap" v-if="showType !== 'pie'">
+                  <!-- <div class="progress-wrap" v-if="showType !== 'pie'">
                       <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
-                  </div>
+                  </div> -->
               </div>
               <span class="option-percent" :class="`is-${showType}`">
                   <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
