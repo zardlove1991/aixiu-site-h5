@@ -86,8 +86,12 @@
       :showBtn="false">
       <div class="suspend-model" slot="content">
         <div class="app-bg"></div>
-        <div class="tip">请在{{limitSource}}App内参与活动</div>
+        <div class="tip">
+          请在{{limitSource}}App内参与活动
+          <div class="err-tip" v-show="errTips">{{errTips}}</div>
+        </div>
         <div class="tip-btn" @click.stop="goDownload()">去下载</div>
+        <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
     <!--底部已考按钮组-->
@@ -133,7 +137,8 @@ export default {
       },
       password: '',
       visitPasswordLimit: false,
-      passwordTips: ''
+      passwordTips: '',
+      errTips: ''
     }
   },
   components: { MyModel },
@@ -146,8 +151,15 @@ export default {
   methods: {
     goDownload () {
       if (this.appDownloadUrl) {
+        this.errTips = ''
         window.location.href = this.appDownloadUrl
+      } else {
+        this.errTips = '未找到下载地址'
       }
+    },
+    closeDownload () {
+      this.App = false
+      this.errTips = ''
     },
     toStatistic () {
       let examId = this.id
@@ -561,6 +573,7 @@ export default {
     }
   }
   .suspend-model{
+    position: relative;
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
     .app-bg{
@@ -580,6 +593,16 @@ export default {
       margin-bottom:px2rem(80px);
       @include font-dpr(15px);
       color:#666666;
+      position: relative;
+      .err-tip {
+        position: absolute;
+        top: px2rem(40px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: red;
+        font-size: px2rem(28px);
+      }
     }
     .desc{
       @include font-dpr(14px);
@@ -600,6 +623,16 @@ export default {
       -moz-border-radius: 5px;
       -ms-border-radius: 5px;
       -o-border-radius: 5px;
+    }
+    .close-icon {
+      position: absolute;
+      right: px2rem(20px);
+      top: px2rem(20px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
   .password-dialog {
