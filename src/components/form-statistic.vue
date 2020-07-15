@@ -25,10 +25,10 @@
     </div>
     <div class="content">
       <div class="operate-wrap flex-v-center">
-        <span class="btn btn-left xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
-        @click="showType = 'pie'">饼状图</span>
-        <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+        <span class="btn btn-left xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
+        <span class="btn btn-right xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+        @click="showType = 'pie'">饼状图</span>
       </div>
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
