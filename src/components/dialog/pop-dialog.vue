@@ -86,7 +86,8 @@ export default {
       .pop-btn {
         width: px2rem(305px);
         height: px2rem(90px);
-        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        @include bg-color('btnColor');
+        // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
         border-radius: px2rem(12px);
         font-size: px2rem(34px);
         color: #fff;
