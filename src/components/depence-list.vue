@@ -78,7 +78,7 @@
           <!--头部标题-->
           <div class="title">
             <div class="title-name">答题卡</div>
-            <div class="title-closr" @click.stop="toggetSubjectList">x</div>
+            <div class="title-close" @click.stop="toggetSubjectList"></div>
           </div>
           <!--答题列表-->
           <div class="info-list-wrap">

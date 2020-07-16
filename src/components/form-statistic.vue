@@ -150,7 +150,6 @@ export default {
   methods: {
     initStatInfo (score, correctNum, total) {
       if (!score || (!correctNum && correctNum !== 0) || !total) {
-        this.statMsg = '是不是开小差了？'
         return
       }
       let statInfo = STORAGE.get('statInfo')
@@ -165,9 +164,6 @@ export default {
               break
             }
           }
-          if (msg === '') {
-            msg = this.getTipMsg(score)
-          }
           this.statMsg = msg
         } else if (type === 'correct') {
           let msg = ''
@@ -177,23 +173,8 @@ export default {
               break
             }
           }
-          if (msg === '') {
-            let correct = parseInt(correctNum / total * 100)
-            msg = this.getTipMsg(correct)
-          }
           this.statMsg = msg
         }
-      } else {
-        this.statMsg = this.getTipMsg()
-      }
-    },
-    getTipMsg (score) {
-      if (score <= 59) {
-        return '是不是开小差了？'
-      } else if (score <= 79) {
-        return '合格了，继续努力吧'
-      } else {
-        return '付出总是有回报的！'
       }
     },
     async initPage (id) {

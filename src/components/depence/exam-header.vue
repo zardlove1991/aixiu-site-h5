@@ -18,10 +18,11 @@
             </div>
           </div>
         </div>
-        <div class="right-wrap">
+        <div class="right-wrap" @click.stop="$emit('showlist')">
           <!--当前题目进度提示-->
           <!-- <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div> -->
-          <div @click.stop="$emit('showlist')">答题卡</div>
+          <div>答题卡</div>
+          <div class="right-triangle"></div>
         </div>
       </div>
       <!--进度条展示-->
@@ -363,6 +364,14 @@ export default {
           @include font-dpr(13px);
           @include font-color('tipColor');
         }
+        .right-triangle {
+          width: 0;
+          height: 0;
+          border-left: px2rem(10px) solid transparent;
+          border-right: px2rem(10px) solid transparent;
+          border-top: px2rem(10px) solid #CCCCCC;
+          margin-left: px2rem(10px);
+        }
       }
     }
     .progress-bar-wrap{
@@ -377,7 +386,8 @@ export default {
         left:0;
         width: 0;
         height: px2rem(8px);
-        background-color:#25C17C;
+        // background-color:#25C17C;
+         @include bg-color('bgColor');
       }
     }
   }

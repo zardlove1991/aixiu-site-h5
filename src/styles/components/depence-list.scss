@@ -117,10 +117,15 @@
       .title-name{
         flex:1;
       }
-      .title-close{
-        color:#979797;
-        padding:0 px2rem(10px);
-        font-size:px2rem(12px);
+      .title-close {
+        position: absolute;
+        right: px2rem(40px);
+        top: px2rem(45px);
+        width: px2rem(20px);
+        height: px2rem(20px);
+        @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+        background-repeat: no-repeat;
+        background-position: center;
       }
       .info-list-wrap{
         width: 100%;
@@ -236,12 +241,13 @@
         // height: px2rem(160px);
       }
       .prev-wrap{
-        border:1px solid #FEBB4E;
+        border:1px solid #FFA46A;
         height:px2rem(90px);
         line-height:px2rem(90px);
         text-align: center;
-        @include font-color('descColor');
-        @include border('all',1px,solid,'descColor');
+        color: #FFA46A;
+        // @include font-color('descColor');
+        // @include border('all',1px,solid,'descColor');
         font-size:px2rem(32px);
         border-radius:5px;
         -webkit-border-radius:5px;
