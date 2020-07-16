@@ -67,9 +67,9 @@
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
-      <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
-        {{examInfo.limit.submit_text || '立即交卷'}}
-      </div>
+    </div>
+    <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+      {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" >
