@@ -217,7 +217,7 @@ export default {
           // 设置当前试题索引
           this.changeSubjectIndex(0)
           // 去往查看考试概况页面
-          this.$router.push({
+          this.$router.replace({
             path: `/depencelist/${examId}`,
             query: {
               rtp: 'exam',
@@ -281,12 +281,12 @@ export default {
       // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
       if (!this.examInfo.limit.is_page_submit) {
-        this.$router.push({
+        this.$router.replace({
           path: `/alllist/${examId}`,
           query: { rtp: 'exam' }
         })
       } else {
-        this.$router.push({
+        this.$router.replace({
           path: `/depencelist/${examId}`,
           query: { rtp: 'exam' }
         })
