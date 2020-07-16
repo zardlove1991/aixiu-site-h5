@@ -457,6 +457,7 @@ const actions = {
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+        commit('SET_BLANK_ANSWER_INFO', {})
         // 结束
         Indicator.close()
         if (res.success === 1) {
