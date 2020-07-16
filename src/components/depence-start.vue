@@ -1,12 +1,6 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
-    <div class="header-normal" v-show="examInfo.person_status === 0">
-      <div class="end-tips">
-        <div class="end-tangan"></div>
-        答题规范:每个用户最多提交一次
-      </div>
-    </div>
     <div class="header-top"
       v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
@@ -78,9 +72,10 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
     </div>
     <div class="btn-area" v-else>
-      <button class="start-exambtn" @click.stop="isShowPassword()" v-if ="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
     </div>
+    <div class="start-exam-tips">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
     <my-model
       :show="App"
       :isLock="true"
@@ -144,7 +139,28 @@ export default {
   },
   components: { MyModel },
   computed: {
-    ...mapGetters('depence', ['examInfo', 'answerCardInfo'])
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
+    examSubmitCount () {
+      let examInfo = this.examInfo
+      let count = 1
+      if (examInfo && examInfo.limit) {
+        let {
+          day_userid_limit_num: dayUserIdLimit,
+          ip_limit_num: ipLimit,
+          userid_limit_num: userIdLimit
+        } = examInfo.limit
+        if (dayUserIdLimit && dayUserIdLimit > count) {
+          count = dayUserIdLimit
+        }
+        if (ipLimit && ipLimit > count) {
+          count = ipLimit
+        }
+        if (userIdLimit && userIdLimit > count) {
+          count = userIdLimit
+        }
+      }
+      return count
+    }
   },
   created () {
     this.initStartInfo()
@@ -309,7 +325,7 @@ export default {
   position:relative;
   width: 100%;
   height: 100vh;
-  padding-top:px2rem(80px);
+  // padding-top:px2rem(80px);
   background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
@@ -329,14 +345,14 @@ export default {
   }
   .header-top{
     background-color:#FFF1ED;
-    z-index: 1;
+    // z-index: 1;
     height:px2rem(80px);
     display: flex;
     flex:1;
     align-items: center;
-    position: absolute;
-    left:0;
-    top:0;
+    // position: absolute;
+    // left:0;
+    // top:0;
     width:100%;
     color:#FF6A45;
     padding-left:px2rem(43px);
@@ -369,35 +385,11 @@ export default {
     display:flex;
     align-items: center;
   }
-  .header-normal{
-    background: rgba(0,0,0,0.50);
-    z-index: 1;
-    height:px2rem(80px);
-    display:flex;
-    flex:1;
-    align-items: center;
-    position: absolute;
-    left:0;
-    top:0;
-    width:100%;
-    color:#fff;
-    padding-left:px2rem(43px);
-    padding-right:px2rem(20px);
-    @include font-dpr(14px);
-    box-sizing: border-box;
-    .end-tangan {
-      width:px2rem(36px);
-      height:px2rem(36px);
-      background-size: px2rem(36px);
-      margin-right:px2rem(20px);
-      @include img-retina('~@/assets/common/gantan@2x.png','~@/assets/common/gantan@3x.png', 100%, 100%);
-    }
-  }
   .header-wrap{
     position: relative;
     width: 100vw;
     height: px2rem(420px);
-    margin-left:px2rem(-34px);
+    // margin-left:px2rem(-34px);
     overflow: hidden;
     .bg{
       width: 100%;
@@ -415,6 +407,7 @@ export default {
   }
   .content-wrap{
     position: relative;
+    padding: 0 px2rem(34px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
@@ -517,7 +510,16 @@ export default {
     width:100%;
     position:absolute;
     left:0;
+    bottom:px2rem(100px);
+  }
+  .start-exam-tips {
+    position:absolute;
+    left:0;
+    right: 0;
     bottom:px2rem(30px);
+    text-align: center;
+    color:#fff;
+    @include font-dpr(14px);
   }
   .start-exambtn{
     flex:1;

@@ -484,7 +484,7 @@ const actions = {
         params: []
       }
       data.params = examList
-      console.log(state, 'SAVE_ANSWER_RECORDS')
+      // console.log(state, 'SAVE_ANSWER_RECORDS')
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
@@ -498,7 +498,9 @@ const actions = {
           throw new Error('error')
         }
       }).catch(err => {
-        Toast(err.error_message || '提交试卷信息出错，请重试')
+        if (err.error_code !== 'invalid-options_id') {
+          Toast(err.error_message || '提交试卷信息出错，请重试')
+        }
         // 结束
         Indicator.close()
         reject(err)

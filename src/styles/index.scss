@@ -14,6 +14,9 @@ body{
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  &.depence-start-wrap {
+    padding: 0 0 20px 0;
+  }
 }
 img{
   width:100%;

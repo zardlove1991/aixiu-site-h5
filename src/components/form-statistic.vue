@@ -20,7 +20,7 @@
             <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
           </div>
         </div>
-        <div class="score-tips">{{statMsg}}</div>
+        <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
       </div>
     </div>
     <div class="content">
@@ -82,7 +82,7 @@
             <i class="answer-icon">答</i>
             <span class="answer-content" :class="{'is-no-answer': item.value.length == 0}">
                 <span v-if="item.value.length == 0">未填写</span>
-                <span v-for="(val, index) in item.value" :key="index">{{val}}</span>
+                <span v-for="(val, index) in item.value" :key="index">{{val}}<span v-show="(index + 1) < item.value.length">、</span></span>
             </span>
             <div class="standard-answer" v-show="displayTrueAnswer && item.extra && item.extra.answer">
               <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
@@ -108,6 +108,7 @@ import STORAGE from '@/utils/storage'
 import Pie from './StatisticPie'
 import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
+import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -138,6 +139,7 @@ export default {
         checkbox: '多选题'
       },
       statMsg: '',
+      statMsgVisible: false,
       displayTrueAnswer: false,
       raffleUrl: ''
     }
@@ -190,6 +192,9 @@ export default {
         } else {
           this.raffleUrl = ''
         }
+        if (submitRules.is_open_tips) {
+          this.statMsgVisible = true
+        }
         let displayTrueAnswer = submitRules.display_true_answer
         // let displayTrueAnswer = 1
         if (displayTrueAnswer && displayTrueAnswer === 1) {
@@ -201,7 +206,9 @@ export default {
       let id = this.$route.params.id
       this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
-        this.initStatInfo(res.score, res.correct_num, res.questions.length)
+        if (this.statMsgVisible) {
+          this.initStatInfo(res.score, res.correct_num, res.questions.length)
+        }
         this.optionData = res
         let questions = res.questions
         if (questions) {
@@ -241,29 +248,64 @@ export default {
             }
             item.trueOption = trueOpt
             item.pieData = pieData
+            if (['singleblank', 'mulitblank'].includes(item.type)) {
+              // 处理富文本的title解析
+              let title = this.dealRichTitle(item)
+              item.title = title
+            }
           })
         }
       })
-      // let params = {
-      //   examination_id: id,
-      //   page: 1,
-      //   count: 100
-      // }
-      // API.getExamDetailsList({params}).then((res) => {
-      //   console.log('getExamDetailsList', res.data)
-      //   let data = res.data
-      //   if (data) {
-      //     data.forEach(item => {
-      //       let options = item.options
-      //       if (options) {
-      //         options.map(opt => {
-      //           opt.percent = opt.answer_counts
-      //         })
-      //       }
-      //     })
-      //   }
-      //   this.optionData = data
-      // })
+    },
+    dealRichTitle (data) {
+      let originTitle = data.title
+      let renderStyle = data.extra.style
+      let underlineReg = /_{3,}/g
+      let textboxReg = /<img\s?\w+[^>]+>/g
+      let matchArr = []
+      // 匹配解析的数组
+      if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
+      else matchArr = originTitle.match(textboxReg)
+      if (matchArr && matchArr.length > 0) {
+        matchArr.forEach((val, index) => {
+          let template = ''
+          // 处理不同填空的形式的渲染
+          if (renderStyle === 'underline') {
+            template = this._getUnderlineTemplate({ index, data })
+          } else if (renderStyle === 'textbox') {
+            template = this._getTextboxTemplate({ index })
+          }
+          // 获得模板替换
+          originTitle = originTitle.replace(val, template)
+        })
+      }
+      // 最终赋值
+      return this._dealHtmlLine(originTitle)
+    },
+    _dealHtmlLine (str) {
+      if (!str || (str && !str.indexOf('\n'))) return
+      return str.replace(/\n/g, '<br/>')
+    },
+    _getUnderlineTemplate (params) {
+      let { index, data } = params // 每个input索引
+      let analysisAnswer = data.extra.answer[index]
+      if (data.extra.answer[index]) {
+        // 正常填空状态
+        let length = 0
+        if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
+        else length = analysisAnswer.length
+        // 计算长度
+        let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
+        let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
+        let inputTemp = `<input type="text" readonly data-index="${index}" style="${inputStyle}" maxlength="${length}" value=""/>`
+        return inputTemp
+      }
+    },
+    _getTextboxTemplate (params) {
+      let { index } = params
+      let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: ${StyleConfig.theme};`
+      let inputTemp = `<input style="${inputStyle}" readonly data-index="${index}" value="" maxlength="1" />`
+      return inputTemp
     },
     backUrl () {
       let examId = this.$route.params.id
