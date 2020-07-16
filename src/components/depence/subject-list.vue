@@ -180,8 +180,10 @@ export default {
           @include font-color('bgColor');
         }
         &.examActive{
-          @include border('all',1px,solid,'themeColor');
-          @include font-color('themeColor');
+          // @include border('all',1px,solid,'themeColor');
+          // @include font-color('themeColor');
+          @include border('all',1px,solid,'btnColor');
+          @include font-color('btnColor');
           background-color:#fff;
         }
       }
