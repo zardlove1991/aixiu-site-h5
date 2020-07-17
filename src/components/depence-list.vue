@@ -98,6 +98,7 @@
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
         <div class="tip-btn"

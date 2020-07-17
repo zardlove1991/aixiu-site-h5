@@ -580,6 +580,12 @@ export default {
     position: relative;
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
+    .tip-title {
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+      text-align: center;
+    }
     .app-bg{
       width: px2rem(370px);
       height: px2rem(224px);

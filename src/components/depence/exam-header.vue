@@ -31,23 +31,25 @@
     <!--交卷的弹窗-->
     <my-model
       :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
-      doneText="确认交卷"
-      cancelText="继续答题"
+      doneText="确定交卷"
+      cancelText="再看看"
       @confirm="confirmSubmitModel"
       @cancel="toggleSubmitModel">
       <div class="submit-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="desc">您还有{{unDoSubjectLength}}道题未做,确认交卷吗?</div>
+        <div class="desc">还有<span class="no-do-tips"> {{unDoSubjectLength}} </span>题没有作答，确定现在交卷？</div>
       </div>
     </my-model>
     <!--去人交卷的-->
     <my-model
       :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
-      doneText="我再想想"
-      cancelText="确认交卷"
+      doneText="再看看"
+      cancelText="确定交卷"
       @confirm="toggleSubmitModel"
       @cancel="confirmSubmitModel">
       <div class="submit-success-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="desc">试题已做完，确认交卷吗？</div>
       </div>
@@ -407,6 +409,12 @@ export default {
   .submit-model,.submit-success-model{
     padding: px2rem(61px) px2rem(77px) px2rem(49px);
     box-sizing: border-box;
+    .tip-title {
+      text-align: center;
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+    }
     .tip-bg{
       width: px2rem(370px);
       height: px2rem(224px);
@@ -420,6 +428,9 @@ export default {
       padding-top: px2rem(30px);
       @include font-dpr(14px);
       @include font-color('tipColor');
+      .no-do-tips {
+        color: #FF6A45;
+      }
     }
   }
   .submit-success-model{
