@@ -43,13 +43,15 @@
             <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
               <div class="option-content flex-v-center">
-                  <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox>
+                  <!-- <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox> -->
+                  <div class="select-tip-checkbox" v-if="isCheckBox(item.type)" :class="{active: val.isChecked}"></div>
                   <el-radio v-else v-model="val.isCheckedId" :label="val.id" disabled class="radio-box" ></el-radio>
                   <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
                   <div class="progress-wrap" v-if="showType !== 'pie'">
-                    <span class="starck-bar" :style="{ width: val.choose_percent ? val.choose_percent + '%' : '0%'}"></span>
+                    <span class="starck-bar"
+                      :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
                   </div>
               </div>
               <span class="option-percent" :class="`is-${showType}`">
@@ -79,11 +81,15 @@
             </el-image>
           </div>
           <div class="answer-wrap" v-else>
-            <i class="answer-icon">答</i>
-            <span class="answer-content" :class="{'is-no-answer': item.value.length == 0}">
-                <span v-if="item.value.length == 0">未填写</span>
-                <span v-for="(val, index) in item.value" :key="index">{{val}}<span v-show="(index + 1) < item.value.length">、</span></span>
-            </span>
+            <div class="flex-answer">
+              <i class="answer-icon">答</i>
+              <span class="answer-content" :class="{'is-no-answer': !item.isCheckedContent }">
+                  <span v-if="!item.isCheckedContent">未填写</span>
+                  <span v-for="(val, index) in item.value" :key="index">{{val}}
+                    <span v-show="item.isCheckedContent && (index + 1) < item.value.length">、</span>
+                  </span>
+              </span>
+            </div>
             <div class="standard-answer" v-show="displayTrueAnswer && item.extra && item.extra.answer">
               <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
                 正确答案<span v-if="item.extra.answer.length > 1">{{index + 1}}</span>：
@@ -217,6 +223,18 @@ export default {
             let checkedValue = item.value
             let trueOpt = ''
             let pieData = []
+            let isCheckedContent = true
+            if (checkedValue && checkedValue.length > 0) {
+              for (let i = 0; i < checkedValue.length; i++) {
+                let val = checkedValue[i]
+                if (!val || val.trim() === 0) {
+                  isCheckedContent = false
+                  break
+                }
+              }
+            } else {
+              isCheckedContent = false
+            }
             if (options) {
               let allPercent = 0
               let noPercent = 0
@@ -246,6 +264,7 @@ export default {
                 })
               }
             }
+            item.isCheckedContent = isCheckedContent
             item.trueOption = trueOpt
             item.pieData = pieData
             if (['singleblank', 'mulitblank'].includes(item.type)) {
@@ -319,30 +338,6 @@ export default {
         window.location.href = link
       }
     },
-    /*
-    async getResultData () {
-      const member = decodeURIComponent(this.params.member)
-      const id = this.params.id
-      const params = { id, mark: 'biaodan', member }
-      const { feedback, component } = await this.$request('yun_result.statistic.formStatistic', { params })
-      component.map((item) => {
-        if (item.form_type === 'picture') {
-          if (item.answer instanceof Array) {
-            item.srcList = item.answer.map((val) => `${val.host}${val.filename}`)
-          } else {
-            item.srcList = item.answer instanceof Object ? new Array(`${item.answer.host}${item.answer.filename}`) : []
-          }
-          item.answer = item.srcList.length === 0 ? '' : item.srcList
-        }
-      })
-      const link = feedback.submit_rules.length ? feedback.submit_rules.link : ''
-      const showTotal = getUrlParam('is_display_total', link)
-      const statisticType = getUrlParam('options_statistic_type', link) || 'number'
-      this.feedback = { ...feedback, ...{ showTotal, statisticType } }
-      this.optionData = component
-      windowTitle(this.feedback.title || '')
-    },
-    */
     isCheckBox (val) {
       return ['checkbox', 'multiple', 'pictureMultiple'].includes(val)
     },
@@ -617,6 +612,47 @@ $font-weight: 400;
                         line-height: 22px;
                         flex: 1;
                     }
+                    .el-radio {
+                      margin-right: px2rem(20px);
+                    }
+                    .el-radio__input {
+                      .el-radio__inner {
+                        width: px2rem(40px);
+                        height: px2rem(40px);
+                        border-color: #CCCCCC;
+                        &:after {
+                          width: px2rem(18px);
+                          height: px2rem(18px);
+                          background-color: #CCCCCC;
+                        }
+                      }
+                    }
+                    .select-tip-checkbox {
+                      width:px2rem(38px);
+                      height:px2rem(38px);
+                      border:1px solid #cccccc;
+                      border-radius: px2rem(4px);
+                      margin-right: px2rem(20px);
+                      &.active {
+                        color:#ccc;
+                        position:relative;
+                        text-align: center;
+                        &:after {
+                          content:'';
+                          position: absolute;
+                          left:50%;
+                          top:50%;
+                          margin-left:px2rem(-10px);
+                          margin-top:px2rem(-7px);
+                          width:px2rem(20px);
+                          height:px2rem(14px);
+                          line-height:px2rem(40px);
+                          background-repeat: no-repeat;
+                          background-size: 100%;
+                          @include img-retina('~@/assets/common/duihao2@2x.png','~@/assets/common/duihao2@3x.png', 100%,100%);
+                        }
+                      }
+                    }
                 }
                 .option-percent{
                     margin-left: 19px;
@@ -686,29 +722,31 @@ $font-weight: 400;
                 }
             }
             .answer-wrap{
-                position: relative;
                 width: 100%;
                 font-family: $font-family;
                 font-weight: $font-weight;
+                .flex-answer {
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: px2rem(20px);
+                }
                 .answer-icon{
-                    width: 15px;
-                    height: 15px;
-                    background: $primary-color;
-                    color: #fff;
-                    border-radius: 2px;
-                    font-size: 10px;
-                    text-align: center;
-                    line-height: 15px;
-                    position: absolute;
-                    top: 4px;
-                    font-style: normal;
+                  width: px2rem(30px);
+                  height: px2rem(30px);
+                  background: $primary-color;
+                  color: #fff;
+                  border-radius: 2px;
+                  font-size: px2rem(20px);
+                  text-align: center;
+                  line-height: px2rem(30px);
+                  font-style: normal;
                 }
                 .answer-content{
                     width: 314px;
-                    font-size: 15px;
+                    font-size: px2rem(30px);
                     color: $font-color;
-                    line-height: 22px;
-                    margin-left: 27px;
+                    line-height: px2rem(30px);
+                    margin-left: px2rem(24px);
                     word-break: break-all;
                     &.is-no-answer{
                         color: rgba(51, 51, 51, 0.3);
