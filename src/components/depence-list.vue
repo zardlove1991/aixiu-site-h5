@@ -213,13 +213,14 @@ export default {
       let listType = this.listType
       let redirectParams = this.redirectParams
       try {
+        // 获取试卷详情
+        await this.getExamDetail({ id: examId })
+        let status = this.examInfo.person_status
         // 调用考试考试接口
-        if (this.rtp === 'exam') {
+        if (this.rtp === 'exam' && status !== 2) {
           let isRestart = this.restart === 'need'
           await this.startExam({ id: examId, restart: isRestart })
         }
-        // 获取试卷详情
-        await this.getExamDetail({ id: examId })
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -273,11 +274,11 @@ export default {
       })
     },
     submitExam () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels

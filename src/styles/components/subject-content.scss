@@ -63,9 +63,11 @@
         border-radius: 50%;
         border:1px solid #cccccc;
         margin-right: px2rem(40px);
-        background-color: #fff;
+        // background-color: #fff;
         &.active{
-          background-color: #fff;
+          // background-color: #fff;
+          border: 0;
+          @include bg-color('btnColor');
           &:after{
             content: '';
             width:px2rem(20px);
@@ -75,7 +77,8 @@
             -moz-border-radius:50%;
             -ms-border-radius:50%;
             -o-border-radius:50%;
-            background-color:#04BE02;
+            // background-color:#04BE02;
+            background-color: #fff;
           }
         }
         &.error{
@@ -87,14 +90,16 @@
         width:px2rem(40px);
         height:px2rem(40px);
         border:1px solid #cccccc;
-        border-radius:5px;
-        -webkit-border-radius:5px;
-        -moz-border-radius:5px;
-        -ms-border-radius:5px;
-        -o-border-radius:5px;
+        border-radius: px2rem(4px);
+        -webkit-border-radius: px2rem(4px);
+        -moz-border-radius: px2rem(4px);
+        -ms-border-radius: px2rem(4px);
+        -o-border-radius: px2rem(4px);
         margin-right: px2rem(40px);
         &.active{
-          background-color: #25C17C;
+          // background-color: #25C17C;
+          border: 0;
+          @include bg-color('btnColor');
           color:#fff;
           position:relative;
           text-align: center;
@@ -103,10 +108,10 @@
             position: absolute;
             left:50%;
             top:50%;
-            margin-left:px2rem(-9px);
-            margin-top:px2rem(-9px);
-            width:px2rem(18px);
-            height:px2rem(18px);
+            margin-left:px2rem(-10.5px);
+            margin-top:px2rem(-7.5px);
+            width:px2rem(21px);
+            height:px2rem(15px);
             line-height:px2rem(40px);
             background-repeat: no-repeat;
             background-size: 100%;

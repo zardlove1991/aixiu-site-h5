@@ -1,9 +1,10 @@
 <template lang="html">
   <div class="exam-header-wrap">
     <div class="time-wrap">
-      <div class="time">
+      <div class="time time-flex">
         <div class="time-icon"></div>
-        {{timeTip ? timeTip : '初始化...'}}</div>
+        <span>{{timeTip ? timeTip : '初始化...'}}</span>
+      </div>
     </div>
     <div class="header-info-wrap" v-if="type === 'list'">
       <!--主体内容展示-->
@@ -302,6 +303,18 @@ export default {
     line-height:px2rem(64px);
     font-size:px2rem(28px);
     z-index:100;
+    .time-flex {
+      display: flex;
+      align-items: center;
+    }
+    .time-icon {
+      width:px2rem(35px);
+      height:px2rem(34px);
+      background-repeat: no-repeat;
+      background-size: 100%;
+      margin-right: px2rem(15px);
+      @include img-retina('~@/assets/common/clock@2x.png','~@/assets/common/clock@3x.png', 100%,100%);
+    }
   }
   .header-info-wrap{
     position: relative;

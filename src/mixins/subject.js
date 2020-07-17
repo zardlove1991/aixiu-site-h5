@@ -192,7 +192,8 @@ export default {
         // }
         if (['judge', 'radio', 'checkbox'].includes(subject.type)) {
           // 多选题目更改下当前题目回答的状态
-          this.changeSubjectAnswerInfo({ subject })
+          // this.changeSubjectAnswerInfo({ subject })
+          await this.saveAnswerRecord(subject)
         }
       } catch (err) {
         console.log(err)

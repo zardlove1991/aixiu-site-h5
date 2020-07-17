@@ -38,20 +38,24 @@ export const oauth = (cbk) => {
   if (id) {
     let params = { id }
     API.getAuthScope({ params }).then(res => {
-      let scope = ''
-      if (res.limit && res.limit.source_limit && res.limit.source_limit.scope_limit) {
-        scope = res.limit.source_limit.scope_limit
-      }
-      if (scope && scope === 'base') {
-        scope = 'snsapi_base'
-      } else {
-        scope = 'snsapi_userinfo'
-      }
-      wechat.authorize((code, info) => {
-        if (code > 0 && !STORAGE.get('userinfo')) {
-          wechat.h5Signature(info, cbk, scope)
+      let limit = res.limit
+      if (limit && limit.source_limit) {
+        let { scope_limit: scopeLimit } = limit.source_limit
+        let scope = ''
+        if (scopeLimit) {
+          scope = scopeLimit
         }
-      }, scope)
+        if (scope && scope === 'base') {
+          scope = 'snsapi_base'
+        } else {
+          scope = 'snsapi_userinfo'
+        }
+        wechat.authorize((code, info) => {
+          if (code > 0 && !STORAGE.get('userinfo')) {
+            wechat.h5Signature(info, cbk, scope)
+          }
+        }, scope)
+      }
     })
   }
 }
