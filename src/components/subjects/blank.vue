@@ -1,15 +1,16 @@
 <template lang="html">
   <div class="subject-single-blank-wrap" :id="'subject-single-black-' + data.id">
     <!--题目的标题-->
-    <div class="subject-type-wrap">
+    <!-- <div class="subject-type-wrap">
       <h3 class="subject-type">
         <span>{{data.typeTip}}</span>
-        <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
+        <span class="all-score" v-show="data.score">{{`(${parseFloat(data.score)}分)`}}</span>
       </h3>
-    </div>
+    </div> -->
     <p class="subject-title" v-if="newTitle" style="overflow:hidden;">
-       <span>{{`${data.index}.`}}</span>
+      <span>{{`${data.index}.`}}</span>
       <span ref="newTitleHtml" v-html="newTitle"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip} ${parseFloat(data.score)}分)`}}</span>
     </p>
     <!-- <p class="subject-title">
       <span>{{`${data.index}.`}}</span>

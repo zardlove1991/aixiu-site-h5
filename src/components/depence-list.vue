@@ -63,13 +63,13 @@
           <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-            立即交卷
+          {{examInfo.limit.submit_text || '立即交卷'}}
           <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
-      <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
-        立即交卷
-      </div>
+    </div>
+    <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+      {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
     <div class="answer-list-info" v-show="isShowSubjectList" >
@@ -78,7 +78,7 @@
           <!--头部标题-->
           <div class="title">
             <div class="title-name">答题卡</div>
-            <div class="title-closr" @click.stop="toggetSubjectList">x</div>
+            <div class="title-close" @click.stop="toggetSubjectList"></div>
           </div>
           <!--答题列表-->
           <div class="info-list-wrap">
@@ -100,7 +100,10 @@
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
-        <div class="tip-btn" @click.stop="toStatistic">查看分数</div>
+        <div class="tip-btn"
+          v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
+          @click.stop="toStatistic">查看分数</div>
+        <div class="tip-btn" v-else @click.stop="toStart">确定</div>
       </div>
     </my-model>
     <my-model
@@ -193,8 +196,15 @@ export default {
     toStatistic () {
       this.isShowSuspendModels = false
       let examId = this.id
-      this.$router.push({
+      this.$router.replace({
         path: `/statistic/${examId}`
+      })
+    },
+    toStart () {
+      this.isShowSuspendModels = false
+      let examId = this.examId
+      this.$router.replace({
+        path: `/depencestart/${examId}`
       })
     },
     async initList () {

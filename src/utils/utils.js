@@ -14,6 +14,9 @@ import API from '@/api/module/examination'
  */
 export const setTheme = (id) => {
   // let id = this.$route.params.id
+  if (!id) {
+    return
+  }
   API.getExamDetail({ query: { id } }).then(res => {
     let info = res
     if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
@@ -333,4 +336,13 @@ export const getQcloud = (type) => {
   } else {
     return qcloudSettingLine[type] || '' // 线上上传配置
   }
+}
+
+export const formatTime = (sec, showHour) => {
+  let hour = Math.floor(sec / 3600)
+  let minute = Math.floor(sec % 3600 / 60)
+  let second = Math.floor(sec % 3600 % 60)
+  let timeArr = [hour, minute, second].map(val => (val < 10 ? `0${val}` : val))
+  if (!showHour) timeArr.shift()
+  return timeArr.join(':')
 }

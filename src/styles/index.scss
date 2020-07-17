@@ -7,12 +7,16 @@ body{
 }
 .depence-wrap{
   @include bg-color('bgColor');
-  padding:px2rem(34px);
+  // padding:px2rem(34px);
+  padding: 40px px2rem(34px) 20px px2rem(34px);
   overflow:scroll;
-  padding-top:px2rem(80px);
+  // padding-top:px2rem(80px);
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  &.depence-start-wrap {
+    padding: 0 0 20px 0;
+  }
 }
 img{
   width:100%;

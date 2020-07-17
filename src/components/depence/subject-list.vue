@@ -85,7 +85,7 @@ export default {
           let emptyNum = Math.floor(Math.floor(curRowEl.clientWidth - ITEM_W * curRowChildLength) / ITEM_W)
           if (emptyNum > 0) detalItemNum = emptyNum
         }
-        console.log('当前填充的个数为', detalItemNum)
+        // console.log('当前填充的个数为', detalItemNum)
         this.subjectEmptyItems = detalItemNum
       })
     },
@@ -180,8 +180,10 @@ export default {
           @include font-color('bgColor');
         }
         &.examActive{
-          @include border('all',1px,solid,'themeColor');
-          @include font-color('themeColor');
+          // @include border('all',1px,solid,'themeColor');
+          // @include font-color('themeColor');
+          @include border('all',1px,solid,'btnColor');
+          @include font-color('btnColor');
           background-color:#fff;
         }
       }
@@ -194,8 +196,10 @@ export default {
           @include font-color('disabledColor');
         }
         &.examActive{
-          @include bg-color('bgColor');
-          @include font-color('themeColor');
+          // @include bg-color('bgColor');
+          // @include font-color('themeColor');
+          @include border('all',1px,solid,'btnColor');
+          @include font-color('btnColor');
         }
       }
       &.success{
