@@ -65,14 +65,19 @@ export const oauth = (cbk) => {
             userName: '秀赞小秘书',
             avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
           }
-          API.getSmartCityUser({
-            params: params2
-          }).then((res) => {
-            if (res && res.id) {
-              STORAGE.set('userinfo', res)
-              cbk(res)
-            }
-          })
+          try {
+            API.getSmartCityUser({
+              params: params2
+            }).then((res) => {
+              if (res && res.id) {
+                STORAGE.set('userinfo', res)
+                cbk(res)
+              }
+            })
+          } catch (err) {
+            console.log(err)
+            cbk(-1, '智慧城市：失败', err)
+          }
         } else {
           smartcity.authorize((code, sdkInfo) => {
             if (code > 0) {
