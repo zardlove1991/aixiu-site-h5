@@ -326,7 +326,7 @@ export default {
   width: 100%;
   height: 100vh;
   // padding-top:px2rem(80px);
-  background-color:#1F52E7;
+  // background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
