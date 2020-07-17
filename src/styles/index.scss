@@ -16,6 +16,7 @@ body{
   background-position: center;
   @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
   &.depence-start-wrap {
+    @include bg-color('bgColor');
     padding: 0 0 20px 0;
   }
 }
