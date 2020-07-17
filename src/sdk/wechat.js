@@ -38,9 +38,18 @@ export const oauth = (cbk) => {
   if (id) {
     let params = { id }
     API.getAuthScope({ params }).then(res => {
+      let limit = res.limit
       let scope = ''
-      if (res.limit && res.limit.source_limit && res.limit.source_limit.scope_limit) {
-        scope = res.limit.source_limit.scope_limit
+      if (limit && limit.source_limit) {
+        let {
+          avoid_landing: avoidanding,
+          scope_limit: scopeLimit
+        } = limit.source_limit
+        if (avoidanding) {
+          scope = 'base'
+        } else if (scopeLimit) {
+          scope = scopeLimit
+        }
       }
       if (scope && scope === 'base') {
         scope = 'snsapi_base'
