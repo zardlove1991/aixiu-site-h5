@@ -18,7 +18,8 @@
     line-height: px2rem(90px);
     text-align: center;
     color:#fff;
-    background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+    // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+    @include bg-color('btnColor');
     @include font-dpr(16px);
     margin:0 auto;
     margin-top:px2rem;
