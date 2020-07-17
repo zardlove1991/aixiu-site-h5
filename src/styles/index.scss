@@ -5,8 +5,9 @@
 body{
   background-color: #fff;;
 }
+
 .depence-wrap{
-  @include bg-color('bgColor');
+  // @include bg-color('bgColor');
   // padding:px2rem(34px);
   padding: 40px px2rem(34px) 20px px2rem(34px);
   overflow:scroll;

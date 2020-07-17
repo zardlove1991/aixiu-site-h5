@@ -391,6 +391,7 @@ $font-weight: 400;
 .form-statistic-wrap{
     font-family: $font-family;
     background-color:#fff;
+    min-height: 100vh;
     i, span{
         display: inline-block;
     }
