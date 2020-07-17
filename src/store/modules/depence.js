@@ -95,10 +95,10 @@ const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = true
-    console.log(list, 'bedore_SET_ANSWER_LIST')
+    // console.log(list, 'bedore_SET_ANSWER_LIST')
     if (list && list[0]) {
       for (let i = 0; i < list.length; i++) {
-        if (list[i].question_id === payload.question_id && list[i].options_id) {
+        if (list[i].options_id && list[i].question_id === payload.question_id) {
           list[i].options_id = payload.options_id
           show = false
         }
@@ -457,6 +457,7 @@ const actions = {
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+        commit('SET_BLANK_ANSWER_INFO', {})
         // 结束
         Indicator.close()
         if (res.success === 1) {
@@ -484,7 +485,7 @@ const actions = {
         params: []
       }
       data.params = examList
-      console.log(state, 'SAVE_ANSWER_RECORDS')
+      // console.log(state, 'SAVE_ANSWER_RECORDS')
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       Promise.all([
@@ -498,7 +499,9 @@ const actions = {
           throw new Error('error')
         }
       }).catch(err => {
-        Toast(err.error_message || '提交试卷信息出错，请重试')
+        if (err.error_code !== 'invalid-options_id') {
+          Toast(err.error_message || '提交试卷信息出错，请重试')
+        }
         // 结束
         Indicator.close()
         reject(err)

@@ -70,19 +70,24 @@ export default {
         @include img-retina("~@/assets/common/answer-pop@2x.png","~@/assets/common/answer-pop@3x.png", 100%, 100%);
       }
       .pop-title {
+        padding: 0 px2rem(40px);
         color: #666666;
         font-size: px2rem(30px);
+        @include line-overflow(1);
       }
       .pop-content {
         color: #999999;
         font-size: px2rem(28px);
+        padding: 0 px2rem(30px);
         margin-top: px2rem(36px);
         margin-bottom: px2rem(50px);
+        @include line-overflow(4);
       }
       .pop-btn {
         width: px2rem(305px);
         height: px2rem(90px);
-        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        @include bg-color('btnColor');
+        // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
         border-radius: px2rem(12px);
         font-size: px2rem(34px);
         color: #fff;

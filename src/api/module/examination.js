@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit } from '@/api'
+import { createAPI, creataUser, createSumbit, createOpen } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -33,7 +33,8 @@ let configUrl = {
   getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
-  checkPassword: 'client/examination/{id}/check' // 检验密码是否正确
+  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
+  getAuthScope: 'open/examination/detail' // 检验密码是否正确
 }
 
 export default {
@@ -61,5 +62,6 @@ export default {
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
-  checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG)
+  checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
+  getAuthScope: config => createOpen(configUrl.getAuthScope, 'get', config, API_FLAG)
 }

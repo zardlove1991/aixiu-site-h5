@@ -3,7 +3,7 @@
   width: 100%;
   .denpncelist-page{
     height:100%;
-    min-height: calc(100vh - 34px);
+    min-height: calc(100vh - 60px);
     border-radius:10px ;
     background-color:#fff;
     position: relative;
@@ -18,7 +18,8 @@
     line-height: px2rem(90px);
     text-align: center;
     color:#fff;
-    background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+    // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+    @include bg-color('btnColor');
     @include font-dpr(16px);
     margin:0 auto;
     margin-top:px2rem;
@@ -49,8 +50,9 @@
   .alllist-wrap{
     position: relative;
     width: 100%;
-    height: 100vh;
-    overflow: scroll;
+    min-height: calc(100vh - 90px - 45px);
+    // overflow: scroll;
+    padding: px2rem(20px) 0;
     box-sizing: border-box;
     background-color:#fff;
     border-radius: px2rem(20px);
@@ -116,10 +118,15 @@
       .title-name{
         flex:1;
       }
-      .title-close{
-        color:#979797;
-        padding:0 px2rem(10px);
-        font-size:px2rem(12px);
+      .title-close {
+        position: absolute;
+        right: px2rem(40px);
+        top: px2rem(45px);
+        width: px2rem(20px);
+        height: px2rem(20px);
+        @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+        background-repeat: no-repeat;
+        background-position: center;
       }
       .info-list-wrap{
         width: 100%;
@@ -198,13 +205,13 @@
     }
   }
   .sumbit-area{
-    @include bg-color('themeColor');
+    @include bg-color('btnColor');
+    color: #fff;
     width:px2rem(305px);
-    height:px2rem(90px);
+    height: 45px;
     text-align: center;
-    color:#fff;
-    line-height:px2rem(90px);
-    margin:px2rem(50px) auto;
+    line-height: 45px;
+    margin: 30px auto;
     margin-bottom:0;
     font-size:px2rem(32px);
     border-radius:5px ;
@@ -214,15 +221,19 @@
     -o-border-radius:5px ;
   }
   .sumbit-btn{
+    position: absolute;
+    bottom: px2rem(60px);
     width:100%;
-    @include font-color('themeColor');
+    // @include font-color('themeColor');   
+    @include font-color('btnColor');
     text-align:center;
-    margin-bottom:px2rem(60px);
+    // margin-bottom:px2rem(60px);
     font-size:px2rem(32px);
   }
   .fixed-btn-wrap{
     padding:0 px2rem(30px);
     margin-top:px2rem(100px);
+    margin-bottom: px2rem(150px);
     .btn-wrap{
       display: flex;
       justify-content: space-between;
@@ -234,12 +245,13 @@
         // height: px2rem(160px);
       }
       .prev-wrap{
-        border:1px solid #FEBB4E;
+        border:1px solid #FFA46A;
         height:px2rem(90px);
         line-height:px2rem(90px);
         text-align: center;
-        @include font-color('descColor');
-        @include border('all',1px,solid,'descColor');
+        color: #FFA46A;
+        // @include font-color('descColor');
+        // @include border('all',1px,solid,'descColor');
         font-size:px2rem(32px);
         border-radius:5px;
         -webkit-border-radius:5px;

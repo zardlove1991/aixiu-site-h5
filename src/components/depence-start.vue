@@ -1,13 +1,8 @@
 <template lang="html">
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
-    <div class="header-normal" v-if="examInfo.person_status === 0">
-      <div class="end-tips">
-        <div class="end-tangan"></div>
-        答题规范:每个用户最多提交一次
-      </div>
-    </div>
-    <div class="header-top" v-else>
+    <div class="header-top"
+      v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">测评已提交</span>
@@ -77,17 +72,22 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
     </div>
     <div class="btn-area" v-else>
-      <button class="start-exambtn" @click.stop="isShowPassword()" v-if ="examInfo.person_status === 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
     </div>
+    <div class="start-exam-tips">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
     <my-model
       :show="App"
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
         <div class="app-bg"></div>
-        <div class="tip">请在{{limitSource}}App内参与活动</div>
+        <div class="tip">
+          请在{{limitSource}}App内参与活动
+          <div class="err-tip" v-show="errTips">{{errTips}}</div>
+        </div>
         <div class="tip-btn" @click.stop="goDownload()">去下载</div>
+        <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
     <!--底部已考按钮组-->
@@ -133,12 +133,34 @@ export default {
       },
       password: '',
       visitPasswordLimit: false,
-      passwordTips: ''
+      passwordTips: '',
+      errTips: ''
     }
   },
   components: { MyModel },
   computed: {
-    ...mapGetters('depence', ['examInfo', 'answerCardInfo'])
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
+    examSubmitCount () {
+      let examInfo = this.examInfo
+      let count = 1
+      if (examInfo && examInfo.limit) {
+        let {
+          day_userid_limit_num: dayUserIdLimit,
+          ip_limit_num: ipLimit,
+          userid_limit_num: userIdLimit
+        } = examInfo.limit
+        if (dayUserIdLimit && dayUserIdLimit > count) {
+          count = dayUserIdLimit
+        }
+        if (ipLimit && ipLimit > count) {
+          count = ipLimit
+        }
+        if (userIdLimit && userIdLimit > count) {
+          count = userIdLimit
+        }
+      }
+      return count
+    }
   },
   created () {
     this.initStartInfo()
@@ -146,8 +168,15 @@ export default {
   methods: {
     goDownload () {
       if (this.appDownloadUrl) {
+        this.errTips = ''
         window.location.href = this.appDownloadUrl
+      } else {
+        this.errTips = '未找到下载地址'
       }
+    },
+    closeDownload () {
+      this.App = false
+      this.errTips = ''
     },
     toStatistic () {
       let examId = this.id
@@ -188,7 +217,7 @@ export default {
           // 设置当前试题索引
           this.changeSubjectIndex(0)
           // 去往查看考试概况页面
-          this.$router.push({
+          this.$router.replace({
             path: `/depencelist/${examId}`,
             query: {
               rtp: 'exam',
@@ -213,7 +242,7 @@ export default {
         // check
         let examId = this.id
         API.checkPassword({query: { id: examId }}).then((res) => {
-          if (res && res.limit_source && res.app_download_link) {
+          if (res && (res.limit_source || res.app_download_link)) {
             this.App = true
             this.appDownloadUrl = res.app_download_link
             this.limitSource = res.limit_source
@@ -252,12 +281,12 @@ export default {
       // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
       if (!this.examInfo.limit.is_page_submit) {
-        this.$router.push({
+        this.$router.replace({
           path: `/alllist/${examId}`,
           query: { rtp: 'exam' }
         })
       } else {
-        this.$router.push({
+        this.$router.replace({
           path: `/depencelist/${examId}`,
           query: { rtp: 'exam' }
         })
@@ -296,7 +325,7 @@ export default {
   position:relative;
   width: 100%;
   height: 100vh;
-  padding-top:px2rem(80px);
+  // padding-top:px2rem(80px);
   background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
@@ -316,14 +345,14 @@ export default {
   }
   .header-top{
     background-color:#FFF1ED;
-    z-index: 1;
-    height:px2rem(90px);
+    // z-index: 1;
+    height:px2rem(80px);
     display: flex;
     flex:1;
     align-items: center;
-    position: absolute;
-    left:0;
-    top:0;
+    // position: absolute;
+    // left:0;
+    // top:0;
     width:100%;
     color:#FF6A45;
     padding-left:px2rem(43px);
@@ -356,35 +385,11 @@ export default {
     display:flex;
     align-items: center;
   }
-  .header-normal{
-    background: rgba(0,0,0,0.50);
-    z-index: 1;
-    height:px2rem(80px);
-    display:flex;
-    flex:1;
-    align-items: center;
-    position: absolute;
-    left:0;
-    top:0;
-    width:100%;
-    color:#fff;
-    padding-left:px2rem(43px);
-    padding-right:px2rem(20px);
-    @include font-dpr(14px);
-    box-sizing: border-box;
-    .end-tangan {
-      width:px2rem(36px);
-      height:px2rem(36px);
-      background-size: px2rem(36px);
-      margin-right:px2rem(20px);
-      @include img-retina('~@/assets/common/gantan@2x.png','~@/assets/common/gantan@3x.png', 100%, 100%);
-    }
-  }
   .header-wrap{
     position: relative;
     width: 100vw;
     height: px2rem(420px);
-    margin-left:px2rem(-34px);
+    // margin-left:px2rem(-34px);
     overflow: hidden;
     .bg{
       width: 100%;
@@ -402,6 +407,7 @@ export default {
   }
   .content-wrap{
     position: relative;
+    padding: 0 px2rem(34px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
@@ -504,7 +510,16 @@ export default {
     width:100%;
     position:absolute;
     left:0;
+    bottom:px2rem(100px);
+  }
+  .start-exam-tips {
+    position:absolute;
+    left:0;
+    right: 0;
     bottom:px2rem(30px);
+    text-align: center;
+    color:#fff;
+    @include font-dpr(14px);
   }
   .start-exambtn{
     flex:1;
@@ -561,6 +576,7 @@ export default {
     }
   }
   .suspend-model{
+    position: relative;
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
     .app-bg{
@@ -580,6 +596,16 @@ export default {
       margin-bottom:px2rem(80px);
       @include font-dpr(15px);
       color:#666666;
+      position: relative;
+      .err-tip {
+        position: absolute;
+        top: px2rem(40px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: red;
+        font-size: px2rem(28px);
+      }
     }
     .desc{
       @include font-dpr(14px);
@@ -591,7 +617,8 @@ export default {
       line-height: px2rem(90px);
       text-align: center;
       color:#fff;
-      background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include bg-color('btnColor');
       @include font-dpr(16px);
       margin:0 auto;
       margin-top:px2rem;
@@ -600,6 +627,16 @@ export default {
       -moz-border-radius: 5px;
       -ms-border-radius: 5px;
       -o-border-radius: 5px;
+    }
+    .close-icon {
+      position: absolute;
+      right: px2rem(20px);
+      top: px2rem(20px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
   .password-dialog {
@@ -653,7 +690,8 @@ export default {
       .password-limit-surebtn {
         width: px2rem(305px);
         height: px2rem(90px);
-        background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        @include bg-color('btnColor');
+        // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
         border-radius: px2rem(12px);
         font-size: px2rem(34px);
         color: #fff;

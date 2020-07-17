@@ -10,7 +10,7 @@
     <p class="subject-title">
       <span>{{`${data.index}.`}}</span>
       <span v-html="_dealHtmlLine(data.title)"></span>
-      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip} ${parseFloat(data.score)}分)`}}</span>
     </p>
     <!--题干的媒体数据-->
     <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">

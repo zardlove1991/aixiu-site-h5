@@ -12,32 +12,32 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{optionData.score}}分</div>
-            <div class="my-text">答对{{optionData.correct_num}}题</div>
+            <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
+            <div class="my-text">答对{{optionData.correct_num ? optionData.correct_num : 0}}题</div>
           </div>
           <div class="num-area">
             <div class="my-text rank-area">总分排名{{optionData.score_ranking}}名</div>
             <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
           </div>
         </div>
-        <div class="score-tips">{{statMsg}}</div>
+        <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
       </div>
     </div>
     <div class="content">
       <div class="operate-wrap flex-v-center">
-        <span class="btn btn-left xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
-        @click="showType = 'pie'">饼状图</span>
-        <span class="btn btn-right xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+        <span class="btn btn-left xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
+        <span class="btn btn-right xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+        @click="showType = 'pie'">饼状图</span>
       </div>
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
           </div>
-          <div v-if="showType === 'pie' && item.options && item.type === 'radio'">
-            <pie classify='pie' :data-array="item.options" :color-data="colorData" :el="item.form_type + key"></pie>
+          <div v-if="showType === 'pie' && item.pieData && item.type === 'radio'">
+            <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
             <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
@@ -49,7 +49,7 @@
                   <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
                   <!-- 柱状图 进度条-->
                   <div class="progress-wrap" v-if="showType !== 'pie'">
-                      <span class="starck-bar" :style="{width: val.percent + '%'}"></span>
+                    <span class="starck-bar" :style="{ width: val.choose_percent ? val.choose_percent + '%' : '0%'}"></span>
                   </div>
               </div>
               <span class="option-percent" :class="`is-${showType}`">
@@ -66,7 +66,7 @@
         <div v-else>
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{item.total_score}}分 <span class="my-score">得{{item.answer_score}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
             <el-image
@@ -82,7 +82,7 @@
             <i class="answer-icon">答</i>
             <span class="answer-content" :class="{'is-no-answer': item.value.length == 0}">
                 <span v-if="item.value.length == 0">未填写</span>
-                <span v-for="(val, index) in item.value" :key="index">{{val}}</span>
+                <span v-for="(val, index) in item.value" :key="index">{{val}}<span v-show="(index + 1) < item.value.length">、</span></span>
             </span>
             <div class="standard-answer" v-show="displayTrueAnswer && item.extra && item.extra.answer">
               <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
@@ -94,6 +94,11 @@
           </div>
         </div>
       </div>
+      <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
+        <div class="luck-pop-icon">
+          <div class="luck-pop-tips">点击抽奖</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +108,7 @@ import STORAGE from '@/utils/storage'
 import Pie from './StatisticPie'
 import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
+import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -113,7 +119,7 @@ export default {
   props: ['params'],
   data () {
     return {
-      showType: 'pie',
+      showType: 'line',
       colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
       feedback: {},
@@ -133,18 +139,19 @@ export default {
         checkbox: '多选题'
       },
       statMsg: '',
-      displayTrueAnswer: false
+      statMsgVisible: false,
+      displayTrueAnswer: false,
+      raffleUrl: ''
     }
   },
   computed: {
     ...mapGetters('depence', [
-      'examInfo'
+      'examInfo', 'luckDrawLink'
     ])
   },
   methods: {
     initStatInfo (score, correctNum, total) {
       if (!score || (!correctNum && correctNum !== 0) || !total) {
-        this.statMsg = '是不是开小差了？'
         return
       }
       let statInfo = STORAGE.get('statInfo')
@@ -162,22 +169,13 @@ export default {
           this.statMsg = msg
         } else if (type === 'correct') {
           let msg = ''
-          let correct = parseInt(correctNum / total * 100)
           for (let i = 0; i < data.length; i++) {
-            if (correct >= data[i].start && correct <= data[i].end) {
+            if (correctNum >= data[i].start && correctNum <= data[i].end) {
               msg = data[i].text
               break
             }
           }
           this.statMsg = msg
-        }
-      } else {
-        if (score <= 59) {
-          this.statMsg = '是不是开小差了？'
-        } else if (score <= 79) {
-          this.statMsg = '合格了，继续努力吧'
-        } else {
-          this.statMsg = '付出总是有回报的！'
         }
       }
     },
@@ -187,7 +185,17 @@ export default {
         await this.getExamDetail({ id })
       }
       if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
-        let displayTrueAnswer = this.examInfo.limit.submit_rules.display_true_answer
+        let submitRules = this.examInfo.limit.submit_rules
+        let raffleUrl = submitRules.raffle_url
+        if (raffleUrl) {
+          this.raffleUrl = raffleUrl
+        } else {
+          this.raffleUrl = ''
+        }
+        if (submitRules.is_open_tips) {
+          this.statMsgVisible = true
+        }
+        let displayTrueAnswer = submitRules.display_true_answer
         // let displayTrueAnswer = 1
         if (displayTrueAnswer && displayTrueAnswer === 1) {
           this.displayTrueAnswer = true
@@ -198,7 +206,9 @@ export default {
       let id = this.$route.params.id
       this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
-        this.initStatInfo(res.score, res.correct_num, res.questions.length)
+        if (this.statMsgVisible) {
+          this.initStatInfo(res.score, res.correct_num, res.questions.length)
+        }
         this.optionData = res
         let questions = res.questions
         if (questions) {
@@ -206,49 +216,108 @@ export default {
             let options = item.options
             let checkedValue = item.value
             let trueOpt = ''
+            let pieData = []
             if (options) {
+              let allPercent = 0
+              let noPercent = 0
               options.map((opt, index) => {
                 let isChecked = checkedValue.includes(opt.id)
+                let percent = opt.choose_percent
                 opt.isChecked = isChecked
                 if (isChecked) {
                   opt.isCheckedId = opt.id
                 }
-                opt.percent = opt.answer_counts
+                allPercent += percent
                 if (opt.is_true === 1) {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
+                pieData.push({
+                  name: options.name,
+                  percent
+                })
               })
+              if (allPercent < 100) {
+                noPercent = 100 - allPercent
+              }
+              if (noPercent !== 0) {
+                pieData.push({
+                  name: '未选',
+                  percent: noPercent
+                })
+              }
             }
             item.trueOption = trueOpt
+            item.pieData = pieData
+            if (['singleblank', 'mulitblank'].includes(item.type)) {
+              // 处理富文本的title解析
+              let title = this.dealRichTitle(item)
+              item.title = title
+            }
           })
         }
       })
-      // let params = {
-      //   examination_id: id,
-      //   page: 1,
-      //   count: 100
-      // }
-      // API.getExamDetailsList({params}).then((res) => {
-      //   console.log('getExamDetailsList', res.data)
-      //   let data = res.data
-      //   if (data) {
-      //     data.forEach(item => {
-      //       let options = item.options
-      //       if (options) {
-      //         options.map(opt => {
-      //           opt.percent = opt.answer_counts
-      //         })
-      //       }
-      //     })
-      //   }
-      //   this.optionData = data
-      // })
+    },
+    dealRichTitle (data) {
+      let originTitle = data.title
+      let renderStyle = data.extra.style
+      let underlineReg = /_{3,}/g
+      let textboxReg = /<img\s?\w+[^>]+>/g
+      let matchArr = []
+      // 匹配解析的数组
+      if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
+      else matchArr = originTitle.match(textboxReg)
+      if (matchArr && matchArr.length > 0) {
+        matchArr.forEach((val, index) => {
+          let template = ''
+          // 处理不同填空的形式的渲染
+          if (renderStyle === 'underline') {
+            template = this._getUnderlineTemplate({ index, data })
+          } else if (renderStyle === 'textbox') {
+            template = this._getTextboxTemplate({ index })
+          }
+          // 获得模板替换
+          originTitle = originTitle.replace(val, template)
+        })
+      }
+      // 最终赋值
+      return this._dealHtmlLine(originTitle)
+    },
+    _dealHtmlLine (str) {
+      if (!str || (str && !str.indexOf('\n'))) return
+      return str.replace(/\n/g, '<br/>')
+    },
+    _getUnderlineTemplate (params) {
+      let { index, data } = params // 每个input索引
+      let analysisAnswer = data.extra.answer[index]
+      if (data.extra.answer[index]) {
+        // 正常填空状态
+        let length = 0
+        if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
+        else length = analysisAnswer.length
+        // 计算长度
+        let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
+        let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
+        let inputTemp = `<input type="text" readonly data-index="${index}" style="${inputStyle}" maxlength="${length}" value=""/>`
+        return inputTemp
+      }
+    },
+    _getTextboxTemplate (params) {
+      let { index } = params
+      let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: ${StyleConfig.theme};`
+      let inputTemp = `<input style="${inputStyle}" readonly data-index="${index}" value="" maxlength="1" />`
+      return inputTemp
     },
     backUrl () {
       let examId = this.$route.params.id
       this.$router.push({
         path: `/depencestart/${examId}`
       })
+    },
+    pageToLuckDraw () {
+      let link = this.raffleUrl
+      if (link) {
+        window.location.href = link
+      }
     },
     /*
     async getResultData () {
@@ -332,10 +401,11 @@ $font-weight: 400;
     }
     .header-tip{
         width: 100%;
-        height: 40px;
+        height:px2rem(80px);
         background:#fff1ed;
         color: $primary-color;
-        padding: 0 10px 0 21px;
+        padding-left:px2rem(43px);
+        padding-right:px2rem(20px);
         box-sizing: border-box;
         z-index: 2;
         .icon-wrap {
@@ -348,7 +418,7 @@ $font-weight: 400;
           @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
         }
         .tips-title{
-            font-size: 14px;
+            @include font-dpr(14px);
             font-weight: $font-weight;
             color: $primary-color;
             margin-left: 7px;
@@ -654,6 +724,27 @@ $font-weight: 400;
           letter-spacing: 0.2px;
           .true-answer-title {
             margin-bottom: 20px;
+          }
+        }
+        .luck-pop {
+          position: fixed;
+          right: px2rem(20px);
+          bottom: px2rem(100px);
+          .luck-pop-icon {
+            width: px2rem(160px);
+            height: px2rem(226px);
+            @include img-retina('~@/assets/common/luck-draw-pop@2x.png','~@/assets/common/luck-draw-pop@3x.png', 100%, 100%);
+            background-repeat: no-repeat;
+            position: relative;
+            .luck-pop-tips {
+              position: absolute;
+              bottom: px2rem(50px);
+              left: 0;
+              right: 0;
+              text-align: center;
+              @include font-dpr(12px);
+              color: #fff;
+            }
           }
         }
     }
