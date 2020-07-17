@@ -49,9 +49,38 @@ export const oauth = (cbk) => {
     cbk(-1, '智慧城市：sdk加载失败')
     return false
   }
-  smartcity.authorize((code, sdkInfo) => {
-    if (code > 0) {
-      smartcity.h5Signature(sdkInfo, cbk)
-    }
-  })
+  let pathname = window.location.pathname
+  let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+  if (id) {
+    let params = { id }
+    API.getAuthScope({ params }).then(res => {
+      let limit = res.limit
+      if (limit && limit.source_limit) {
+        let { avoid_landing: avoidanding } = limit.source_limit
+        if (avoidanding) {
+          // 免登陆
+          const params2 = {
+            userId: 'xiuzan',
+            sign: 'other',
+            userName: '秀赞小秘书',
+            avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
+          }
+          API.getSmartCityUser({
+            params: params2
+          }).then((res) => {
+            if (res && res.id) {
+              STORAGE.set('userinfo', res)
+              cbk(res)
+            }
+          })
+        } else {
+          smartcity.authorize((code, sdkInfo) => {
+            if (code > 0) {
+              smartcity.h5Signature(sdkInfo, cbk)
+            }
+          })
+        }
+      }
+    })
+  }
 }
