@@ -5,12 +5,30 @@ import {
   qcloudSettingDev,
   qcloudSetting
 } from '@/config/upload'
+import API from '@/api/module/examination'
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
  * @param  {[string]} format [时间格式，支持的格式自定义，需在该方法中配置]
  * @return {[string]}        [转化后的时间格式]
  */
+export const setTheme = (id) => {
+  // let id = this.$route.params.id
+  if (!id) {
+    return
+  }
+  API.getExamDetail({ query: { id } }).then(res => {
+    let info = res
+    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
+      let content = info.limit.color_scheme.content
+      document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+      document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+      document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+      document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+    }
+  })
+}
+
 export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false) => {
   let _format = function (num) {
     if (num < 10) {
@@ -113,6 +131,87 @@ export const setPlatCssInclude = () => {
   window.document.documentElement.setAttribute('data-theme', theme)
 }
 
+export const getFontsize = () => {
+// 初始值
+  const defaultDpr = 1
+  //   const dpr = window.devicePixelRatio
+  const dpr = Number(document.getElementsByTagName('html')[0].getAttribute('data-dpr'))
+  const width = screen.width
+  let htmlStyle = ''
+  let bodyStyle = ''
+  // dpr倍数
+  const difference = dpr / defaultDpr
+  // 计算
+  if (difference === 1 || difference === 2 || difference === 3) {
+    const defaultMinSize = 20 * difference
+    const defaultMaxSize = 33.75 * difference
+    const defaultCoefficient = 0.0625 * difference
+    htmlStyle = getFontSize(width, defaultMinSize, defaultMaxSize, defaultCoefficient)
+    bodyStyle = difference * 12
+  } else {
+    htmlStyle = getFontSize(width, 20, 33.75, 0.0625)
+    bodyStyle = 12
+  }
+  return { bodyStyle, htmlStyle }
+}
+
+/**
+
+ * 通过手机屏幕dpr和手机宽度来确定font-size的值
+
+ * @param {int} width
+
+ * @param {int} defaultMinSize
+
+ * @param {int} defaultMaxSize
+
+ * @param {int} defaultCoefficient
+
+ * @returns {String}
+
+ */
+
+function getFontSize (width, defaultMinSize, defaultMaxSize, defaultCoefficient) {
+  let style = 0
+  // 屏幕宽度需要在320-540之间进行计算
+  if (width < 320) {
+    style = defaultMinSize
+  } else if (width > 540) {
+    style = defaultMaxSize
+  } else {
+    const difference = width - 320
+
+    const fontsize = defaultMinSize + difference * defaultCoefficient
+
+    style = fontsize
+  }
+  return style
+}
+
+export const mobileDevice = () => {
+  const mbldevice = navigator.userAgent.toLowerCase()
+  if (/iphone|ipod|ipad/gi.test(mbldevice)) {
+    return 'iOS'
+  } else if (/android/gi.test(mbldevice)) {
+    return 'Android'
+  } else {
+    return 'Other'
+  }
+}
+
+export const windowTitle = (title) => {
+  window.document.title = title
+  if (mobileDevice() === 'iOS') {
+    const hackIframe = document.createElement('iframe')
+    hackIframe.style.display = 'none'
+    hackIframe.src = '//h5.ixiuzan.cn/p/Tplglobal/images/favicon.ico?random=' + Math.random()
+    document.body.appendChild(hackIframe)
+    setTimeout(function () {
+      document.body.removeChild(hackIframe)
+    }, 300)
+  }
+}
+
 // 创建一个自动根据浏览器来添加CSS前缀
 let elementStyle = document.createElement('div').style
 let vender = (() => {
@@ -134,6 +233,22 @@ let vender = (() => {
 
   return false
 })()
+
+/*
+ * 获取随机串
+ * */
+
+export const randomNum = (len) => {
+  var salt = ''
+  for (var i = 0; i < len; i++) {
+    let tmp = parseInt(Math.floor(Math.random() * 10))
+    if (!tmp) {
+      tmp = '2'
+    }
+    salt += tmp
+  }
+  return salt
+}
 
 /* 添加style前缀 */
 export function prefixStyle (style) {
@@ -221,4 +336,13 @@ export const getQcloud = (type) => {
   } else {
     return qcloudSettingLine[type] || '' // 线上上传配置
   }
+}
+
+export const formatTime = (sec, showHour) => {
+  let hour = Math.floor(sec / 3600)
+  let minute = Math.floor(sec % 3600 / 60)
+  let second = Math.floor(sec % 3600 % 60)
+  let timeArr = [hour, minute, second].map(val => (val < 10 ? `0${val}` : val))
+  if (!showHour) timeArr.shift()
+  return timeArr.join(':')
 }

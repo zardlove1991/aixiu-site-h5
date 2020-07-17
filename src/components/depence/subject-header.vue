@@ -193,14 +193,14 @@ export default {
         }
       }
       &.disabled{
-        @include bg-color('bgGrayColor');
+        @include bg-color('bgColor');
         @include font-color('disabledColor');
         @include border('all',1px,solid,'borderGray');
         .essay-tip{
-          @include font-color('disabledColor');
+          @include bg-color('bgColor');
         }
         &.active{
-          @include bg-color('disabledColor');
+          @include bg-color('bgColor');
           @include font-color('bgColor');
         }
       }

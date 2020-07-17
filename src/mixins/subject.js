@@ -63,7 +63,7 @@ export default {
       // 检查是否有特殊类型提醒的提交操作
       this.sendSaveRecordOption(subject)
       // 清空当前页面的视频组件信息
-      if (this.curSubjectVideos.length) this.setCurSubjectVideos([])
+      if (this.curSubjectVideo && this.curSubjectVideos.length) this.setCurSubjectVideos([])
     },
     essayTempAnswerInfo (newAnwer) {
       console.log('当前问答题触发的临时提交数据', newAnwer)
@@ -175,16 +175,25 @@ export default {
         console.log(err)
       }
     },
-    async selectAnswer (selectIndex) {
-      let subject = this.currentSubjectInfo
+    async selectAnswer (selectIndex, index) {
+      let subject = this.examList[index - 1]
       try {
-        await this.addSelectActiveFlag(selectIndex)
-        // 保存答题记录 这边主要针对单选题和判断题 自动保存
-        if (['judge', 'radio'].includes(subject.type)) {
-          await this.saveAnswerRecord(subject)
-        } else if (['checkbox'].includes(subject.type)) {
+        let data = {
+          'selectIndex': selectIndex,
+          'index': index
+        }
+        await this.addSelectActiveFlag(data)
+        // // 保存答题记录 这边主要针对单选题和判断题 自动保存
+        // if (['judge', 'radio'].includes(subject.type)) {
+        //   await this.saveAnswerRecord(subject)
+        // } else if (['checkbox'].includes(subject.type)) {
+        //   // 多选题目更改下当前题目回答的状态
+        //   this.changeSubjectAnswerInfo({ subject })
+        // }
+        if (['judge', 'radio', 'checkbox'].includes(subject.type)) {
           // 多选题目更改下当前题目回答的状态
-          this.changeSubjectAnswerInfo({ subject })
+          // this.changeSubjectAnswerInfo({ subject })
+          await this.saveAnswerRecord(subject)
         }
       } catch (err) {
         console.log(err)
@@ -231,13 +240,13 @@ export default {
         this.isShowOpsModel = false
       }, 520)
     },
-    selectTouchEnd (selectIndex) {
+    selectTouchEnd (selectIndex, index) {
       let selectEl = this.$refs.subjectSelectWrap[selectIndex]
       selectEl.style.backgroundColor = '#f9f9f9'
       setTimeout(() => {
         selectEl.style.backgroundColor = ''
         // 调用选择答案
-        this.selectAnswer(selectIndex)
+        this.selectAnswer(selectIndex, index)
       }, 100)
     },
     _triggerFileUpload () {

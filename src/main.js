@@ -3,7 +3,7 @@ import App from './App'
 import 'babel-polyfill'
 import router from '@/router/index'
 import store from '@/store/index'
-import { setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
+import { setTheme, setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 // 引入所有第三库
 import '@/lib/index'
 
@@ -17,6 +17,11 @@ router.afterEach(route => {
   let routerTitle = query && query.title ? query.title : route.meta.title
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
+  let name = router.currentRoute.name
+  if (name !== 'depencestart') {
+    let id = router.currentRoute.params.id
+    setTheme(id)
+  }
 })
 
 /* eslint-disable no-new */

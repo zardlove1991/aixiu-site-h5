@@ -1,11 +1,14 @@
 const protocol = window.location.protocol
 
 export default {
+  'sumbitAPI': protocol + '//result-pre.aihoge.com/',
+  'USER': protocol + '//member-pre.aihoge.com/',
   'API': protocol + '//core-v3d.ddapp.com/api/',
-  'API41': protocol + '//sys.dev41.dingdone.com/api/',
+  'OPEN': protocol + '//examinationapi-pre.aihoge.com/',
+  'API41': protocol + '//examinationapi-pre.aihoge.com/api/',
   'PHPAPI': protocol + '//clientapi-v3d.ddapp.com/api/',
-  'EXAMAPI': protocol + '//pre-exam.ddapp.com/api/',
-  'ONLINE_EXAM_API': protocol + '//exam.ddapp.com/api/',
+  'EXAMAPI': protocol + '//examinationapi-pre.aihoge.com/api/',
+  'ONLINE_EXAM_API': protocol + '//examinationapi.aihoge.com/api/',
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,

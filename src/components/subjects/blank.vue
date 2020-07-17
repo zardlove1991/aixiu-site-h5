@@ -1,29 +1,23 @@
 <template lang="html">
-  <div class="subject-single-blank-wrap">
+  <div class="subject-single-blank-wrap" :id="'subject-single-black-' + data.id">
     <!--题目的标题-->
-    <div class="subject-type-wrap">
+    <!-- <div class="subject-type-wrap">
       <h3 class="subject-type">
         <span>{{data.typeTip}}</span>
-        <span class="score" v-show="data.score">{{`(${data.score}分)`}}</span>
+        <span class="all-score" v-show="data.score">{{`(${parseFloat(data.score)}分)`}}</span>
       </h3>
-    </div>
+    </div> -->
     <p class="subject-title" v-if="newTitle" style="overflow:hidden;">
-      <span>{{`${currentSubjectIndex+1}.`}}</span>
+      <span>{{`${data.index}.`}}</span>
       <span ref="newTitleHtml" v-html="newTitle"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip} ${parseFloat(data.score)}分)`}}</span>
     </p>
+    <!-- <p class="subject-title">
+      <span>{{`${data.index}.`}}</span>
+      <span v-html="_dealHtmlLine(data.title)"></span>
+      <span class="all-score" v-show="data.score">{{`(${data.typeTip}${data.score}分)`}}</span>
+    </p> -->
     <!--题干的媒体数据-->
-    <div class="media-wrap" v-for="(media,mediaKey) in data.annex" :key="mediaKey">
-      <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
-      <!--音频播放-->
-      <my-audio
-        v-if="mediaKey=='audio' && annexMedia(media)"
-        class="my-audio"
-        :limit-info="{ isLimit: false }"
-        :src="annexMedia(media)">
-      </my-audio>
-      <!--视频播放-->
-      <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
-    </div>
     <!--题目解析选项-->
     <div class="answerinfo-wrap" v-if="mode === 'analysis'">
       <div class="correct-answer"
@@ -134,9 +128,11 @@ export default {
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
       // 匹配解析的数组
+      // console.log(renderStyle)
+      // console.log(originTitle)
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
-      console.log('当前匹配的数组', matchArr)
+      // console.log(matchArr, 'textboxReg')
       matchArr.forEach((val, index) => {
         let template = ''
         // 处理不同填空的形式的渲染
@@ -149,11 +145,13 @@ export default {
         originTitle = originTitle.replace(val, template)
       })
       // 最终赋值
+      // console.log(originTitle)
       this.newTitle = this._dealHtmlLine(originTitle)
     },
     addListener () {
       this.$nextTick(() => {
-        let targets = document.getElementsByClassName('text-input')
+        let newt = document.getElementById('subject-single-black-' + this.data.id).getElementsByClassName('text-input')
+        let targets = newt
         let dealKeyboard = (source) => {
           let { type } = source
           if (type === 'focus') {
@@ -172,7 +170,7 @@ export default {
           target.addEventListener('focus', dealKeyboard, false)
           target.addEventListener('blur', dealKeyboard, false)
           target.addEventListener('input', this.dealInput, false)
-          // 使用销毁函数钩子催婚事件
+          // 使用销毁函数钩子摧毁事件
           this.$on('hook:beforeDestroy', () => {
             target.removeEventListener('focus', dealKeyboard, false)
             target.removeEventListener('blur', dealKeyboard, false)
@@ -221,11 +219,12 @@ export default {
             nextFoucs(index) // 自动跳转下一个文本框
           }
         }
-        console.log('xxx 最终传送的值', this.answerArr)
+        // console.log('xxx 最终传送的值', this.answerArr)
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
-        this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        // this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        this.saveAnswerRecord(data)
       }, delayTime)
     },
     _getUnderlineTemplate (params) {
@@ -233,21 +232,23 @@ export default {
       let mode = this.mode
       let { index } = params // 每个input索引
       let analysisAnswer = data.extra.answer[index]
-      let value = this.curAnswer[index] || ''
-      // 正常填空状态
-      let length = 0
-      if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
-      else length = analysisAnswer.length
-      // 计算长度
-      let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
-      let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
-      let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
-      if (mode === 'analysis') {
-        let color = this._checkGroupState(index)
-        inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;border-radius:0;`
-        inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+      if (data.extra.answer[index]) {
+        let value = this.curAnswer[index] || ''
+        // 正常填空状态
+        let length = 0
+        if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
+        else length = analysisAnswer.length
+        // 计算长度
+        let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
+        let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
+        let inputTemp = `<input type="text" class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+        if (mode === 'analysis') {
+          let color = this._checkGroupState(index)
+          inputStyle = `width:${70 + offsetW}px; border:none; border-bottom: 1px solid #999;font-size:14px; color:${color}; text-align:center; outline:none;border-radius:0;`
+          inputTemp = `<input type="text" readonly class="text-input" placeholder='点击答题' data-index="${index}" style="${inputStyle}" maxlength="${length}" value="${value}"/>`
+        }
+        return inputTemp
       }
-      return inputTemp
     },
     _getTextboxTemplate (params) {
       let mode = this.mode

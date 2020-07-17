@@ -20,12 +20,15 @@ export default {
 
 <style lang="scss">
 #app{
-  width: 100%;
   height: 100vh;
+  background-color: var(--bgColor, #fff);
   overflow: scroll;
   -webkit-overflow-scrolling:touch;
   &.hide{
     overflow: hidden;
   }
+}
+*{
+  box-sizing: border-box;
 }
 </style>

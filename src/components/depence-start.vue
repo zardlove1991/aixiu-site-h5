@@ -1,35 +1,48 @@
 <template lang="html">
   <!--当前开始考试页面-->
-  <div class="depence-start-wrap" v-if="examInfo">
+  <div class="depence-start-wrap depence-wrap" v-if="examInfo">
+    <div class="header-top"
+      v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
+      <div class="end-tips">
+        <i class="tips-icon"></i>
+        <span class="tips-msg">测评已提交</span>
+      </div>
+      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
+    </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap">
-      <template v-if="examInfo.indexpic">
-        <img :src="examInfo.indexpic" class="bg" />
+    <div class="header-wrap" v-if="examInfo.indexpic">
+      <template>
+        <img :src="examInfo.indexpic.url" class="bg" />
         <!--透明遮罩-->
-        <div class="thumb"></div>
       </template>
       <!--默认的背景图片-->
-      <div v-show="!examInfo.indexpic" class="indexpic-bg"></div>
     </div>
     <!--主体展示部分-->
     <div class="content-wrap">
       <div class="content">
         <!--头部-->
         <div class="header-desc">
-          <div class="default-avater">
-            <img v-show="examInfo.indexpic" :src="examInfo.indexpic" alt="" class="avater">
-          </div>
-          <span class="title">{{examInfo.title}}</span>
+          <div class="title">{{examInfo.title}}</div>
+        </div>
+        <div class="exam-time" v-if="examInfo.limit.is_time_show == 1">
+          <div class="icon-time"></div>
+          {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div class="body-wrap">
           <!--信息展示-->
           <div class="row">
-            <span class="title">试题数量</span>
-            <span class="desc">{{`${examInfo.question_num}题, 总计${examInfo.total_score}分`}}</span>
+            <div class="row-icon row-naozhong"></div>
+            <div>
+              <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
+              <div class="title">测评时长</div>
+            </div>
           </div>
           <div class="row">
-            <span class="title">考试时间</span>
-            <span class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</span>
+            <div class="row-icon row-juanzi"></div>
+            <div>
+              <div class="desc">{{`${examInfo.question_num}题`}}</div>
+              <div class="title">试题数量</div>
+            </div>
           </div>
           <!-- <div class="row">
             <span class="title">考试难度</span>
@@ -42,30 +55,66 @@
             <span class="desc">{{examInfo.builder || '暂无'}}</span>
           </div> -->
           <div class="row">
-            <span class="title">考试次数</span>
-            <span class="desc">{{examInfo.restart ? '不限' : '1次'}}</span>
+            <div class="row-icon row-jianguo"></div>
+            <div>
+              <div class="desc">{{`${examInfo.total_score}分`}}</div>
+              <div class="title">满分</div>
+            </div>
           </div>
         </div>
         <!--底部-->
-        <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div>
+        <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
     </div>
     <!--底部按钮-->
-    <button v-if ="examInfo.person_status === 0" class="start-exambtn" @click.stop="goExamPage">开始测验</button>
+    <div class="btn-area" v-if="examInfo.timeStatus !== 0">
+      <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
+      <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+    </div>
+    <div class="btn-area" v-else>
+      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
+    </div>
+    <div class="start-exam-tips">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
+    <my-model
+      :show="App"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="app-bg"></div>
+        <div class="tip">
+          请在{{limitSource}}App内参与活动
+          <div class="err-tip" v-show="errTips">{{errTips}}</div>
+        </div>
+        <div class="tip-btn" @click.stop="goDownload()">去下载</div>
+        <div class="close-icon" @click.stop="closeDownload()"></div>
+      </div>
+    </my-model>
     <!--底部已考按钮组-->
-    <div v-else class="reset-exam-btns" :class="{'center': !examInfo.restart}">
+    <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
       <button class="show" @click.stop="jumpGradePage">查看成绩</button>
+    </div> -->
+    <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
+      <div class="password-limit-wrap" @click.stop>
+        <div class="password-limit-title">请输入密码参与答题</div>
+        <input class="password-limit" placeholder='请输入密码' v-model="password" type="text" />
+        <div class="password-tips">{{passwordTips}}</div>
+        <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
+import STORAGE from '@/utils/storage'
 import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
+import MyModel from './depence/model'
 
 export default {
   mixins: [mixins],
@@ -74,33 +123,92 @@ export default {
   },
   data () {
     return {
+      App: false,
+      appDownloadUrl: '',
+      limitSource: '',
       starMap: {
         easy: 0,
         middle: 2,
         hard: 4
-      }
+      },
+      password: '',
+      visitPasswordLimit: false,
+      passwordTips: '',
+      errTips: ''
     }
   },
+  components: { MyModel },
   computed: {
-    ...mapGetters('depence', ['examInfo', 'answerCardInfo'])
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
+    examSubmitCount () {
+      let examInfo = this.examInfo
+      let count = 1
+      if (examInfo && examInfo.limit) {
+        let {
+          day_userid_limit_num: dayUserIdLimit,
+          ip_limit_num: ipLimit,
+          userid_limit_num: userIdLimit
+        } = examInfo.limit
+        if (dayUserIdLimit && dayUserIdLimit > count) {
+          count = dayUserIdLimit
+        }
+        if (ipLimit && ipLimit > count) {
+          count = ipLimit
+        }
+        if (userIdLimit && userIdLimit > count) {
+          count = userIdLimit
+        }
+      }
+      return count
+    }
   },
   created () {
     this.initStartInfo()
   },
   methods: {
+    goDownload () {
+      if (this.appDownloadUrl) {
+        this.errTips = ''
+        window.location.href = this.appDownloadUrl
+      } else {
+        this.errTips = '未找到下载地址'
+      }
+    },
+    closeDownload () {
+      this.App = false
+      this.errTips = ''
+    },
+    toStatistic () {
+      let examId = this.id
+      this.$router.push({
+        path: `/statistic/${examId}`
+      })
+    },
     async initStartInfo () {
       let examId = this.id
       try {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
+        let info = this.examInfo
+        if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
+          let content = info.limit.color_scheme.content
+          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+          document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+        }
+        if (info.limit && info.limit.submit_rules && info.limit.submit_rules.result) {
+          STORAGE.set('statInfo', info.limit.submit_rules.result)
+        }
+        STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
       }
     },
     async startReExam () {
       let examId = this.id
-      let redirectParams = this.redirectParams
+      // let redirectParams = this.redirectParams
       Indicator.open({ spinnerType: 'fading-circle' })
       try {
         await this.getAnswerCardInfo({id: examId})
@@ -109,12 +217,11 @@ export default {
           // 设置当前试题索引
           this.changeSubjectIndex(0)
           // 去往查看考试概况页面
-          this.$router.push({
+          this.$router.replace({
             path: `/depencelist/${examId}`,
             query: {
               rtp: 'exam',
-              restart: 'need',
-              ...redirectParams
+              restart: 'need'
             }
           })
         } else {
@@ -123,27 +230,74 @@ export default {
         // 结束loading
         Indicator.close()
       } catch (err) {
-        console.log(err)
         // 结束loading
         Indicator.close()
       }
     },
+    isShowPassword () {
+      let limit = this.examInfo.limit.visit_password_limit
+      if (limit) {
+        this.visitPasswordLimit = true
+      } else {
+        // check
+        let examId = this.id
+        API.checkPassword({query: { id: examId }}).then((res) => {
+          if (res && (res.limit_source || res.app_download_link)) {
+            this.App = true
+            this.appDownloadUrl = res.app_download_link
+            this.limitSource = res.limit_source
+          } else {
+            this.goExamPage()
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    },
+    hiddenPasswordLimit () {
+      this.visitPasswordLimit = false
+      this.passwordTips = ''
+      this.password = ''
+    },
+    onCommitPassword () {
+      if (!this.password) {
+        this.passwordTips = '请输入密码'
+      } else {
+        // 发送请求校验密码是否正确
+        let examId = this.id
+        API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
+          this.hiddenPasswordLimit()
+          this.goExamPage()
+        }).catch(err => {
+          // console.log(err)
+          if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
+            this.passwordTips = err.error_message
+          }
+        })
+      }
+    },
     goExamPage () {
       let examId = this.id
-      let redirectParams = this.redirectParams
+      // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
-      this.$router.push({
-        path: `/depencelist/${examId}`,
-        query: { rtp: 'exam', ...redirectParams }
-      })
+      if (!this.examInfo.limit.is_page_submit) {
+        this.$router.replace({
+          path: `/alllist/${examId}`,
+          query: { rtp: 'exam' }
+        })
+      } else {
+        this.$router.replace({
+          path: `/depencelist/${examId}`,
+          query: { rtp: 'exam' }
+        })
+      }
     },
     jumpGradePage () {
       let examId = this.id
-      let redirectParams = this.redirectParams // mixin中的公共属性
+      // let redirectParams = this.redirectParams // mixin中的公共属性
       // 跳转去往答题卡页面
       this.$router.push({
-        path: `/depencecard/${examId}`,
-        query: { ...redirectParams }
+        path: `/depencecard/${examId}`
       })
     },
     _getStarNum (level) {
@@ -167,30 +321,81 @@ export default {
 @import "@/styles/index.scss";
 
 .depence-start-wrap{
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  position:relative;
   width: 100%;
   height: 100vh;
+  // padding-top:px2rem(80px);
+  // background-color:#1F52E7;
+  background-repeat: no-repeat;
+  background-position: center;
+  @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  .exam-time{
+    @include font-dpr(15px);
+    color:#fff;
+    margin-bottom:px2rem(87px);
+    display:flex;
+    align-items:center;
+  }
+  .icon-time{
+    width:px2rem(34px);
+    height:px2rem(34px);
+    margin-right:px2rem(20px);
+    @include img-retina('~@/assets/common/timeInfo@2x.png','~@/assets/common/timeInfo@3x.png', 100%, 100%);
+  }
+  .header-top{
+    background-color:#FFF1ED;
+    // z-index: 1;
+    height:px2rem(80px);
+    display: flex;
+    flex:1;
+    align-items: center;
+    // position: absolute;
+    // left:0;
+    // top:0;
+    width:100%;
+    color:#FF6A45;
+    padding-left:px2rem(43px);
+    padding-right:px2rem(20px);
+    @include font-dpr(14px);
+    box-sizing: border-box;
+    .tips-icon {
+      display: inline-block;
+      width: px2rem(36px);
+      height: px2rem(36px);
+      background-size: px2rem(36px);
+      margin-right: 7px;
+      @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
+    }
+    .tips-msg {
+      line-height: 14px;
+      @include font-dpr(14px);
+    }
+    .to-score{
+      height:px2rem(54px);
+      line-height:px2rem(54px);
+      text-align:center;
+      width:px2rem(200px);
+      border:1px solid #FF6A45;
+      border-radius: 27px;
+    }
+  }
+  .end-tips{
+    flex:1;
+    display:flex;
+    align-items: center;
+  }
   .header-wrap{
     position: relative;
-    width: 100%;
-    height: px2rem(300px);
+    width: 100vw;
+    height: px2rem(420px);
+    // margin-left:px2rem(-34px);
     overflow: hidden;
     .bg{
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(4px);
-    }
-    .thumb{
-      position: absolute;
-      top:0;
-      left:0;
-      right: 0;
-      bottom:0;
-      background-color: rgba(0,0,0,0.08);
-      overflow: hidden;
+      // filter: blur(4px);
     }
     .indexpic-bg{
       width: 100%;
@@ -202,70 +407,52 @@ export default {
   }
   .content-wrap{
     position: relative;
-    flex:1;
-    width: 100%;
-    @include bg-color('tipBgColor');
+    padding: 0 px2rem(34px);
     .content{
-      position: absolute;
-      top: px2rem(-176px);
-      right: px2rem(30px);
-      left:px2rem(30px);
-      bottom: px2rem(30px);
-      padding: 0 px2rem(50px);
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
       box-sizing: border-box;
-      @include bg-color('bgColor');
-      .header-desc,.body-wrap{
-        margin: 0 px2rem(22px);
-      }
+      // @include bg-color('bgColor');
       .header-desc{
-        display: flex;
-        align-items: center;
-        padding: px2rem(60px) 0 px2rem(39px);
-        @include border('bottom',1px,solid,'lineColor');
-        .default-avater{
-          width: px2rem(125px);
-          height: px2rem(125px);
-          border-radius: px2rem(5px);
-          background-position: center;
-          background-repeat: no-repeat;
-          @include img-retina('~@/assets/common/empty_indexpic@2x.png','~@/assets/common/empty_indexpic@3x.png', 100%, 100%);
-          .avater{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: px2rem(5px);
-          }
-        }
+        margin:px2rem(26px) 0;
         .title{
-          max-width: px2rem(470px);
-          line-height: px2rem(50px);
+          line-height: px2rem(68px);
+          font-family:SourceHanSansCN-Medium;
           font-weight: bold;
-          margin-left: px2rem(53px);
-          @include font-dpr(17px);
-          @include font-color('titleColor');
+          display:block;
+          @include font-dpr(26px);
+          color:#fff;
           @include line-overflow(2);
         }
       }
       .body-wrap{
         width: 100%;
         overflow: hidden;
+        display:flex;
         .row{
+          flex: 1;
           display: flex;
+          position:relative;
+          justify-content: center;
           align-items: center;
-          margin-top: px2rem(40px);
-          @include font-dpr(15px)
-          .title,.desc{
-            line-height: 1;
+          text-align:center;
+          height:px2rem(150px);
+          background:rgba(255,255,255,0.2);
+          color:#fff;
+          border-radius: px2rem(12px);
+          @include font-dpr(15px);
+          &:nth-child(2){
+            margin:0 px2rem(21px);
           }
           .title{
-            margin-right: px2rem(58px);
-            @include font-color('tipColor');
+            @include font-dpr(14px);
           }
           .desc{
-            flex:1;
-            @include font-color('titleColor');
+            @include font-dpr(16px);
+            margin-bottom:px2rem(22px);
+          }
+          .title,.desc{
+            line-height: 1;
           }
           .desc-wrap{
             flex:1;
@@ -287,6 +474,24 @@ export default {
             }
           }
         }
+        .row-icon{
+          width:px2rem(80px);
+          height:px2rem(80px);
+          position:absolute;
+          right:px2rem(10px);
+          top:px2rem(20px);
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        .row-naozhong{
+          @include img-retina('~@/assets/common/row_click@2x.png','~@/assets/common/row_click@3x.png', 100%, 100%);
+        }
+        .row-juanzi{
+          @include img-retina('~@/assets/common/juanzi@2x.png','~@/assets/common/juanzi@3x.png', 100%, 100%);
+        }
+        .row-jianguo{
+          @include img-retina('~@/assets/common/jianguo@2x.png','~@/assets/common/jianguo@3x.png', 100%, 100%);
+        }
       }
       .footer-brief{
         margin-top: px2rem(40px);
@@ -301,15 +506,45 @@ export default {
       }
     }
   }
+  .btn-area{
+    display:flex;
+    width:100%;
+    position:absolute;
+    left:0;
+    bottom:px2rem(100px);
+  }
+  .start-exam-tips {
+    position:absolute;
+    left:0;
+    right: 0;
+    bottom:px2rem(30px);
+    text-align: center;
+    color:#fff;
+    @include font-dpr(14px);
+  }
   .start-exambtn{
-    width: 100%;
-    height: px2rem(100px);
-    line-height: px2rem(100px);
+    flex:1;
+    border-radius: px2rem(8px);
+    margin:0 px2rem(30px);
+    height: px2rem(90px);
+    line-height: px2rem(90px);
     text-align: center;
     border: none;
+    color:#fff;
+    @include font-dpr(16px);
+    @include bg-color('btnColor')
+  }
+  .end-exambtn{
+    flex:1;
+    border-radius: px2rem(8px);
+    margin:0 px2rem(30px);
+    height: px2rem(90px);
+    line-height: px2rem(90px);
+    text-align: center;
+    border: none;
+    background-color:#CCC;
     @include font-dpr(16px);
     @include font-color('bgColor');
-    @include bg-color('themeColor')
   }
   .reset-exam-btns{
     display: flex;
@@ -317,7 +552,6 @@ export default {
     padding: 0 px2rem(30px) px2rem(30px);
     width: 100%;
     box-sizing: border-box;
-    @include bg-color('tipBgColor');
     &.center{
       justify-content: center;
     }
@@ -340,6 +574,130 @@ export default {
       @include font-color('bgColor');
       @include bg-color('themeColor');
       @include border('all', px2rem(1px), solid, 'themeColor');
+    }
+  }
+  .suspend-model{
+    position: relative;
+    padding:px2rem(49px) px2rem(51px) px2rem(41px);
+    box-sizing: border-box;
+    .app-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/Bitmap@2x.png","~@/assets/common/Bitmap@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      font-weight: bold;
+      text-align: center;
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
+      position: relative;
+      .err-tip {
+        position: absolute;
+        top: px2rem(40px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: red;
+        font-size: px2rem(28px);
+      }
+    }
+    .desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .tip-btn{
+      width:px2rem(305px);
+      height:px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      color:#fff;
+      // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include bg-color('btnColor');
+      @include font-dpr(16px);
+      margin:0 auto;
+      margin-top:px2rem;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -ms-border-radius: 5px;
+      -o-border-radius: 5px;
+    }
+    .close-icon {
+      position: absolute;
+      right: px2rem(20px);
+      top: px2rem(20px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+  .password-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    .password-limit-wrap {
+      box-sizing: border-box;
+      width: px2rem(600px);
+      height: px2rem(490px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: px2rem(8px);
+      background-color: #fff;
+      .password-limit-title {
+        font-weight: 500;
+        font-size: px2rem(34px);
+        color: #333333;
+        margin-bottom: px2rem(60px);
+      }
+      .password-limit {
+        width: px2rem(540px);
+        height: px2rem(90px);
+        padding: px2rem(27px) px2rem(38px);
+        border-radius: px2rem(8px);
+        border: 1px solid #DBDBDB;
+        font-size: px2rem(34px);
+        margin-bottom: px2rem(10px);
+        &::placeholder {
+          color: #999999;
+        }
+      }
+      .password-tips {
+        color: red;
+        width: px2rem(540px);
+        height: px2rem(30px);
+        text-align: left;
+        line-height: px2rem(30px);
+        font-size: px2rem(28px);
+        margin-bottom: px2rem(30px);
+      }
+      .password-limit-surebtn {
+        width: px2rem(305px);
+        height: px2rem(90px);
+        @include bg-color('btnColor');
+        // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+        border-radius: px2rem(12px);
+        font-size: px2rem(34px);
+        color: #fff;
+        border: 0;
+      }
     }
   }
 }
