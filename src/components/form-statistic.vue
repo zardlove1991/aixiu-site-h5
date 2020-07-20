@@ -43,7 +43,7 @@
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
-            <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
+            <li class="choice-item" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
               <div class="option-content flex-v-center">
                   <!-- <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox> -->
@@ -51,22 +51,28 @@
                   <el-radio v-else v-model="val.isCheckedId" :label="val.id" disabled class="radio-box" ></el-radio>
                   <!-- <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img"> -->
                   <div class="text-content flex-v-center">
-                    <span>{{radioIndex[index]}}.</span>
+                    <span class="text-index">{{radioIndex[index]}}.</span>
                     <div class="media-wrap-option" v-show="val.annex" v-for="(media,mediaKey) in val.annex" :key="mediaKey">
                       <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
                     </div>
-                    <span>{{val.name}}</span>
+                    <span class="content-name">{{val.name}}</span>
                   </div>
+                  <span class="option-pie-percent" v-show="showType === 'pie'">
+                    <i class="icon-percent" :style="{background: colorData[index]}"></i>
+                    <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
+                  </span>
               </div>
               <!-- 柱状图 进度条-->
-              <div class="progress-wrap" v-if="showType !== 'pie'">
-                <span class="starck-bar"
-                  :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
-              </div>
-              <span class="option-percent" :class="`is-${showType}`">
-                  <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
+              <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
+                <div class="line-wrap">
+                  <span class="starck-bar"
+                    :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
+                </div>
+                <span class="option-percent">
+                  <!-- <i class="icon-percent" :style="{background: colorData[index]}"></i> -->
                   <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
-              </span>
+                </span>
+              </div>
             </li>
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
@@ -540,9 +546,9 @@ $font-weight: 400;
                 padding: 0;
                 margin: 0;
             }
-            margin-top: 40px;
+            margin-top: px2rem(90px);
             &.is-first{
-                margin-top: 21px;
+                margin-top: px2rem(60px);
             }
             .title-wrap{
                 color: $font-color;
@@ -551,8 +557,9 @@ $font-weight: 400;
                 line-height: 23px;
                 margin-bottom: 8px;
                 .title{
-                    font-size: 16px;
-                    display:flex;
+                  font-weight: 500;
+                  font-size: 16px;
+                  display:flex;
                 }
                 .option-num{
                     color: #999;
@@ -578,10 +585,9 @@ $font-weight: 400;
             .choice-item{
                 font-size: 15px;
                 font-family: $font-family;
-                font-weight: 500;;
                 color: $font-color;
                 position: relative;
-                margin-bottom: 30px;
+                margin-bottom: px2rem(30px);
                 .check-box, .radio-box{
                     margin-right: 10px;
                     .el-radio__input.is-disabled+span.el-radio__label{
@@ -634,13 +640,23 @@ $font-weight: 400;
                         font-size: 15px;
                         line-height: 22px;
                         flex: 1;
+                        .text-index {
+                          display: inline-block;
+                          margin-right: px2rem(20px);
+                        }
                         .media-wrap-option .my-img {
                           width: px2rem(90px);
                           height: px2rem(90px);
-                          margin-left: px2rem(20px);
                           margin-right: px2rem(20px);
                           object-fit: cover;
                         }
+                        .content-name {
+                          flex: 1;
+                        }
+                    }
+                    .option-pie-percent {
+                      width: px2rem(120px);
+                      margin-left: px2rem(20px);
                     }
                     .el-radio {
                       margin-right: px2rem(20px);
@@ -684,21 +700,6 @@ $font-weight: 400;
                       }
                     }
                 }
-                .option-percent{
-                    margin-left: 19px;
-                    &.is-pie{
-                        display: flex;
-                        align-items: center;
-                        position:absolute;
-                        right:0;
-                        top:px2rem(5px);
-                    }
-                    &.is-line{
-                        line-height: 1;
-                        align-self: flex-end;
-                        transform: translateY(15px);
-                    }
-                }
                 .icon-percent{
                     width: 7px;
                     height: 7px;
@@ -706,32 +707,32 @@ $font-weight: 400;
                     margin-right: 6px;
                     border-radius: 1px;
                 }
-                .progress-wrap{
+                .progress-wrap {
+                  height: px2rem(30px);
+                  margin-top: px2rem(10px);
+                  position: relative;
+                  .line-wrap {
                     margin-left: 29px;
-                    width: calc(100% - 29px - 50px);
+                    // width: calc(100% - 29px - 50px);
+                    flex: 1;
                     height: 3px;
                     background: #fff6f4;
                     border-radius: 3px;
-                    position: absolute;
-                    bottom: -10px;
+                    position: relative;
                     box-sizing: border-box;
                     .starck-bar{
-                        background: $primary-color;
-                        height: 3px;
-                        border-radius: 3px;
-                        position: absolute;
-                        left: 0;
-                        top: 0;
+                      background: $primary-color;
+                      height: 3px;
+                      border-radius: 3px;
+                      position: absolute;
+                      left: 0;
+                      top: 0;
                     }
-                }
-                &.no-img{
-                    margin-bottom: 15px;
-                    padding-right:40px;
-                }
-                &.is-show-line{
-                    .check-box, .radio-box{
-                        transform: translateY(5px);
-                    }
+                  }
+                  .option-percent{
+                    margin-left: px2rem(38px);
+                    width: px2rem(90px);
+                  }
                 }
             }
             .picture-wrap{
