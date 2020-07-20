@@ -22,7 +22,7 @@
         <div class="right-wrap" @click.stop="$emit('showlist')">
           <!--当前题目进度提示-->
           <!-- <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div> -->
-          <div>答题卡</div>
+          <div class="right-card-title">答题卡</div>
           <div class="right-triangle"></div>
         </div>
       </div>
@@ -350,10 +350,19 @@ export default {
         .subject-tip-wrap{
           display: flex;
           align-items: center;
+          .current-num {
+            color: #333333;
+          }
+          .list-num {
+            color: #999999;
+          }
         }
       }
       .right-wrap{
         margin-right: px2rem(37px);
+        .right-card-title {
+          color: #333;
+        }
         .subject-tip-wrap{
           display: flex;
           align-items: center;
@@ -368,7 +377,7 @@ export default {
           }
           .tip-count{
             @include font-dpr(13px);
-            @include font-color('tipColor')
+            @include font-color('tipColor');
           }
         }
         .submit-btn,.line{
@@ -447,10 +456,6 @@ export default {
     .desc{
       text-align: center;
     }
-  }
-  .list-num{
-    color:#3f3f3f;
-    display:inline-block;
   }
 }
 </style>
