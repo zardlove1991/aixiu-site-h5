@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="exam-header-wrap">
-    <div class="time-wrap">
+    <div class="time-wrap" :class="['time-wrap', isTimeStyle ]">
       <div class="time time-flex">
         <div class="time-icon"></div>
         <span>{{timeTip ? timeTip : '初始化...'}}</span>
@@ -100,6 +100,7 @@ export default {
       isShowSubjectList: false,
       isShowSubmitModel: false,
       timeTip: null,
+      isTimeStyle: '',
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
       pop: {}, // 弹窗显示内容
@@ -155,6 +156,9 @@ export default {
           clearInterval(this.timer)
           this.$emit('timeup') // 发送考试时间到的事件
           return
+        }
+        if (this.duration <= 60 && this.isTimeStyle !== 'time-up-wrap') {
+          this.isTimeStyle = 'time-up-wrap'
         }
         this.timeTip = formatTimeBySec(this.duration, true)
         this.duration--
@@ -305,6 +309,9 @@ export default {
     line-height:px2rem(64px);
     font-size:px2rem(28px);
     z-index:100;
+    &.time-up-wrap {
+      background-color: #FF6A45;
+    }
     .time-flex {
       display: flex;
       align-items: center;
