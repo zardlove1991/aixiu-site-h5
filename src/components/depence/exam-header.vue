@@ -411,12 +411,14 @@ export default {
       width:px2rem(140px);
       margin-right:px2rem(22px);
       @include bg-color('lineColor');
+      border-radius: px2rem(4px);
       .progress{
         position: absolute;
         top: 0;
         left:0;
         width: 0;
         height: px2rem(8px);
+        border-radius: px2rem(4px);
         // background-color:#25C17C;
          @include bg-color('bgColor');
       }
