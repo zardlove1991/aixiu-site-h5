@@ -43,7 +43,7 @@
     -o-border-radius: px2rem(10px);
     .list-item-wrap{
       width: 100%;
-      margin-bottom:px2rem(20px);
+      // margin-bottom:px2rem(20px);
       @include font-dpr(16px);
       @include font-color('titleColor');
     }
