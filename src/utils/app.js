@@ -70,6 +70,18 @@ export const getApiFlag = () => {
   return flag
 }
 
+// 获取测试环境还是线上环境
+export const getEnvironment = () => {
+  let href = window.location.href
+  if (href.indexOf('test') > 0) {
+    return 'test'
+  } else if (href.indexOf('pre') > 0) {
+    return 'pre'
+  } else {
+    return 'online'
+  }
+}
+
 // 判断使用的是不是微信浏览器内核
 export const isWeixnBrowser = () => {
   let ua = navigator.userAgent.toLowerCase()
