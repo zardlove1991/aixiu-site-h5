@@ -33,6 +33,7 @@
     position: relative;
     width: 100%;
     padding-bottom:px2rem(40px);
+    margin-bottom: px2rem(260px);
     box-sizing: border-box;
     background-color:#fff;
     border-radius: px2rem(10px);
@@ -237,9 +238,12 @@
     font-size:px2rem(32px);
   }
   .fixed-btn-wrap{
+    position: absolute;
+    bottom: px2rem(112px);
+    width:100%;
     padding:0 px2rem(30px);
-    margin-top:px2rem(100px);
-    margin-bottom: px2rem(150px);
+    // margin-top:px2rem(60px);
+    // margin-bottom: px2rem(150px);
     .btn-wrap{
       display: flex;
       justify-content: space-between;
