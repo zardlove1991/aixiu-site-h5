@@ -33,8 +33,10 @@
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            <span class="title">{{key + 1}}、
+              <span v-html="item.title"></span>
+              <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
             </div>
@@ -82,8 +84,9 @@
         </div>
         <div v-else>
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
+            <span class="title">{{key + 1}}、<span v-html="item.title"></span>
             <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            </span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
             <el-image
@@ -401,13 +404,13 @@ $font-weight: 400;
     i, span{
         display: inline-block;
     }
-    .my-score{
+    .score-area .my-score{
         font-size:px2rem(72px);
         line-height:px2rem(72px);
         color:#FF6A45;
         margin-bottom:px2rem(20px);
     }
-    .my-text{
+    .score-area .my-text{
         color:#666;
         font-size:px2rem(30px);
         line-height:px2rem(30px);
@@ -554,14 +557,12 @@ $font-weight: 400;
                 color: $font-color;
                 font-family: $font-family;
                 font-weight: $font-weight;
-                line-height: 23px;
                 margin-bottom: 8px;
-                .title{
+                .title {
                   font-weight: 500;
                   font-size: 16px;
-                  display:flex;
-                }
-                .option-num{
+                  line-height: 24px;
+                  .option-num {
                     color: #999;
                     font-size: 13px;
                     margin-left: 7px;
@@ -569,11 +570,13 @@ $font-weight: 400;
                       font-size: 13px;
                       color: #ff6a45;
                     }
+                  }
                 }
                 .media-wrap {
                   padding:0 px2rem(43px) 0 px2rem(30px);
                   box-sizing: border-box;
                   text-align: center;
+                  margin-top: px2rem(10px);
                   .my-img{
                     width: 100%;
                     max-width: 100%;
