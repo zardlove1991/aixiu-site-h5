@@ -544,7 +544,8 @@ export default {
     border: none;
     background-color:#CCC;
     @include font-dpr(16px);
-    @include font-color('bgColor');
+    // @include font-color('bgColor');
+    color: #fff;
   }
   .reset-exam-btns{
     display: flex;
