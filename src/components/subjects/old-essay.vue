@@ -88,20 +88,20 @@
             v-show="['unlimit','image'].includes(data.mode)"
             :class="{'disabled': essayTempAnswerInfo && (essayTempAnswerInfo.image.length > 8)}"
             @click.stop='uploadImg'>
-            <i class="examfont icon-image"></i>
+            <!-- <i class="examfont icon-image"></i> -->
           </div>
           <div class="upload-audio"
             v-show="['unlimit','audio'].includes(data.mode)"
             :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.audio.length}"
             @click.stop="uploadAudio">
-            <i class="examfont icon-audio"></i>
+            <!-- <i class="examfont icon-audio"></i> -->
           </div>
           <div class="upload-video"
             v-show="['unlimit','video'].includes(data.mode)"
             :class="{'disabled': essayTempAnswerInfo && essayTempAnswerInfo.video.length}"
             @click.stop="uploadVideo"
             >
-            <i class="examfont icon-video"></i>
+            <!-- <i class="examfont icon-video"></i> -->
           </div>
           <!--原生上传操作-->
           <input type="file"
