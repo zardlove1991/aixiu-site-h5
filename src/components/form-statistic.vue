@@ -25,9 +25,9 @@
     </div>
     <div class="content">
       <div class="operate-wrap flex-v-center">
-        <span class="btn btn-left xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+        <span class="btn btn-left examfont iconshuju flex-v-center" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
-        <span class="btn btn-right xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+        <span class="btn btn-right examfont iconbingzhuangtu flex-v-center" :class="{'is-active': showType === 'pie'}"
         @click="showType = 'pie'">饼状图</span>
       </div>
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
@@ -529,7 +529,7 @@ $font-weight: 400;
             }
             .iconbingzhuangtu:before, .iconshuju:before{
                 font-size: 16px;
-                margin: 0 1px 0 6px;
+                margin: 0 px2rem(15px) 0 px2rem(12px);
                 color: #ccc;
             }
             .is-active{
