@@ -10,10 +10,12 @@
       <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap" v-if="examInfo.indexpic">
+    <div class="header-wrap">
       <template>
-        <img :src="examInfo.indexpic.url" class="bg" />
+        <img v-if="examInfo.indexpic" :src="examInfo.indexpic.url" class="bg" />
+        <img v-else :src="require('@/assets/common/main-header@2x.png')" class="bg bg-default" />
         <!--透明遮罩-->
+        <div class="header-img-shadow "></div>
       </template>
       <!--默认的背景图片-->
     </div>
@@ -388,14 +390,30 @@ export default {
   .header-wrap{
     position: relative;
     width: 100vw;
-    height: px2rem(420px);
+    height: px2rem(414px);
     // margin-left:px2rem(-34px);
     overflow: hidden;
+    box-sizing: border-box;
+    padding: px2rem(30px) px2rem(30px) 0 px2rem(30px);
+    .header-img-shadow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: px2rem(80px);
+      opacity: 0.2;
+      background-image: linear-gradient(-180deg, rgba(0,0,0,0.00) 0%, #000000 100%);
+    }
     .bg{
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: px2rem(20px) px2rem(20px) 0 0;
+      background-color: #fff;
       // filter: blur(4px);
+      &.bg-default {
+        object-fit: contain;
+      }
     }
     .indexpic-bg{
       width: 100%;
