@@ -1,6 +1,6 @@
 import wx from 'weixin-js-sdk'
 import { Toast } from 'mint-ui'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 
 const API_CONFIG = {
   shareQQZone: 'onMenuShareQZone', // 分享到QQ空间
@@ -48,7 +48,7 @@ const WX_API = {
         console.log('微信认证信息出错', err)
         if (err.errMsg) {
           // 删除存储的本地数据
-          STORAGE.remove('weixin-auth-info')
+          // STORAGE.remove('weixin-auth-info')
           // 返回错误标识
           let err = new Error('auth_fail')
           reject(err)
@@ -80,6 +80,7 @@ const WX_API = {
         if (isPass) {
           // 所有JS-SDK的方法全部放在ready函数中执行
           wx.ready(() => {
+            params.from = methodName
             wx[methodName](params)
           })
         } else {

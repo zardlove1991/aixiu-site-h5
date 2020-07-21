@@ -12,44 +12,20 @@ export const getAppInfo = () => {
 export const getAPIfix = (api) => {
   let host
   switch (api) {
-    case 'PHPAPI': {
-      host = globalConfig['PHPAPI']
+    case 'user': {
+      host = globalConfig['user']
       break
     }
-    case 'V3API': {
-      host = globalConfig['V3API']
+    case 'submit': {
+      host = globalConfig['submit']
       break
     }
-    case 'ADMINAPI': {
-      host = globalConfig['ADMINAPI']
-      break
-    }
-    case 'EXAMAPI': {
-      host = globalConfig['EXAMAPI']
-      break
-    }
-    case 'ONLINE_EXAM_API': {
-      host = globalConfig['ONLINE_EXAM_API']
-      break
-    }
-    case 'API41': {
-      host = globalConfig['API41']
-      break
-    }
-    case 'USER': {
-      host = globalConfig['USER']
-      break
-    }
-    case 'sumbitAPI': {
-      host = globalConfig['sumbitAPI']
-      break
-    }
-    case 'OPEN': {
-      host = globalConfig['OPEN']
+    case 'exam': {
+      host = globalConfig['exam']
       break
     }
     default: {
-      host = globalConfig['API']
+      host = globalConfig['exam']
     }
   }
   return host
@@ -57,13 +33,10 @@ export const getAPIfix = (api) => {
 
 // 判断当前API使用的是什么平台
 export const getApiFlag = () => {
-  // API41: 'test_h5.ddapp.com' -> 默认
   let localUrl = window.location.href
-  let flag = 'API41'
-  let platMap = globalConfig.hostMap
-
-  for (let key in platMap) {
-    if (!localUrl.includes(platMap[key])) continue
+  let flag = 'exam'
+  for (let key in globalConfig) {
+    if (!localUrl.includes(globalConfig[key])) continue
     flag = key
   }
   console.log('当前请求的API的FLAG', localUrl, flag)

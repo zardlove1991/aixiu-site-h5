@@ -192,6 +192,8 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
+        // 分享
+        this.sharePage()
         let info = this.examInfo
         if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
           let content = info.limit.color_scheme.content
@@ -207,6 +209,37 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    sharePage () {
+      let examInfo = this.examInfo
+      if (!examInfo) {
+        return
+      }
+      let limit = examInfo.limit
+      let title = ''
+      let link = ''
+      let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        title = share.share_title ? share.share_title : examInfo.title
+        link = share.share_url ? share.share_url : window.location.href
+        desc = share.share_brief ? share.share_brief : examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = examInfo.indexpic
+        if (picObj && picObj.host && picObj.filename) {
+          imgUrl = 'http:' + picObj.host + picObj.filename
+        } else if (indexObj && indexObj.host && indexObj.filename) {
+          imgUrl = 'http:' + indexObj.host + indexObj.filename
+        }
+      }
+      this.initPageShareInfo({
+        id: examInfo.id,
+        title,
+        desc,
+        indexpic: imgUrl,
+        link
+      })
     },
     async startReExam () {
       let examId = this.id

@@ -695,17 +695,21 @@ const actions = {
   },
   GET_WEIXIN_INFO ({commit, state}, payload) {
     return new Promise((resolve, reject) => {
-      let { url } = payload
+      let { url, sign, appid } = payload
       // 获得微信信息
       API.getWeixinInfo({
-        data: { url }
+        params: {
+          url,
+          sign,
+          appid
+        }
       }).then(data => {
         // 设置数据
-        STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
+        // STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
         // 结束
         resolve(data)
       }).catch(err => {
-        STORAGE.remove('weixin-auth-info')
+        // STORAGE.remove('weixin-auth-info')
         // 提醒
         let tip = err.message || err.error_message || '获取微信认证信息出错'
         Toast(tip)
@@ -749,6 +753,29 @@ const actions = {
       let params = { id: state.examId }
       // 开始请求数据
       API.unlockCourse({ params }).then(res => resolve()).catch(err => reject(err))
+    })
+  },
+  SET_SHARE ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { id, title, from = '' } = payload
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
+      let data = [{
+        id: id,
+        mark: 'examination',
+        type: 'wechat',
+        title: title,
+        member_id: STORAGE.get('userinfo').id,
+        create_time: parseInt((new Date().getTime()) / 1000),
+        from: from
+      }]
+      API.setShare({ data: { data } }).then(res => {
+        Indicator.close() // 结束
+        resolve(res)
+      }).catch(err => {
+        Indicator.close() // 结束
+        reject(err)
+      })
     })
   }
 }
