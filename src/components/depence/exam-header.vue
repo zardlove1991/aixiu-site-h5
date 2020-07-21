@@ -216,6 +216,7 @@ export default {
             this.isSubmitSuccess = true
             setTimeout(() => {
               this.isSubmitSuccess = false
+              this.pageToStart()
               window.location.href = link.url
             }, 1000)
           } else if (result) {
