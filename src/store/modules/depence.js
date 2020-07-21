@@ -458,6 +458,7 @@ const actions = {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
         commit('SET_BLANK_ANSWER_INFO', {})
+        commit('SET_CURRENT_SUBJECT_INDEX', 0)
         // 结束
         Indicator.close()
         if (res.success === 1) {
