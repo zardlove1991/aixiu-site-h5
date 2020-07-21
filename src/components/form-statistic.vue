@@ -13,11 +13,11 @@
         <div class="score-line">
           <div class="score-area">
             <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
-            <div class="my-text">答对{{optionData.correct_num ? optionData.correct_num : 0}}题</div>
+            <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
-            <div class="my-text rank-area">总分排名{{optionData.score_ranking}}名</div>
-            <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
+            <div class="my-text rank-area"><i class="line-static-icon"></i>总分排名<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
+            <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
         <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
@@ -414,6 +414,9 @@ $font-weight: 400;
         color:#666;
         font-size:px2rem(30px);
         line-height:px2rem(30px);
+        .static-weight {
+          color: #333;
+        }
     }
     .header-tip{
         width: 100%;
@@ -463,16 +466,17 @@ $font-weight: 400;
             background-color:#fff;
             box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
             border-radius: 5px;
-            padding:px2rem(50px);
+            padding:px2rem(50px) px2rem(50px) px2rem(50px) px2rem(67px);
 
         }
         .score-tips{
+            color: #333;
             margin-top:px2rem(48px);
         }
         .score-line{
             display:flex;
             align-items: center;
-            text-align:center;
+            text-align: left;
         }
         .rank-area{
             margin-bottom:px2rem(38px);
@@ -483,6 +487,22 @@ $font-weight: 400;
         }
         .num-area{
             flex:1;
+            text-align: center;
+            .my-text {
+              color:#666;
+              font-size:px2rem(30px);
+              line-height:px2rem(30px);
+              .line-static-icon {
+                width: px2rem(18px);
+                height: px2rem(28px);
+                background-size: px2rem(18px) px2rem(28px);
+                margin-right: px2rem(15px);
+                @include img-retina("~@/assets/common/line-static@2x.png","~@/assets/common/line-static@3x.png", 100%, 100%);
+              }
+              .static-weight {
+                color: #333;
+              }
+            }
         }
         .title{
             font-size: 20px;
