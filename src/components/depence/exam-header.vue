@@ -302,7 +302,7 @@ export default {
     bottom:50px;
     @include bg-color('btnColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
-    padding-left:px2em(20px);
+    padding-left:px2em(13px);
     padding-right:px2rem(10px);
     color:#fff;
     height:px2rem(64px);
