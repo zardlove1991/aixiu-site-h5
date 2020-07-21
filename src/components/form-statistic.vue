@@ -302,6 +302,15 @@ export default {
       let underlineReg = /_{3,}/g
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
+      // p标签改为行内标签
+      let pReg = /<p>/g
+      let pMatchArr = originTitle.match(pReg)
+      if (pMatchArr && pMatchArr.length > 0) {
+        pMatchArr.forEach((val, index) => {
+          let template = '<p style="display:inline;">'
+          originTitle = originTitle.replace(val, template)
+        })
+      }
       // 匹配解析的数组
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
@@ -338,6 +347,8 @@ export default {
         let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
         let inputTemp = `<input type="text" readonly data-index="${index}" style="${inputStyle}" maxlength="${length}" value=""/>`
         return inputTemp
+      } else {
+        return ''
       }
     },
     _getTextboxTemplate (params) {
