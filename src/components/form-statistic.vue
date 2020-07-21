@@ -401,7 +401,7 @@ $font-weight: 400;
     font-family: $font-family;
     background-color:#fff;
     min-height: 100vh;
-    i, span{
+    i {
         display: inline-block;
     }
     .score-area .my-score{
@@ -425,7 +425,8 @@ $font-weight: 400;
         box-sizing: border-box;
         z-index: 2;
         .icon-wrap {
-            vertical-align: middle;
+          display: inline-block;
+          vertical-align: middle;
         }
         .tips-icon{
           width: px2rem(36px);
@@ -434,6 +435,7 @@ $font-weight: 400;
           @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
         }
         .tips-title{
+            display: inline-block;
             @include font-dpr(14px);
             font-weight: $font-weight;
             color: $primary-color;
@@ -510,6 +512,7 @@ $font-weight: 400;
         margin-top:px2rem(78px);
         .operate-wrap{
             .btn{
+                display: inline-block;
                 width: 75px;
                 height: 29px;
                 text-align: center;
