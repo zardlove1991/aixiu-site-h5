@@ -247,7 +247,8 @@
     // margin-bottom: px2rem(150px);
     .btn-wrap{
       display: flex;
-      justify-content: space-between;
+      // justify-content: space-between;
+      justify-content: center;
       pointer-events: auto;
       margin-bottom:px2rem(60px);
       box-sizing: border-box;
@@ -256,6 +257,7 @@
         // height: px2rem(160px);
       }
       .prev-wrap{
+        width: px2rem(305px);
         border:1px solid #FFA46A;
         height:px2rem(90px);
         line-height:px2rem(90px);
@@ -272,6 +274,7 @@
         margin-right:px2rem(20px);
       }
       .next-wrap{
+        width: px2rem(305px);
         height:px2rem(90px);
         line-height:px2rem(90px);
         text-align: center;
@@ -287,7 +290,7 @@
 }
       .prev-wrap,.next-wrap{
         display: flex;
-        flex:1;
+        // flex:1;
         flex-direction: column;
         align-items: center;
         pointer-events: auto;
