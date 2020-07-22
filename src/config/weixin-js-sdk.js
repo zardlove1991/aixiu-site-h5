@@ -84,7 +84,8 @@ const WX_API = {
             wx[methodName](params)
           })
         } else {
-          Toast('微信内部授权出错,请刷新页面重试')
+          console.log('微信内部授权出错,请刷新页面重试')
+          // Toast('微信内部授权出错,请刷新页面重试')
         }
       }
     })

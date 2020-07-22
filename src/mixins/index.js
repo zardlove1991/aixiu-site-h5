@@ -89,7 +89,7 @@ export default {
         }
         // console.log('执行了分享参数调用', params)
         // 执行调用
-        // wx.execute('shareQQZone', params)
+        wx.execute('shareQQZone', params)
         wx.execute('shareQQFriends', params)
         wx.execute('shareWeChatZone', params)
         wx.execute('shareFriends', params)
