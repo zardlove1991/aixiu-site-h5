@@ -189,6 +189,7 @@ export default {
     async initStartInfo () {
       let examId = this.id
       try {
+        STORAGE.set('toLink', '')
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)

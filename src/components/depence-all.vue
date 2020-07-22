@@ -77,6 +77,7 @@ import SubjectContent from './depence/subject-content'
 import SubjectList from '@/components/depence/subject-list'
 import MyModel from './depence/model'
 import MyRecord from './depence/record'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'depence-list',
@@ -145,6 +146,12 @@ export default {
       let rtp = this.rtp
       let listType = this.listType
       let redirectParams = this.redirectParams
+      let toLink = STORAGE.get('toLink')
+      if (toLink) {
+        this.$router.replace({
+          path: `/depencestart/${examId}`
+        })
+      }
       try {
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
