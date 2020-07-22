@@ -137,7 +137,11 @@ export default {
         let template = ''
         // 处理不同填空的形式的渲染
         if (renderStyle === 'underline') {
-          template = this._getUnderlineTemplate({ index })
+          if (index === 0) {
+            template = this._getUnderlineTemplate({ index })
+          } else {
+            template = ''
+          }
         } else if (renderStyle === 'textbox') {
           template = this._getTextboxTemplate({ index })
         }
