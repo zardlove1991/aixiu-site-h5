@@ -61,7 +61,7 @@ export const oauth = (cbk) => {
           // 免登陆
           const params2 = {
             userId: 'xiuzan',
-            sign: 'other',
+            sign: 'smartcity',
             userName: '秀赞小秘书',
             avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
           }
