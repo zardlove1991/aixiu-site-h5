@@ -74,7 +74,6 @@ import PopDialog from '../dialog/pop-dialog'
 import LuckDrawDialog from '../dialog/luck-draw-dialog'
 // import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
-import STORAGE from '@/utils/storage'
 
 export default {
   name: 'exam-header',
@@ -215,10 +214,9 @@ export default {
             }
           } else if (link) {
             this.isSubmitSuccess = true
-            STORAGE.set('toLink', link.url)
             setTimeout(() => {
               this.isSubmitSuccess = false
-              window.location.href = link.url
+              window.location.replace(link.url)
             }, 1000)
           } else if (result) {
             let examId = this.examId
