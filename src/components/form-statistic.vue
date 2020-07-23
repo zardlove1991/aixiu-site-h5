@@ -502,7 +502,8 @@ $font-weight: 400;
         }
         .num-area{
             flex:1;
-            text-align: center;
+            text-align: left;
+            margin-left: px2rem(70px);
             .my-text {
               color:#666;
               font-size:px2rem(30px);
