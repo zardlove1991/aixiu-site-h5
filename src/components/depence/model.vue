@@ -92,21 +92,34 @@ export default {
     .btn-wrap{
       display: flex;
       width: 100%;
-      height: px2rem(90px);
-      @include border('top',1px,solid,'lineColor');
+      padding: px2rem(30px);
+      // height: px2rem(90px);
+      // @include border('top',1px,solid,'lineColor');
       .confirm,.cancel{
-        flex:1;
+        // flex:1;
         display: flex;
         justify-content: center;
         align-items: center;
-        @include font-dpr(15px);
+        width:px2rem(275px);
+        height:px2rem(90px);
+        line-height: px2rem(90px);
+        text-align: center;
+        color:#fff;
+        border-radius: px2rem(12px);
+        // @include font-dpr(15px);
+        font-size:px2rem(32px);
       }
       .confirm{
-        @include font-color('titleColor');
-        @include border('right',1px,solid,'lineColor');
+        border:1px solid #FFA46A;
+        color: #FFA46A;
+        margin-right: px2rem(21px);
+        // @include font-color('titleColor');
+        // @include border('right',1px,solid,'lineColor');
       }
       .cancel{
-        @include font-color('themeColor');
+        color:#fff;
+        @include bg-color('btnColor');
+        // @include font-color('themeColor');
       }
     }
   }

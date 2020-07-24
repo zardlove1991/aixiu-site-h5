@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createOpen } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -17,7 +17,7 @@ let configUrl = {
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
-  getWeixinInfo: 'client/wechat/js/sign', // 获得微信公众号信息
+  getWeixinInfo: 'signature', // 获得微信公众号信息
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -34,7 +34,8 @@ let configUrl = {
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
-  getAuthScope: 'open/examination/detail' // 检验密码是否正确
+  getAuthScope: 'open/examination/detail', // 检验密码是否正确
+  setShare: 'setShare' // 分享活动时请求分享接口
 }
 
 export default {
@@ -46,7 +47,7 @@ export default {
   getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),
   getQcloudVideoInfo: config => createAPI(configUrl.getQcloudVideoInfo, 'GET', config, API_FLAG),
   getMaterialInfo: config => createAPI(configUrl.getMaterialInfo, 'POST', config, API_FLAG),
-  getWeixinInfo: config => createAPI(configUrl.getWeixinInfo, 'POST', config, API_FLAG),
+  getWeixinInfo: config => creataUser(configUrl.getWeixinInfo, 'GET', config, API_FLAG),
   setSubjectFavorInfo: config => createAPI(configUrl.setSubjectFavorInfo, 'post', config, API_FLAG),
   getSubjectFavorInfo: config => createAPI(configUrl.getSubjectFavorInfo, 'get', config, API_FLAG),
   saveSubjectRecord: config => createAPI(configUrl.saveSubjectRecord, 'post', config, API_FLAG),
@@ -63,5 +64,6 @@ export default {
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
-  getAuthScope: config => createOpen(configUrl.getAuthScope, 'get', config, API_FLAG)
+  getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
+  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG)
 }

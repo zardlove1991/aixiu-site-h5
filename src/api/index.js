@@ -35,8 +35,7 @@ function dealError ({code, msg}) {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
     if (!query.plat) {
-      let newHost = host.substring(0, host.indexOf('/api'))
-      let url = `${newHost}/client/authorize/start/${params.id}?to=${nowUrl}`
+      let url = `${host}/client/authorize/start/${params.id}?to=${nowUrl}`
       window.location.replace(url)
     }
   } else if (code === 'invalid-source') {
@@ -107,7 +106,7 @@ instance.interceptors.response.use((res, xhr) => {
   return Promise.reject(rej)
 })
 
-const getUrl = (url, config = {}, api = 'API') => {
+const getUrl = (url, config = {}, api = 'exam') => {
   if (!url) {
     console.warn('接口地址不能为空')
     return false
@@ -122,8 +121,9 @@ const getUrl = (url, config = {}, api = 'API') => {
 }
 
 export const createAPI = (url, method, config = {}, api) => {
+  api = 'exam'
   return instance({
-    url: getUrl(url, config, api),
+    url: getUrl('api/' + url, config, api),
     method,
     withCredentials: true,
     ...config
@@ -131,7 +131,7 @@ export const createAPI = (url, method, config = {}, api) => {
 }
 
 export const createSumbit = (url, method, config = {}, api) => {
-  api = 'sumbitAPI'
+  api = 'submit'
   return instance({
     url: getUrl(url, config, api),
     method,
@@ -141,7 +141,7 @@ export const createSumbit = (url, method, config = {}, api) => {
 }
 
 export const creataUser = (url, method, config = {}, api) => {
-  api = 'USER'
+  api = 'user'
   return instance({
     url: getUrl(url, config, api),
     method,
@@ -150,8 +150,8 @@ export const creataUser = (url, method, config = {}, api) => {
   })
 }
 
-export const createOpen = (url, method, config = {}, api) => {
-  api = 'OPEN'
+export const createExam = (url, method, config = {}, api) => {
+  api = 'exam'
   return instance({
     url: getUrl(url, config, api),
     method,

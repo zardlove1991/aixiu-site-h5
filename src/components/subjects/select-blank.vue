@@ -158,7 +158,7 @@ export default {
         // 改变下当前富文本容器的布局
         let newTitleEl = this.$refs['newTitleHtml']
         let richContentEl = newTitleEl.children[0]
-        richContentEl.style.cssText = 'display:inline; line-height: 40px;'
+        richContentEl.style.cssText = 'display:inline;'
         // 执行解析模板
         this.dealTemplteAnalysis()
       })

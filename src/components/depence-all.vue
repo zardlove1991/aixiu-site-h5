@@ -39,6 +39,7 @@
       @confirm="confirmSuspendModel"
       @cancel="cancelSuspendModel">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
         <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
@@ -49,6 +50,7 @@
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="end-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
         <div class="tip-btn"

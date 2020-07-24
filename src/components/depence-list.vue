@@ -27,7 +27,7 @@
       <!--底部跳转按钮-->
       <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
         <!--上一题按钮-->
-        <div class="prev-wrap"
+        <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
           :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
           @click.stop="changeSubjectIndex('sub')">
           上一题
@@ -98,6 +98,7 @@
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
         <div class="tip-btn"
