@@ -18,7 +18,7 @@ router.afterEach(route => {
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
   let name = router.currentRoute.name
-  if (name !== 'depencestart') {
+  if (name !== 'depencestart' && name !== 'votestart') {
     let id = router.currentRoute.params.id
     setTheme(id)
   }

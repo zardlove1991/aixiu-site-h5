@@ -337,12 +337,3 @@ export const getQcloud = (type) => {
     return qcloudSettingLine[type] || '' // 线上上传配置
   }
 }
-
-export const formatTime = (sec, showHour) => {
-  let hour = Math.floor(sec / 3600)
-  let minute = Math.floor(sec % 3600 / 60)
-  let second = Math.floor(sec % 3600 % 60)
-  let timeArr = [hour, minute, second].map(val => (val < 10 ? `0${val}` : val))
-  if (!showHour) timeArr.shift()
-  return timeArr.join(':')
-}

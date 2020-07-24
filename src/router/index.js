@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import STORAGE from '@/utils/storage'
 // 引入动态组件
 const getComponent = name => () => import(`@/components/${name}`)
+const getVoteComponent = name => () => import(`@/components/vote/main/${name}`)
 
 Vue.use(Router)
 
@@ -90,6 +91,38 @@ let router = new Router({
       }),
       meta: {
         title: '温馨提示'
+      }
+    },
+    {
+      path: '/votestart',
+      name: 'votestart',
+      component: getVoteComponent('vote-start'),
+      meta: {
+        title: '投票'
+      }
+    },
+    {
+      path: '/votedetail',
+      name: 'votedetail',
+      component: getVoteComponent('vote-detail'),
+      meta: {
+        title: '投票详情'
+      }
+    },
+    {
+      path: '/voterank',
+      name: 'voterank',
+      component: getVoteComponent('vote-rank'),
+      meta: {
+        title: '排行榜'
+      }
+    },
+    {
+      path: '/votemy',
+      name: 'votemy',
+      component: getVoteComponent('vote-my'),
+      meta: {
+        title: '我的投票'
       }
     }
   ]
