@@ -39,6 +39,7 @@
       @confirm="confirmSuspendModel"
       @cancel="cancelSuspendModel">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
         <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
@@ -49,6 +50,7 @@
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="end-bg"></div>
         <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
         <div class="tip-btn"
@@ -144,13 +146,14 @@ export default {
       let listType = this.listType
       let redirectParams = this.redirectParams
       try {
+        // 获取试卷详情
+        await this.getExamDetail({ id: examId })
+        let status = this.examInfo.person_status
         // 调用考试考试接口
-        if (this.rtp === 'exam') {
+        if (this.rtp === 'exam' && status !== 2) {
           let isRestart = this.restart === 'need'
           await this.startExam({ id: examId, restart: isRestart })
         }
-        // 获取试卷详情
-        await this.getExamDetail({ id: examId })
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -205,11 +208,11 @@ export default {
     },
     submitExam () {
       // console.log(this.answerList)
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels

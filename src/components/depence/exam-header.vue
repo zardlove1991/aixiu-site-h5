@@ -1,9 +1,10 @@
 <template lang="html">
   <div class="exam-header-wrap">
-    <div class="time-wrap">
-      <div class="time">
+    <div class="time-wrap" :class="['time-wrap', isTimeStyle ]">
+      <div class="time time-flex">
         <div class="time-icon"></div>
-        {{timeTip ? timeTip : '初始化...'}}</div>
+        <span>{{timeTip ? timeTip : '初始化...'}}</span>
+      </div>
     </div>
     <div class="header-info-wrap" v-if="type === 'list'">
       <!--主体内容展示-->
@@ -21,7 +22,7 @@
         <div class="right-wrap" @click.stop="$emit('showlist')">
           <!--当前题目进度提示-->
           <!-- <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div> -->
-          <div>答题卡</div>
+          <div class="right-card-title">答题卡</div>
           <div class="right-triangle"></div>
         </div>
       </div>
@@ -30,23 +31,25 @@
     <!--交卷的弹窗-->
     <my-model
       :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
-      doneText="确认交卷"
-      cancelText="继续答题"
+      doneText="确定交卷"
+      cancelText="再看看"
       @confirm="confirmSubmitModel"
       @cancel="toggleSubmitModel">
       <div class="submit-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="desc">您还有{{unDoSubjectLength}}道题未做,确认交卷吗?</div>
+        <div class="desc">还有<span class="no-do-tips"> {{unDoSubjectLength}} </span>题没有作答，确定现在交卷？</div>
       </div>
     </my-model>
     <!--去人交卷的-->
     <my-model
       :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
-      doneText="我再想想"
-      cancelText="确认交卷"
+      doneText="再看看"
+      cancelText="确定交卷"
       @confirm="toggleSubmitModel"
       @cancel="confirmSubmitModel">
       <div class="submit-success-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="desc">试题已做完，确认交卷吗？</div>
       </div>
@@ -97,6 +100,7 @@ export default {
       isShowSubjectList: false,
       isShowSubmitModel: false,
       timeTip: null,
+      isTimeStyle: '',
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
       pop: {}, // 弹窗显示内容
@@ -152,6 +156,9 @@ export default {
           clearInterval(this.timer)
           this.$emit('timeup') // 发送考试时间到的事件
           return
+        }
+        if (this.duration <= 60 && this.isTimeStyle !== 'time-up-wrap') {
+          this.isTimeStyle = 'time-up-wrap'
         }
         this.timeTip = formatTimeBySec(this.duration, true)
         this.duration--
@@ -209,7 +216,7 @@ export default {
             this.isSubmitSuccess = true
             setTimeout(() => {
               this.isSubmitSuccess = false
-              window.location.href = link.url
+              window.location.replace(link.url)
             }, 1000)
           } else if (result) {
             let examId = this.examId
@@ -295,13 +302,28 @@ export default {
     bottom:50px;
     @include bg-color('btnColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
-    padding-left:px2em(20px);
+    padding-left:px2em(13px);
     padding-right:px2rem(10px);
     color:#fff;
     height:px2rem(64px);
     line-height:px2rem(64px);
     font-size:px2rem(28px);
     z-index:100;
+    &.time-up-wrap {
+      background-color: #FF6A45;
+    }
+    .time-flex {
+      display: flex;
+      align-items: center;
+    }
+    .time-icon {
+      width:px2rem(35px);
+      height:px2rem(34px);
+      background-repeat: no-repeat;
+      background-size: 100%;
+      margin-right: px2rem(15px);
+      @include img-retina('~@/assets/common/clock@2x.png','~@/assets/common/clock@3x.png', 100%,100%);
+    }
   }
   .header-info-wrap{
     position: relative;
@@ -328,10 +350,19 @@ export default {
         .subject-tip-wrap{
           display: flex;
           align-items: center;
+          .current-num {
+            color: #333333;
+          }
+          .list-num {
+            color: #999999;
+          }
         }
       }
       .right-wrap{
         margin-right: px2rem(37px);
+        .right-card-title {
+          color: #333;
+        }
         .subject-tip-wrap{
           display: flex;
           align-items: center;
@@ -346,7 +377,7 @@ export default {
           }
           .tip-count{
             @include font-dpr(13px);
-            @include font-color('tipColor')
+            @include font-color('tipColor');
           }
         }
         .submit-btn,.line{
@@ -380,12 +411,14 @@ export default {
       width:px2rem(140px);
       margin-right:px2rem(22px);
       @include bg-color('lineColor');
+      border-radius: px2rem(4px);
       .progress{
         position: absolute;
         top: 0;
         left:0;
         width: 0;
         height: px2rem(8px);
+        border-radius: px2rem(4px);
         // background-color:#25C17C;
          @include bg-color('bgColor');
       }
@@ -394,6 +427,12 @@ export default {
   .submit-model,.submit-success-model{
     padding: px2rem(61px) px2rem(77px) px2rem(49px);
     box-sizing: border-box;
+    .tip-title {
+      text-align: center;
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+    }
     .tip-bg{
       width: px2rem(370px);
       height: px2rem(224px);
@@ -407,6 +446,9 @@ export default {
       padding-top: px2rem(30px);
       @include font-dpr(14px);
       @include font-color('tipColor');
+      .no-do-tips {
+        color: #FF6A45;
+      }
     }
   }
   .submit-success-model{
@@ -416,10 +458,6 @@ export default {
     .desc{
       text-align: center;
     }
-  }
-  .list-num{
-    color:#3f3f3f;
-    display:inline-block;
   }
 }
 </style>

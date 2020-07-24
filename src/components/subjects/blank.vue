@@ -137,7 +137,11 @@ export default {
         let template = ''
         // 处理不同填空的形式的渲染
         if (renderStyle === 'underline') {
-          template = this._getUnderlineTemplate({ index })
+          if (index === 0) {
+            template = this._getUnderlineTemplate({ index })
+          } else {
+            template = ''
+          }
         } else if (renderStyle === 'textbox') {
           template = this._getTextboxTemplate({ index })
         }
@@ -180,7 +184,7 @@ export default {
         // 改变下当前富文本容器的布局
         let newTitleEl = this.$refs['newTitleHtml']
         let richContentEl = newTitleEl.children[0]
-        richContentEl.style.cssText = 'display:inline; line-height: 40px;'
+        richContentEl.style.cssText = 'display:inline;'
       })
     },
     dealInput (e) {
@@ -223,7 +227,8 @@ export default {
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
-        this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        // this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        this.saveAnswerRecord(data)
       }, delayTime)
     },
     _getUnderlineTemplate (params) {

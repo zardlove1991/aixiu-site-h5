@@ -13,11 +13,11 @@
         <div class="score-line">
           <div class="score-area">
             <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
-            <div class="my-text">答对{{optionData.correct_num ? optionData.correct_num : 0}}题</div>
+            <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
-            <div class="my-text rank-area">总分排名{{optionData.score_ranking}}名</div>
-            <div class="my-text">交卷排名{{optionData.submit_ranking}}名</div>
+            <div class="my-text rank-area"><i class="line-static-icon"></i>总分排名<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
+            <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
         <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
@@ -25,37 +25,56 @@
     </div>
     <div class="content">
       <div class="operate-wrap flex-v-center">
-        <span class="btn btn-left xiuzanicon iconshuju" :class="{'is-active': showType === 'line'}"
+        <span class="btn btn-left examfont iconshuju flex-v-center" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
-        <span class="btn btn-right xiuzanicon iconbingzhuangtu" :class="{'is-active': showType === 'pie'}"
+        <span class="btn btn-right examfont iconbingzhuangtu flex-v-center" :class="{'is-active': showType === 'pie'}"
         @click="showType = 'pie'">饼状图</span>
       </div>
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            <span class="title">{{key + 1}}、
+              <span v-html="item.title"></span>
+              <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            </span>
+            <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
+              <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+            </div>
           </div>
           <div v-if="showType === 'pie' && item.pieData && item.type === 'radio'">
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
-            <li class="choice-item flex-v-center" v-for="(val, index) in item.options" :key="index"
+            <li class="choice-item" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
               <div class="option-content flex-v-center">
-                  <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox>
+                  <!-- <el-checkbox v-if="isCheckBox(item.type)" v-model="val.isChecked" disabled class="check-box"></el-checkbox> -->
+                  <div class="select-tip-checkbox" v-if="isCheckBox(item.type)" :class="{active: val.isChecked}"></div>
                   <el-radio v-else v-model="val.isCheckedId" :label="val.id" disabled class="radio-box" ></el-radio>
-                  <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img">
-                  <span class="text-content">{{radioIndex[index]}}. {{val.name}}</span>
-                  <!-- 柱状图 进度条-->
-                  <div class="progress-wrap" v-if="showType !== 'pie'">
-                    <span class="starck-bar" :style="{ width: val.choose_percent ? val.choose_percent + '%' : '0%'}"></span>
+                  <!-- <img v-if="val.pic" :src="`${val.pic.host}${val.pic.filename}`" class="option-img"> -->
+                  <div class="text-content flex-v-center">
+                    <span class="text-index">{{radioIndex[index]}}.</span>
+                    <div class="media-wrap-option" v-show="val.annex" v-for="(media,mediaKey) in val.annex" :key="mediaKey">
+                      <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)"  v-preview="annexMedia(media)" @click.stop="_setPreviewState" preview-nav-enable="false" class="my-img"/>
+                    </div>
+                    <span class="content-name">{{val.name}}</span>
                   </div>
+                  <span class="option-pie-percent" v-show="showType === 'pie'">
+                    <i class="icon-percent" :style="{background: colorData[index]}"></i>
+                    <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
+                  </span>
               </div>
-              <span class="option-percent" :class="`is-${showType}`">
-                  <i class="icon-percent" v-if="showType === 'pie'" :style="{background: colorData[index]}"></i>
+              <!-- 柱状图 进度条-->
+              <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
+                <div class="line-wrap">
+                  <span class="starck-bar"
+                    :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
+                </div>
+                <span class="option-percent">
+                  <!-- <i class="icon-percent" :style="{background: colorData[index]}"></i> -->
                   <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
-              </span>
+                </span>
+              </div>
             </li>
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
@@ -65,8 +84,9 @@
         </div>
         <div v-else>
           <div class="title-wrap">
-            <span class="title">{{key + 1}}、<span v-html="item.title"></span></span>
+            <span class="title">{{key + 1}}、<span v-html="item.title"></span>
             <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            </span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
             <el-image
@@ -79,11 +99,15 @@
             </el-image>
           </div>
           <div class="answer-wrap" v-else>
-            <i class="answer-icon">答</i>
-            <span class="answer-content" :class="{'is-no-answer': item.value.length == 0}">
-                <span v-if="item.value.length == 0">未填写</span>
-                <span v-for="(val, index) in item.value" :key="index">{{val}}<span v-show="(index + 1) < item.value.length">、</span></span>
-            </span>
+            <div class="flex-answer">
+              <i class="answer-icon">答</i>
+              <span class="answer-content" :class="{'is-no-answer': !item.isCheckedContent }">
+                  <span v-if="!item.isCheckedContent">未填写</span>
+                  <span v-for="(val, index) in item.value" :key="index">{{val}}
+                    <span v-show="item.isCheckedContent && (index + 1) < item.value.length">、</span>
+                  </span>
+              </span>
+            </div>
             <div class="standard-answer" v-show="displayTrueAnswer && item.extra && item.extra.answer">
               <div v-for="(aw, index) in item.extra.answer" :key="index" class="true-answer-title">
                 正确答案<span v-if="item.extra.answer.length > 1">{{index + 1}}</span>：
@@ -110,12 +134,14 @@ import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
 import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
   name: 'form-statistic',
   components: {
     Pie
   },
+  mixins: [ SubjectMixin ],
   props: ['params'],
   data () {
     return {
@@ -217,6 +243,18 @@ export default {
             let checkedValue = item.value
             let trueOpt = ''
             let pieData = []
+            let isCheckedContent = true
+            if (checkedValue && checkedValue.length > 0) {
+              for (let i = 0; i < checkedValue.length; i++) {
+                let val = checkedValue[i]
+                if (!val || val.trim() === 0) {
+                  isCheckedContent = false
+                  break
+                }
+              }
+            } else {
+              isCheckedContent = false
+            }
             if (options) {
               let allPercent = 0
               let noPercent = 0
@@ -246,6 +284,7 @@ export default {
                 })
               }
             }
+            item.isCheckedContent = isCheckedContent
             item.trueOption = trueOpt
             item.pieData = pieData
             if (['singleblank', 'mulitblank'].includes(item.type)) {
@@ -263,6 +302,15 @@ export default {
       let underlineReg = /_{3,}/g
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
+      // p标签改为行内标签
+      let pReg = /<p>/g
+      let pMatchArr = originTitle.match(pReg)
+      if (pMatchArr && pMatchArr.length > 0) {
+        pMatchArr.forEach((val, index) => {
+          let template = '<p style="display:inline;">'
+          originTitle = originTitle.replace(val, template)
+        })
+      }
       // 匹配解析的数组
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
@@ -271,7 +319,11 @@ export default {
           let template = ''
           // 处理不同填空的形式的渲染
           if (renderStyle === 'underline') {
-            template = this._getUnderlineTemplate({ index, data })
+            if (index === 0) {
+              template = this._getUnderlineTemplate({ index, data })
+            } else {
+              template = ''
+            }
           } else if (renderStyle === 'textbox') {
             template = this._getTextboxTemplate({ index })
           }
@@ -299,6 +351,8 @@ export default {
         let inputStyle = `width:${70 + offsetW}px;border:none; border-bottom: 1px solid #999;font-size:14px; color: ${StyleConfig.theme}; text-align:center; outline:none;border-radius:0;`
         let inputTemp = `<input type="text" readonly data-index="${index}" style="${inputStyle}" maxlength="${length}" value=""/>`
         return inputTemp
+      } else {
+        return ''
       }
     },
     _getTextboxTemplate (params) {
@@ -319,30 +373,6 @@ export default {
         window.location.href = link
       }
     },
-    /*
-    async getResultData () {
-      const member = decodeURIComponent(this.params.member)
-      const id = this.params.id
-      const params = { id, mark: 'biaodan', member }
-      const { feedback, component } = await this.$request('yun_result.statistic.formStatistic', { params })
-      component.map((item) => {
-        if (item.form_type === 'picture') {
-          if (item.answer instanceof Array) {
-            item.srcList = item.answer.map((val) => `${val.host}${val.filename}`)
-          } else {
-            item.srcList = item.answer instanceof Object ? new Array(`${item.answer.host}${item.answer.filename}`) : []
-          }
-          item.answer = item.srcList.length === 0 ? '' : item.srcList
-        }
-      })
-      const link = feedback.submit_rules.length ? feedback.submit_rules.link : ''
-      const showTotal = getUrlParam('is_display_total', link)
-      const statisticType = getUrlParam('options_statistic_type', link) || 'number'
-      this.feedback = { ...feedback, ...{ showTotal, statisticType } }
-      this.optionData = component
-      windowTitle(this.feedback.title || '')
-    },
-    */
     isCheckBox (val) {
       return ['checkbox', 'multiple', 'pictureMultiple'].includes(val)
     },
@@ -385,19 +415,23 @@ $font-weight: 400;
 .form-statistic-wrap{
     font-family: $font-family;
     background-color:#fff;
-    i, span{
+    min-height: 100vh;
+    i {
         display: inline-block;
     }
-    .my-score{
+    .score-area .my-score{
         font-size:px2rem(72px);
         line-height:px2rem(72px);
         color:#FF6A45;
         margin-bottom:px2rem(20px);
     }
-    .my-text{
+    .score-area .my-text{
         color:#666;
         font-size:px2rem(30px);
         line-height:px2rem(30px);
+        .static-weight {
+          color: #333;
+        }
     }
     .header-tip{
         width: 100%;
@@ -409,7 +443,8 @@ $font-weight: 400;
         box-sizing: border-box;
         z-index: 2;
         .icon-wrap {
-            vertical-align: middle;
+          display: inline-block;
+          vertical-align: middle;
         }
         .tips-icon{
           width: px2rem(36px);
@@ -418,6 +453,7 @@ $font-weight: 400;
           @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
         }
         .tips-title{
+            display: inline-block;
             @include font-dpr(14px);
             font-weight: $font-weight;
             color: $primary-color;
@@ -445,16 +481,17 @@ $font-weight: 400;
             background-color:#fff;
             box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
             border-radius: 5px;
-            padding:px2rem(50px);
+            padding:px2rem(50px) px2rem(50px) px2rem(50px) px2rem(67px);
 
         }
         .score-tips{
+            color: #333;
             margin-top:px2rem(48px);
         }
         .score-line{
             display:flex;
             align-items: center;
-            text-align:center;
+            text-align: left;
         }
         .rank-area{
             margin-bottom:px2rem(38px);
@@ -465,6 +502,23 @@ $font-weight: 400;
         }
         .num-area{
             flex:1;
+            text-align: left;
+            margin-left: px2rem(70px);
+            .my-text {
+              color:#666;
+              font-size:px2rem(30px);
+              line-height:px2rem(30px);
+              .line-static-icon {
+                width: px2rem(18px);
+                height: px2rem(28px);
+                background-size: px2rem(18px) px2rem(28px);
+                margin-right: px2rem(15px);
+                @include img-retina("~@/assets/common/line-static@2x.png","~@/assets/common/line-static@3x.png", 100%, 100%);
+              }
+              .static-weight {
+                color: #333;
+              }
+            }
         }
         .title{
             font-size: 20px;
@@ -494,6 +548,7 @@ $font-weight: 400;
         margin-top:px2rem(78px);
         .operate-wrap{
             .btn{
+                display: inline-block;
                 width: 75px;
                 height: 29px;
                 text-align: center;
@@ -513,7 +568,7 @@ $font-weight: 400;
             }
             .iconbingzhuangtu:before, .iconshuju:before{
                 font-size: 16px;
-                margin: 0 1px 0 6px;
+                margin: 0 px2rem(15px) 0 px2rem(12px);
                 color: #ccc;
             }
             .is-active{
@@ -533,21 +588,20 @@ $font-weight: 400;
                 padding: 0;
                 margin: 0;
             }
-            margin-top: 40px;
+            margin-top: px2rem(90px);
             &.is-first{
-                margin-top: 21px;
+                margin-top: px2rem(60px);
             }
             .title-wrap{
                 color: $font-color;
                 font-family: $font-family;
                 font-weight: $font-weight;
-                line-height: 23px;
                 margin-bottom: 8px;
-                .title{
-                    font-size: 16px;
-                    display:flex;
-                }
-                .option-num{
+                .title {
+                  font-weight: 500;
+                  font-size: 16px;
+                  line-height: 24px;
+                  .option-num {
                     color: #999;
                     font-size: 13px;
                     margin-left: 7px;
@@ -555,15 +609,27 @@ $font-weight: 400;
                       font-size: 13px;
                       color: #ff6a45;
                     }
+                  }
+                }
+                .media-wrap {
+                  padding:0 px2rem(43px) 0 px2rem(30px);
+                  box-sizing: border-box;
+                  text-align: center;
+                  margin-top: px2rem(10px);
+                  .my-img{
+                    width: 100%;
+                    max-width: 100%;
+                    height: px2rem(320px);
+                    object-fit: cover;
+                  }
                 }
             }
             .choice-item{
                 font-size: 15px;
                 font-family: $font-family;
-                font-weight: 500;;
                 color: $font-color;
                 position: relative;
-                margin-bottom: 30px;
+                margin-bottom: px2rem(30px);
                 .check-box, .radio-box{
                     margin-right: 10px;
                     .el-radio__input.is-disabled+span.el-radio__label{
@@ -616,21 +682,64 @@ $font-weight: 400;
                         font-size: 15px;
                         line-height: 22px;
                         flex: 1;
+                        .text-index {
+                          display: inline-block;
+                          margin-right: px2rem(20px);
+                        }
+                        .media-wrap-option .my-img {
+                          width: px2rem(90px);
+                          height: px2rem(90px);
+                          margin-right: px2rem(20px);
+                          object-fit: cover;
+                        }
+                        .content-name {
+                          flex: 1;
+                        }
                     }
-                }
-                .option-percent{
-                    margin-left: 19px;
-                    &.is-pie{
-                        display: flex;
-                        align-items: center;
-                        position:absolute;
-                        right:0;
-                        top:px2rem(5px);
+                    .option-pie-percent {
+                      width: px2rem(120px);
+                      margin-left: px2rem(20px);
                     }
-                    &.is-line{
-                        line-height: 1;
-                        align-self: flex-end;
-                        transform: translateY(15px);
+                    .el-radio {
+                      margin-right: px2rem(20px);
+                    }
+                    .el-radio__input {
+                      .el-radio__inner {
+                        width: px2rem(40px);
+                        height: px2rem(40px);
+                        border-color: #CCCCCC;
+                        &:after {
+                          width: px2rem(18px);
+                          height: px2rem(18px);
+                          background-color: #CCCCCC;
+                        }
+                      }
+                    }
+                    .select-tip-checkbox {
+                      width:px2rem(38px);
+                      height:px2rem(38px);
+                      border:1px solid #cccccc;
+                      border-radius: px2rem(4px);
+                      margin-right: px2rem(20px);
+                      &.active {
+                        color:#ccc;
+                        position:relative;
+                        text-align: center;
+                        &:after {
+                          content:'';
+                          position: absolute;
+                          left:50%;
+                          top:50%;
+                          margin-left:px2rem(-10px);
+                          margin-top:px2rem(-7px);
+                          width:px2rem(20px);
+                          height:px2rem(14px);
+                          line-height:px2rem(40px);
+                          background-repeat: no-repeat;
+                          background-size: 100%;
+                          @include img-retina('~@/assets/common/duihao2@2x.png','~@/assets/common/duihao2@3x.png', 100%,100%);
+                        }
+                      }
                     }
                 }
                 .icon-percent{
@@ -640,32 +749,32 @@ $font-weight: 400;
                     margin-right: 6px;
                     border-radius: 1px;
                 }
-                .progress-wrap{
+                .progress-wrap {
+                  height: px2rem(30px);
+                  margin-top: px2rem(10px);
+                  position: relative;
+                  .line-wrap {
                     margin-left: 29px;
-                    width: calc(100% - 29px);
+                    // width: calc(100% - 29px - 50px);
+                    flex: 1;
                     height: 3px;
                     background: #fff6f4;
                     border-radius: 3px;
-                    position: absolute;
-                    bottom: -10px;
+                    position: relative;
                     box-sizing: border-box;
                     .starck-bar{
-                        background: $primary-color;
-                        height: 3px;
-                        border-radius: 3px;
-                        position: absolute;
-                        left: 0;
-                        top: 0;
+                      background: $primary-color;
+                      height: 3px;
+                      border-radius: 3px;
+                      position: absolute;
+                      left: 0;
+                      top: 0;
                     }
-                }
-                &.no-img{
-                    margin-bottom: 15px;
-                    padding-right:40px;
-                }
-                &.is-show-line{
-                    .check-box, .radio-box{
-                        transform: translateY(5px);
-                    }
+                  }
+                  .option-percent{
+                    margin-left: px2rem(38px);
+                    width: px2rem(90px);
+                  }
                 }
             }
             .picture-wrap{
@@ -686,29 +795,31 @@ $font-weight: 400;
                 }
             }
             .answer-wrap{
-                position: relative;
                 width: 100%;
                 font-family: $font-family;
                 font-weight: $font-weight;
+                .flex-answer {
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: px2rem(20px);
+                }
                 .answer-icon{
-                    width: 15px;
-                    height: 15px;
-                    background: $primary-color;
-                    color: #fff;
-                    border-radius: 2px;
-                    font-size: 10px;
-                    text-align: center;
-                    line-height: 15px;
-                    position: absolute;
-                    top: 4px;
-                    font-style: normal;
+                  width: px2rem(30px);
+                  height: px2rem(30px);
+                  background: $primary-color;
+                  color: #fff;
+                  border-radius: 2px;
+                  font-size: px2rem(20px);
+                  text-align: center;
+                  line-height: px2rem(30px);
+                  font-style: normal;
                 }
                 .answer-content{
                     width: 314px;
-                    font-size: 15px;
+                    font-size: px2rem(30px);
                     color: $font-color;
-                    line-height: 22px;
-                    margin-left: 27px;
+                    line-height: px2rem(30px);
+                    margin-left: px2rem(24px);
                     word-break: break-all;
                     &.is-no-answer{
                         color: rgba(51, 51, 51, 0.3);

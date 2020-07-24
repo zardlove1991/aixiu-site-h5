@@ -35,7 +35,7 @@ export default {
   },
   created () {
     // this.$wx = wx// 初始化通用weixin变量
-    // this.initWeixinInfo() // 初始化微信配置信息
+    this.initWeixinInfo() // 初始化微信配置信息
     // this.initReirectParams() // 判断是否有全局参数
   },
   computed: {
@@ -43,7 +43,23 @@ export default {
   },
   methods: {
     async initWeixinInfo () {
-      console.log(123)
+      // 执行调用
+      let url = window.location.href.split('#')[0]
+      // encodeURIComponent(location.href.split('#')[0])
+      this.getWeixinInfo({
+        url,
+        sign: 'wechat',
+        appid: 'wx63a3a30d3880a56e'
+      }).then(res => {
+        console.log(res)
+        let { appId, timestamp, nonceStr, signature } = res
+        wx.config({
+          appId,
+          timestamp,
+          nonceStr,
+          signature
+        })
+      })
     },
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
@@ -58,9 +74,20 @@ export default {
           title: data.title, // 分享标题
           desc: data.desc, // 分享描述
           imgUrl: data.indexpic, // 分享图标
-          link: data.link // 分享链接
+          link: data.link, // 分享链接
+          success: () => {
+            // 用户确认分享后执行的回调函数
+            this.setShare({
+              id: data.id,
+              title: params.title,
+              from: params.from
+            })
+          },
+          cancel: function () {
+            // 用户取消分享后执行的回调函数
+          }
         }
-        console.log('执行了分享参数调用', data)
+        // console.log('执行了分享参数调用', params)
         // 执行调用
         wx.execute('shareQQZone', params)
         wx.execute('shareQQFriends', params)
@@ -74,7 +101,8 @@ export default {
       }, 1000)
     },
     ...mapActions('depence', {
-      getWeixinInfo: 'GET_WEIXIN_INFO'
+      getWeixinInfo: 'GET_WEIXIN_INFO',
+      setShare: 'SET_SHARE'
     }),
     ...mapMutations('depence', {
       setRedirectParams: 'SET_REDIRECT_PARAMS'
