@@ -124,6 +124,14 @@ let router = new Router({
       meta: {
         title: '我的投票'
       }
+    },
+    {
+      path: '/votesubmit',
+      name: 'votesubmit',
+      component: getVoteComponent('vote-submit'),
+      meta: {
+        title: '报名'
+      }
     }
   ]
 })

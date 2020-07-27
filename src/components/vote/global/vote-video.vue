@@ -39,9 +39,11 @@ export default {
   },
   methods: {
     initVideoInfo () {
-      this.video = this.$refs.video
-      // 监听客户端请求数据
-      this.video.load()
+      this.$nextTick(() => {
+        this.video = this.$refs.video
+        // 监听客户端请求数据
+        this.video.load()
+      })
     },
     setPlay (slug) {
       let curPlay = null
@@ -69,7 +71,7 @@ export default {
   .commvote-base-video-wrap {
     position: relative;
     width: 100%;
-    height: px2rem(390px);
+    height: 100%;
     .base-video {
       width: 100%;
       height: 100%;

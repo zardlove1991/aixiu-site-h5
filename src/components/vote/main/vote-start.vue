@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div class="commvote-overview color-bg_color">
+    <div :class="['commvote-overview', 'color-bg_color', status !== 3 ? 'status-no-end' : '']">
       <!--背景标题-->
       <div v-if="detailInfo.indexpic"
         :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
@@ -35,7 +35,7 @@
           </div>
         </div>
         <!--信息展示-->
-        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display">
+        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status !== 1">
           <div :class="['vote-cols-wrap', 'color-content', showModel + '-text']">
             <span class="vote-count color-normal_text">{{detailInfo.works_count}}</span>
             <span class="vote-desc color-normal_text">作品数</span>
@@ -49,15 +49,34 @@
             <span class="vote-desc color-normal_text">访问次数</span>
           </div>
         </div>
+        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status === 1">
+          <div class="vote-cols-wrap color-content signup-icon">
+            <span class="vote-count color-normal_text">{{detailInfo.works_count}}</span>
+            <span class="vote-desc color-normal_text">报名次数</span>
+          </div>
+          <div class="vote-cols-wrap color-content examine-icon">
+            <span class="vote-count color-normal_text">{{detailInfo.votes}}</span>
+            <span class="vote-desc color-normal_text">已通过审核</span>
+          </div>
+          <div class="vote-cols-wrap color-content">
+            <span class="vote-count color-normal_text">{{detailInfo.views_count}}</span>
+            <span class="vote-desc color-normal_text">访问次数</span>
+          </div>
+        </div>
         <!--菜单-->
-        <div class="overview-menus-wrap">
-          <div class="menu-wrap color-button_color" @click.stop="jumpPage('voterank')">
+        <div class="overview-menus-wrap" v-if="status !== 1">
+          <div class="menu-wrap menu-right color-button_color" @click.stop="jumpPage('voterank')">
             <i class="examfont iconjiangbei rank color-button_text"></i>
             <span class="menu-text color-button_text">榜单</span>
           </div>
           <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
             <span class="menu-text color-button_text">我的投票</span>
+          </div>
+        </div>
+        <div class="overview-menus-wrap" v-if="status === 1">
+          <div class="menu-wrap color-button_color" @click="jumpPage('votesubmit', showModel)">
+            <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
           </div>
         </div>
         <div class="overview-list-title-wrap">
@@ -79,6 +98,7 @@
       <vote-text @jump-page="jumpPage"></vote-text>
     </div>
     <div class="active-rule-wrap default">活动规则</div>
+    <count-down :status="status" :obj="detailInfo"></count-down>
   </div>
 </template>
 
@@ -87,29 +107,31 @@ import VotePictureText from '@/components/vote/list/vote-picture-text'
 import VoteVideoText from '@/components/vote/list/vote-video-text'
 import VoteAudioText from '@/components/vote/list/vote-audio-text'
 import VoteText from '@/components/vote/list/vote-text'
+import CountDown from '@/components/vote/global/count-down'
 
 export default {
   components: {
-    VotePictureText, VoteVideoText, VoteAudioText, VoteText
+    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown
   },
   data () {
     return {
-      // indexStyle: 'background-image: url("http://xzimg.hoge.cn/xiuzan/1593413360885/9A86E5BA203CC6FA06EB7864A4CDA521.jpg");',
       searchVal: '',
       searchBarFocus: false,
       isShowAllIntro: false,
       showButton: true,
       showModel: 'text',
+      status: 1, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
+      isExamine: 0, // 0 未报名 1 已报名
       'detailInfo': {
         'id': '431531aa9edd45d0981284961de9fd05',
         'title': '图片+文本投票组件',
         'indexpic': {
-          // 'host': '//xzimg.hoge.cn/',
-          // 'filename': 'xiuzan/1593413360885/9A86E5BA203CC6FA06EB7864A4CDA521.jpg',
-          // 'format': '.jpg',
-          // 'width': 1440,
-          // 'height': 1920,
-          // 'filesize': 457651
+          'host': '//xzimg.hoge.cn/',
+          'filename': 'xiuzan/1593413360885/9A86E5BA203CC6FA06EB7864A4CDA521.jpg',
+          'format': '.jpg',
+          'width': 1440,
+          'height': 1920,
+          'filesize': 457651
         },
         'organizers': [{
           name: '张三'
@@ -189,6 +211,9 @@ export default {
     .commvote-overview {
       background-color: #221A6E;
       transform: translateX(0);
+      &.status-no-end {
+        padding-bottom: px2rem(200px);
+      }
       .overview-indexpic-wrap {
         position: relative;
         width: 100%;
@@ -260,7 +285,6 @@ export default {
         padding: px2rem(30px);
         text-align: center;
         line-height: px2rem(30px);
-        // box-sizing: border-box;
         &.nointroduce{
           padding: 0.48rem 0.3rem 1rem;
         }
@@ -402,6 +426,12 @@ export default {
           &:nth-child(3):before {
             background-image: url('https://xzh5.hoge.cn/new-vote/images/visited_icon@2x.png');
           }
+          &.signup-icon:before {
+            @include img-retina('~@/assets/vote/signup-icon@2x.png', '~@/assets/vote/signup-icon@3x.png', px2rem(86px), px2rem(120px));
+          }
+          &.examine-icon:before {
+            @include img-retina('~@/assets/vote/examine-icon@2x.png', '~@/assets/vote/examine-icon@3x.png', px2rem(93px), px2rem(120px));
+          }
           .vote-count {
             @include font-dpr(18px);
             color: #fff;
@@ -427,7 +457,7 @@ export default {
           border-radius: px2rem(8px);
           font-size: 0;
           background-color: #FC7465;
-          &:first-child {
+          &.menu-right {
             margin-right: px2rem(30px);
           }
           .rank, .mine {
@@ -443,7 +473,6 @@ export default {
             display: inline-block;
             @include font-dpr(14px);
             color: #fff;
-            line-height: 1;
           }
         }
       }

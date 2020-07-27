@@ -11,10 +11,12 @@
             @click.stop="dealDetailMenu('lottery')">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
         </div>
         <!--媒体组件渲染-->
-        <vote-video class="base-video"
-          v-for="(video, index) in workDetail.material.video" :key="index"
-          :data="video">
-        </vote-video>
+        <div class="detail-video-wrap">
+          <vote-video class="base-video"
+            v-for="(video, index) in workDetail.material.video" :key="index"
+            :data="video">
+          </vote-video>
+        </div>
         <!-- <vote-audio class="base-audio"
           v-for="(audio, index) in workDetail.material.audio" :key="index"
           :data="audio">
@@ -190,6 +192,10 @@ export default {
             background-color: #FC7465;
             pointer-events: auto;
           }
+        }
+        .detail-video-wrap {
+          width: 100%;
+          height: px2rem(390px);
         }
         .base-video, .base-audio, .base-image {
           width: 100%;
