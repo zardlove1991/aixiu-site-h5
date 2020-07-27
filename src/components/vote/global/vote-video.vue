@@ -8,6 +8,7 @@
       :style="{ backgroundImage: 'url('+ data.cover +')'}">
       <div class="play-icon" @click.stop='setPlay'></div>
     </div>
+    <i class="file-delete-icon" v-if="isShowDelBtn" @click="deleteFile(data)"></i>
   </div>
 </template>
 
@@ -19,6 +20,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    isShowDelBtn: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -61,6 +66,13 @@ export default {
       this.isPlay = curPlay
       this.isShowVideo = this.isPlay
       this.isShowPoster = !this.isPlay
+    },
+    deleteFile (item) {
+      let video = this.video
+      if (video) {
+        this.setPlay('hidden')
+      }
+      this.$emit('deleteFile', item)
     }
   }
 }
@@ -99,6 +111,15 @@ export default {
         background-image: url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
         background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
       }
+    }
+    .file-delete-icon {
+      display: inline-block;
+      position: absolute;
+      right: px2rem(-15px);
+      top: px2rem(-15px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
     }
   }
 </style>

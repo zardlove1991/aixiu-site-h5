@@ -1,23 +1,36 @@
 <template>
   <div class="vote-upload">
+    <div class="upload-picture-item"
+      v-show="flag === 'picture' && fileList.length"
+      v-for="(item, index) in fileList" :key="index">
+      <img :src="item.url" />
+      <i class="file-delete-icon" @click.stop="handleRemove(item)"></i>
+    </div>
+    <div v-if="flag === 'video' && fileList.length" class="upload-video-wrap">
+      <vote-video
+        :data="fileList[0]"
+        :isShowDelBtn="true"
+        @deleteFile="handleRemove">
+      </vote-video>
+    </div>
+    <vote-audio
+      v-if="flag === 'audio' && fileList.length"
+      :data="fileList[0]"
+      :isShowDelBtn="true"
+      @deleteFile="handleRemove">
+    </vote-audio>
     <el-upload
-      :class="[flag, fileList.length >= settings[flag].limit ? 'hide' : '' ]"
+      :class="{ hide: fileList.length >= settings[flag].limit }"
       list-type="picture-card"
       action=""
       :limit="settings[flag].limit"
       :multiple="false"
-      :show-file-list="settings[flag].isShowFileList"
+      :show-file-list="false"
+      :file-list="fileList"
       :http-request="uploadFile"
-      :on-remove="handleRemove">
+      :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
     </el-upload>
-    <div class="upload-video-wrap" v-if="flag === 'video' && fileList.length">
-      <vote-video :data="fileList[0]"></vote-video>
-    </div>
-    <vote-audio
-      v-if="flag === 'audio' && fileList.length"
-      :data="fileList[0]">
-    </vote-audio>
   </div>
 </template>
 
@@ -46,15 +59,17 @@ export default {
       settings: {
         video: {
           limit: 1,
-          isShowFileList: false
+          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
+          // accept: '.mp4,.MP4'
         },
         picture: {
           limit: 9,
-          isShowFileList: true
+          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
         },
         audio: {
           limit: 1,
-          isShowFileList: false
+          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
+          // accept: '.mp3,.MP3'
         }
       }
     }
@@ -63,6 +78,7 @@ export default {
     uploadFile (obj) {
       let that = this
       let file = obj.file
+      console.log('uploadFile', obj)
       /**
       that.fileList.push({
         name: file.name,
@@ -86,8 +102,13 @@ export default {
           duration: 161,
           url: 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3'
         })
+      } else if (this.flag === 'picture') {
+        that.fileList.push({
+          name: file.name,
+          uid: file.uid,
+          url: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg'
+        })
       }
-      console.log(that.fileList)
     },
     handleRemove (file) {
       for (let i in this.fileList) {
@@ -103,6 +124,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .vote-upload {
+    display: flex;
+    flex-wrap: wrap;
     .hide .el-upload--picture-card {
       display: none;
     }
@@ -117,12 +140,21 @@ export default {
         @include font-dpr(30px);
       }
     }
-    .picture .el-upload-list__item {
+    .upload-picture-item {
+      position: relative;
       border-radius: px2rem(8px);
-      border: 0;
       margin: 0 px2rem(20px) px2rem(20px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
+      .file-delete-icon {
+        display: inline-block;
+        position: absolute;
+        right: px2rem(-15px);
+        top: px2rem(-15px);
+        width: px2rem(30px);
+        height: px2rem(30px);
+        @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
+      }
     }
     .upload-video-wrap {
       width: px2rem(470px);

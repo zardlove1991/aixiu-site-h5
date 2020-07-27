@@ -12,6 +12,7 @@
     </div>
     <!--音频元素-->
     <audio ref="audio" preload='auto' @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
+    <i class="file-delete-icon" v-if="isShowDelBtn" @click="deleteFile(data)"></i>
   </div>
 </template>
 
@@ -27,6 +28,10 @@ export default {
       }
     },
     isPreview: {
+      type: Boolean,
+      default: false
+    },
+    isShowDelBtn: {
       type: Boolean,
       default: false
     }
@@ -51,8 +56,8 @@ export default {
     },
     percent: function (val) {
       console.log('当前播放的百分比', val)
-      var processEl = this.audioWrapEl.find('.process')
-      var barEl = this.audioWrapEl.find('.bar')
+      let processEl = this.audioWrapEl.find('.process')
+      let barEl = this.audioWrapEl.find('.bar')
       processEl.animate({ width: val + '%' }, 'normal')
       barEl.animate({ left: val + '%' }, 'normal')
       // 关闭播放
@@ -93,6 +98,13 @@ export default {
       let time = e.target.currentTime
       this.duration = formatTimeBySec(time)
       this.percent = Math.round(time / this.data.duration * 100)
+    },
+    deleteFile (item) {
+      let audio = this.audio
+      if (audio) {
+        this.setPlay('hidden')
+      }
+      this.$emit('deleteFile', item)
     }
   }
 }
@@ -100,7 +112,8 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .commvote-base-audio-wrap{
+  .commvote-base-audio-wrap {
+    position: relative;
     width: 100%;
     padding: px2rem(25px) px2rem(30px);
     background-color: rgba(255,255,255,0.1);
@@ -161,6 +174,15 @@ export default {
           animation: audioPlay 1s linear infinite;
         }
       }
+    }
+    .file-delete-icon {
+      display: inline-block;
+      position: absolute;
+      right: px2rem(-15px);
+      top: px2rem(-15px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
     }
   }
 </style>
