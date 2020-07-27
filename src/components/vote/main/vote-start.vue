@@ -97,8 +97,18 @@
       <vote-audio-text @jump-page="jumpPage"></vote-audio-text>
       <vote-text @jump-page="jumpPage"></vote-text>
     </div>
-    <div class="active-rule-wrap default">活动规则</div>
+    <div class="active-rule-wrap default" @click="isShowRuleDialog = true">活动规则</div>
     <count-down :status="status" :obj="detailInfo"></count-down>
+    <tips-dialog
+      :show="isShowRuleDialog"
+      @close="isShowRuleDialog = false">
+      <div class="rule-dialog-wrap" slot="tips-content">
+        <div class="rule-header">活动规则</div>
+        <div class="rule-content">
+          <p v-for="(rule, index) in rules" :key="index">{{index + 1}}. {{rule}}</p>
+        </div>
+      </div>
+    </tips-dialog>
   </div>
 </template>
 
@@ -108,20 +118,26 @@ import VoteVideoText from '@/components/vote/list/vote-video-text'
 import VoteAudioText from '@/components/vote/list/vote-audio-text'
 import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
+import TipsDialog from '@/components/vote/global/tips-dialog'
 
 export default {
   components: {
-    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown
+    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown, TipsDialog
   },
   data () {
     return {
       searchVal: '',
       searchBarFocus: false,
       isShowAllIntro: false,
+      isShowRuleDialog: false,
       showButton: true,
       showModel: 'text',
       status: 1, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
       isExamine: 0, // 0 未报名 1 已报名
+      rules: [
+        '每天每个微信号可投票十票，投票后点击此链接幸运抽奖，进入抽奖页面。',
+        '粉丝福利抽奖活动将于9月30日开始'
+      ],
       'detailInfo': {
         'id': '431531aa9edd45d0981284961de9fd05',
         'title': '图片+文本投票组件',
@@ -529,6 +545,20 @@ export default {
             background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
           }
         }
+      }
+    }
+    .rule-dialog-wrap {
+      padding: px2rem(60px) px2rem(40px) px2rem(100px) px2rem(40px);
+      .rule-header {
+        margin-bottom: px2rem(45px);
+        text-align: center;
+        @include font-dpr(17px);
+        color: #333333;
+      }
+      .rule-content {
+        @include font-dpr(15px);
+        line-height: px2rem(48px);
+        color: #666;
       }
     }
   }
