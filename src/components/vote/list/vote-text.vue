@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', item.id)">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { id : item.id})">
       <div class="work-header-wrap">
         <div class="work-title color-theme_color">
           <div class="icon-square-wrap color-button_color"></div>
@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     jumpPage (page, id) {
-      this.$emit('jump-page', page, id)
+      this.$emit('jump-page', page, { id })
     }
   }
 }

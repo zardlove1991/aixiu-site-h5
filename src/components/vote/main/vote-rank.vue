@@ -30,7 +30,7 @@
       </div>
       <div class="rank-list-item"
         v-for="(item, index) in rankList" :key="index"
-        @click.stop="jumpPage('votedetail', item.id)">
+        @click.stop="jumpPage('votedetail', { id: item.id })">
         <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
         <div class="list-item-content">
           <div class="indexpic-wrap" v-if="showFlag === 'picture' && item.material.image.length"
@@ -168,7 +168,7 @@ export default {
   },
   methods: {
     initRankList () {
-      console.log('initRankList')
+      console.log('initRankList', this.$route.query)
     },
     jumpPage (page, id = '') {
       this.$router.replace({

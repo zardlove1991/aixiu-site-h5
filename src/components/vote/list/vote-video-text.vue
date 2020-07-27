@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', item.id)">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { id: item.id})">
       <div class="work-poster-wrap" :style="{ backgroundImage: 'url('+item.material.video[0].cover+')'}">
         <div class="poster-thumb">
           <div class="thumb-bg" :class="[ item.bgClass ]"></div>
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     jumpPage (page, id) {
-      this.$emit('jump-page', page, id)
+      this.$emit('jump-page', page, { id })
     }
   }
 }

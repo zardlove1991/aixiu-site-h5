@@ -11,7 +11,7 @@
         </div>
         <div class="list-item"
           v-for="(item, idx) in list" :key="idx"
-          @click.stop="jumpPage('votedetail', item.id)">
+          @click.stop="jumpPage('votedetail', { id: item.id})">
           <div class="item-indexpic" v-if="showFlag === 'picture' && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}"></div>
           <div class="item-indexpic" v-if="showFlag === 'video' && item.works.material.video.length"

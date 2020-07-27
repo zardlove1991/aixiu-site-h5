@@ -16,7 +16,6 @@
     </div>
     <vote-audio
       v-if="flag === 'audio' && fileList.length"
-      :is-preview="true"
       :data="fileList[0]">
     </vote-audio>
   </div>
@@ -69,6 +68,7 @@ export default {
         name: file.name,
         uid: file.uid,
         cover: '',
+        duration: 0,
         url: ''
       })
       */
@@ -83,6 +83,7 @@ export default {
         that.fileList.push({
           name: file.name,
           uid: file.uid,
+          duration: 161,
           url: 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3'
         })
       }

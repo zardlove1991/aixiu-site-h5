@@ -126,7 +126,7 @@ export default {
   },
   methods: {
     jumpPage (page, id) {
-      this.$emit('jump-page', page, id)
+      this.$emit('jump-page', page, { id })
     }
   }
 }

@@ -64,15 +64,17 @@ export default {
   },
   methods: {
     initAudioInfo () {
-      this.isPlay = false // 重新将状态还原
-      this.audio = this.$refs.audio
-      // 赋值src
-      this.audio.src = this.data.url
-      this.totalDuration = formatTimeBySec(this.data.duration)
-      // 获得当前音频包裹元素
-      this.audioWrapEl = this.$refs['audio-wrap']
-      // 监听客户端请求数据
-      this.audio.load()
+      this.$nextTick(() => {
+        this.isPlay = false // 重新将状态还原
+        this.audio = this.$refs.audio
+        // 赋值src
+        this.audio.src = this.data.url
+        this.totalDuration = formatTimeBySec(this.data.duration)
+        // 获得当前音频包裹元素
+        this.audioWrapEl = this.$refs['audio-wrap']
+        // 监听客户端请求数据
+        this.audio.load()
+      })
     },
     setPlay (slug) {
       // 如果是预览不允许播放

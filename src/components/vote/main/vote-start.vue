@@ -75,7 +75,7 @@
           </div>
         </div>
         <div class="overview-menus-wrap" v-if="status === 1">
-          <div class="menu-wrap color-button_color" @click="jumpPage('votesubmit', showModel)">
+          <div class="menu-wrap color-button_color" @click="jumpPage('votesubmit', { flag: showModel })">
             <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
           </div>
         </div>
@@ -178,10 +178,10 @@ export default {
     dealSearch () {
       console.log('dealSearch')
     },
-    jumpPage (page, id = '') {
+    jumpPage (page, data) {
       this.$router.replace({
         name: page,
-        query: { id }
+        query: data
       })
     }
   }

@@ -1,10 +1,29 @@
 <template>
   <div class="form-submit-wrap">
     <form>
-      <div class="form-item">
-        <div class="form-title">上传视频<span class="form-tips">（视频格式为MP4，时长不能超过60s）</span></div>
+      <div v-if="flag === 'video'" class="form-item">
+        <div class="form-title">上传视频<span class="form-tips">(视频格式为MP4，时长不能超过60s)</span></div>
         <div class="form-content">
           <file-upload :flag="flag" :fileList="fileList"></file-upload>
+        </div>
+      </div>
+      <div v-if="flag === 'picture'" class="form-item">
+        <div class="form-title">上传图片</div>
+        <div class="form-tips">(图片最多上传9张，支持PNG、JPG、GIF格式，小于5M)</div>
+        <div class="form-content">
+          <file-upload :flag="flag" :fileList="fileList"></file-upload>
+        </div>
+      </div>
+      <div v-if="flag === 'audio'" class="form-item">
+        <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3，时长不能超过60s)</span></div>
+        <div class="form-content">
+          <file-upload :flag="flag" :fileList="fileList"></file-upload>
+        </div>
+      </div>
+      <div v-if="flag === 'text'" class="form-item">
+        <div class="form-title">文字内容</div>
+        <div class="form-content">
+          <el-input type="textarea" v-model="examineData.desc"></el-input>
         </div>
       </div>
       <div class="form-item">
@@ -19,7 +38,7 @@
           <el-input v-model="examineData.source"></el-input>
         </div>
       </div>
-      <div class="form-item">
+      <div class="form-item" v-if="flag !== 'text'">
         <div class="form-title">描述</div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" show-word-limit v-model="examineData.desc"></el-input>
@@ -45,7 +64,7 @@
 </template>
 
 <script>
-import FileUpload from '@/components/vote/global/fileupload'
+import FileUpload from '@/components/vote/global/file-upload'
 
 export default {
   created () {
@@ -64,12 +83,16 @@ export default {
         phone: ''
       },
       fileList: [],
-      flag: 'picture'
+      flag: '' // video/picture/audio/text
     }
   },
   methods: {
     initForm () {
-      console.log('initForm')
+      console.log('initForm', this.$route.query)
+      let { flag } = this.$route.query
+      if (flag) {
+        this.flag = flag
+      }
     }
   }
 }
@@ -86,15 +109,15 @@ export default {
       .form-title {
         display: flex;
         align-items: center;
-        margin-bottom: px2rem(20px);
         color: #fff;
         @include font-dpr(16px);
-        .form-tips {
-          @include font-dpr(12px);
-          color: rgba(255, 255, 255, 0.5);
-        }
+      }
+      .form-tips {
+        @include font-dpr(12px);
+        color: rgba(255, 255, 255, 0.5);
       }
       .form-content {
+        margin-top: px2rem(20px);
         .el-input__inner, .el-textarea__inner {
           background-color: rgba(255, 255, 255, 0.2);
           border-radius: px2rem(8px);
