@@ -147,7 +147,9 @@
       @close="isShowQrcode = false">
       <div class="qrcode-dialog-wrap flex-column-dialog" slot="tips-content">
         <div class="qrcode-header">关注下方公众号，即可参与互动</div>
-        <div class="qrcode-img"></div>
+        <div class="qrcode-img"
+          :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"
+        ></div>
         <div class="qrcode-tips">长按识别二维码</div>
       </div>
     </tips-dialog>
@@ -700,7 +702,6 @@ export default {
         margin-bottom: px2rem(10px);
         width: px2rem(225px);
         height: px2rem(225px);
-        @include img-retina("~@/assets/vote/qrcode-icon@2x.png","~@/assets/vote/qrcode-icon@2x.png", 100%, 100%);
       }
       .qrcode-tips {
         @include font-dpr(12px);
