@@ -212,12 +212,6 @@ export default {
       }
       if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
         let submitRules = this.examInfo.limit.submit_rules
-        let raffleUrl = submitRules.raffle_url
-        if (raffleUrl) {
-          this.raffleUrl = raffleUrl
-        } else {
-          this.raffleUrl = ''
-        }
         if (submitRules.is_open_tips) {
           this.statMsgVisible = true
         }
@@ -232,8 +226,32 @@ export default {
       let id = this.$route.params.id
       this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
+        let correctNum = res.correct_num
+        let count = res.questions.length
         if (this.statMsgVisible) {
-          this.initStatInfo(res.score, res.correct_num, res.questions.length)
+          this.initStatInfo(res.score, correctNum, count)
+        }
+        if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
+          let submitRules = this.examInfo.limit.submit_rules
+          let raffleUrl = submitRules.raffle_url
+          let tempUrl = ''
+          // 开启抽奖
+          if (submitRules.is_open_raffle && submitRules.jump_conditions) {
+            let { type, value } = submitRules.jump_conditions
+            if (type && value) {
+              if (type === 'score') {
+                if (res.score >= value) {
+                  tempUrl = raffleUrl
+                }
+              } else {
+                let resul1 = (correctNum / count) * 100
+                if (resul1 >= value) {
+                  tempUrl = raffleUrl
+                }
+              }
+            }
+          }
+          this.raffleUrl = tempUrl
         }
         this.optionData = res
         let questions = res.questions
