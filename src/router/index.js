@@ -94,9 +94,14 @@ let router = new Router({
       }
     },
     {
-      path: '/votestart',
+      path: '/votebegin/:id',
       name: 'votestart',
       component: getVoteComponent('vote-start'),
+      props: (route) => ({
+        id: route.params.id, // 传入需要请求当前投票的ID
+        redirect: route.query.redirect, // 小程序传入的重定向地址
+        delta: route.query.delta // 小程序需要回退的页面层级
+      }),
       meta: {
         title: '投票'
       }

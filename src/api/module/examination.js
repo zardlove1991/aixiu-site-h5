@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -9,9 +9,16 @@ let QCloundUrl = {
   getQcloudVideoInfo: 'client/material/video/info', // 获取腾讯云视频信息
   getMaterialInfo: 'client/material/save' // 获取素材信息
 }
+
+// 投票相关接口
+let voteUrl = {
+  getVoteWorks: 'client/voting/{id}/works' // 获取投票数据列表
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
+  ...voteUrl,
   sumbitUV: 'setSubmit', // 提交次数
   setClick: 'setClick', // click
   getDingdingUser: 'ding/signature', // 钉钉会员
@@ -65,5 +72,7 @@ export default {
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
-  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG)
+  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  // 投票
+  getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG)
 }

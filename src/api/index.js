@@ -159,3 +159,13 @@ export const createExam = (url, method, config = {}, api) => {
     ...config
   })
 }
+
+export const createVote = (url, method, config = {}, api) => {
+  api = 'vote'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
