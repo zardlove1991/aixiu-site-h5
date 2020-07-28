@@ -19,7 +19,7 @@
       <div class="work-title color-theme_color">{{item.name}}</div>
       <div class="work-desc color-theme_color">{{item.source}}</div>
       <div class="vote-btn-group">
-        <vote-btn-group :data="item" :index="index"></vote-btn-group>
+        <vote-btn-group :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
       </div>
     </div>
   </div>
@@ -127,6 +127,9 @@ export default {
   methods: {
     jumpPage (page, id) {
       this.$emit('jump-page', page, { id })
+    },
+    btnClick (data) {
+      this.$emit('trigger-work', data)
     }
   }
 }

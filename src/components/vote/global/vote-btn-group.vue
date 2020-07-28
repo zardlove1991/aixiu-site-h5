@@ -1,11 +1,12 @@
 <template>
   <div class="vote-btn-group-wrap">
-    <button class="option-invote" @click.stop="triggerWork(data, index, 'invote')">帮ta拉票</button>
-    <button class="options-vote" @click.stop="triggerWork(data, index, 'vote')">给ta投票</button>
+    <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">帮ta拉票</button>
+    <button class="options-vote" @click.stop="btnClick(data, index, 'vote')">给ta投票</button>
   </div>
 </template>
 
 <script>
+
 export default {
   props: {
     data: {
@@ -19,8 +20,10 @@ export default {
     }
   },
   methods: {
-    triggerWork (data, index, slug) {
-      console.log(data, index, slug)
+    btnClick (data, index, slug) {
+      this.$emit('btn-click', {
+        data, slug
+      })
     }
   }
 }

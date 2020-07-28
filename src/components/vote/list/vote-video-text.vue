@@ -14,7 +14,7 @@
           <div class="info-icon"></div>
           <div class="info-thumb"></div>
           <div class="info-options-wrap">
-            <vote-btn-group :data="item" :index="index"></vote-btn-group>
+            <vote-btn-group :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
           </div>
         </div>
       </div>
@@ -100,6 +100,9 @@ export default {
   methods: {
     jumpPage (page, id) {
       this.$emit('jump-page', page, { id })
+    },
+    btnClick (data) {
+      this.$emit('trigger-work', data)
     }
   }
 }

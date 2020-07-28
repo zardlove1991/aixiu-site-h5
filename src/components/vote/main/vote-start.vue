@@ -29,7 +29,7 @@
           <p class="intro-desc color-theme_color" :class="{'show': isShowAllIntro}">{{detailInfo.introduce}}</p>
           <div class="intro-showall-wrap"
             @click.stop="isShowAllIntro = !isShowAllIntro"
-            v-if="showButton">
+            v-if="isShowButton">
             <span class="showall-text color-theme_color">查看全部</span>
             <span class="showall-arrow color-theme_color" :class="{'show': isShowAllIntro}"></span>
           </div>
@@ -92,13 +92,14 @@
           </div>
         </div>
       </div>
-      <vote-picture-text @jump-page="jumpPage"></vote-picture-text>
-      <vote-video-text @jump-page="jumpPage"></vote-video-text>
-      <vote-audio-text @jump-page="jumpPage"></vote-audio-text>
-      <vote-text @jump-page="jumpPage"></vote-text>
+      <vote-picture-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-picture-text>
+      <vote-video-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-video-text>
+      <vote-audio-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-audio-text>
+      <vote-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-text>
     </div>
     <div class="active-rule-wrap default" @click="isShowRuleDialog = true">活动规则</div>
     <count-down :status="status" :obj="detailInfo"></count-down>
+    <!-- 活动规则弹窗 -->
     <tips-dialog
       :show="isShowRuleDialog"
       @close="isShowRuleDialog = false">
@@ -109,6 +110,48 @@
         </div>
       </div>
     </tips-dialog>
+    <!-- 未找到搜索内容弹窗 -->
+    <tips-dialog
+      :show="isShowSearch"
+      @close="isShowSearch = false">
+      <div class="search-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="search-header">没有找到你要的内容<br>换个搜索词试试</div>
+        <button class="dialog-ok-btn" @click="isShowSearch = false">好的</button>
+      </div>
+    </tips-dialog>
+    <!-- 活动提示弹窗 -->
+    <tips-dialog
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false">
+      <div class="active-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="active-header">请在<span class="tips"> {{activeTips}} </span>内参与活动</div>
+        <div class="active-img"></div>
+        <button class="dialog-ok-btn" @click="isShowActiveTips = false">好的</button>
+      </div>
+    </tips-dialog>
+    <!-- 活动地区限制弹窗 -->
+    <tips-dialog
+      :show="isShowActiveLimit"
+      @close="isShowActiveLimit = false">
+      <div class="limit-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="limit-header">活动地区限制</div>
+        <div class="limit-content">仅支持
+          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
+        </div>
+        <button class="dialog-ok-btn" @click="isShowActiveLimit = false">好的</button>
+      </div>
+    </tips-dialog>
+    <!-- 关注公众号弹窗 -->
+    <tips-dialog
+      :show="isShowQrcode"
+      @close="isShowQrcode = false">
+      <div class="qrcode-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="qrcode-header">关注下方公众号，即可参与互动</div>
+        <div class="qrcode-img"></div>
+        <div class="qrcode-tips">长按识别二维码</div>
+      </div>
+    </tips-dialog>
+    <check-vote :isCheckVote="isCheckVote"  @close="isCheckVote = false"></check-vote>
   </div>
 </template>
 
@@ -119,25 +162,33 @@ import VoteAudioText from '@/components/vote/list/vote-audio-text'
 import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
 import TipsDialog from '@/components/vote/global/tips-dialog'
+import CheckVote from '@/components/vote/global/check-vote'
 
 export default {
   components: {
-    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown, TipsDialog
+    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown, TipsDialog, CheckVote
   },
   data () {
     return {
-      searchVal: '',
-      searchBarFocus: false,
-      isShowAllIntro: false,
-      isShowRuleDialog: false,
-      showButton: true,
-      showModel: 'text',
+      searchVal: '', // 搜索框输入内容
+      searchBarFocus: false, // 搜索框是否获取焦点
+      isShowButton: true, // 显示查看全部按钮
+      isShowAllIntro: false, // 是否展开查看全部
+      isShowRuleDialog: false, // 活动规则弹窗显隐
+      isShowSearch: false, // 搜索无结果弹窗
+      isShowActiveTips: false, // 活动提示
+      activeTips: '微信', // 再xxx内参加活动
+      isShowActiveLimit: false, // 活动地区限制弹窗
+      limitArea: ['江苏南京', '上海浦东'], // 限制的地区
+      isShowQrcode: false, // 关注公众号，即可参加活动弹窗
+      isCheckVote: false, // 验证投票弹窗
+      showModel: 'text', // 当前展示text/video/audio/picture
       status: 1, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
       isExamine: 0, // 0 未报名 1 已报名
       rules: [
         '每天每个微信号可投票十票，投票后点击此链接幸运抽奖，进入抽奖页面。',
         '粉丝福利抽奖活动将于9月30日开始'
-      ],
+      ], // 活动规则
       'detailInfo': {
         'id': '431531aa9edd45d0981284961de9fd05',
         'title': '图片+文本投票组件',
@@ -192,13 +243,22 @@ export default {
   },
   methods: {
     dealSearch () {
-      console.log('dealSearch')
+      let val = this.searchVal.trim()
+      if (val === '') {
+        return
+      }
+      this.isShowSearch = true
     },
     jumpPage (page, data) {
       this.$router.replace({
         name: page,
         query: data
       })
+    },
+    triggerWork (data) {
+      // 投票、拉票
+      this.isCheckVote = true
+      console.log('triggerWork', data)
     }
   }
 }
@@ -552,6 +612,7 @@ export default {
       .rule-header {
         margin-bottom: px2rem(45px);
         text-align: center;
+        font-weight: 500;
         @include font-dpr(17px);
         color: #333333;
       }
@@ -559,6 +620,92 @@ export default {
         @include font-dpr(15px);
         line-height: px2rem(48px);
         color: #666;
+      }
+    }
+    .flex-column-dialog {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .search-dialog-wrap {
+      padding-bottom: px2rem(100px);
+      padding-top: px2rem(66px);
+      .search-header {
+        text-align: center;
+        @include font-dpr(16px);
+        color: #333333;
+        margin-bottom: px2rem(58px);
+      }
+    }
+    .active-dialog-wrap, .limit-dialog-wrap {
+      padding-bottom: px2rem(91px);
+      padding-top: px2rem(86px);
+      &.limit-dialog-wrap {
+        padding-left: px2rem(60px);
+        padding-right: px2rem(60px);
+      }
+      .active-header, .limit-header {
+        text-align: center;
+        @include font-dpr(16px);
+        color: #333333;
+      }
+      .active-header {
+        margin-bottom: px2rem(50px);
+      }
+      .limit-header {
+        margin-bottom: px2rem(15px);
+      }
+      .tips {
+        color: #151515;
+        font-weight: 500;
+      }
+      .limit-content {
+        text-align: center;
+        margin-bottom: px2rem(60px);
+        @include font-dpr(14px);
+        line-height: px2rem(44px);
+        color: #333333;
+        .split-line {
+          color: #999;
+        }
+      }
+      .active-img {
+        margin-bottom: px2rem(55px);
+        width: px2rem(337px);
+        height: px2rem(241px);
+        @include img-retina("~@/assets/vote/tips-icon@3x.png","~@/assets/vote/tips-icon@3x.png", 100%, 100%);
+      }
+    }
+    .dialog-ok-btn {
+      width: px2rem(270px);
+      height: px2rem(70px);
+      line-height: px2rem(70px);
+      text-align: center;
+      border: 1px solid #CCCCCC;
+      background: #fff;
+      border-radius: px2rem(35px);
+      @include font-dpr(14px);
+      color: #666666;
+    }
+    .qrcode-dialog-wrap {
+      padding: px2rem(88px) px2rem(72px);
+      .qrcode-header {
+        margin-bottom: px2rem(40px);
+        text-align: center;
+        @include font-dpr(16px);
+        color: #333333;
+      }
+      .qrcode-img {
+        margin-bottom: px2rem(10px);
+        width: px2rem(225px);
+        height: px2rem(225px);
+        @include img-retina("~@/assets/vote/qrcode-icon@2x.png","~@/assets/vote/qrcode-icon@2x.png", 100%, 100%);
+      }
+      .qrcode-tips {
+        @include font-dpr(12px);
+        color: #999999;
+        letter-spacing: px2rem(9px);
       }
     }
   }
