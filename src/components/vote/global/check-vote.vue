@@ -16,8 +16,8 @@
             <el-input placeholder="手机号" v-model="checkData.phone"></el-input>
           </div>
           <div class="check-item">
-            <el-input placeholder="验证码" v-model="checkData.reg"></el-input>
-            <!-- <div>获取验证码</div> -->
+            <el-input placeholder="验证码" maxlength="10" v-model="checkData.reg"></el-input>
+            <div class="get-code" @click="getCode()">获取验证码</div>
           </div>
           <div class="check-item">
             <el-input placeholder="生日" v-model="checkData.birth"></el-input>
@@ -72,6 +72,9 @@ export default {
     closeCheckVote () {
       this.$emit('close')
     },
+    getCode () {
+      console.log('getCode')
+    },
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'
     })
@@ -122,6 +125,7 @@ export default {
         .check-item {
             width: 100%;
             margin-bottom: px2rem(30px);
+            position: relative;
             .el-input__inner, .el-textarea__inner {
               background-color: rgba(255, 255, 255, 0.2);
               border-radius: px2rem(4px);
@@ -143,6 +147,13 @@ export default {
                 resize: none;
                 height: px2rem(140px);
               }
+            }
+            .get-code {
+              position: absolute;
+              right: px2rem(28px);
+              top: px2rem(25px);
+              @include font-dpr(14px);
+              color: #FF6A45;
             }
           }
       }
