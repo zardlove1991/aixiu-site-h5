@@ -75,7 +75,8 @@
           </div>
         </div>
         <div class="overview-menus-wrap" v-if="status === 1">
-          <div class="menu-wrap color-button_color" @click="jumpPage('votesubmit', { flag: showModel })">
+          <div class="menu-wrap color-button_color"
+            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit', { flag: showModel })">
             <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
           </div>
         </div>
@@ -186,7 +187,7 @@ export default {
       isCheckVote: false, // 验证投票弹窗
       showModel: 'text', // 当前展示text/video/audio/picture
       status: 1, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
-      isExamine: 0, // 0 未报名 1 已报名
+      isExamine: 1, // 0 未报名 1 已报名
       rules: [
         '每天每个微信号可投票十票，投票后点击此链接幸运抽奖，进入抽奖页面。',
         '粉丝福利抽奖活动将于9月30日开始'
