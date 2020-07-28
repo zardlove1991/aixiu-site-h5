@@ -151,7 +151,7 @@
         <div class="qrcode-tips">长按识别二维码</div>
       </div>
     </tips-dialog>
-    <check-vote :isCheckVote="isCheckVote"  @close="isCheckVote = false"></check-vote>
+    <check-vote :show="isCheckVote"  @close="isCheckVote = false"></check-vote>
   </div>
 </template>
 
@@ -672,9 +672,9 @@ export default {
       }
       .active-img {
         margin-bottom: px2rem(55px);
-        width: px2rem(337px);
-        height: px2rem(241px);
-        @include img-retina("~@/assets/vote/tips-icon@3x.png","~@/assets/vote/tips-icon@3x.png", 100%, 100%);
+        width: px2rem(334px);
+        height: px2rem(244px);
+        @include img-retina("~@/assets/vote/tips-icon@2x.png","~@/assets/vote/tips-icon@3x.png", 100%, 100%);
       }
     }
     .dialog-ok-btn {
