@@ -1,11 +1,14 @@
 import { randomNum } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import globalConfig from '@/api/config'
 
 let wechat = {
   authorize: (cbk, scope) => {
+    let appid = globalConfig['APPID']
+    let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     if (window.$vue.$route.query.code) {
       cbk(1, window.$vue.$route.query.code)
     } else {
@@ -15,7 +18,7 @@ let wechat = {
   async h5Signature (info, cbk, scope) {
     let params = {
       code: info,
-      appid: 'wx63a3a30d3880a56e',
+      appid: globalConfig['APPID'],
       sign: 'wechat',
       scope,
       mark: 'marketing'
@@ -37,25 +40,25 @@ export const oauth = (cbk) => {
   let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
   if (id) {
     let params = { id }
+    let scope = ''
     API.getAuthScope({ params }).then(res => {
       let limit = res.limit
       if (limit && limit.source_limit) {
         let { scope_limit: scopeLimit } = limit.source_limit
-        let scope = ''
         if (scopeLimit) {
           scope = scopeLimit
         }
-        if (scope && scope === 'base') {
-          scope = 'snsapi_base'
-        } else {
-          scope = 'snsapi_userinfo'
-        }
-        wechat.authorize((code, info) => {
-          if (code > 0 && !STORAGE.get('userinfo')) {
-            wechat.h5Signature(info, cbk, scope)
-          }
-        }, scope)
       }
     })
+    if (scope && scope === 'base') {
+      scope = 'snsapi_base'
+    } else {
+      scope = 'snsapi_userinfo'
+    }
+    wechat.authorize((code, info) => {
+      if (code > 0 && !STORAGE.get('userinfo')) {
+        wechat.h5Signature(info, cbk, scope)
+      }
+    }, scope)
   }
 }
