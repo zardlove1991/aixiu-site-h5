@@ -40,6 +40,7 @@
 <script>
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
+import API from '@/api/module/examination'
 
 export default {
   data () {
@@ -168,6 +169,10 @@ export default {
             }
           }
         }]
+      },
+      pager: {
+        page: 1,
+        count: 20
       }
     }
   },
@@ -179,7 +184,17 @@ export default {
   },
   methods: {
     initMyVoteList () {
-      console.log('initMyVoteList')
+      let { id } = this.$route.query
+      let { page, count } = this.pager
+      API.getMineVoteList({
+        params: {
+          voting_id: id,
+          page,
+          count
+        }
+      }).then(res => {
+        console.log(res)
+      })
     },
     jumpPage (page, id = '') {
       this.$router.replace({

@@ -5,19 +5,19 @@
       <span class="title-tip color-link_text">距离{{statusMsg[status]}}还有</span>
       <div class="time-count-wrap">
         <p class="day-tip color-button_color">
-          <span class="time-num color-button_text">0</span>
+          <span class="time-num color-button_text">{{voteDate[0]}}</span>
         </p>
         <span class="time-tip color-link_text">天</span>
         <p class="hour-tip color-button_color">
-          <span class="time-num color-button_text">0</span>
+          <span class="time-num color-button_text">{{voteDate[1]}}</span>
         </p>
         <span class="time-tip color-link_text">时</span>
         <p class="minutes-tip color-button_color">
-          <span class="time-num color-button_text">0</span>
+          <span class="time-num color-button_text">{{voteDate[2]}}</span>
         </p>
         <span class="time-tip color-link_text">分</span>
         <p class="second-tip color-button_color">
-          <span class="time-num color-button_text">0</span>
+          <span class="time-num color-button_text">{{voteDate[3]}}</span>
         </p>
         <span class="time-tip color-link_text">秒</span>
       </div>
@@ -25,7 +25,7 @@
     <!--可投票数字提醒-->
     <div class="right-vote-tip" v-show="status === 2">
       <span class="vote-title-tip color-link_text">可投票数</span>
-      <span class="vote-tip-num color-link_text">0</span>
+      <span class="vote-tip-num color-link_text">{{ remainVotes ? remainVotes : 0 }}</span>
     </div>
   </div>
 </template>
@@ -33,15 +33,18 @@
 <script>
 export default {
   props: {
-    obj: {
-      type: Object,
+    voteDate: {
+      type: Array,
       default: () => {
-        return {}
+        return [0, 0, 0, 0]
       }
     },
-    status: {
+    remainVotes: {
       type: Number,
       default: 0
+    },
+    status: {
+      type: Number
     }
   },
   data () {

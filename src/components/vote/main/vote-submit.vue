@@ -41,22 +41,22 @@
       <div class="form-item" v-if="flag !== 'text'">
         <div class="form-title">描述</div>
         <div class="form-content">
-          <el-input type="textarea" maxlength="500" show-word-limit v-model="examineData.desc"></el-input>
+          <el-input type="textarea" maxlength="500" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">联系人姓名</div>
         <div class="form-content">
-          <el-input v-model="examineData.username"></el-input>
+          <el-input v-model="examineData.contact_name"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">联系人电话</div>
         <div class="form-content">
-          <el-input v-model="examineData.phone"></el-input>
+          <el-input v-model="examineData.contact_phone"></el-input>
         </div>
       </div>
-      <div class="submit-btn-wrap color-button_color">
+      <div class="submit-btn-wrap color-button_color" @click="!disabled && commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
     </form>
@@ -65,6 +65,7 @@
 
 <script>
 import FileUpload from '@/components/vote/global/file-upload'
+import API from '@/api/module/examination'
 
 export default {
   created () {
@@ -75,24 +76,55 @@ export default {
   },
   data () {
     return {
+      disabled: false,
       examineData: {
         name: '',
         source: '',
-        desc: '',
-        username: '',
-        phone: ''
+        introduce: '',
+        contact_name: '',
+        contact_phone: ''
       },
       fileList: [],
-      flag: '' // video/picture/audio/text
+      flag: '', // video/picture/audio/text
+      voteId: ''
     }
   },
   methods: {
     initForm () {
-      console.log('initForm', this.$route.query)
-      let { flag } = this.$route.query
+      let { flag, id } = this.$route.query
       if (flag) {
         this.flag = flag
       }
+      if (id) {
+        this.voteId = id
+      }
+    },
+    commitVote () {
+      console.log('commitVote', this.examineData)
+      let id = this.voteId
+      if (!id) {
+        return
+      }
+      let data = {
+        voting_id: id,
+        material: {
+          video: [{
+            url: 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/10b9990-1717151ac65-0004-5cb9-006-28284.mov',
+            cover: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg'
+          }]
+        },
+        ...this.examineData
+      }
+      this.disabled = true
+      API.workReport({
+        data
+      }).then(res => {
+        console.log('报名成功')
+        this.disabled = false
+        this.$router.replace({
+          path: `votebegin/${id}`
+        })
+      })
     }
   }
 }
@@ -134,6 +166,7 @@ export default {
           .el-textarea__inner {
             resize: none;
             height: px2rem(300px);
+            padding: px2rem(10px) px2rem(30px);
           }
           .el-input__count {
             @include font-dpr(14px);

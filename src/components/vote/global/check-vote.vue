@@ -6,27 +6,30 @@
       <div class="check-dialog-content">
         <div class="check-dialog-main">
           <div class="check-header">投票验证</div>
-          <div class="check-item">
+          <div class="check-item" v-if="checkVote.name">
             <el-input placeholder="姓名" v-model="checkData.name"></el-input>
           </div>
-          <div class="check-item">
+          <div class="check-item" v-if="checkVote.sex">
             <el-input placeholder="性别" v-model="checkData.sex"></el-input>
           </div>
-          <div class="check-item">
+          <div class="check-item" v-if="checkVote.phone">
             <el-input placeholder="手机号" v-model="checkData.phone"></el-input>
           </div>
-          <div class="check-item">
-            <el-input placeholder="验证码" maxlength="10" v-model="checkData.reg"></el-input>
+          <div class="check-item" v-if="checkVote.code">
+            <el-input placeholder="验证码" maxlength="10" v-model="checkData.code"></el-input>
             <div class="get-code" @click="getCode()">获取验证码</div>
           </div>
-          <div class="check-item">
-            <el-input placeholder="生日" v-model="checkData.birth"></el-input>
+          <div class="check-item" v-if="checkVote.birthday">
+            <el-input placeholder="生日" v-model="checkData.birthday"></el-input>
           </div>
-          <div class="check-item">
+          <div class="check-item" v-if="checkVote.email">
             <el-input placeholder="邮箱" v-model="checkData.email"></el-input>
           </div>
-          <div class="check-item">
+          <div class="check-item" v-if="checkVote.address">
             <el-input placeholder="详细地址" type="textarea" v-model="checkData.address"></el-input>
+          </div>
+          <div class="submit-btn-wrap color-button_color">
+            <span class="menu-text color-button_text">确认</span>
           </div>
         </div>
       </div>
@@ -47,6 +50,12 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    checkVote: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   watch: {
@@ -61,8 +70,8 @@ export default {
         name: '',
         sex: '',
         phone: '',
-        reg: '',
-        birth: '',
+        code: '',
+        birthday: '',
         email: '',
         address: ''
       }
@@ -92,10 +101,12 @@ export default {
     height: 100vh;
     background: rgba(0,0,0,0.5);
     z-index: 99;
+    display: flex;
+    align-items: center;
     .scroll-wrap {
       padding: px2rem(50px) 0;
       width: 100%;
-      height: 100%;
+      // height: 100%;
       overflow: auto;
       text-align: center;
     }
@@ -123,39 +134,52 @@ export default {
           font-weight: 500;
         }
         .check-item {
-            width: 100%;
-            margin-bottom: px2rem(30px);
-            position: relative;
-            .el-input__inner, .el-textarea__inner {
-              background-color: rgba(255, 255, 255, 0.2);
-              border-radius: px2rem(4px);
-              padding: px2rem(20px);
+          width: 100%;
+          margin-bottom: px2rem(30px);
+          position: relative;
+          .el-input__inner, .el-textarea__inner {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: px2rem(4px);
+            padding: px2rem(20px);
+            @include font-dpr(14px);
+            color: #333;
+            border: 1px solid #FF6A45;
+            &::placeholder {
               @include font-dpr(14px);
-              color: #333;
-              border: 1px solid #FF6A45;
-              &::placeholder {
-                @include font-dpr(14px);
-                color: #999999;
-              }
-            }
-            .el-input .el-input__inner {
-              height: px2rem(90px);
-              line-height: px2rem(90px);
-            }
-            .el-textarea {
-              .el-textarea__inner {
-                resize: none;
-                height: px2rem(140px);
-              }
-            }
-            .get-code {
-              position: absolute;
-              right: px2rem(28px);
-              top: px2rem(25px);
-              @include font-dpr(14px);
-              color: #FF6A45;
+              color: #999999;
             }
           }
+          .el-input .el-input__inner {
+            height: px2rem(90px);
+            line-height: px2rem(90px);
+          }
+          .el-textarea {
+            .el-textarea__inner {
+              resize: none;
+              height: px2rem(140px);
+            }
+          }
+          .get-code {
+            position: absolute;
+            right: px2rem(28px);
+            top: px2rem(25px);
+            @include font-dpr(14px);
+            color: #FF6A45;
+          }
+        }
+        .submit-btn-wrap {
+          width: 100%;
+          margin-top: px2rem(44px);
+          height: px2rem(80px);
+          line-height: px2rem(80px);
+          text-align: center;
+          border-radius: px2rem(40px);
+          background-color: #FC7465;
+          .menu-text {
+            @include font-dpr(14px);
+            color: #fff;
+          }
+        }
       }
     }
     .close-btn {

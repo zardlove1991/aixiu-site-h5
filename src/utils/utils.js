@@ -73,6 +73,25 @@ export const formatTimeBySec = (sec, isShowHour = false, joinTip = ':') => {
   return timeArr.join(joinTip)
 }
 
+/* 传入时间戳转换成秒 */
+export const formatSecByTime = (params) => {
+  let sec = Math.floor((params.endtime - params.nowtime) / 1000)
+  let day = Math.floor(sec / (24 * 3600))
+  let _dayLastTime = sec % (24 * 3600)
+  let hour = Math.floor(_dayLastTime / 3600)
+  let minute = Math.floor(_dayLastTime % 3600 / 60)
+  let second = Math.floor(_dayLastTime % 3600 % 60)
+  let timeArr = [ day, hour, minute, second ]
+  for (let i = 0; i < 4; i++) {
+    let val = timeArr[i]
+    // 是否需要填充0
+    if (params.isToFix) {
+      timeArr[i] = val < 10 ? '0' + val : val
+    }
+  }
+  return timeArr
+}
+
 /*
  * 判断嵌入平台
  * */

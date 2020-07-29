@@ -12,7 +12,12 @@ let QCloundUrl = {
 
 // 投票相关接口
 let voteUrl = {
-  getVoteWorks: 'client/voting/{id}/works' // 获取投票数据列表
+  getVodeDetail: 'client/voting/{id}', // 投票详情
+  getVoteWorks: 'client/voting/{id}/works', // 投票数据列表
+  getUserVoteRemains: 'client/voting/{id}/remains', // 获取会员剩余票数
+  getMineVoteList: 'client/voting/mine', // 我的投票列表
+  checkUserReport: 'client/report/{id}', // 检查用户是否报名
+  workReport: 'client/report/work' // 用户创建/编辑报名
 }
 
 // 不带GUID
@@ -74,5 +79,10 @@ export default {
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   // 投票
-  getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG)
+  getVodeDetail: config => createVote(configUrl.getVodeDetail, 'GET', config, API_FLAG),
+  getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG),
+  getUserVoteRemains: config => createVote(configUrl.getUserVoteRemains, 'GET', config, API_FLAG),
+  getMineVoteList: config => createVote(configUrl.getMineVoteList, 'GET', config, API_FLAG),
+  checkUserReport: config => createVote(configUrl.checkUserReport, 'GET', config, API_FLAG),
+  workReport: config => createVote(configUrl.workReport, 'POST', config, API_FLAG)
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="vote-start-wrap">
-    <div :class="['commvote-overview', 'color-bg_color', status !== 3 ? 'status-no-end' : '']">
+    <div :class="['commvote-overview', 'color-bg_color', status !== statusCode.endStatus ? 'status-no-end' : '']">
       <!--背景标题-->
-      <div v-if="detailInfo.indexpic"
+      <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
         <div class="pic-thumb"
           :class="{
@@ -11,33 +11,20 @@
           }">
           <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
             :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
-          <div v-if="detailInfo.subject" class="pic-title color-high_text color-decorated">{{detailInfo.subject}}</div>
+          <div v-if="detailInfo.title" class="pic-title color-high_text color-decorated">{{detailInfo.title}}</div>
         </div>
       </div>
       <div v-else class="overview-indexpic-empty"></div>
       <!--当前机构描述-->
-      <div class="overview-organizers"
-          v-if="detailInfo.organizers.length"
-          :class="{ nointroduce: !detailInfo.introduce }">
-          <span class="name color-high_text" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
+      <div class="overview-organizers" v-if="detailInfo.organizers && detailInfo.organizers.length">
+        <span class="name color-high_text" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
       <!--主要内容包裹-->
-      <div class="overview-content-wrap" :style="{ paddingTop: detailInfo.introduce ? 0 : '0.64rem' }">
-        <!--当前活动描述-->
-        <div class="overview-introduce" v-show="detailInfo.introduce">
-          <div class="intro-title color-theme_color">活动规则</div>
-          <p class="intro-desc color-theme_color" :class="{'show': isShowAllIntro}">{{detailInfo.introduce}}</p>
-          <div class="intro-showall-wrap"
-            @click.stop="isShowAllIntro = !isShowAllIntro"
-            v-if="isShowButton">
-            <span class="showall-text color-theme_color">查看全部</span>
-            <span class="showall-arrow color-theme_color" :class="{'show': isShowAllIntro}"></span>
-          </div>
-        </div>
+      <div class="overview-content-wrap">
         <!--信息展示-->
-        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status !== 1">
+        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
           <div :class="['vote-cols-wrap', 'color-content', showModel + '-text']">
-            <span class="vote-count color-normal_text">{{detailInfo.works_count}}</span>
+            <span class="vote-count color-normal_text">{{detailInfo.report_count}}</span>
             <span class="vote-desc color-normal_text">作品数</span>
           </div>
           <div class="vote-cols-wrap color-content">
@@ -49,13 +36,13 @@
             <span class="vote-desc color-normal_text">访问次数</span>
           </div>
         </div>
-        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status === 1">
+        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
           <div class="vote-cols-wrap color-content signup-icon">
-            <span class="vote-count color-normal_text">{{detailInfo.works_count}}</span>
+            <span class="vote-count color-normal_text">{{detailInfo.report_count}}</span>
             <span class="vote-desc color-normal_text">报名次数</span>
           </div>
           <div class="vote-cols-wrap color-content examine-icon">
-            <span class="vote-count color-normal_text">{{detailInfo.votes}}</span>
+            <span class="vote-count color-normal_text">{{detailInfo.report_pass_count}}</span>
             <span class="vote-desc color-normal_text">已通过审核</span>
           </div>
           <div class="vote-cols-wrap color-content">
@@ -64,19 +51,19 @@
           </div>
         </div>
         <!--菜单-->
-        <div class="overview-menus-wrap" v-if="status !== 1">
+        <div class="overview-menus-wrap" v-if="status !== statusCode.signUpStatus">
           <div class="menu-wrap menu-right color-button_color" @click.stop="jumpPage('voterank')">
             <i class="examfont iconjiangbei rank color-button_text"></i>
             <span class="menu-text color-button_text">榜单</span>
           </div>
-          <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
+          <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy', { id: detailInfo.id })">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
             <span class="menu-text color-button_text">我的投票</span>
           </div>
         </div>
-        <div class="overview-menus-wrap" v-if="status === 1">
+        <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus">
           <div class="menu-wrap color-button_color"
-            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit', { flag: showModel })">
+            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit', { flag: showModel, id: detailInfo.id })">
             <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
           </div>
         </div>
@@ -99,7 +86,7 @@
       <vote-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-text>
     </div>
     <div class="active-rule-wrap default" @click="isShowRuleDialog = true">活动规则</div>
-    <count-down :status="status" :obj="detailInfo"></count-down>
+    <count-down v-if="status !== statusCode.endStatus" :status="status" :remainVotes="remainVotes" :voteDate="voteDate"></count-down>
     <!-- 活动规则弹窗 -->
     <tips-dialog
       :show="isShowRuleDialog"
@@ -107,7 +94,7 @@
       <div class="rule-dialog-wrap" slot="tips-content">
         <div class="rule-header">活动规则</div>
         <div class="rule-content">
-          <p v-for="(rule, index) in rules" :key="index">{{index + 1}}. {{rule}}</p>
+          <p>{{detailInfo.introduce}}</p>
         </div>
       </div>
     </tips-dialog>
@@ -143,6 +130,7 @@
       </div>
     </tips-dialog>
     <!-- 关注公众号弹窗 -->
+    <!--
     <tips-dialog
       :show="isShowQrcode"
       @close="isShowQrcode = false">
@@ -154,7 +142,8 @@
         <div class="qrcode-tips">长按识别二维码</div>
       </div>
     </tips-dialog>
-    <check-vote :show="isCheckVote"  @close="isCheckVote = false"></check-vote>
+    -->
+    <check-vote :show="isCheckVote" :checkVote="checkVote" @close="isCheckVote = false"></check-vote>
   </div>
 </template>
 
@@ -166,85 +155,235 @@ import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
+import mixins from '@/mixins/index'
+import API from '@/api/module/examination'
+import { formatSecByTime } from '@/utils/utils'
 
 export default {
+  mixins: [mixins],
+  props: {
+    id: String
+  },
   components: {
     VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown, TipsDialog, CheckVote
   },
   data () {
     return {
+      status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
+      statusCode: {
+        noStatus: 0, // 未开始
+        signUpStatus: 1, // 报名中
+        voteStatus: 2, // 投票中
+        endStatus: 3 // 已结束
+      },
       searchVal: '', // 搜索框输入内容
       searchBarFocus: false, // 搜索框是否获取焦点
-      isShowButton: true, // 显示查看全部按钮
-      isShowAllIntro: false, // 是否展开查看全部
       isShowRuleDialog: false, // 活动规则弹窗显隐
       isShowSearch: false, // 搜索无结果弹窗
       isShowActiveTips: false, // 活动提示
       activeTips: '微信', // 再xxx内参加活动
       isShowActiveLimit: false, // 活动地区限制弹窗
-      limitArea: ['江苏南京', '上海浦东'], // 限制的地区
+      limitArea: [], // 限制的地区
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isCheckVote: false, // 验证投票弹窗
-      showModel: 'text', // 当前展示text/video/audio/picture
-      status: 1, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
+      checkVote: {}, // 验证投票需要收录的数据
+      showModel: '', // 当前展示text/video/audio/picture
       isExamine: 1, // 0 未报名 1 已报名
-      rules: [
-        '每天每个微信号可投票十票，投票后点击此链接幸运抽奖，进入抽奖页面。',
-        '粉丝福利抽奖活动将于9月30日开始'
-      ], // 活动规则
-      'detailInfo': {
-        'id': '431531aa9edd45d0981284961de9fd05',
-        'title': '图片+文本投票组件',
-        'indexpic': {
-          'host': '//xzimg.hoge.cn/',
-          'filename': 'xiuzan/1593413360885/9A86E5BA203CC6FA06EB7864A4CDA521.jpg',
-          'format': '.jpg',
-          'width': 1440,
-          'height': 1920,
-          'filesize': 457651
-        },
-        'organizers': [{
-          name: '张三'
-        }, {
-          name: '李四'
-        }],
-        'start_time': 1594224000,
-        'end_time': 1596038400,
-        'introduce': '活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍活动规则及介绍',
-        'user_id': 3,
-        'create_time': '2020-07-09 16:10:10',
-        'update_time': '2020-07-09 16:10:10',
-        'subject': '图文投票',
-        'mark': 'commonvote-image',
-        'works_count': 2,
-        'record_count': 0,
-        'views_count': 102,
-        'interact_data_display': 1,
-        'votes': 0,
-        'rule': {
-          'id': 673,
-          'voting_id': '431531aa9edd45d0981284961de9fd05',
-          'interact_data': {
-            'is_display': 0,
-            'views': 100,
-            'votes': 0,
-            '_is_display': '0'
-          },
-          'is_user_limit': 1,
-          'user_limit_times': 5,
-          'user_limit_unit': 0,
-          'is_works_limit': 1,
-          'works_limit_times': 1,
-          'is_total_limit': 1,
-          'total_limit_times': 1,
-          'max_increment': 0,
-          'unlock_duration': 60,
-          'extra_config': []
-        }
-      }
+      remainVotes: 0, // 剩余投票数
+      voteDate: [], // 投票时间
+      detailInfo: {}
     }
   },
+  created () {
+    this.initData()
+  },
   methods: {
+    initData () {
+      let voteId = this.id
+      API.getVodeDetail({
+        query: { id: voteId }
+      }).then((res) => {
+        this.detailInfo = res
+        this.handleVoteData()
+        this.initReportTime()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handleVoteData () {
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return
+      }
+      let { mark, rule } = detailInfo
+      let { collect_member_info: collectMemberInfo, area_limit: areaLimit, page_setup: setup } = rule
+      // 主题颜色
+      if (setup && setup.color_scheme && setup.color_scheme.content) {
+        let content = setup.color_scheme.content
+        let bodyEle = document.getElementsByTagName('body')[0]
+        bodyEle.style.setProperty('--bgColor', content.bg_color)
+        bodyEle.style.setProperty('--buttonBorder', content.button_border)
+        bodyEle.style.setProperty('--buttonColor', content.button_color)
+        bodyEle.style.setProperty('--buttonText', content.button_text)
+        bodyEle.style.setProperty('--component', content.component)
+        bodyEle.style.setProperty('--content', content.content)
+        bodyEle.style.setProperty('--decorated', content.decorated)
+        bodyEle.style.setProperty('--grayText', content.gray_text)
+        bodyEle.style.setProperty('--highText', content.high_text)
+        bodyEle.style.setProperty('--linkText', content.link_text)
+        bodyEle.style.setProperty('--normalText', content.normal_text)
+        bodyEle.style.setProperty('--themeColor', content.theme_color)
+      }
+      // 当前展示类型
+      let showModel = ''
+      if (mark.indexOf('video') !== -1) {
+        showModel = 'video'
+      } else if (mark.indexOf('image') !== -1) {
+        showModel = 'picture'
+      } else if (mark.indexOf('audio') !== -1) {
+        showModel = 'audio'
+      } else {
+        showModel = 'text'
+      }
+      this.showModel = showModel
+      // 是否验证投票
+      if (collectMemberInfo && collectMemberInfo.length > 0) {
+        let newCheckVote = {}
+        for (let coll of collectMemberInfo) {
+          newCheckVote[coll] = true
+        }
+        this.checkVote = newCheckVote
+        this.isCheckVote = true
+      }
+      // 是否活动地区限制
+      if (areaLimit && areaLimit.is_area_limit) {
+        this.isShowActiveLimit = true
+        this.limitArea = areaLimit.area
+      }
+    },
+    initReportTime () {
+      let detailInfo = this.detailInfo
+      let status = null
+      if (!detailInfo) {
+        return
+      }
+      let nowTime = new Date().getTime()
+      let { id, rule } = detailInfo
+      // 判断是否需要报名
+      let { signUpStatus } = this.statusCode
+      let { report_status: reportStatus, report_start_time: reportStartTime, report_end_time: reportEndTime } = rule
+      if (reportStatus && reportStatus === 2) {
+        // 开启了投票报名
+        let reportStartTimeMS = reportStartTime * 1000
+        let reportEndTimeMS = reportEndTime * 1000
+        if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
+          status = signUpStatus
+          this.status = status
+          // 检查是否报名
+          this.checkUserReport(id)
+          this.startCountTime(reportEndTimeMS, (timeArr) => {
+            // 更改当前投票的时间
+            this.voteDate = timeArr
+            // console.log('报名的时间', timeArr)
+          }, () => {
+            this.initVoteTime()
+          })
+        }
+      }
+      if (status !== signUpStatus) {
+        this.initVoteTime()
+      }
+    },
+    initVoteTime () {
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return
+      }
+      let nowTime = new Date().getTime()
+      let { noStatus, voteStatus, endStatus } = this.statusCode
+      let { id, start_time: startTime, end_time: endTime } = detailInfo
+      let startTimeMS = startTime * 1000
+      let endTimeMS = endTime * 1000
+      let flag = startTimeMS > nowTime
+      if (endTimeMS <= nowTime) {
+        // 已经结束
+        this.status = endStatus
+        return
+      }
+      let time = flag ? startTimeMS : endTimeMS
+      let status = flag ? noStatus : voteStatus
+      this.status = status
+      if (status === voteStatus) {
+        this.getRemainVotes(id)
+      }
+      this.startCountTime(time, (timeArr) => {
+        // 更改当前投票的时间
+        this.voteDate = timeArr
+        // console.log('投票的时间', timeArr)
+      }, () => {
+        if (flag) {
+          this.initVoteTime()
+        } else {
+          // 结束后关闭
+          this.status = endStatus
+        }
+      })
+    },
+    checkUserReport (id) {
+      if (!id) {
+        return
+      }
+      API.checkUserReport({
+        query: { id }
+      }).then(res => {
+        let isExamine = 0 // 0 未报名 1 已报名
+        if (res.status) {
+          isExamine = 1
+        }
+        this.isExamine = isExamine
+      })
+    },
+    getRemainVotes (id) {
+      if (!id) {
+        return
+      }
+      API.getUserVoteRemains({
+        query: { id }
+      }).then(res => {
+        let remainVotes = 0
+        if (res.remain_votes && res.remain_votes > 0) {
+          remainVotes = res.remain_votes
+        }
+        this.remainVotes = remainVotes
+      })
+    },
+    startCountTime (endTime, dealCb, doneCb) {
+      let timer = null
+      let isDone = false
+      function computedTime () {
+        let nowTime = new Date().getTime()
+        let timeArr = formatSecByTime({ endtime: endTime, nowtime: nowTime })
+        // 判断是否全部为0
+        isDone = true
+        for (let i = 0; i < timeArr.length; i++) {
+          if (timeArr[i] !== 0) {
+            isDone = false
+            break
+          }
+        }
+        // console.log('计算的时间数组', timeArr, '是否开始', isDone)
+        // 每次调用处理的函数
+        dealCb && dealCb(timeArr)
+        // 结束
+        if (isDone) {
+          timer && clearInterval(timer)
+          doneCb && doneCb() // 处理结束操作
+        }
+      }
+      computedTime()
+      // 开始倒计时
+      timer = setInterval(computedTime, 1000)
+    },
     dealSearch () {
       let val = this.searchVal.trim()
       if (val === '') {
@@ -364,9 +503,6 @@ export default {
         padding: px2rem(30px);
         text-align: center;
         line-height: px2rem(30px);
-        &.nointroduce{
-          padding: 0.48rem 0.3rem 1rem;
-        }
         .name {
           position: relative;
           display: inline-block;
@@ -398,65 +534,6 @@ export default {
         width: 100%;
         padding: 0 px2rem(30px) px2rem(30px) px2rem(30px);
         box-sizing: border-box;
-        .overview-introduce {
-          width: 100%;
-          padding: 0.64rem 0 1rem;
-          box-sizing: border-box;
-          .intro-title {
-            @include font-dpr(17px);
-            font-weight: bold;
-            color: #fff;
-            line-height: 1;
-            margin-bottom: 0.26rem;
-          }
-          .intro-desc {
-            @include font-dpr(15px);
-            color: #fff;
-            line-height: 24px;
-            white-space: pre-line;
-            max-height: calc(24px * 3);
-            overflow: hidden;
-            &.show {
-              max-height: none;
-              overflow: auto;
-            }
-          }
-          .intro-showall-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.3rem 0 0.13rem;
-            line-height: 0.3rem;
-            text-align: center;
-            opacity: 0.7;
-            .showall-text {
-              display: inline-block;
-              font-size: 12px;
-              color: #fff;
-              line-height: 1;
-              margin-right: 5px;
-              vertical-align: top;
-            }
-            .showall-arrow {
-              position: relative;
-              top: 0;
-              display: inline-block;
-              width: 5px;
-              height: 5px;
-              border: 1px solid #fff;
-              border-top: none;
-              border-left: none;
-              transform: rotate(45deg);
-              vertical-align: top;
-              transition: transform 0.3s ease;
-              &.show {
-                position: relative;
-                top: 2px;
-                transform: rotate(225deg);
-              }
-            }
-          }
-        }
       }
       .overview-vote-wrap {
         display: flex;
@@ -487,7 +564,7 @@ export default {
           &:nth-child(2) {
             margin: 0 px2rem(30px);
           }
-          &.image-text:nth-child(1):before {
+          &.picture-text:nth-child(1):before {
             background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
           }
           &.video-text:nth-child(1):before {
