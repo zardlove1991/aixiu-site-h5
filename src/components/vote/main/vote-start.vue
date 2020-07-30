@@ -83,23 +83,27 @@
       <vote-picture-text
         v-if="showModel === 'picture'"
         :workList="workList"
+        :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-picture-text>
       <vote-video-text v-if="showModel === 'video'"
         :workList="workList"
+        :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-video-text>
       <vote-audio-text
         v-if="showModel === 'audio'"
         :workList="workList"
+        :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-audio-text>
       <vote-text
         v-if="showModel === 'text'"
         :workList="workList"
+        :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-text>
@@ -164,6 +168,18 @@
       </div>
     </tips-dialog>
     -->
+    <!-- 投票弹窗 -->
+    <tips-dialog
+      :show="isShowWorkVote"
+      @close="isShowWorkVote = false">
+      <div class="workvote-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="workvote-header">确定要给这个作品投票吗？</div>
+        <div class="workvote-all-btn">
+          <button class="dialog-sure-btn min workvote-right" @click="sureWorkVote()">确定</button>
+          <button class="dialog-ok-btn min" @click="cancelWorkVote()">取消</button>
+        </div>
+      </div>
+    </tips-dialog>
     <check-vote :show="isCheckVote" :checkVote="checkVote" @close="isCheckVote = false"></check-vote>
   </div>
 </template>
@@ -209,6 +225,8 @@ export default {
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isCheckVote: false, // 验证投票弹窗
       checkVote: {}, // 验证投票需要收录的数据
+      isShowWorkVote: false, // 给他投票弹窗
+      worksId: '', // 作品id
       showModel: 'text', // 当前展示text/video/audio/picture
       isExamine: 1, // 0 未报名 1 已报名
       remainVotes: 0, // 剩余投票数
@@ -479,27 +497,39 @@ export default {
         query: data
       })
     },
-    triggerWork (data) {
-      // 投票、拉票
+    triggerWork (obj) {
+      console.log('triggerWork', obj)
+      let { data, slug } = obj
+      // 给他投票
+      if (slug === 'vote') {
+        this.worksId = data.id
+        this.isShowWorkVote = true
+      } else if (slug === 'invote') {
+        // 拉票
+      }
+    },
+    cancelWorkVote () {
+      this.worksId = ''
+      this.isShowWorkVote = false
+    },
+    sureWorkVote () {
+      this.isShowWorkVote = false
       let detailInfo = this.detailInfo
-      if (!detailInfo) {
+      let worksId = this.worksId
+      if (!detailInfo || !worksId) {
         return
       }
-      console.log('triggerWork', data)
-      // 给他投票
-      if (data.slug === 'vote') {
-        let obj = {
-          voting_id: this.id,
-          mark: detailInfo.mark,
-          works_id: data.worksId,
-          member_id: STORAGE.get('userinfo').id
-        }
-        API.workVote({
-          data: obj
-        }).then(res => {
-          console.log('workVote', res)
-        })
+      let obj = {
+        voting_id: this.id,
+        mark: detailInfo.mark,
+        works_id: worksId,
+        member_id: STORAGE.get('userinfo').id
       }
+      API.workVote({
+        data: obj
+      }).then(res => {
+        console.log('workVote', res)
+      })
     }
   }
 }
@@ -824,14 +854,14 @@ export default {
         margin-bottom: px2rem(58px);
       }
     }
-    .active-dialog-wrap, .limit-dialog-wrap {
+    .active-dialog-wrap, .limit-dialog-wrap, .workvote-dialog-wrap {
       padding-bottom: px2rem(91px);
       padding-top: px2rem(86px);
       &.limit-dialog-wrap {
         padding-left: px2rem(60px);
         padding-right: px2rem(60px);
       }
-      .active-header, .limit-header {
+      .active-header, .limit-header, .workvote-header {
         text-align: center;
         @include font-dpr(16px);
         color: #333333;
@@ -841,6 +871,15 @@ export default {
       }
       .limit-header {
         margin-bottom: px2rem(15px);
+      }
+      .workvote-all-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: px2rem(56px);
+        .workvote-right {
+          margin-right: px2rem(60px);
+        }
       }
       .tips {
         color: #151515;
@@ -866,6 +905,9 @@ export default {
     .dialog-ok-btn {
       width: px2rem(270px);
       height: px2rem(70px);
+      &.min {
+        width: px2rem(200px);
+      }
       line-height: px2rem(70px);
       text-align: center;
       border: 1px solid #CCCCCC;
@@ -873,6 +915,20 @@ export default {
       border-radius: px2rem(35px);
       @include font-dpr(14px);
       color: #666666;
+    }
+    .dialog-sure-btn {
+      width: px2rem(270px);
+      height: px2rem(70px);
+      &.min {
+        width: px2rem(200px);
+      }
+      line-height: px2rem(70px);
+      text-align: center;
+      border: 1px solid #F36E4E;
+      background: #fff;
+      border-radius: px2rem(35px);
+      @include font-dpr(14px);
+      color: #F36E4E;
     }
     .qrcode-dialog-wrap {
       padding: px2rem(88px) px2rem(72px);

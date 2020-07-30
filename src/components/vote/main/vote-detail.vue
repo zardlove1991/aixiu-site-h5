@@ -11,7 +11,8 @@
             @click.stop="dealDetailMenu('lottery')">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
         </div>
         <!--媒体组件渲染-->
-        <div class="detail-video-wrap" v-if="flag === 'video'">
+        <div class="detail-video-wrap"
+          v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
           <vote-video class="base-video"
             v-for="(video, index) in workDetail.material.video" :key="index"
             :data="video">
@@ -45,6 +46,7 @@
 import VoteAudio from '@/components/vote/global/vote-audio'
 import VoteVideo from '@/components/vote/global/vote-video'
 import CommonPageDetail from '@/components/vote/global/common-page-detail'
+import API from '@/api/module/examination'
 
 export default {
   components: {
@@ -66,7 +68,24 @@ export default {
   },
   methods: {
     inintDetail () {
-      console.log('inintDetail', this.id, this.flag)
+      let { worksId } = this.$route.query
+      API.getVoteWorksDetail({
+        query: {
+          id: this.id,
+          worksId
+        }
+      }).then(res => {
+        if (!res) {
+          return
+        }
+        let { remain_votes: remainVotes } = res
+        let newVotes = 0
+        if (remainVotes > 0) {
+          newVotes = remainVotes
+        }
+        res.remain_votes = newVotes
+        this.workDetail = res
+      })
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {

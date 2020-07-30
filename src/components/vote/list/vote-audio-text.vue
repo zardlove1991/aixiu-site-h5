@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { audioId: item.id })">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { worksId: item.id })">
       <div class="work-header-wrap">
         <div class="work-title color-theme_color">
           <div class="icon-arrow-wrap">
@@ -25,7 +25,7 @@
           <p class="number-tip color-button_color"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
           <p class="vote-tip">{{item.total_votes}}票</p>
         </div>
-        <vote-btn-group :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
+        <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
       </div>
     </div>
   </div>
@@ -42,6 +42,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    remainVotes: {
+      type: Number,
+      default: 0
     }
   },
   components: {

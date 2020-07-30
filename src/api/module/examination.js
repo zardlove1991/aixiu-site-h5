@@ -14,6 +14,7 @@ let QCloundUrl = {
 let voteUrl = {
   getVodeDetail: 'client/voting/{id}', // 投票详情
   getVoteWorks: 'client/voting/{id}/works', // 投票数据列表
+  getVoteWorksDetail: 'client/voting/{id}/works/{worksId}', // 投票数据详情
   getUserVoteRemains: 'client/voting/{id}/remains', // 获取会员剩余票数
   getMineVoteList: 'client/voting/mine', // 我的投票列表
   checkUserReport: 'client/report/{id}', // 检查用户是否报名
@@ -83,6 +84,7 @@ export default {
   // 投票
   getVodeDetail: config => createVote(configUrl.getVodeDetail, 'GET', config, API_FLAG),
   getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG),
+  getVoteWorksDetail: config => createVote(configUrl.getVoteWorksDetail, 'GET', config, API_FLAG),
   getUserVoteRemains: config => createVote(configUrl.getUserVoteRemains, 'GET', config, API_FLAG),
   getMineVoteList: config => createVote(configUrl.getMineVoteList, 'GET', config, API_FLAG),
   checkUserReport: config => createVote(configUrl.checkUserReport, 'GET', config, API_FLAG),

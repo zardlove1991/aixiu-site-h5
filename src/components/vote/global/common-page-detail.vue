@@ -26,6 +26,7 @@
       </div>
       <button class="option-vote"
         :class="{ disabled: !info.remain_votes }"
+        :disabled="!info.remain_votes"
         @click.stop="triggerMenu('vote')">给ta投票</button>
     </div>
   </div>
@@ -43,32 +44,28 @@ export default {
   },
   data () {
     return {
-      remarkList: [{
-        member_avatar: 'http://xzimg.hoge.cn/xiuzan/2020/07/008d9b623262f6db463e44ffb3fd40c8.png',
-        member_id: '3c4eb0a28506f7136a3287babb23137c',
-        member_name: 'R'
-      }],
+      remarkList: [],
       remarkParams: { id: '', count: 20, page: 1 }
     }
   },
   watch: {
-    info: (newinfo) => {
-      newinfo && this.init()
-    }
+    // info: (newinfo) => {
+    //   newinfo && this.init()
+    // }
   },
   methods: {
     init () {
-      let _this = this
-      let curId = _this.info.works_id || _this.info.id
-      // 先重置列表参数
-      _this._resetRemarkList()
-      // 设置ID
-      _this.remarkRenderSlug = 'init'
-      _this.remarkParams.id = curId
-      // 等待更新完毕后在去处理评论
-      _this.$nextTick(function () {
-        _this.getRemarkList()
-      })
+      // let _this = this
+      // let curId = _this.info.works_id || _this.info.id
+      // // 先重置列表参数
+      // _this._resetRemarkList()
+      // // 设置ID
+      // _this.remarkRenderSlug = 'init'
+      // _this.remarkParams.id = curId
+      // // 等待更新完毕后在去处理评论
+      // _this.$nextTick(function () {
+      //   _this.getRemarkList()
+      // })
     },
     getRemarkList () {
       let _this = this
@@ -110,11 +107,6 @@ export default {
           renerList(list)
         })
         */
-        renerList([{
-          member_avatar: 'http://xzimg.hoge.cn/xiuzan/2020/07/008d9b623262f6db463e44ffb3fd40c8.png',
-          member_id: '3c4eb0a28506f7136a3287babb23137c',
-          member_name: 'R'
-        }])
       }
     },
     createMarkAnimation () {
@@ -259,6 +251,9 @@ export default {
         margin-top: px2rem(20px);
         border: none;
         pointer-events: auto;
+        &.disabled {
+          background-color: #ccc;
+        }
       }
       .option-invote {
         background-color: #3F7BF3;
@@ -278,6 +273,8 @@ export default {
           line-height: px2rem(34px);
         }
         .desc {
+          display: inline-block;
+          margin-top: px2rem(5px);
           font-size: px2rem(22px);
           color: rgba(255,255,255,0.67);
         }

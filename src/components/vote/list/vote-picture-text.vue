@@ -2,7 +2,7 @@
   <div class="image-work-list-wrap">
     <div v-for="(item, index) in workList"
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { pictureId: item.id })"
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { worksId: item.id })"
       :key="index">
       <div class="work-poster-wrap" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0]._src)+'?x-oss-process=image/resize,w_400)'}">
         <div class="poster-thumb">
@@ -19,7 +19,7 @@
       <div class="work-title color-theme_color">{{item.name}}</div>
       <div class="work-desc color-theme_color">{{item.source}}</div>
       <div class="vote-btn-group">
-        <vote-btn-group :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
+        <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
       </div>
     </div>
   </div>
@@ -35,6 +35,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    remainVotes: {
+      type: Number,
+      default: 0
     }
   },
   components: {

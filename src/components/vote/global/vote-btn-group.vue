@@ -1,7 +1,10 @@
 <template>
   <div class="vote-btn-group-wrap">
     <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">帮ta拉票</button>
-    <button class="options-vote" @click.stop="btnClick(data, index, 'vote')">给ta投票</button>
+    <button class="options-vote"
+      :class="{ disabled: !remainVotes }"
+      :disabled="!remainVotes"
+      @click.stop="btnClick(data, index, 'vote')">给ta投票</button>
   </div>
 </template>
 
@@ -14,6 +17,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    remainVotes: {
+      type: Number,
+      default: 0
     },
     index: {
       type: Number
@@ -43,6 +50,9 @@ export default {
       color: #fff;
       border-radius: px2rem(4px);
       border: none;
+      &.disabled {
+        background-color: #ccc;
+      }
     }
     .option-invote {
       margin-right: px2rem(20px);

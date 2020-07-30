@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { videoId: item.id})">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { worksId: item.id})">
       <div class="work-poster-wrap"
         v-if="item.material.video && item.material.video.length"
         :style="{ backgroundImage: 'url('+ item.material.video[0].cover+')'}">
@@ -16,7 +16,7 @@
           <div class="info-icon"></div>
           <div class="info-thumb"></div>
           <div class="info-options-wrap">
-            <vote-btn-group :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
+            <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
           </div>
         </div>
       </div>
@@ -36,6 +36,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    remainVotes: {
+      type: Number,
+      default: 0
     }
   },
   components: {

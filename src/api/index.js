@@ -117,6 +117,7 @@ const getUrl = (url, config = {}, api = 'exam') => {
   url = url
     .replace('{guid}', guid)
     .replace('{id}', config.query.id)
+    .replace('{worksId}', config.query.worksId)
   return getAPIfix(api) + url
 }
 
