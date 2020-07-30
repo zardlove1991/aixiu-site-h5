@@ -95,53 +95,71 @@ let router = new Router({
     },
     {
       path: '/votebegin/:id',
-      name: 'votestart',
+      name: 'votebegin',
       component: getVoteComponent('vote-start'),
       props: (route) => ({
-        id: route.params.id, // 传入需要请求当前投票的ID
-        redirect: route.query.redirect, // 小程序传入的重定向地址
-        delta: route.query.delta // 小程序需要回退的页面层级
+        id: route.params.id
       }),
       meta: {
         title: '投票'
       }
     },
     {
-      path: '/votedetail',
+      path: '/votedetail/:flag/:id',
       name: 'votedetail',
       component: getVoteComponent('vote-detail'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
       meta: {
         title: '投票详情'
       }
     },
     {
-      path: '/voterank',
+      path: '/voterank/:flag/:id',
       name: 'voterank',
       component: getVoteComponent('vote-rank'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
       meta: {
         title: '排行榜'
       }
     },
     {
-      path: '/votemy',
+      path: '/votemy/:flag/:id',
       name: 'votemy',
       component: getVoteComponent('vote-my'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
       meta: {
         title: '我的投票'
       }
     },
     {
-      path: '/votesubmit',
+      path: '/votesubmit/:flag/:id',
       name: 'votesubmit',
       component: getVoteComponent('vote-submit'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
       meta: {
         title: '上传作品'
       }
     },
     {
-      path: '/voteoneself',
+      path: '/voteoneself/:flag/:id',
       name: 'voteoneself',
       component: getVoteComponent('vote-oneself'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
       meta: {
         title: '我的作品'
       }

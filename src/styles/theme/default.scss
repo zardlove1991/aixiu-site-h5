@@ -5,6 +5,16 @@ $descColor: var(--decorated, #fff);
 $themeColor: var(--themeColor, #25C17C);
 $themeFadeColor:var(--themeColor,#4DD996);
 $btnColor: var(--buttonColor, #4DD996);
+// vote
+$contentColor: var(--content, #fff);
+$btnTextColor: var(--buttonText, #f9f9f9);
+$btnBorderColor: var(--buttonBorder, #f9f9f9);
+$compColor: var(--component, #fff);
+$grayTextColor: var(--grayText, #25C17C);
+$highTextColor:var(--highText,#4DD996);
+$linkTextColor: var(--linkText, #4DD996);
+$normalTextColor: var(--normalText, #4DD996);
+
 // 其它背景颜色
 $audioBg: #f5f5f5;
 $audioBgOne: #51CD96;
@@ -53,7 +63,16 @@ $defaultColorMap: (
   audioBg: $audioBg,
   audioBgOne: $audioBgOne,
   audioBgTwo: $audioBgTwo,
-  audioProgressBar: $audioProgressBar
+  audioProgressBar: $audioProgressBar,
+  // vote
+  contentColor: $contentColor,
+  btnTextColor: $btnTextColor,
+  btnBorderColor: $btnBorderColor,
+  compColor: $compColor,
+  grayTextColor: $grayTextColor,
+  highTextColor: $highTextColor,
+  linkTextColor: $linkTextColor,
+  normalTextColor: $normalTextColor
 )
 
 // 导出变量

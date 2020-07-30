@@ -12,21 +12,44 @@ import API from '@/api/module/examination'
  * @param  {[string]} format [时间格式，支持的格式自定义，需在该方法中配置]
  * @return {[string]}        [转化后的时间格式]
  */
-export const setTheme = (id) => {
-  // let id = this.$route.params.id
-  if (!id) {
+export const setTheme = (id, name) => {
+  if (!id || !name) {
     return
   }
-  API.getExamDetail({ query: { id } }).then(res => {
-    let info = res
-    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
-      let content = info.limit.color_scheme.content
-      document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
-    }
-  })
+  if (name.indexOf('vote') !== -1) {
+    // 投票
+    API.getVodeDetail({ query: { id } }).then((res) => {
+      let info = res
+      if (info.rule && info.rule.page_setup && info.rule.page_setup.color_scheme && info.rule.page_setup.color_scheme.content) {
+        let content = info.rule.page_setup.color_scheme.content
+        let bodyEle = document.getElementsByTagName('body')[0]
+        bodyEle.style.setProperty('--bgColor', content.bg_color)
+        bodyEle.style.setProperty('--buttonBorder', content.button_border)
+        bodyEle.style.setProperty('--buttonColor', content.button_color)
+        bodyEle.style.setProperty('--buttonText', content.button_text)
+        bodyEle.style.setProperty('--component', content.component)
+        bodyEle.style.setProperty('--content', content.content)
+        bodyEle.style.setProperty('--decorated', content.decorated)
+        bodyEle.style.setProperty('--grayText', content.gray_text)
+        bodyEle.style.setProperty('--highText', content.high_text)
+        bodyEle.style.setProperty('--linkText', content.link_text)
+        bodyEle.style.setProperty('--normalText', content.normal_text)
+        bodyEle.style.setProperty('--themeColor', content.theme_color)
+      }
+    })
+  } else {
+    // 测评
+    API.getExamDetail({ query: { id } }).then(res => {
+      let info = res
+      if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
+        let content = info.limit.color_scheme.content
+        document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+      }
+    })
+  }
 }
 
 export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false) => {

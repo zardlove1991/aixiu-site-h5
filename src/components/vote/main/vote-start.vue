@@ -56,14 +56,14 @@
             <i class="examfont iconjiangbei rank color-button_text"></i>
             <span class="menu-text color-button_text">榜单</span>
           </div>
-          <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy', { id: detailInfo.id })">
+          <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
             <span class="menu-text color-button_text">我的投票</span>
           </div>
         </div>
         <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus">
           <div class="menu-wrap color-button_color"
-            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit', { flag: showModel, id: detailInfo.id })">
+            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
             <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
           </div>
         </div>
@@ -80,10 +80,31 @@
           </div>
         </div>
       </div>
-      <vote-picture-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-picture-text>
-      <vote-video-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-video-text>
-      <vote-audio-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-audio-text>
-      <vote-text @jump-page="jumpPage" @trigger-work="triggerWork"></vote-text>
+      <vote-picture-text
+        v-if="showModel === 'picture'"
+        :workList="workList"
+        @jump-page="jumpPage"
+        @trigger-work="triggerWork">
+      </vote-picture-text>
+      <vote-video-text v-if="showModel === 'video'"
+        :workList="workList"
+        @jump-page="jumpPage"
+        @trigger-work="triggerWork">
+      </vote-video-text>
+      <vote-audio-text
+        v-if="showModel === 'audio'"
+        :workList="workList"
+        @jump-page="jumpPage"
+        @trigger-work="triggerWork">
+      </vote-audio-text>
+      <vote-text
+        v-if="showModel === 'text'"
+        :workList="workList"
+        @jump-page="jumpPage"
+        @trigger-work="triggerWork">
+      </vote-text>
+      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <div class="active-rule-wrap default" @click="isShowRuleDialog = true">活动规则</div>
     <count-down v-if="status !== statusCode.endStatus" :status="status" :remainVotes="remainVotes" :voteDate="voteDate"></count-down>
@@ -158,6 +179,7 @@ import CheckVote from '@/components/vote/global/check-vote'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime } from '@/utils/utils'
+import STORAGE from '@/utils/storage'
 
 export default {
   mixins: [mixins],
@@ -187,15 +209,30 @@ export default {
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isCheckVote: false, // 验证投票弹窗
       checkVote: {}, // 验证投票需要收录的数据
-      showModel: '', // 当前展示text/video/audio/picture
+      showModel: 'text', // 当前展示text/video/audio/picture
       isExamine: 1, // 0 未报名 1 已报名
       remainVotes: 0, // 剩余投票数
       voteDate: [], // 投票时间
-      detailInfo: {}
+      detailInfo: {}, // 投票详情信息
+      workList: [], // 投票列表数据
+      loading: false,
+      pager: { // 投票列表分页
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
+      }
     }
   },
   created () {
     this.initData()
+  },
+  computed: {
+    noMore () {
+      // 当起始页数大于总页数时停止加载
+      let { page, totalPages } = this.pager
+      return page >= totalPages
+    }
   },
   methods: {
     initData () {
@@ -204,6 +241,7 @@ export default {
         query: { id: voteId }
       }).then((res) => {
         this.detailInfo = res
+        this.getVoteWorks()
         this.handleVoteData()
         this.initReportTime()
       }).catch(err => {
@@ -385,22 +423,83 @@ export default {
       timer = setInterval(computedTime, 1000)
     },
     dealSearch () {
-      let val = this.searchVal.trim()
-      if (val === '') {
-        return
+      let name = this.searchVal.trim()
+      this.pager = {
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
       }
-      this.isShowSearch = true
+      this.workList = []
+      this.getVoteWorks(name)
+    },
+    getVoteWorks (name = '') {
+      let voteId = this.id
+      this.loading = true
+      let { page, count } = this.pager
+      let params = {
+        page: page + 1,
+        count,
+        k: name
+      }
+      API.getVoteWorks({
+        query: { id: voteId },
+        params: params
+      }).then(res => {
+        let { data, page: pageInfo } = res
+        if (!data || !data.length) {
+          if (name) {
+            this.isShowSearch = true
+          }
+          this.loading = false
+          console.log('getVoteWorks', res)
+          return
+        }
+        let { total, current_page: page } = pageInfo
+        total = parseInt(total)
+        page = parseInt(page)
+        // 总页数
+        let totalPages = total / count
+        if (total % count !== 0) {
+          totalPages = parseInt(total / count) + 1
+        }
+        this.workList = this.workList.concat(data)
+        this.pager = { total, page, count, totalPages }
+        this.loading = false
+      })
     },
     jumpPage (page, data) {
+      let params = {
+        flag: this.showModel,
+        id: this.id
+      }
       this.$router.replace({
         name: page,
+        params,
         query: data
       })
     },
     triggerWork (data) {
       // 投票、拉票
-      this.isCheckVote = true
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return
+      }
       console.log('triggerWork', data)
+      // 给他投票
+      if (data.slug === 'vote') {
+        let obj = {
+          voting_id: this.id,
+          mark: detailInfo.mark,
+          works_id: data.worksId,
+          member_id: STORAGE.get('userinfo').id
+        }
+        API.workVote({
+          data: obj
+        }).then(res => {
+          console.log('workVote', res)
+        })
+      }
     }
   }
 }
@@ -427,7 +526,8 @@ export default {
       }
     }
     .commvote-overview {
-      background-color: #221A6E;
+      // background-color: #221A6E;
+      @include bg-color('bgColor');
       transform: translateX(0);
       &.status-no-end {
         padding-bottom: px2rem(200px);
@@ -535,10 +635,15 @@ export default {
         padding: 0 px2rem(30px) px2rem(30px) px2rem(30px);
         box-sizing: border-box;
       }
+      .scroll-tips {
+        width: 100%;
+        @include font-dpr(14px);
+        color:#ccc;
+        text-align: center;
+      }
       .overview-vote-wrap {
         display: flex;
         justify-content: space-between;
-        margin-bottom: px2rem(50px);
         .vote-cols-wrap {
           position: relative;
           flex: 1;
@@ -604,6 +709,7 @@ export default {
       .overview-menus-wrap {
         display: flex;
         // padding: 0 0 0.67rem;
+        padding-top: px2rem(50px);
         margin-bottom: px2rem(40px);
         .menu-wrap {
           flex: 1;

@@ -6,23 +6,23 @@
       <div class="rank-list-img"></div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        @click.stop="jumpPage('votemy')"
+        @click.stop="jumpPage('votemy', { id, flag })"
         v-show="myVoteData">
         <i class="item-rank color-theme_color" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
-          <div class="indexpic-wrap" v-if="showFlag === 'picture' && myVoteData.material.image.length"
+          <div class="indexpic-wrap" v-if="flag === 'picture' && myVoteData.material.image.length"
             :style="{ backgroundImage: 'url(' + myVoteData.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap" v-if="showFlag === 'video' && myVoteData.material.video.length"
+          <div class="indexpic-wrap" v-if="flag === 'video' && myVoteData.material.video.length"
             :style="{ backgroundImage: 'url(' + myVoteData.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
             <div class="play-icon"></div>
           </div>
-          <div :class="['title-wrap', (showFlag === 'text' || showFlag === 'audio') ? 'text-title-wrap': '']">
+          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
             <div class="title color-theme_color">{{myVoteData.name}}</div>
             <div class="source color-theme_color">
-              <span v-show="showFlag === 'text' || showFlag === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
+              <span v-show="flag === 'text' || flag === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
             </div>
           </div>
           <p class="item-votes color-theme_color">{{myVoteData.total_votes}}票</p>
@@ -30,22 +30,22 @@
       </div>
       <div class="rank-list-item"
         v-for="(item, index) in rankList" :key="index"
-        @click.stop="jumpPage('votedetail', { id: item.id })">
+        @click.stop="jumpPage('votedetail', { id, flag })">
         <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
         <div class="list-item-content">
-          <div class="indexpic-wrap" v-if="showFlag === 'picture' && item.material.image.length"
+          <div class="indexpic-wrap" v-if="flag === 'picture' && item.material.image.length"
             :style="{ backgroundImage: 'url(' + item.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">{{item.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap" v-if="showFlag === 'video' && item.material.video.length"
+          <div class="indexpic-wrap" v-if="flag === 'video' && item.material.video.length"
             :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">{{item.numbering}}号</div>
             <div class="play-icon"></div>
           </div>
-          <div :class="['title-wrap', (showFlag === 'text' || showFlag === 'audio') ? 'text-title-wrap': '']">
+          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
             <div class="title color-theme_color">{{item.name}}</div>
             <div class="source color-theme_color">
-              <span v-show="showFlag === 'text' || showFlag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+              <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
             </div>
           </div>
           <p class="item-votes color-theme_color">{{item.total_votes}}票</p>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <!--当前返回组件-->
-    <common-pageback-btn></common-pageback-btn>
+    <common-pageback-btn :id="id"></common-pageback-btn>
   </div>
 </template>
 
@@ -64,68 +64,7 @@ import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 export default {
   data () {
     return {
-      showFlag: 'video', // text/picture/video/audio
-      rankList: [{
-        id: '000001',
-        name: '王者荣耀',
-        source: '王者归来',
-        total_votes: 2,
-        numbering: '000001',
-        material: {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-            'format': '.jpg',
-            'width': 203,
-            'height': 220,
-            'filesize': 21781,
-            '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-          }],
-          'video': [{
-            'id': 21,
-            'videoid': '448a654ef39747a6b2af79dc98209038',
-            'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-            'name': 'Alone Together_Fall Out Boy.mp3',
-            'size': 8419341,
-            'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-            'create_time': '2020-01-15 15:17:58',
-            'height': 0,
-            'width': 0,
-            'tags': [],
-            'fileid': '448a654ef39747a6b2af79dc98209038'
-          }]
-        }
-      }, {
-        id: '000002',
-        name: '王者荣耀',
-        source: '王者归来',
-        total_votes: 2,
-        numbering: '000001',
-        material: {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-            'format': '.jpg',
-            'width': 203,
-            'height': 220,
-            'filesize': 21781,
-            '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-          }],
-          'video': [{
-            'id': 21,
-            'videoid': '448a654ef39747a6b2af79dc98209038',
-            'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-            'name': 'Alone Together_Fall Out Boy.mp3',
-            'size': 8419341,
-            'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-            'create_time': '2020-01-15 15:17:58',
-            'height': 0,
-            'width': 0,
-            'tags': [],
-            'fileid': '448a654ef39747a6b2af79dc98209038'
-          }]
-        }
-      }],
+      rankList: [],
       myVoteIndex: 1,
       myVoteData: {
         id: '000002',
@@ -160,6 +99,10 @@ export default {
       }
     }
   },
+  props: {
+    id: String,
+    flag: String
+  },
   components: {
     CommonPageEmpty, CommonPagebackBtn
   },
@@ -168,12 +111,12 @@ export default {
   },
   methods: {
     initRankList () {
-      console.log('initRankList', this.$route.query)
+      console.log('initRankList', this.flag, this.id)
     },
-    jumpPage (page, id = '') {
+    jumpPage (page, data) {
       this.$router.replace({
         name: page,
-        query: { id }
+        params: data
       })
     }
   }
@@ -183,7 +126,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .commvote-rank {
-    background-color: #221A6E;
+    // background-color: #221A6E;
+    @include bg-color('bgColor');
     min-height: 100vh;
     .rank-list-wrap {
       position: relative;

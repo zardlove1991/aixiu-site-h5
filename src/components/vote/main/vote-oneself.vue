@@ -69,6 +69,10 @@ export default {
   created () {
     this.initForm()
   },
+  props: {
+    id: String,
+    flag: String
+  },
   components: {
     VoteVideo, VoteAudio
   },
@@ -77,7 +81,6 @@ export default {
       status: 2, // 0: 审核中 1: 审核通过 2: 审核驳回
       noTxt: '', // 编号
       reason: '素材涉嫌抄袭', // 打回原因
-      flag: '', // video/picture/audio/text
       selfData: {
         id: '1',
         desc: `《沁园春·国庆》 万里晴空,壮丽山河，赤旗飘，扬
@@ -106,11 +109,7 @@ export default {
   },
   methods: {
     initForm () {
-      console.log('initForm', this.$route.query)
-      let { flag } = this.$route.query
-      if (flag) {
-        this.flag = flag
-      }
+      console.log('initForm', this.flag, this.id)
     },
     jumpPage (page, data) {
       this.$router.push({
@@ -125,7 +124,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .oneself-submit-wrap {
-    background-color: #221A6E;
+    // background-color: #221A6E;
+    @include bg-color('bgColor');
     padding: px2rem(47px) px2rem(30px) px2rem(30px) px2rem(30px);
     min-height: 100vh;
     .works-no {

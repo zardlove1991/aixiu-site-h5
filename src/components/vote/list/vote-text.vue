@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { id : item.id})">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { textId : item.id})">
       <div class="work-header-wrap">
         <div class="work-title color-theme_color">
           <div class="icon-square-wrap color-button_color"></div>
@@ -29,54 +29,24 @@
 import VoteBtnGroup from '@/components/vote/global/vote-btn-group'
 
 export default {
+  props: {
+    workList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   components: {
     VoteBtnGroup
   },
   data () {
     return {
-      workList: [{
-        'id': '6ea5c798ad0944fea651c7d2b769ea48',
-        'name': '名称11111',
-        'numbering': '00001',
-        'cover': '',
-        'source': '来源11111',
-        'introduce': '在报名时间段内，直接点击“立即报名”→上传作品→审核流程→审核通过→查看我的作品在报名时间段内，直接点击“立即报名”→上传作品→审核流程→审核通过→查看我的作品在报名时间段内，直接点击“立即报名”→上传作品→审核流程→审核通过→查看我的作品',
-        'votes': 0,
-        'virtual_votes': 10,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 10,
-        'is_my': 1,
-        'material': {
-          'image': [],
-          'audio': [],
-          'video': [],
-          'image_counts': 0
-        }
-      }, {
-        'id': 'e890cb943f334c66b512eb707a7c4fc4',
-        'name': '名称22222',
-        'numbering': '00002',
-        'cover': '',
-        'source': '来源22222',
-        'introduce': '报名时间结束，投票开始，可以快速查看自己的作品，可以给自己的作品投票和拉票报名时间结束，投票开始，可以快速查看自己的作品，可以给自己的作品投票和拉票报名时间结束，投票开始，可以快速查看自己的作品，可以给自己的作品投票和拉票',
-        'votes': 0,
-        'virtual_votes': 3,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 3,
-        'material': {
-          'image': [],
-          'audio': [],
-          'video': [],
-          'image_counts': 0
-        }
-      }]
     }
   },
   methods: {
-    jumpPage (page, id) {
-      this.$emit('jump-page', page, { id })
+    jumpPage (page, data) {
+      this.$emit('jump-page', page, data)
     },
     btnClick (data) {
       this.$emit('trigger-work', data)

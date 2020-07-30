@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', item.id)">
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { audioId: item.id })">
       <div class="work-header-wrap">
         <div class="work-title color-theme_color">
           <div class="icon-arrow-wrap">
@@ -36,129 +36,24 @@ import VoteAudio from '@/components/vote/global/vote-audio'
 import VoteBtnGroup from '@/components/vote/global/vote-btn-group'
 
 export default {
+  props: {
+    workList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   components: {
     VoteAudio, VoteBtnGroup
   },
   data () {
     return {
-      workList: [{
-        'id': '5cc421c212524c46947c201316c4ae14',
-        'name': '名称1111',
-        'numbering': '00001',
-        'cover': '',
-        'source': '来源1111',
-        'introduce': '描述1111',
-        'votes': 0,
-        'virtual_votes': 20,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 20,
-        'is_my': 1,
-        'material': {
-          'image': [],
-          'audio': [{
-            'id': 13,
-            'tid': 0,
-            'name': '谢昊轩 - 稻香.mp3',
-            'host': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/',
-            'filename': 'xiuzan/1580901541802/谢昊轩 - 稻香.mp3',
-            'format': 'mp3',
-            'filesize': 2770170,
-            'nums': 0,
-            'ip': '47.101.109.117',
-            'source': 2,
-            'is_display': 1,
-            'order_id': 13,
-            'create_time': '2020-02-05 19:19:32',
-            'duration': 161,
-            'indexaudio': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3',
-            'tags': [],
-            'src': [],
-            'url': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3'
-          }],
-          'video': [],
-          'image_counts': 0
-        }
-      }, {
-        'id': 'bfac8d918e334e93a112312855a79944',
-        'name': '名称2222',
-        'numbering': '00002',
-        'cover': '',
-        'source': '来源2222',
-        'introduce': '描述2222',
-        'votes': 0,
-        'virtual_votes': 15,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 15,
-        'material': {
-          'image': [],
-          'audio': [{
-            'id': 35,
-            'tid': 0,
-            'name': '红豆.mp3',
-            'host': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/',
-            'filename': 'xiuzan/1586744205222/红豆.mp3',
-            'format': 'mp3',
-            'filesize': 3777097,
-            'nums': 0,
-            'ip': '47.106.63.162',
-            'source': 2,
-            'is_display': 1,
-            'order_id': 35,
-            'create_time': '2020-04-13 10:16:46',
-            'duration': 236,
-            'indexaudio': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1586744205222/红豆.mp3',
-            'tags': [],
-            'src': [],
-            'url': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1586744205222/红豆.mp3'
-          }],
-          'video': [],
-          'image_counts': 0
-        }
-      }, {
-        'id': 'bfac8d918e334e93a112312855a79944',
-        'name': '名称2222',
-        'numbering': '00002',
-        'cover': '',
-        'source': '来源2222',
-        'introduce': '描述2222',
-        'votes': 0,
-        'virtual_votes': 15,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 15,
-        'material': {
-          'image': [],
-          'audio': [{
-            'id': 35,
-            'tid': 0,
-            'name': '红豆.mp3',
-            'host': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/',
-            'filename': 'xiuzan/1586744205222/红豆.mp3',
-            'format': 'mp3',
-            'filesize': 3777097,
-            'nums': 0,
-            'ip': '47.106.63.162',
-            'source': 2,
-            'is_display': 1,
-            'order_id': 35,
-            'create_time': '2020-04-13 10:16:46',
-            'duration': 236,
-            'indexaudio': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1586744205222/红豆.mp3',
-            'tags': [],
-            'src': [],
-            'url': 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1586744205222/红豆.mp3'
-          }],
-          'video': [],
-          'image_counts': 0
-        }
-      }]
     }
   },
   methods: {
-    jumpPage (page, id) {
-      this.$emit('jump-page', page, id)
+    jumpPage (page, data) {
+      this.$emit('jump-page', page, data)
     },
     btnClick (data) {
       this.$emit('trigger-work', data)

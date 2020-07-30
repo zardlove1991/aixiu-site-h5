@@ -66,6 +66,7 @@
 <script>
 import FileUpload from '@/components/vote/global/file-upload'
 import API from '@/api/module/examination'
+import { Toast } from 'mint-ui'
 
 export default {
   created () {
@@ -73,6 +74,10 @@ export default {
   },
   components: {
     FileUpload
+  },
+  props: {
+    id: String,
+    flag: String
   },
   data () {
     return {
@@ -85,23 +90,16 @@ export default {
         contact_phone: ''
       },
       fileList: [],
-      flag: '', // video/picture/audio/text
       voteId: ''
     }
   },
   methods: {
     initForm () {
-      let { flag, id } = this.$route.query
-      if (flag) {
-        this.flag = flag
-      }
-      if (id) {
-        this.voteId = id
-      }
+      console.log(this.flag, this.id)
     },
     commitVote () {
       console.log('commitVote', this.examineData)
-      let id = this.voteId
+      let id = this.id
       if (!id) {
         return
       }
@@ -120,9 +118,15 @@ export default {
         data
       }).then(res => {
         console.log('报名成功')
+        if (res.error_code) {
+          Toast(res.error_message)
+          return
+        }
         this.disabled = false
+        Toast('报名成功')
         this.$router.replace({
-          path: `votebegin/${id}`
+          name: 'votebegin',
+          params: { id }
         })
       })
     }
@@ -133,7 +137,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .form-submit-wrap {
-    background-color: #221A6E;
+    // background-color: #221A6E;
+    @include bg-color('bgColor');
     padding: px2rem(30px);
     min-height: 100vh;
     .form-item {

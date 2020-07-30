@@ -11,20 +11,20 @@
         </div>
         <div class="list-item"
           v-for="(item, idx) in list" :key="idx"
-          @click.stop="jumpPage('votedetail', { id: item.id})">
-          <div class="item-indexpic" v-if="showFlag === 'picture' && item.works.material.image.length"
+          @click.stop="jumpPage('votedetail', { id, flag })">
+          <div class="item-indexpic" v-if="flag === 'picture' && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}"></div>
-          <div class="item-indexpic" v-if="showFlag === 'video' && item.works.material.video.length"
+          <div class="item-indexpic" v-if="flag === 'video' && item.works.material.video.length"
             :style="{ backgroundImage: 'url(' + item.works.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="play-icon"></div>
           </div>
           <div class="item-content">
             <div class="content-title color-theme_color">
-              <div class="icon-arrow-wrap" v-if="showFlag === 'audio'">
+              <div class="icon-arrow-wrap" v-if="flag === 'audio'">
                 <div class="arrow-top"></div>
                 <div class="arrow-bottom color-button_color"></div>
               </div>
-              <div class="icon-square-wrap color-button_color" v-if="showFlag === 'text'"></div>
+              <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
             <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">投了<i class="vote-num">{{item.total}}</i>票</span></p>
@@ -33,7 +33,7 @@
       </div>
     </div>
     <!--当前返回组件-->
-    <common-pageback-btn></common-pageback-btn>
+    <common-pageback-btn :id="id"></common-pageback-btn>
 </div>
 </template>
 
@@ -45,136 +45,16 @@ import API from '@/api/module/examination'
 export default {
   data () {
     return {
-      showFlag: 'audio', // text/picture/video/audio
-      mineList: {
-        '2020-07-22': [{
-          showdate: '07-22 11:22',
-          total: 3,
-          works: {
-            name: '英雄联盟',
-            material: {
-              'image': [{
-                'host': '//xzimg.hoge.cn/',
-                'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-                'format': '.jpg',
-                'width': 203,
-                'height': 220,
-                'filesize': 21781,
-                '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-              }],
-              'video': [{
-                'id': 21,
-                'videoid': '448a654ef39747a6b2af79dc98209038',
-                'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-                'name': 'Alone Together_Fall Out Boy.mp3',
-                'size': 8419341,
-                'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-                'create_time': '2020-01-15 15:17:58',
-                'height': 0,
-                'width': 0,
-                'tags': [],
-                'fileid': '448a654ef39747a6b2af79dc98209038'
-              }]
-            }
-          }
-        }, {
-          showdate: '07-22 11:22',
-          total: 3,
-          works: {
-            name: '英雄联盟',
-            material: {
-              'image': [{
-                'host': '//xzimg.hoge.cn/',
-                'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-                'format': '.jpg',
-                'width': 203,
-                'height': 220,
-                'filesize': 21781,
-                '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-              }],
-              'video': [{
-                'id': 21,
-                'videoid': '448a654ef39747a6b2af79dc98209038',
-                'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-                'name': 'Alone Together_Fall Out Boy.mp3',
-                'size': 8419341,
-                'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-                'create_time': '2020-01-15 15:17:58',
-                'height': 0,
-                'width': 0,
-                'tags': [],
-                'fileid': '448a654ef39747a6b2af79dc98209038'
-              }]
-            }
-          }
-        }],
-        '2020-07-23': [{
-          showdate: '07-23 11:22',
-          total: 3,
-          works: {
-            name: '英雄联盟',
-            material: {
-              'image': [{
-                'host': '//xzimg.hoge.cn/',
-                'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-                'format': '.jpg',
-                'width': 203,
-                'height': 220,
-                'filesize': 21781,
-                '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-              }],
-              'video': [{
-                'id': 21,
-                'videoid': '448a654ef39747a6b2af79dc98209038',
-                'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-                'name': 'Alone Together_Fall Out Boy.mp3',
-                'size': 8419341,
-                'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-                'create_time': '2020-01-15 15:17:58',
-                'height': 0,
-                'width': 0,
-                'tags': [],
-                'fileid': '448a654ef39747a6b2af79dc98209038'
-              }]
-            }
-          }
-        }, {
-          showdate: '07-23 11:22',
-          total: 3,
-          works: {
-            name: '英雄联盟',
-            material: {
-              'image': [{
-                'host': '//xzimg.hoge.cn/',
-                'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-                'format': '.jpg',
-                'width': 203,
-                'height': 220,
-                'filesize': 21781,
-                '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-              }],
-              'video': [{
-                'id': 21,
-                'videoid': '448a654ef39747a6b2af79dc98209038',
-                'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-                'name': 'Alone Together_Fall Out Boy.mp3',
-                'size': 8419341,
-                'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-                'create_time': '2020-01-15 15:17:58',
-                'height': 0,
-                'width': 0,
-                'tags': [],
-                'fileid': '448a654ef39747a6b2af79dc98209038'
-              }]
-            }
-          }
-        }]
-      },
+      mineList: {},
       pager: {
         page: 1,
         count: 20
       }
     }
+  },
+  props: {
+    id: String,
+    flag: String
   },
   components: {
     CommonPageEmpty, CommonPagebackBtn
@@ -184,7 +64,11 @@ export default {
   },
   methods: {
     initMyVoteList () {
-      let { id } = this.$route.query
+      console.log('initMyVoteList', this.id, this.flag)
+      let { id } = this.id
+      if (!id) {
+        return
+      }
       let { page, count } = this.pager
       API.getMineVoteList({
         params: {
@@ -196,10 +80,10 @@ export default {
         console.log(res)
       })
     },
-    jumpPage (page, id = '') {
+    jumpPage (page, data) {
       this.$router.replace({
         name: page,
-        query: { id }
+        params: data
       })
     }
   }
@@ -209,7 +93,8 @@ export default {
 <style lang="scss">
   @import "@/styles/components/vote/base.scss";
   .commvote-mine {
-    background-color: #221A6E;
+    // background-color: #221A6E;
+    @include bg-color('bgColor');
     min-height: 100vh;
     .mine-list-wrap {
       padding: px2rem(50px) 0 px2rem(50px) px2rem(30px);

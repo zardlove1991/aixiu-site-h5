@@ -7,10 +7,14 @@
 
 <script>
 export default {
+  props: {
+    id: String
+  },
   methods: {
     jumpPage () {
       this.$router.replace({
-        name: 'votestart'
+        name: 'votebegin',
+        params: { id: this.id }
       })
     }
   }

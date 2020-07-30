@@ -2,7 +2,7 @@
   <div class="image-work-list-wrap">
     <div v-for="(item, index) in workList"
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', item.id)"
+      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { pictureId: item.id })"
       :key="index">
       <div class="work-poster-wrap" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0]._src)+'?x-oss-process=image/resize,w_400)'}">
         <div class="poster-thumb">
@@ -29,104 +29,24 @@
 import VoteBtnGroup from '@/components/vote/global/vote-btn-group'
 
 export default {
+  props: {
+    workList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   components: {
     VoteBtnGroup
   },
   data () {
     return {
-      workList: [{
-        'id': '1ccbb74091db4174910e063fd5822124',
-        'name': '王者荣耀',
-        'numbering': '00001',
-        'cover': '',
-        'source': '王者归来',
-        'introduce': '王者荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀荣耀',
-        'votes': 0,
-        'virtual_votes': 0,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 0,
-        'is_my': 1,
-        'material': {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-            'format': '.jpg',
-            'width': 203,
-            'height': 220,
-            'filesize': 21781,
-            '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-          }, {
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-            'format': '.jpg',
-            'width': 203,
-            'height': 220,
-            'filesize': 21781,
-            '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-          }],
-          'audio': [],
-          'video': [],
-          'image_counts': 2
-        }
-      }, {
-        'id': '4d90ec2085384b03a3ae7c6e8642568d',
-        'name': '帅锅锅',
-        'numbering': '00002',
-        'cover': '',
-        'source': '帅喳喳',
-        'introduce': '帅的一塌糊涂',
-        'votes': 0,
-        'virtual_votes': 0,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 0,
-        'material': {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'market/2020/04/20200413143419_f6hnhd',
-            'format': '.jpg',
-            'width': 400,
-            'height': 554,
-            'filesize': 44742,
-            '_src': '//xzimg.hoge.cn/market/2020/04/20200413143419_f6hnhd'
-          }],
-          'audio': [],
-          'video': [],
-          'image_counts': 1
-        }
-      }, {
-        'id': '4d90ec2085384b03a3ae7c6e8642568d',
-        'name': '帅锅锅',
-        'numbering': '00002',
-        'cover': '',
-        'source': '帅喳喳',
-        'introduce': '帅的一塌糊涂',
-        'votes': 0,
-        'virtual_votes': 0,
-        'source_image': '',
-        'source_name': '',
-        'total_votes': 0,
-        'material': {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'market/2020/04/20200413143419_f6hnhd',
-            'format': '.jpg',
-            'width': 400,
-            'height': 554,
-            'filesize': 44742,
-            '_src': '//xzimg.hoge.cn/market/2020/04/20200413143419_f6hnhd'
-          }],
-          'audio': [],
-          'video': [],
-          'image_counts': 1
-        }
-      }]
     }
   },
   methods: {
-    jumpPage (page, id) {
-      this.$emit('jump-page', page, { id })
+    jumpPage (page, data) {
+      this.$emit('jump-page', page, data)
     },
     btnClick (data) {
       this.$emit('trigger-work', data)
