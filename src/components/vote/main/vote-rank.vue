@@ -7,14 +7,16 @@
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         @click.stop="jumpPage('votemy', { id, flag })"
-        v-show="myVoteData">
+        v-show="myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
-          <div class="indexpic-wrap" v-if="flag === 'picture' && myVoteData.material.image.length"
+          <div class="indexpic-wrap"
+            v-if="flag === 'picture' && myVoteData.material && myVoteData.material.image && myVoteData.material.image.length"
             :style="{ backgroundImage: 'url(' + myVoteData.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap" v-if="flag === 'video' && myVoteData.material.video.length"
+          <div class="indexpic-wrap"
+            v-if="flag === 'video' && myVoteData.material && myVoteData.material.video && myVoteData.material.video.length"
             :style="{ backgroundImage: 'url(' + myVoteData.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
             <div class="play-icon"></div>
@@ -33,11 +35,13 @@
         @click.stop="jumpPage('votedetail', { id, flag })">
         <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
         <div class="list-item-content">
-          <div class="indexpic-wrap" v-if="flag === 'picture' && item.material.image.length"
+          <div class="indexpic-wrap"
+            v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
             :style="{ backgroundImage: 'url(' + item.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">{{item.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap" v-if="flag === 'video' && item.material.video.length"
+          <div class="indexpic-wrap"
+            v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
             :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">{{item.numbering}}号</div>
             <div class="play-icon"></div>
@@ -51,6 +55,8 @@
           <p class="item-votes color-theme_color">{{item.total_votes}}票</p>
         </div>
       </div>
+      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
     <common-pageback-btn :id="id"></common-pageback-btn>
@@ -60,42 +66,20 @@
 <script>
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
+import API from '@/api/module/examination'
 
 export default {
   data () {
     return {
       rankList: [],
       myVoteIndex: 1,
-      myVoteData: {
-        id: '000002',
-        name: '王者荣耀',
-        source: '王者归来',
-        total_votes: 2,
-        numbering: '000001',
-        material: {
-          'image': [{
-            'host': '//xzimg.hoge.cn/',
-            'filename': 'xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg',
-            'format': '.jpg',
-            'width': 203,
-            'height': 220,
-            'filesize': 21781,
-            '_src': '//xzimg.hoge.cn/xiuzan/1592814530965/da91761a07b37e4989807e00b2b7d4f4.jpg'
-          }],
-          'video': [{
-            'id': 21,
-            'videoid': '448a654ef39747a6b2af79dc98209038',
-            'url': 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/5694119b-16fa810d4b2-0004-5cb9-006-28284.mp3',
-            'name': 'Alone Together_Fall Out Boy.mp3',
-            'size': 8419341,
-            'cover': 'https://xzvideo.hoge.cn/448a654ef39747a6b2af79dc98209038/snapshots/797f3776022947de84ffa55091fb243d-00001.jpg',
-            'create_time': '2020-01-15 15:17:58',
-            'height': 0,
-            'width': 0,
-            'tags': [],
-            'fileid': '448a654ef39747a6b2af79dc98209038'
-          }]
-        }
+      myVoteData: {},
+      loading: false,
+      pager: { // 投票列表分页
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
       }
     }
   },
@@ -109,9 +93,45 @@ export default {
   created () {
     this.initRankList()
   },
+  computed: {
+    noMore () {
+      // 当起始页数大于总页数时停止加载
+      let { page, totalPages } = this.pager
+      return page >= totalPages
+    }
+  },
   methods: {
     initRankList () {
       console.log('initRankList', this.flag, this.id)
+      let voteId = this.id
+      this.loading = true
+      let { page, count } = this.pager
+      let params = {
+        page: page + 1,
+        count,
+        rank: 1
+      }
+      API.getVoteWorks({
+        query: { id: voteId },
+        params: params
+      }).then(res => {
+        let { data, page: pageInfo } = res
+        if (!data || !data.length) {
+          this.loading = false
+          return
+        }
+        let { total, current_page: page } = pageInfo
+        total = parseInt(total)
+        page = parseInt(page)
+        // 总页数
+        let totalPages = total / count
+        if (total % count !== 0) {
+          totalPages = parseInt(total / count) + 1
+        }
+        this.rankList = this.rankList.concat(data)
+        this.pager = { total, page, count, totalPages }
+        this.loading = false
+      })
     },
     jumpPage (page, data) {
       this.$router.replace({
@@ -274,6 +294,12 @@ export default {
           min-width: px2rem(70px);
           text-align: right;
         }
+      }
+      .scroll-tips {
+        width: 100%;
+        @include font-dpr(14px);
+        color:#ccc;
+        text-align: center;
       }
     }
   }
