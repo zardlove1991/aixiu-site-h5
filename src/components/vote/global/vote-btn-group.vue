@@ -2,8 +2,8 @@
   <div class="vote-btn-group-wrap">
     <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">帮ta拉票</button>
     <button class="options-vote"
-      :class="{ disabled: !remainVotes && voteStatus !== 2 }"
-      :disabled="!remainVotes && voteStatus !== 2"
+      :class="{ disabled: !remainVotes || voteStatus !== 2 }"
+      :disabled="!remainVotes || voteStatus !== 2"
       @click.stop="btnClick(data, index, 'vote')">给ta投票</button>
   </div>
 </template>

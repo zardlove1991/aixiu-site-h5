@@ -25,8 +25,8 @@
         <span class="desc">可投票数</span>
       </div>
       <button class="option-vote"
-        :class="{ disabled: !info.remain_votes && voteStatus !== 2 }"
-        :disabled="!info.remain_votes && voteStatus !== 2"
+        :class="{ disabled: !info.remain_votes || voteStatus !== 2 }"
+        :disabled="!info.remain_votes || voteStatus !== 2"
         @click.stop="triggerMenu('vote')">给ta投票</button>
     </div>
   </div>
