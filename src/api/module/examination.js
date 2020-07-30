@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -12,6 +12,9 @@ let QCloundUrl = {
 
 // 投票相关接口
 let voteUrl = {
+  getVideoUrl: 'video/detail', // 获取视频地址
+  getUploadSign: 'ali/signature', // 获取文件上传签名
+  getUploadVideoCrdl: 'video/upload/credential', // 获取视频上传凭证
   getVodeDetail: 'client/voting/{id}', // 投票详情
   getVoteWorks: 'client/voting/{id}/works', // 投票数据列表
   getVoteWorksDetail: 'client/voting/{id}/works/{worksId}', // 投票数据详情
@@ -82,6 +85,9 @@ export default {
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   // 投票
+  getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
+  getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
+  getUploadVideoCrdl: config => createSumbit(configUrl.getUploadVideoCrdl, 'GET', config, API_FLAG),
   getVodeDetail: config => createVote(configUrl.getVodeDetail, 'GET', config, API_FLAG),
   getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG),
   getVoteWorksDetail: config => createVote(configUrl.getVoteWorksDetail, 'GET', config, API_FLAG),

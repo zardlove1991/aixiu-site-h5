@@ -12,7 +12,7 @@
         <div class="list-item-content">
           <div class="indexpic-wrap"
             v-if="flag === 'picture' && myVoteData.material && myVoteData.material.image && myVoteData.material.image.length"
-            :style="{ backgroundImage: 'url(' + myVoteData.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
+            :style="{ backgroundImage: 'url(' + myVoteData.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
           </div>
           <div class="indexpic-wrap"

@@ -12,9 +12,11 @@
         <div class="list-item"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { id, flag })">
-          <div class="item-indexpic" v-if="flag === 'picture' && item.works.material.image.length"
-            :style="{ backgroundImage: 'url(' + item.works.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}"></div>
-          <div class="item-indexpic" v-if="flag === 'video' && item.works.material.video.length"
+          <div class="item-indexpic"
+            v-if="flag === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
+            :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
+          <div class="item-indexpic"
+            v-if="flag === 'video' && item.works.material && item.works.material.video && item.works.material.video.length"
             :style="{ backgroundImage: 'url(' + item.works.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
             <div class="play-icon"></div>
           </div>
@@ -31,6 +33,8 @@
           </div>
         </div>
       </div>
+      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
     <common-pageback-btn :id="id"></common-pageback-btn>
@@ -46,9 +50,12 @@ export default {
   data () {
     return {
       mineList: {},
+      loading: false,
       pager: {
-        page: 1,
-        count: 20
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
       }
     }
   },
@@ -62,22 +69,55 @@ export default {
   created () {
     this.initMyVoteList()
   },
+  computed: {
+    noMore () {
+      // 当起始页数大于总页数时停止加载
+      let { page, totalPages } = this.pager
+      return page >= totalPages
+    }
+  },
   methods: {
     initMyVoteList () {
       console.log('initMyVoteList', this.id, this.flag)
-      let { id } = this.id
-      if (!id) {
-        return
-      }
+      let voteId = this.id
+      this.loading = true
       let { page, count } = this.pager
+      let params = {
+        voting_id: voteId,
+        page: page + 1,
+        count
+      }
       API.getMineVoteList({
-        params: {
-          voting_id: id,
-          page,
-          count
-        }
+        params
       }).then(res => {
-        console.log(res)
+        let { data, page: pageInfo } = res
+        if (!data || !data.length) {
+          this.loading = false
+          return
+        }
+        let { total, current_page: page } = pageInfo
+        total = parseInt(total)
+        page = parseInt(page)
+        // 总页数
+        let totalPages = total / count
+        if (total % count !== 0) {
+          totalPages = parseInt(total / count) + 1
+        }
+        let mineList = this.mineList
+        for (let item of data) {
+          let dateKey = item.create_time ? item.create_time.split(' ')[0] : '未知'
+          let dateArr = mineList[dateKey] || [] // 声明对象为原数组或者初始化为空
+          // 存放数据
+          let limtIndex = item.create_time.indexOf('-')
+          item.showdate = limtIndex > 0 ? item.create_time.substr(limtIndex + 1) : '暂无'
+          dateArr.push(item)
+          mineList[dateKey] = dateArr
+        }
+        // 赋值
+        this.mineList = mineList
+        console.log('处理后的我的投票的列表数据', this.mineList)
+        this.pager = { total, page, count, totalPages }
+        this.loading = false
       })
     },
     jumpPage (page, data) {
@@ -172,6 +212,12 @@ export default {
           }
         }
       }
+    }
+    .scroll-tips {
+      width: 100%;
+      @include font-dpr(14px);
+      color:#ccc;
+      text-align: center;
     }
   }
 </style>

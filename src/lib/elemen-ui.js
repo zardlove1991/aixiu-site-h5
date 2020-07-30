@@ -5,7 +5,8 @@ import {
   Radio,
   Checkbox,
   Input,
-  Upload
+  Upload,
+  Loading
 } from 'element-ui'
 
 export default function (Vue) {
@@ -15,4 +16,5 @@ export default function (Vue) {
   Vue.use(Checkbox)
   Vue.use(Input)
   Vue.use(Upload)
+  Vue.use(Loading)
 }

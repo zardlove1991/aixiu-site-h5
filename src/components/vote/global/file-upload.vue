@@ -6,13 +6,6 @@
       <img :src="item.url" />
       <i class="file-delete-icon" @click.stop="handleRemove(item)"></i>
     </div>
-    <div v-if="flag === 'video' && fileList.length" class="upload-video-wrap">
-      <vote-video
-        :data="fileList[0]"
-        :isShowDelBtn="true"
-        @deleteFile="handleRemove">
-      </vote-video>
-    </div>
     <vote-audio
       v-if="flag === 'audio' && fileList.length"
       :data="fileList[0]"
@@ -22,12 +15,15 @@
     <el-upload
       :class="{ hide: fileList.length >= settings[flag].limit }"
       list-type="picture-card"
-      action=""
+      :action="uploadUrl"
+      :data="extraData"
       :limit="settings[flag].limit"
       :multiple="false"
       :show-file-list="false"
       :file-list="fileList"
-      :http-request="uploadFile"
+      :before-upload="beforeUpload"
+      :on-success="onSuccess"
+      v-loading="loading"
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
     </el-upload>
@@ -37,6 +33,7 @@
 <script>
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
+import API from '@/api/module/examination'
 
 export default {
   props: {
@@ -49,6 +46,10 @@ export default {
     flag: {
       type: String,
       default: 'picture'
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -57,58 +58,53 @@ export default {
   data () {
     return {
       settings: {
-        video: {
-          limit: 1,
-          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
-          // accept: '.mp4,.MP4'
-        },
         picture: {
           limit: 9,
           accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
         },
         audio: {
           limit: 1,
-          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
-          // accept: '.mp3,.MP3'
+          accept: '.mp3,.MP3'
         }
+      },
+      uploadUrl: '', // 上传地址
+      file: {},
+      signature: {} // 签名
+    }
+  },
+  computed: {
+    extraData () { // 上传时附带的额外参数
+      const { policy, signature, callback, accessid, dir } = this.signature
+      const SUCCESS_STATUS = 200
+      const time = +new Date()
+      const name = [time, this.file.name].join('/') // name要唯一
+      // console.log('extraData', this.signature)
+      return {
+        policy,
+        signature,
+        callback,
+        OSSAccessKeyId: accessid,
+        success_action_status: SUCCESS_STATUS,
+        name: name,
+        key: dir + name
       }
     }
   },
   methods: {
-    uploadFile (obj) {
-      let that = this
-      let file = obj.file
-      console.log('uploadFile', obj)
-      /**
-      that.fileList.push({
-        name: file.name,
-        uid: file.uid,
-        cover: '',
-        duration: 0,
-        url: ''
+    // 文件上传前准备签名
+    beforeUpload (file) {
+      // console.log('beforeUpload', file)
+      this.$emit('update:loading', true)
+      return new Promise((resolve, reject) => {
+        API.getUploadSign({
+          params: { source: 2 }
+        }).then(signature => {
+          this.signature = signature
+          this.uploadUrl = signature.host
+          this.file = file
+          resolve()
+        })
       })
-      */
-      if (this.flag === 'video') {
-        that.fileList.push({
-          name: file.name,
-          uid: file.uid,
-          cover: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg',
-          url: 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/10b9990-1717151ac65-0004-5cb9-006-28284.mov'
-        })
-      } else if (this.flag === 'audio') {
-        that.fileList.push({
-          name: file.name,
-          uid: file.uid,
-          duration: 161,
-          url: 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3'
-        })
-      } else if (this.flag === 'picture') {
-        that.fileList.push({
-          name: file.name,
-          uid: file.uid,
-          url: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg'
-        })
-      }
     },
     handleRemove (file) {
       for (let i in this.fileList) {
@@ -116,6 +112,24 @@ export default {
           this.fileList.splice(i, 1)
         }
       }
+    },
+    // 上传成功
+    onSuccess (response, files, fileList) {
+      let { obj, uid, duration } = response
+      if (!obj) {
+        return
+      }
+      let { host, filename } = obj
+      let tmp = {
+        url: host + filename,
+        uid
+      }
+      if (this.flag === 'audio') {
+        tmp.duration = duration
+      }
+      this.fileList.push(tmp)
+      this.$emit('update:loading', false)
+      this.$emit('changeFile', response)
     }
   }
 }

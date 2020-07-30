@@ -46,7 +46,6 @@ export default {
   },
   watch: {
     data: function (newData) {
-      console.log('xxxxx', newData)
       this.initAudioInfo()
     },
     isPlay: function (state) {

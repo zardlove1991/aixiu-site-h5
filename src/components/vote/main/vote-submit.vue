@@ -4,14 +4,14 @@
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">上传视频<span class="form-tips">(视频格式为MP4，时长不能超过60s)</span></div>
         <div class="form-content">
-          <file-upload :flag="flag" :fileList="fileList"></file-upload>
+          <video-upload :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
         </div>
       </div>
       <div v-if="flag === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
         <div class="form-tips">(图片最多上传9张，支持PNG、JPG、GIF格式，小于5M)</div>
         <div class="form-content">
-          <file-upload :flag="flag" :fileList="fileList"></file-upload>
+          <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="flag === 'audio'" class="form-item">
@@ -65,6 +65,7 @@
 
 <script>
 import FileUpload from '@/components/vote/global/file-upload'
+import VideoUpload from '@/components/vote/global/video-upload'
 import API from '@/api/module/examination'
 import { Toast } from 'mint-ui'
 
@@ -73,7 +74,7 @@ export default {
     this.initForm()
   },
   components: {
-    FileUpload
+    FileUpload, VideoUpload
   },
   props: {
     id: String,
@@ -89,8 +90,10 @@ export default {
         contact_name: '',
         contact_phone: ''
       },
+      material: {},
       fileList: [],
-      worksId: ''
+      worksId: '',
+      loading: false
     }
   },
   methods: {
@@ -122,13 +125,14 @@ export default {
       if (!id) {
         return
       }
+      if (this.loading) {
+        Toast('文件正在上传中，请稍后再提交')
+        return
+      }
       let data = {
         voting_id: id,
         material: {
-          video: [{
-            url: 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/10b9990-1717151ac65-0004-5cb9-006-28284.mov',
-            cover: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg'
-          }]
+          ...this.material
         },
         ...this.examineData
       }
@@ -139,7 +143,6 @@ export default {
       API.workReport({
         data
       }).then(res => {
-        console.log('报名成功')
         if (res.error_code) {
           Toast(res.error_message)
           return
@@ -151,6 +154,20 @@ export default {
           params: { id }
         })
       })
+    },
+    changeFile () {
+      let fileList = this.fileList
+      console.log('changeFile', fileList)
+      if (!fileList || fileList.length <= 0) {
+        this.material = {}
+      }
+      if (this.flag === 'video') {
+        this.material = {video: [...this.fileList]}
+      } else if (this.flag === 'picture') {
+        this.material = {image: [...this.fileList]}
+      } else if (this.flag === 'audio') {
+        this.material = {audio: [...this.fileList]}
+      }
     }
   }
 }

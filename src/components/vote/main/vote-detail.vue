@@ -27,8 +27,7 @@
         <div v-if="flag === 'image'">
           <img class="base-image"
             v-for="(image, index) in workDetail.material.image" :key="index"
-            :src="image._src"
-            @click.stop="previewImg(index, workDetail.material.image)" />
+            :src="image.url" />
         </div>
         <!--详情页面内容-->
         <p class="detail-cotent" v-show="workDetail.introduce" v-html="workDetail.introduce"></p>
