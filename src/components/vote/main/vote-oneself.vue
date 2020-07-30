@@ -1,16 +1,16 @@
 <template>
   <div class="oneself-submit-wrap">
-    <div class="works-no">作品编号：<span class="no-tet">{{noTxt ? noTxt : '暂无'}}</span></div>
+    <div class="works-no">作品编号：<span class="no-tet">{{selfData.numbering ? selfData.numbering : '暂无'}}</span></div>
     <div class="examine-wrap">
-      <div :class="'examine-icon-' + status "></div>
-      <div class="status-tips-wait" v-if="status=== 0">作品正在审核中，请耐心等候哦～</div>
-      <div class="status-tips-success" v-if="status=== 1">
+      <div :class="'examine-icon-' + selfData.audit_status"></div>
+      <div class="status-tips-wait" v-if="selfData.audit_status === 3">作品正在审核中，请耐心等候哦～</div>
+      <div class="status-tips-success" v-if="selfData.audit_status === 1">
         <p class="success-tips1">恭喜，审核已通过</p>
         <p class="success-tips2">待投票开始就可以给自己的作品投票/拉票哦</p>
       </div>
-      <div class="status-tips-fail" v-if="status=== 2">
+      <div class="status-tips-fail" v-if="selfData.audit_status === 2">
         <p class="fail-tips1">审核不通过，被打回</p>
-        <p class="fail-tips2">打回原因：{{reason}}</p>
+        <p class="fail-tips2">打回原因：{{selfData.reject_reason}}</p>
       </div>
       <div class="examine-title-wrap">
         <div class="line"></div>
@@ -18,15 +18,18 @@
         <div class="line"></div>
       </div>
       <div class="oneself-content">
-        <div class="onself-picture-wrap" v-show="flag === 'picture' && selfData.picture.length">
-          <div class="onself-picture-item" v-for="(item, index) in selfData.picture" :key="index">
+        <div class="onself-picture-wrap"
+          v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
+          <div class="onself-picture-item" v-for="(item, index) in selfData.material.image" :key="index">
             <img :src="item.url" />
           </div>
         </div>
-        <div class="onself-video-wrap" v-show="flag === 'video' && selfData.video.length">
-          <vote-video :data="selfData.video[0]"></vote-video>
+        <div class="onself-video-wrap"
+          v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
+          <vote-video :data="selfData.material.video[0]"></vote-video>
         </div>
-        <vote-audio v-if="flag === 'audio' && selfData.audio.length" :data="selfData.audio[0]"></vote-audio>
+        <vote-audio
+          v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>
         <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.desc}}</div>
         <div class="header first-header">
           <span>名称：</span>
@@ -38,25 +41,25 @@
         </div>
         <div class="header" v-show="flag !== 'text'">
           <span>描述：</span>
-          <span class="header-txt">{{selfData.desc}}</span>
+          <span class="header-txt">{{selfData.introduce}}</span>
         </div>
         <div class="header">
           <span>联系人姓名：</span>
-          <span class="header-txt">{{selfData.username}}</span>
+          <span class="header-txt">{{selfData.contact_name}}</span>
         </div>
         <div class="header">
           <span>联系人电话：</span>
-          <span class="header-txt">{{selfData.phone}}</span>
+          <span class="header-txt">{{selfData.contact_phone}}</span>
         </div>
       </div>
     </div>
-    <div class="submit-btn-wrap color-button_color" v-if="status === 0" >
+    <div class="submit-btn-wrap color-button_color" v-if="selfData.audit_status === 3" >
       <span class="menu-text color-button_text"
-        @click="jumpPage('votesubmit', { flag: flag, id: selfData.id })">修改</span>
+        @click="jumpPage('votesubmit', { worksId: selfData.id })">修改</span>
     </div>
-    <div class="submit-btn-wrap color-button_color" v-if="status === 2" >
+    <div class="submit-btn-wrap color-button_color" v-if="selfData.audit_status === 2" >
       <span class="menu-text color-button_text"
-        @click="jumpPage('votesubmit', { flag: flag, id: selfData.id })">重新报名</span>
+        @click="jumpPage('votesubmit', { worksId: selfData.id })">重新报名</span>
     </div>
   </div>
 </template>
@@ -64,6 +67,7 @@
 <script>
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
+import API from '@/api/module/examination'
 
 export default {
   created () {
@@ -78,42 +82,30 @@ export default {
   },
   data () {
     return {
-      status: 2, // 0: 审核中 1: 审核通过 2: 审核驳回
-      noTxt: '', // 编号
-      reason: '素材涉嫌抄袭', // 打回原因
-      selfData: {
-        id: '1',
-        desc: `《沁园春·国庆》 万里晴空,壮丽山河，赤旗飘，扬
-          看九州方圆,普天同庆; 江河歌唱,遍地流芳。 社会
-          稳定，人民幸福，改革开放谱新章。`,
-        name: '测试姓名数据',
-        source: '测试来源数据',
-        username: '联系人测试数据',
-        phone: '156xxxx1222',
-        picture: [{
-          name: '1.png',
-          url: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg'
-        }],
-        audio: [{
-          name: '1.mp3',
-          duration: 161,
-          url: 'http://xiaozan-pub.oss-cn-hangzhou.aliyuncs.com/xiuzan/1580901541802/谢昊轩 - 稻香.mp3'
-        }],
-        video: [{
-          name: '1.mp4',
-          cover: 'https://xzvideo.hoge.cn/ce95fb4ce81e4b88881fa8dc8e5ff16c/snapshots/a4ba44b7a95144b7bd1b72fc244718e7-00003.jpg',
-          url: 'http://outin-a03b512cf3cc11e8acdb00163e1c35d5.oss-cn-shanghai.aliyuncs.com/customerTrans/203182cc86928effd06b285f5532153f/10b9990-1717151ac65-0004-5cb9-006-28284.mov'
-        }]
-      }
+      selfData: {}
     }
   },
   methods: {
     initForm () {
-      console.log('initForm', this.flag, this.id)
+      API.getReportDetail({
+        query: {
+          id: this.id
+        }
+      }).then(res => {
+        if (!res) {
+          return
+        }
+        this.selfData = res
+      })
     },
     jumpPage (page, data) {
+      let params = {
+        flag: this.flag,
+        id: this.id
+      }
       this.$router.push({
         name: page,
+        params,
         query: data
       })
     }
@@ -140,7 +132,7 @@ export default {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      .examine-icon-0 {
+      .examine-icon-3 {
         margin: px2rem(60px) 0;
         width: px2rem(150px);
         height: px2rem(181px);
@@ -209,6 +201,7 @@ export default {
         }
       }
       .oneself-content {
+        width: 100%;
         .onself-picture-wrap {
           width: 100%;
           display: flex;

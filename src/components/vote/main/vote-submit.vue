@@ -90,15 +90,34 @@ export default {
         contact_phone: ''
       },
       fileList: [],
-      voteId: ''
+      worksId: ''
     }
   },
   methods: {
     initForm () {
-      console.log(this.flag, this.id)
+      let { worksId } = this.$route.query
+      if (worksId) {
+        // 获取详情
+        API.getReportDetail({
+          query: {
+            id: this.id
+          }
+        }).then(res => {
+          if (!res) {
+            return
+          }
+          this.worksId = worksId
+          this.examineData = {
+            name: res.name,
+            source: res.source,
+            introduce: res.introduce,
+            contact_name: res.contact_name,
+            contact_phone: res.contact_phone
+          }
+        })
+      }
     },
     commitVote () {
-      console.log('commitVote', this.examineData)
       let id = this.id
       if (!id) {
         return
@@ -112,6 +131,9 @@ export default {
           }]
         },
         ...this.examineData
+      }
+      if (this.worksId) {
+        data.id = this.worksId
       }
       this.disabled = true
       API.workReport({

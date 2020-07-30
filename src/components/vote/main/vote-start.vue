@@ -199,7 +199,7 @@ import CheckVote from '@/components/vote/global/check-vote'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime } from '@/utils/utils'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 import { mapActions } from 'vuex'
 
 export default {
@@ -500,7 +500,7 @@ export default {
         flag: this.showModel,
         id: this.id
       }
-      this.$router.replace({
+      this.$router.push({
         name: page,
         params,
         query: data
@@ -531,8 +531,8 @@ export default {
       let obj = {
         voting_id: this.id,
         mark: detailInfo.mark,
-        works_id: worksId,
-        member_id: STORAGE.get('userinfo').id
+        works_id: worksId
+        // member_id: STORAGE.get('userinfo').id
       }
       API.workVote({
         data: obj
