@@ -180,7 +180,11 @@
         </div>
       </div>
     </tips-dialog>
-    <check-vote :show="isCheckVote" :checkVote="checkVote" @close="isCheckVote = false"></check-vote>
+    <check-vote
+      :show="isCheckVote"
+      :checkVote="checkVote"
+      @close="isCheckVote = false">
+    </check-vote>
   </div>
 </template>
 
@@ -196,6 +200,7 @@ import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
+import { mapActions } from 'vuex'
 
 export default {
   mixins: [mixins],
@@ -335,6 +340,7 @@ export default {
         if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
           this.status = status
+          this.setVoteStatus(status)
           // 检查是否报名
           this.checkUserReport(id)
           this.startCountTime(reportEndTimeMS, (timeArr) => {
@@ -364,11 +370,13 @@ export default {
       if (endTimeMS <= nowTime) {
         // 已经结束
         this.status = endStatus
+        this.setVoteStatus(endStatus)
         return
       }
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
+      this.setVoteStatus(status)
       if (status === voteStatus) {
         this.getRemainVotes(id)
       }
@@ -382,6 +390,7 @@ export default {
         } else {
           // 结束后关闭
           this.status = endStatus
+          this.setVoteStatus(endStatus)
         }
       })
     },
@@ -530,7 +539,10 @@ export default {
       }).then(res => {
         console.log('workVote', res)
       })
-    }
+    },
+    ...mapActions('vote', {
+      setVoteStatus: 'SET_VOTE_STATUS'
+    })
   }
 }
 </script>

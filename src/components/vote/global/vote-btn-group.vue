@@ -2,13 +2,14 @@
   <div class="vote-btn-group-wrap">
     <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">帮ta拉票</button>
     <button class="options-vote"
-      :class="{ disabled: !remainVotes }"
-      :disabled="!remainVotes"
+      :class="{ disabled: !remainVotes && voteStatus !== 2 }"
+      :disabled="!remainVotes && voteStatus !== 2"
       @click.stop="btnClick(data, index, 'vote')">给ta投票</button>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -25,6 +26,11 @@ export default {
     index: {
       type: Number
     }
+  },
+  computed: {
+    ...mapGetters('vote', [
+      'voteStatus'
+    ])
   },
   methods: {
     btnClick (data, index, slug) {
