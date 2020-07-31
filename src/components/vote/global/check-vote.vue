@@ -28,7 +28,7 @@
           <div class="check-item" v-if="checkVote.address">
             <el-input placeholder="详细地址" type="textarea" v-model="checkData.address"></el-input>
           </div>
-          <div class="submit-btn-wrap color-button_color">
+          <div class="submit-btn-wrap color-button_color" @click="sureCheckVote()">
             <span class="menu-text color-button_text">确认</span>
           </div>
         </div>
@@ -83,6 +83,9 @@ export default {
     },
     getCode () {
       console.log('getCode')
+    },
+    sureCheckVote () {
+      this.$emit('success')
     },
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'

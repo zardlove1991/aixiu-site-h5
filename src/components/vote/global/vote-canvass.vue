@@ -78,7 +78,7 @@ export default {
             params.audioTime = res.material.audio[0].duration
             params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
           } else if (this.flag === 'text') {
-            params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
+            params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
           }
         }
         API.shareMake({

@@ -118,9 +118,7 @@
       @close="isShowRuleDialog = false">
       <div class="rule-dialog-wrap" slot="tips-content">
         <div class="rule-header">活动规则</div>
-        <div class="rule-content">
-          <p>{{detailInfo.introduce}}</p>
-        </div>
+        <div class="rule-content">{{detailInfo.introduce}}</div>
       </div>
     </tips-dialog>
     <!-- 未找到搜索内容弹窗 -->
@@ -182,7 +180,8 @@
     <check-vote
       :show="isCheckVote"
       :checkVote="checkVote"
-      @close="isCheckVote = false">
+      @close="isCheckVote = false"
+      @success="isShowWorkVote = true">
     </check-vote>
   </div>
 </template>
@@ -316,15 +315,6 @@ export default {
         showModel = 'text'
       }
       this.showModel = showModel
-      // 是否验证投票
-      // if (collectMemberInfo && collectMemberInfo.length > 0) {
-      //   let newCheckVote = {}
-      //   for (let coll of collectMemberInfo) {
-      //     newCheckVote[coll] = true
-      //   }
-      //   this.checkVote = newCheckVote
-      //   this.isCheckVote = true
-      // }
       // 是否活动地区限制
       if (areaLimit && areaLimit.is_area_limit) {
         this.isShowActiveLimit = true
@@ -517,11 +507,27 @@ export default {
     },
     triggerWork (obj) {
       let { data, slug } = obj
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return
+      }
       let worksId = data.id
       this.worksId = worksId
       // 给他投票
       if (slug === 'vote') {
-        this.isShowWorkVote = true
+        let { rule } = detailInfo
+        let { collect_member_info: collectMemberInfo } = rule
+        // 是否验证投票
+        if (collectMemberInfo && collectMemberInfo.length > 0) {
+          let newCheckVote = {}
+          for (let coll of collectMemberInfo) {
+            newCheckVote[coll] = true
+          }
+          this.checkVote = newCheckVote
+          this.isCheckVote = true
+        } else {
+          this.isShowWorkVote = true
+        }
       } else if (slug === 'invote') {
         // 拉票
         let obj = this.$refs['canvass-vote']
@@ -836,9 +842,11 @@ export default {
         color: #333333;
       }
       .rule-content {
+        width: 100%;
         @include font-dpr(15px);
         line-height: px2rem(48px);
         color: #666;
+        @include line-overflow(10);
       }
     }
     .flex-column-dialog {

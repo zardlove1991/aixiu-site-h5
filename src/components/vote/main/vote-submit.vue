@@ -23,7 +23,7 @@
       <div v-if="flag === 'text'" class="form-item">
         <div class="form-title">文字内容</div>
         <div class="form-content">
-          <el-input type="textarea" v-model="examineData.desc"></el-input>
+          <el-input type="textarea" v-model="examineData.introduce"></el-input>
         </div>
       </div>
       <div class="form-item">
@@ -90,7 +90,11 @@ export default {
         contact_name: '',
         contact_phone: ''
       },
-      material: {},
+      material: {
+        image: [],
+        video: [],
+        audio: []
+      },
       fileList: [],
       worksId: '',
       loading: false
@@ -157,16 +161,16 @@ export default {
     },
     changeFile () {
       let fileList = this.fileList
-      console.log('changeFile', fileList)
+      // console.log('changeFile', fileList)
       if (!fileList || fileList.length <= 0) {
-        this.material = {}
+        this.material = {...this.material}
       }
       if (this.flag === 'video') {
-        this.material = {video: [...this.fileList]}
+        this.material = {...this.material, video: [...this.fileList]}
       } else if (this.flag === 'picture') {
-        this.material = {image: [...this.fileList]}
+        this.material = {...this.material, image: [...this.fileList]}
       } else if (this.flag === 'audio') {
-        this.material = {audio: [...this.fileList]}
+        this.material = {...this.material, audio: [...this.fileList]}
       }
     }
   }
