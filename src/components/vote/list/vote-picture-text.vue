@@ -2,7 +2,7 @@
   <div class="image-work-list-wrap">
     <div v-for="(item, index) in workList"
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
-      @click.stop="jumpPage(item.is_my ? 'votemy' : 'votedetail', { worksId: item.id })"
+      @click.stop="jumpPage(item.is_my ? 'voteoneself' : 'votedetail', { worksId: item.id })"
       :key="index">
       <div class="work-poster-wrap" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
         <div class="poster-thumb">

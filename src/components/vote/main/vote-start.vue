@@ -76,33 +76,33 @@
         <div class="overview-search-bar-wrap color-component">
           <input class="search-input" type="text" placeholder="请输入作品名称/来源/编号" v-model="searchVal"
               @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
-          <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch">
+          <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch()">
           </div>
         </div>
       </div>
       <vote-picture-text
         v-if="showModel === 'picture'"
-        :workList="workList"
+        :workList="[myWork, ...workList]"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-picture-text>
       <vote-video-text v-if="showModel === 'video'"
-        :workList="workList"
+        :workList="[myWork, ...workList]"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-video-text>
       <vote-audio-text
         v-if="showModel === 'audio'"
-        :workList="workList"
+        :workList="[myWork, ...workList]"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-audio-text>
       <vote-text
         v-if="showModel === 'text'"
-        :workList="workList"
+        :workList="[myWork, ...workList]"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
@@ -236,6 +236,7 @@ export default {
       voteDate: [], // 投票时间
       detailInfo: {}, // 投票详情信息
       workList: [], // 投票列表数据
+      myWork: {},
       loading: false,
       pager: { // 投票列表分页
         total: 0,
@@ -279,8 +280,12 @@ export default {
       if (!detailInfo) {
         return
       }
-      let { mark, rule } = detailInfo
+      let { mark, rule, my_work: myWork } = detailInfo
       let { area_limit: areaLimit, page_setup: setup } = rule
+      if (myWork) {
+        myWork.is_my = 1
+        this.myWork = myWork
+      }
       // 主题颜色
       if (setup && setup.color_scheme && setup.color_scheme.content) {
         let content = setup.color_scheme.content
@@ -454,7 +459,7 @@ export default {
       this.workList = []
       this.getVoteWorks(name)
     },
-    getVoteWorks (name = '') {
+    getVoteWorks (name = '', isShowMy = true) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -473,7 +478,7 @@ export default {
             this.isShowSearch = true
           }
           this.loading = false
-          console.log('getVoteWorks', res)
+          // console.log('getVoteWorks', res)
           return
         }
         let { total, current_page: page } = pageInfo

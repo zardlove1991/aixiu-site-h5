@@ -6,7 +6,7 @@
       <div class="rank-list-img"></div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        @click.stop="jumpPage('votedetail', { worksId: myVoteData.id })"
+        @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
         v-show="myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
@@ -67,6 +67,7 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   data () {
@@ -102,7 +103,14 @@ export default {
   },
   methods: {
     initRankList () {
-      console.log('initRankList', this.flag, this.id)
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return
+      }
+      if (detailInfo.my_work) {
+        this.myVoteData = detailInfo.my_work
+      }
+      // console.log('initRankList', this.flag, this.id)
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
