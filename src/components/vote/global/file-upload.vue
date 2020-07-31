@@ -95,9 +95,13 @@ export default {
     beforeUpload (file) {
       // console.log('beforeUpload', file)
       this.$emit('update:loading', true)
+      let flag = this.flag
       return new Promise((resolve, reject) => {
         API.getUploadSign({
-          params: { source: 2 }
+          params: {
+            source: 2,
+            type: flag
+          }
         }).then(signature => {
           this.signature = signature
           this.uploadUrl = signature.host
@@ -115,17 +119,21 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList) {
-      let { obj, uid, duration } = response
+      let { obj, duration } = response
       if (!obj) {
         return
       }
       let { host, filename } = obj
       let tmp = {
         url: host + filename,
-        uid
+        uid: this.file.uid
       }
       if (this.flag === 'audio') {
-        tmp.duration = duration
+        let tempDura = 0
+        if (duration) {
+          tempDura = duration
+        }
+        tmp.duration = tempDura
       }
       this.fileList.push(tmp)
       this.$emit('update:loading', false)

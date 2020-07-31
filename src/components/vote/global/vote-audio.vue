@@ -4,8 +4,8 @@
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
       <div class="process-wrap">
-        <div class="process"></div>
-        <div class="bar" v-show="duration !== '00:00'"></div>
+        <div class="process" ref="audio-process"></div>
+        <div class="bar" ref="audio-bar" v-show="duration !== '00:00'"></div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
       <div class="audio-play-icon" :class="{ play: isPlay }" @click.stop="setPlay"></div>
@@ -55,8 +55,8 @@ export default {
     },
     percent: function (val) {
       console.log('当前播放的百分比', val)
-      let processEl = this.audioWrapEl.find('.process')
-      let barEl = this.audioWrapEl.find('.bar')
+      let processEl = this.$refs['audio-process']
+      let barEl = this.$refs['audio-bar']
       processEl.animate({ width: val + '%' }, 'normal')
       barEl.animate({ left: val + '%' }, 'normal')
       // 关闭播放
