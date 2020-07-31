@@ -6,7 +6,7 @@
       <div class="rank-list-img"></div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        @click.stop="jumpPage('votemy', { id, flag })"
+        @click.stop="jumpPage('votedetail', { worksId: myVoteData.id })"
         v-show="myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
@@ -32,7 +32,7 @@
       </div>
       <div class="rank-list-item"
         v-for="(item, index) in rankList" :key="index"
-        @click.stop="jumpPage('votedetail', { id, flag })">
+        @click.stop="jumpPage('votedetail', { worksId: item.id })">
         <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
         <div class="list-item-content">
           <div class="indexpic-wrap"
@@ -136,7 +136,11 @@ export default {
     jumpPage (page, data) {
       this.$router.replace({
         name: page,
-        params: data
+        params: {
+          flag: this.flag,
+          id: this.id
+        },
+        query: data
       })
     }
   }

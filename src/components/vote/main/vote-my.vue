@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-mine color-bg_color">
-    <common-page-empty v-if="!Object.keys(mineList).length" tip="暂无列表投票记录"></common-page-empty>
+    <common-page-empty v-if="!mineList && JSON.stringify(data) === '{}'" tip="暂无列表投票记录"></common-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
@@ -11,7 +11,7 @@
         </div>
         <div class="list-item"
           v-for="(item, idx) in list" :key="idx"
-          @click.stop="jumpPage('votedetail', { id, flag })">
+          @click.stop="jumpPage('votedetail', { worksId: item.works_id })">
           <div class="item-indexpic"
             v-if="flag === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
@@ -90,6 +90,7 @@ export default {
       API.getMineVoteList({
         params
       }).then(res => {
+        console.log('getMineVoteList', res)
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
           this.loading = false
@@ -105,6 +106,7 @@ export default {
         }
         let mineList = this.mineList
         for (let item of data) {
+          console.log('xxxxxxxxx', item)
           let dateKey = item.create_time ? item.create_time.split(' ')[0] : '未知'
           let dateArr = mineList[dateKey] || [] // 声明对象为原数组或者初始化为空
           // 存放数据
@@ -121,9 +123,13 @@ export default {
       })
     },
     jumpPage (page, data) {
-      this.$router.replace({
+      this.$router.push({
         name: page,
-        params: data
+        params: {
+          id: this.id,
+          flag: this.flag
+        },
+        query: data
       })
     }
   }
