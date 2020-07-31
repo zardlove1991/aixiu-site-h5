@@ -52,7 +52,7 @@ export default {
       settings: {
         video: {
           limit: 1,
-          accept: '.mp4,.MP4,.mov,.MOV'
+          accept: '.mp4,.MP4'
         }
       },
       signature: {} // 签名
@@ -128,6 +128,7 @@ export default {
       this.upload(file)
     },
     async upload (file) {
+      this.$emit('update:loading', true)
       await this.getCredential(file)
       this.uploader.addFile(file, null, null, null, JSON.stringify(this.credential))
       this.uploader.startUpload()
@@ -144,25 +145,29 @@ export default {
       let credential = this.credential
       if (credential) {
         let videoId = credential.VideoId
-        API.getVideoUrl({
-          params: {
-            video_id: videoId
-          }
-        }).then(res => {
-          if (!res) {
-            return
-          }
-          let { id, url, cover } = res
-          this.fileList.push({
-            fileid: id,
-            url,
-            cover
-          })
-          console.log(this.fileList)
-          this.$emit('changeFile')
-          this.$emit('update:loading', false)
-        })
+        this.getVideoUrl(videoId)
       }
+    },
+    getVideoUrl (videoId) {
+      API.getVideoUrl({
+        params: {
+          video_id: videoId
+        }
+      }).then(res => {
+        if (!res || !res.url || !res.cover) {
+          this.getVideoUrl(videoId)
+          return
+        }
+        let { id, url, cover } = res
+        this.fileList.push({
+          fileid: id,
+          url,
+          cover
+        })
+        // console.log(this.fileList)
+        this.$emit('changeFile')
+        this.$emit('update:loading', false)
+      })
     }
   }
 }
