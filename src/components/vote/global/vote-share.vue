@@ -17,7 +17,7 @@
       :show="isCheckVote"
       :checkVote="checkVote"
       @close="isCheckVote = false"
-      @success="saveShare()">
+      @success="isCanvassShare()">
     </check-vote>
   </div>
 </template>
@@ -27,6 +27,7 @@ import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -43,6 +44,9 @@ export default {
   },
   components: {
     TipsDialog, CheckVote
+  },
+  computed: {
+    ...mapGetters('vote', ['shareData'])
   },
   data () {
     return {
@@ -71,17 +75,33 @@ export default {
         this.$emit('close')
         this.isCheckVote = true
       } else {
+        this.isCanvassShare()
+      }
+    },
+    isCanvassShare () {
+      let shareData = this.shareData
+      if (shareData && shareData.sign && shareData.invotekey) {
+        // 通过二维码进入投票
+        API.getSharer({
+          params: { key: shareData.invotekey }
+        }).then(res => {
+          if (!res || !res.member_id) {
+            return
+          }
+          this.saveShare(res.member_id)
+        })
+      } else {
         this.saveShare()
       }
     },
-    saveShare () {
+    saveShare (memberId = '') {
       let config = this.config
       if (!config) {
         return
       }
       let obj = {
-        ...config
-        // member_id: STORAGE.get('userinfo').id
+        ...config,
+        member_id: memberId
       }
       API.workVote({
         data: obj

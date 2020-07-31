@@ -59,6 +59,7 @@ import CommonPageDetail from '@/components/vote/global/common-page-detail'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import API from '@/api/module/examination'
+import { mapActions } from 'vuex'
 import STORAGE from '@/utils/storage'
 
 export default {
@@ -85,7 +86,10 @@ export default {
   },
   methods: {
     inintDetail () {
-      let { worksId } = this.$route.query
+      let { worksId, sign, invotekey } = this.$route.query
+      if (sign && invotekey) {
+        this.setShareData({ sign, invotekey })
+      }
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
@@ -125,7 +129,10 @@ export default {
           obj.saveSharer(this.workDetail.id)
         }
       }
-    }
+    },
+    ...mapActions('vote', {
+      setShareData: 'SET_SHARE_DATA'
+    })
   }
 }
 </script>

@@ -193,6 +193,7 @@ import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
+import { mapActions } from 'vuex'
 
 export default {
   mixins: [mixins],
@@ -257,6 +258,10 @@ export default {
   methods: {
     initData () {
       let voteId = this.id
+      let { sign, invotekey } = this.$route.query
+      if (sign && invotekey) {
+        this.setShareData({ sign, invotekey })
+      }
       API.getVodeDetail({
         query: { id: voteId }
       }).then((res) => {
@@ -513,7 +518,10 @@ export default {
     closeWorkVote () {
       this.worksId = ''
       this.isShowWorkVote = false
-    }
+    },
+    ...mapActions('vote', {
+      setShareData: 'SET_SHARE_DATA'
+    })
   }
 }
 </script>
