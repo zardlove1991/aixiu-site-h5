@@ -49,12 +49,6 @@
       @close="isShowWorkVote = false"
     ></share-vote>
     <canvass-vote :flag="flag" ref="canvass-vote-detail" />
-    <check-vote
-      :show="isCheckVote"
-      :checkVote="checkVote"
-      @close="isCheckVote = false"
-      @success="isShowWorkVote = true">
-    </check-vote>
 </div>
 </template>
 
@@ -64,7 +58,6 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import CommonPageDetail from '@/components/vote/global/common-page-detail'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
-import CheckVote from '@/components/vote/global/check-vote'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -74,16 +67,13 @@ export default {
     VoteAudio,
     CommonPageDetail,
     ShareVote,
-    CanvassVote,
-    CheckVote
+    CanvassVote
   },
   data () {
     return {
       workDetail: {},
       isShowWorkVote: false,
-      mark: '',
-      isCheckVote: false,
-      checkVote: {}
+      mark: ''
     }
   },
   created () {
@@ -128,23 +118,7 @@ export default {
           }
         })
       } else if (slug === 'vote') {
-        let detailInfo = STORAGE.get('detailInfo')
-        if (!detailInfo) {
-          return
-        }
-        let { rule } = detailInfo
-        let { collect_member_info: collectMemberInfo } = rule
-        // 是否验证投票
-        if (collectMemberInfo && collectMemberInfo.length > 0) {
-          let newCheckVote = {}
-          for (let coll of collectMemberInfo) {
-            newCheckVote[coll] = true
-          }
-          this.checkVote = newCheckVote
-          this.isCheckVote = true
-        } else {
-          this.isShowWorkVote = true
-        }
+        this.isShowWorkVote = true
       } else if (slug === 'invote') {
         let obj = this.$refs['canvass-vote-detail']
         if (obj) {

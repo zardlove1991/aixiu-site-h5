@@ -1,21 +1,32 @@
 <template>
   <!-- 投票弹窗 -->
-  <tips-dialog
-    :show="show"
-    @close="close()">
-    <div class="workvote-dialog-wrap" slot="tips-content">
-      <div class="workvote-header">确定要给这个作品投票吗？</div>
-      <div class="workvote-all-btn">
-        <button class="dialog-sure-btn min workvote-right" @click="sureWorkVote()">确定</button>
-        <button class="dialog-ok-btn min" @click="close()">取消</button>
+  <div>
+    <tips-dialog
+      :show="show"
+      @close="close()">
+      <div class="workvote-dialog-wrap" slot="tips-content">
+        <div class="workvote-header">确定要给这个作品投票吗？</div>
+        <div class="workvote-all-btn">
+          <button class="dialog-sure-btn min workvote-right" @click="sureWorkVote()">确定</button>
+          <button class="dialog-ok-btn min" @click="close()">取消</button>
+        </div>
       </div>
-    </div>
-  </tips-dialog>
+    </tips-dialog>
+    <check-vote
+      :voteId="config.voting_id"
+      :show="isCheckVote"
+      :checkVote="checkVote"
+      @close="isCheckVote = false"
+      @success="saveShare()">
+    </check-vote>
+  </div>
 </template>
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
+import CheckVote from '@/components/vote/global/check-vote'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   props: {
@@ -31,13 +42,39 @@ export default {
     }
   },
   components: {
-    TipsDialog
+    TipsDialog, CheckVote
+  },
+  data () {
+    return {
+      isCheckVote: false,
+      checkVote: {}
+    }
   },
   methods: {
     close () {
       this.$emit('close')
     },
     sureWorkVote () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return
+      }
+      let { rule } = detailInfo
+      let { collect_member_info: collectMemberInfo } = rule
+      // 是否验证投票
+      if (collectMemberInfo && collectMemberInfo.length > 0) {
+        let newCheckVote = {}
+        for (let coll of collectMemberInfo) {
+          newCheckVote[coll] = true
+        }
+        this.checkVote = newCheckVote
+        this.$emit('close')
+        this.isCheckVote = true
+      } else {
+        this.saveShare()
+      }
+    },
+    saveShare () {
       let config = this.config
       if (!config) {
         return
@@ -49,7 +86,6 @@ export default {
       API.workVote({
         data: obj
       }).then(res => {
-        console.log('workVote', res)
         this.$emit('close')
         this.$emit('success')
       })

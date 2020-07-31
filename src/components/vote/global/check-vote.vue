@@ -13,7 +13,7 @@
             <el-input placeholder="性别" v-model="checkData.sex"></el-input>
           </div>
           <div class="check-item" v-if="checkVote.phone">
-            <el-input placeholder="手机号" v-model="checkData.phone"></el-input>
+            <el-input placeholder="手机号" v-model.number="checkData.phone"></el-input>
           </div>
           <div class="check-item" v-if="checkVote.code">
             <el-input placeholder="验证码" maxlength="10" v-model="checkData.code"></el-input>
@@ -41,12 +41,18 @@
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import { mapMutations } from 'vuex'
+import API from '@/api/module/examination'
+import { Toast } from 'mint-ui'
 
 export default {
   components: {
     TipsDialog
   },
   props: {
+    voteId: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: false
@@ -60,6 +66,17 @@ export default {
   },
   watch: {
     show (newState) {
+      if (!newState) {
+        this.checkData = {
+          name: '',
+          sex: '',
+          phone: '',
+          code: '',
+          birthday: '',
+          email: '',
+          address: ''
+        }
+      }
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
     }
@@ -85,7 +102,45 @@ export default {
       console.log('getCode')
     },
     sureCheckVote () {
-      this.$emit('success')
+      let checkVote = this.checkVote
+      let checkData = this.checkData
+      if (checkVote.name && !checkData.name) {
+        Toast('请输入姓名')
+        return
+      }
+      if (checkVote.sex && !checkData.sex) {
+        Toast('请输入性别')
+        return
+      }
+      if (checkVote.phone && !checkData.phone) {
+        Toast('请输入手机号')
+        return
+      }
+      if (checkVote.birthday && !checkData.birthday) {
+        Toast('请输入生日')
+        return
+      }
+      if (checkVote.email && !checkData.email) {
+        Toast('请输入详细地址')
+        return
+      }
+      if (checkVote.address && !checkData.address) {
+        Toast('请输入邮箱')
+        return
+      }
+      API.collectInfo({
+        query: {
+          id: this.voteId
+        },
+        data: checkData
+      }).then(res => {
+        if (res.error_code) {
+          Toast(res.error_message)
+          return
+        }
+        this.$emit('close')
+        this.$emit('success')
+      })
     },
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'

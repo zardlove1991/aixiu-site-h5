@@ -177,12 +177,6 @@
       @close="closeWorkVote()"
     ></share-vote>
     <canvass-vote :flag="showModel" ref="canvass-vote" />
-    <check-vote
-      :show="isCheckVote"
-      :checkVote="checkVote"
-      @close="isCheckVote = false"
-      @success="isShowWorkVote = true">
-    </check-vote>
   </div>
 </template>
 
@@ -193,7 +187,6 @@ import VoteAudioText from '@/components/vote/list/vote-audio-text'
 import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
 import TipsDialog from '@/components/vote/global/tips-dialog'
-import CheckVote from '@/components/vote/global/check-vote'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import mixins from '@/mixins/index'
@@ -213,7 +206,6 @@ export default {
     VoteText,
     CountDown,
     TipsDialog,
-    CheckVote,
     ShareVote,
     CanvassVote
   },
@@ -235,8 +227,6 @@ export default {
       isShowActiveLimit: false, // 活动地区限制弹窗
       limitArea: [], // 限制的地区
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
-      isCheckVote: false, // 验证投票弹窗
-      checkVote: {}, // 验证投票需要收录的数据
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
@@ -507,27 +497,11 @@ export default {
     },
     triggerWork (obj) {
       let { data, slug } = obj
-      let detailInfo = this.detailInfo
-      if (!detailInfo) {
-        return
-      }
       let worksId = data.id
       this.worksId = worksId
       // 给他投票
       if (slug === 'vote') {
-        let { rule } = detailInfo
-        let { collect_member_info: collectMemberInfo } = rule
-        // 是否验证投票
-        if (collectMemberInfo && collectMemberInfo.length > 0) {
-          let newCheckVote = {}
-          for (let coll of collectMemberInfo) {
-            newCheckVote[coll] = true
-          }
-          this.checkVote = newCheckVote
-          this.isCheckVote = true
-        } else {
-          this.isShowWorkVote = true
-        }
+        this.isShowWorkVote = true
       } else if (slug === 'invote') {
         // 拉票
         let obj = this.$refs['canvass-vote']

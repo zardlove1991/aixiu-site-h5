@@ -56,7 +56,8 @@ let configUrl = {
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getAuthScope: 'open/examination/detail', // 检验密码是否正确
-  setShare: 'setShare' // 分享活动时请求分享接口
+  setShare: 'setShare', // 分享活动时请求分享接口
+  collectInfo: 'client/report/collect/{id}' // 收集信息
 }
 
 export default {
@@ -102,5 +103,6 @@ export default {
   workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG),
   saveSharer: config => createVote(configUrl.saveSharer, 'GET', config, API_FLAG),
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
-  getSharer: config => createVote(configUrl.getSharer, 'POST', config, API_FLAG)
+  getSharer: config => createVote(configUrl.getSharer, 'POST', config, API_FLAG),
+  collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG)
 }
