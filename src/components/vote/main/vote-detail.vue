@@ -38,6 +38,17 @@
       :info="workDetail"
       @detail-menu="dealDetailMenu">
     </common-page-detail>
+    <share-vote
+      :show="isShowWorkVote"
+      :config="{
+        voting_id: id,
+        works_id: workDetail.id,
+        mark: mark
+      }"
+      @success="inintDetail()"
+      @close="isShowWorkVote = false"
+    ></share-vote>
+    <canvass-vote :flag="flag" ref="canvass-vote-detail" />
 </div>
 </template>
 
@@ -45,17 +56,24 @@
 import VoteAudio from '@/components/vote/global/vote-audio'
 import VoteVideo from '@/components/vote/global/vote-video'
 import CommonPageDetail from '@/components/vote/global/common-page-detail'
+import ShareVote from '@/components/vote/global/vote-share'
+import CanvassVote from '@/components/vote/global/vote-canvass'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   components: {
     VoteVideo,
     VoteAudio,
-    CommonPageDetail
+    CommonPageDetail,
+    ShareVote,
+    CanvassVote
   },
   data () {
     return {
-      workDetail: {}
+      workDetail: {},
+      isShowWorkVote: false,
+      mark: ''
     }
   },
   created () {
@@ -68,6 +86,11 @@ export default {
   methods: {
     inintDetail () {
       let { worksId } = this.$route.query
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return
+      }
+      this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
           id: this.id,
@@ -94,6 +117,13 @@ export default {
             id: this.id
           }
         })
+      } else if (slug === 'vote') {
+        this.isShowWorkVote = true
+      } else if (slug === 'invote') {
+        let obj = this.$refs['canvass-vote-detail']
+        if (obj) {
+          obj.saveSharer(this.workDetail.id)
+        }
       }
     }
   }

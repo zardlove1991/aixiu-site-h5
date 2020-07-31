@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import STORAGE from '@/utils/storage'
 
 export default {
   props: {
@@ -27,10 +27,10 @@ export default {
       type: Number
     }
   },
-  computed: {
-    ...mapGetters('vote', [
-      'voteStatus'
-    ])
+  data () {
+    return {
+      voteStatus: STORAGE.get('voteStatus')
+    }
   },
   methods: {
     btnClick (data, index, slug) {

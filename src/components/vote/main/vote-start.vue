@@ -168,18 +168,17 @@
       </div>
     </tips-dialog>
     -->
-    <!-- 投票弹窗 -->
-    <tips-dialog
+    <share-vote
       :show="isShowWorkVote"
-      @close="isShowWorkVote = false">
-      <div class="workvote-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="workvote-header">确定要给这个作品投票吗？</div>
-        <div class="workvote-all-btn">
-          <button class="dialog-sure-btn min workvote-right" @click="sureWorkVote()">确定</button>
-          <button class="dialog-ok-btn min" @click="cancelWorkVote()">取消</button>
-        </div>
-      </div>
-    </tips-dialog>
+      :config="{
+        voting_id: detailInfo.id,
+        works_id: worksId,
+        mark: detailInfo.mark
+      }"
+      @success="dealSearch()"
+      @close="closeWorkVote()"
+    ></share-vote>
+    <canvass-vote :flag="showModel" ref="canvass-vote" />
     <check-vote
       :show="isCheckVote"
       :checkVote="checkVote"
@@ -196,11 +195,12 @@ import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
+import ShareVote from '@/components/vote/global/vote-share'
+import CanvassVote from '@/components/vote/global/vote-canvass'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime } from '@/utils/utils'
-// import STORAGE from '@/utils/storage'
-import { mapActions } from 'vuex'
+import STORAGE from '@/utils/storage'
 
 export default {
   mixins: [mixins],
@@ -208,7 +208,15 @@ export default {
     id: String
   },
   components: {
-    VotePictureText, VoteVideoText, VoteAudioText, VoteText, CountDown, TipsDialog, CheckVote
+    VotePictureText,
+    VoteVideoText,
+    VoteAudioText,
+    VoteText,
+    CountDown,
+    TipsDialog,
+    CheckVote,
+    ShareVote,
+    CanvassVote
   },
   data () {
     return {
@@ -231,7 +239,7 @@ export default {
       isCheckVote: false, // 验证投票弹窗
       checkVote: {}, // 验证投票需要收录的数据
       isShowWorkVote: false, // 给他投票弹窗
-      worksId: '', // 作品id
+      worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
       isExamine: 1, // 0 未报名 1 已报名
       remainVotes: 0, // 剩余投票数
@@ -264,6 +272,7 @@ export default {
         query: { id: voteId }
       }).then((res) => {
         this.detailInfo = res
+        STORAGE.set('detailInfo', res)
         this.getVoteWorks()
         this.handleVoteData()
         this.initReportTime()
@@ -277,7 +286,7 @@ export default {
         return
       }
       let { mark, rule } = detailInfo
-      let { collect_member_info: collectMemberInfo, area_limit: areaLimit, page_setup: setup } = rule
+      let { area_limit: areaLimit, page_setup: setup } = rule
       // 主题颜色
       if (setup && setup.color_scheme && setup.color_scheme.content) {
         let content = setup.color_scheme.content
@@ -308,14 +317,14 @@ export default {
       }
       this.showModel = showModel
       // 是否验证投票
-      if (collectMemberInfo && collectMemberInfo.length > 0) {
-        let newCheckVote = {}
-        for (let coll of collectMemberInfo) {
-          newCheckVote[coll] = true
-        }
-        this.checkVote = newCheckVote
-        this.isCheckVote = true
-      }
+      // if (collectMemberInfo && collectMemberInfo.length > 0) {
+      //   let newCheckVote = {}
+      //   for (let coll of collectMemberInfo) {
+      //     newCheckVote[coll] = true
+      //   }
+      //   this.checkVote = newCheckVote
+      //   this.isCheckVote = true
+      // }
       // 是否活动地区限制
       if (areaLimit && areaLimit.is_area_limit) {
         this.isShowActiveLimit = true
@@ -340,7 +349,7 @@ export default {
         if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
           this.status = status
-          this.setVoteStatus(status)
+          STORAGE.set('voteStatus', status)
           // 检查是否报名
           this.checkUserReport(id)
           this.startCountTime(reportEndTimeMS, (timeArr) => {
@@ -370,13 +379,13 @@ export default {
       if (endTimeMS <= nowTime) {
         // 已经结束
         this.status = endStatus
-        this.setVoteStatus(endStatus)
+        STORAGE.set('voteStatus', endStatus)
         return
       }
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
-      this.setVoteStatus(status)
+      STORAGE.set('voteStatus', status)
       if (status === voteStatus) {
         this.getRemainVotes(id)
       }
@@ -390,7 +399,7 @@ export default {
         } else {
           // 结束后关闭
           this.status = endStatus
-          this.setVoteStatus(endStatus)
+          STORAGE.set('voteStatus', endStatus)
         }
       })
     },
@@ -507,42 +516,24 @@ export default {
       })
     },
     triggerWork (obj) {
-      console.log('triggerWork', obj)
       let { data, slug } = obj
+      let worksId = data.id
+      this.worksId = worksId
       // 给他投票
       if (slug === 'vote') {
-        this.worksId = data.id
         this.isShowWorkVote = true
       } else if (slug === 'invote') {
         // 拉票
+        let obj = this.$refs['canvass-vote']
+        if (obj) {
+          obj.saveSharer(worksId)
+        }
       }
     },
-    cancelWorkVote () {
+    closeWorkVote () {
       this.worksId = ''
       this.isShowWorkVote = false
-    },
-    sureWorkVote () {
-      this.isShowWorkVote = false
-      let detailInfo = this.detailInfo
-      let worksId = this.worksId
-      if (!detailInfo || !worksId) {
-        return
-      }
-      let obj = {
-        voting_id: this.id,
-        mark: detailInfo.mark,
-        works_id: worksId
-        // member_id: STORAGE.get('userinfo').id
-      }
-      API.workVote({
-        data: obj
-      }).then(res => {
-        console.log('workVote', res)
-      })
-    },
-    ...mapActions('vote', {
-      setVoteStatus: 'SET_VOTE_STATUS'
-    })
+    }
   }
 }
 </script>

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import STORAGE from '@/utils/storage'
 
 export default {
   props: {
@@ -44,13 +44,9 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters('vote', [
-      'voteStatus'
-    ])
-  },
   data () {
     return {
+      voteStatus: STORAGE.get('voteStatus'),
       remarkList: [],
       remarkParams: { id: '', count: 20, page: 1 }
     }

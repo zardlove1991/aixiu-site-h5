@@ -6,6 +6,8 @@ import {
   qcloudSetting
 } from '@/config/upload'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
+
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -35,6 +37,7 @@ export const setTheme = (id, name) => {
         bodyEle.style.setProperty('--linkText', content.link_text)
         bodyEle.style.setProperty('--normalText', content.normal_text)
         bodyEle.style.setProperty('--themeColor', content.theme_color)
+        STORAGE.set('detailInfo', info)
       }
     })
   } else {

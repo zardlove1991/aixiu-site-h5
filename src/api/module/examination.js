@@ -23,7 +23,10 @@ let voteUrl = {
   checkUserReport: 'client/report/{id}', // 检查用户是否报名
   workReport: 'client/report/work', // 用户创建/编辑报名
   getReportDetail: 'client/report/work/{id}', // 获取报名内容详情
-  workVote: 'client/voting' // 给他投票
+  workVote: 'client/voting', // 给他投票
+  saveSharer: 'client/voting/save_sharer', // 点击拉票将分享者信息，投票id和作品id入库
+  shareMake: 'share/make', // 生成海报
+  getSharer: 'client/voting/get_sharer' // 用户扫描二维码后获得分享者信息
 }
 
 // 不带GUID
@@ -96,5 +99,8 @@ export default {
   checkUserReport: config => createVote(configUrl.checkUserReport, 'GET', config, API_FLAG),
   workReport: config => createVote(configUrl.workReport, 'POST', config, API_FLAG),
   getReportDetail: config => createVote(configUrl.getReportDetail, 'GET', config, API_FLAG),
-  workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG)
+  workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG),
+  saveSharer: config => createVote(configUrl.saveSharer, 'GET', config, API_FLAG),
+  shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
+  getSharer: config => createVote(configUrl.getSharer, 'POST', config, API_FLAG)
 }
