@@ -36,7 +36,7 @@ export default {
         if (!code) {
           return
         }
-        this.shareMake(worksId, voteId, code)
+        this.shareMake(worksId, code)
       })
     },
     shareMake (worksId, code) {
