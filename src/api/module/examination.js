@@ -103,6 +103,6 @@ export default {
   workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG),
   saveSharer: config => createVote(configUrl.saveSharer, 'GET', config, API_FLAG),
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
-  getSharer: config => createVote(configUrl.getSharer, 'POST', config, API_FLAG),
+  getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG)
 }
