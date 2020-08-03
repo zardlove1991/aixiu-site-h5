@@ -36,7 +36,7 @@ let smartcity = {
       }).then((res) => {
         if (res && res.id) {
           STORAGE.set('userinfo', res)
-          console.log(STORAGE.get('userinfo'), 'userinfo')
+          cbk(res)
         }
       })
     } catch (err) {
