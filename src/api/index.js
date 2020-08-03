@@ -55,7 +55,10 @@ instance.interceptors.response.use((res, xhr) => {
   if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorCode === 'EXPIRE_SIGNATURE' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
     STORAGE.clear()
     oauth((res) => {
-      window.location.reload()
+      if (res && res.id) {
+        console.log('login', res)
+        window.location.reload()
+      }
     })
   }
   let curErrorCode = data.error || data.error_code
