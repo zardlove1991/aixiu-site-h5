@@ -154,20 +154,6 @@
         <button class="dialog-ok-btn" @click="isShowActiveLimit = false">好的</button>
       </div>
     </tips-dialog>
-    <!-- 关注公众号弹窗 -->
-    <!--
-    <tips-dialog
-      :show="isShowQrcode"
-      @close="isShowQrcode = false">
-      <div class="qrcode-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="qrcode-header">关注下方公众号，即可参与互动</div>
-        <div class="qrcode-img"
-          :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"
-        ></div>
-        <div class="qrcode-tips">长按识别二维码</div>
-      </div>
-    </tips-dialog>
-    -->
     <share-vote
       :show="isShowWorkVote"
       :config="{
@@ -230,7 +216,6 @@ export default {
       activeTips: [], // 再xxx内参加活动
       isShowActiveLimit: false, // 活动地区限制弹窗
       limitArea: [], // 限制的地区
-      isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
@@ -969,25 +954,6 @@ export default {
       border-radius: px2rem(35px);
       @include font-dpr(14px);
       color: #F36E4E;
-    }
-    .qrcode-dialog-wrap {
-      padding: px2rem(88px) px2rem(72px);
-      .qrcode-header {
-        margin-bottom: px2rem(40px);
-        text-align: center;
-        @include font-dpr(16px);
-        color: #333333;
-      }
-      .qrcode-img {
-        margin-bottom: px2rem(10px);
-        width: px2rem(225px);
-        height: px2rem(225px);
-      }
-      .qrcode-tips {
-        @include font-dpr(12px);
-        color: #999999;
-        letter-spacing: px2rem(9px);
-      }
     }
   }
 </style>

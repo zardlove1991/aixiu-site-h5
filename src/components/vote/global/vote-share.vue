@@ -19,15 +19,22 @@
       @close="isCheckVote = false"
       @success="isCanvassShare()">
     </check-vote>
+    <qrcode-vote
+      :show="isShowQrcode"
+      :qrcodeUrl="qrcodeUrl"
+      @close="isShowQrcode = false">
+    </qrcode-vote>
   </div>
 </template>
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
+import QrcodeVote from '@/components/vote/global/vote-qrcode'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
+import { Toast } from 'mint-ui'
 
 export default {
   props: {
@@ -43,7 +50,7 @@ export default {
     }
   },
   components: {
-    TipsDialog, CheckVote
+    TipsDialog, CheckVote, QrcodeVote
   },
   computed: {
     ...mapGetters('vote', ['shareData'])
@@ -51,7 +58,9 @@ export default {
   data () {
     return {
       isCheckVote: false,
-      checkVote: {}
+      isShowQrcode: false, // 关注公众号，即可参加活动弹窗
+      checkVote: {},
+      qrcodeUrl: ''
     }
   },
   methods: {
@@ -106,6 +115,17 @@ export default {
       API.workVote({
         data: obj
       }).then(res => {
+        if (res.error_code) {
+          Toast(res.error_message)
+          return
+        }
+        let qrcodeUrl = res.url
+        if (qrcodeUrl) {
+          this.qrcodeUrl = qrcodeUrl
+          this.$emit('close')
+          this.isShowQrcode = true
+          return
+        }
         this.$emit('close')
         this.$emit('success')
       })
