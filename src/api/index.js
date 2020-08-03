@@ -1,6 +1,6 @@
 import axios from 'axios'
 import apiConfig from './config'
-import { oauth } from '@/utils/userinfo'
+// import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
@@ -52,15 +52,6 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorCode === 'EXPIRE_SIGNATURE' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
-    STORAGE.clear()
-    oauth((res) => {
-      if (res && res.id) {
-        console.log('login', res)
-        window.location.reload()
-      }
-    })
-  }
   let curErrorCode = data.error || data.error_code
   let curErrorMsg = data.message || data.error_message
   dealError({ code: curErrorCode, msg: curErrorMsg })
