@@ -346,3 +346,21 @@ export const formatTime = (sec, showHour) => {
   if (!showHour) timeArr.shift()
   return timeArr.join(':')
 }
+
+export const getAppSign = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  if (/micromessenger/.test(ua)) {
+    return 'wechat'
+  } else if (/m2oapp/.test(ua) || /m2osmartcity/.test(ua)) {
+    const arr = ua.split(' ')
+    let sign = 'smartcity'
+    arr.forEach(item => {
+      if (/smartcity/.test(item)) {
+        sign = item
+      }
+    })
+    return sign
+  } else {
+    return 'other'
+  }
+}
