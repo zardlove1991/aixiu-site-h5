@@ -5,7 +5,12 @@ import STORAGE from '@/utils/storage'
 let wechat = {
   getAuthUrl: (scope) => {
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let backUrl = window.location.href
+    let indexOf = backUrl.indexOf('?')
+    if (indexOf !== -1) {
+      backUrl = backUrl.substring(0, indexOf)
+    }
+    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
   async h5Signature (info, cbk, scope) {
