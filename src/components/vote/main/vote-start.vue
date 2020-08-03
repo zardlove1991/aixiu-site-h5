@@ -82,27 +82,27 @@
       </div>
       <vote-picture-text
         v-if="showModel === 'picture'"
-        :workList="[myWork, ...workList]"
+        :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-picture-text>
       <vote-video-text v-if="showModel === 'video'"
-        :workList="[myWork, ...workList]"
+        :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-video-text>
       <vote-audio-text
         v-if="showModel === 'audio'"
-        :workList="[myWork, ...workList]"
+        :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
       </vote-audio-text>
       <vote-text
         v-if="showModel === 'text'"
-        :workList="[myWork, ...workList]"
+        :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
         @trigger-work="triggerWork">
@@ -283,7 +283,7 @@ export default {
       }
       let { mark, rule, my_work: myWork } = detailInfo
       let { area_limit: areaLimit, page_setup: setup } = rule
-      if (myWork) {
+      if (myWork && myWork.id) {
         myWork.is_my = 1
         this.myWork = myWork
       }
