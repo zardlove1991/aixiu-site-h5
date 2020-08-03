@@ -1,5 +1,6 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import { getAppSign } from '@/utils/utils'
 
 let smartcitySetting = {
   sign: 'smartcity',
@@ -27,7 +28,7 @@ let smartcity = {
   },
   async h5Signature (sdkInfo, cbk) { // code换用户登录
     try {
-      sdkInfo.sign = smartcitySetting.sign
+      sdkInfo.sign = getAppSign()
       // let plant = sdkConfig[getAppInfo().guid] || sdkConfig['default']
       let params = sdkInfo
       API.getSmartCityUser({
@@ -61,8 +62,8 @@ export const oauth = (cbk) => {
           // 免登陆
           const params2 = {
             userId: 'xiuzan',
-            sign: 'smartcity',
-            userName: '秀赞小秘书',
+            sign: getAppSign(),
+            userName: '爱秀小秘书',
             avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
           }
           try {
