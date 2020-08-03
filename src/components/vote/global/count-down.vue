@@ -91,7 +91,8 @@ export default {
           height: px2rem(50px);
           line-height: px2rem(50px);
           text-align: center;
-          background-color: #FC7465;
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
           border-radius: px2rem(4px);
           .time-num {
             @include font-dpr(16px);

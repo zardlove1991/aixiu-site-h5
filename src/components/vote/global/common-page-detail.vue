@@ -197,7 +197,8 @@ export default {
           padding: 0 px2rem(23px);
           height: px2rem(44px);
           line-height: px2rem(44px);
-          background-color: #FC7465;
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
           border-radius:  px2rem(24px) px2rem(4px) px2rem(32px) px2rem(4px);
           font-size: px2rem(24px);
           color: #fff;

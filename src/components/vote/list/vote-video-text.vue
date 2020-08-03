@@ -168,7 +168,8 @@ export default {
             right: 0.27rem;
           }
           &.my-infos-wrap .info-number {
-            background-color: #FC7465;
+            // background-color: #FC7465;
+            @include bg-color('btnColor');
           }
         }
       }

@@ -17,7 +17,8 @@
     border-right: none;
     border-left-width: px2rem(18px);
     border-left-style: solid;
-    border-left-color: #FC7465;
+    // border-left-color: #FC7465;
+    @include bg-color('btnColor');
   }
   .arrow-top {
     position: absolute;
@@ -37,7 +38,8 @@
   position: relative;
   width: px2rem(23px);
   height: px2rem(23px);
-  background-color: #F06F64;
+  // background-color: #F06F64;
+  @include bg-color('btnColor');
   margin-right: px2rem(20px);
   margin-left: px2rem(10px);
   &::after {
@@ -60,7 +62,8 @@
     @include font-dpr(11px);
     padding: 0 px2rem(15px) 0 px2rem(10px);
     border-radius: px2rem(24px) px2rem(4px) px2rem(34px) px2rem(4px);
-    background-color: #FC7465;
+    // background-color: #FC7465;
+    @include bg-color('btnColor');
     color: #fff;
     height: px2rem(40px);
     line-height: px2rem(40px);

@@ -230,7 +230,8 @@ export default {
       line-height: px2rem(80px);
       text-align: center;
       border-radius: px2rem(8px);
-      background-color: #FC7465;
+      // background-color: #FC7465;
+      @include bg-color('btnColor');
       .menu-text {
         @include font-dpr(14px);
         color: #fff;

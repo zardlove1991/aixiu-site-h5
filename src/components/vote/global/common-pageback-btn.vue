@@ -32,7 +32,8 @@ export default {
     height: px2rem(68px);
     padding: 0 px2rem(20px);
     border-radius: px2rem(34px);
-    background-color: #FC7465;
+    // background-color: #FC7465;
+    @include bg-color('btnColor');
     font-size: 0;
     .back-btn-arrow {
       display: inline-block;

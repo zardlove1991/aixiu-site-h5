@@ -197,7 +197,8 @@ export default {
               height: px2rem(100px);
               .rank-num {
                 max-width: px2rem(120px);
-                background-color: #FC7465;
+                // background-color: #FC7465;
+                @include bg-color('btnColor');
               }
             }
           }

@@ -145,7 +145,8 @@ export default {
           width: 0;
           height: 100%;
           border-radius: 2px;
-          background-color: #FC7465;
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
         }
         .bar {
           position: absolute;
@@ -155,8 +156,9 @@ export default {
           width: 0.22rem;
           height: 0.22rem;
           border-radius: 50%;
-          background-color: #FC7465;
-          box-shadow: 0 0 5px #FC7465;
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
+          // box-shadow: 0 0 5px #FC7465;
         }
       }
       .audio-play-icon {

@@ -744,7 +744,8 @@ export default {
           text-align: center;
           border-radius: px2rem(8px);
           font-size: 0;
-          background-color: #FC7465;
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
           &.menu-right {
             margin-right: px2rem(30px);
           }
@@ -770,12 +771,12 @@ export default {
         height: px2rem(30px);
         line-height: px2rem(30px);
         font-size: px2rem(24px);
-        color: #4943B7;
+        color: rgba(255, 255, 255, 0.3);
         margin-bottom: px2rem(40px);
         .line {
           flex: 1;
           height: px2rem(15px);
-          border-bottom: 1px dashed #4A43B7;
+          border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
           &:first-child {
             margin-right: px2rem(20px);
           }

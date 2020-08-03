@@ -157,7 +157,8 @@ export default {
             @include font-dpr(11px);
           }
           &.my-infos-wrap .info-number {
-            background-color: #FC7465;
+            // background-color: #FC7465;
+            @include bg-color('btnColor');
           }
         }
       }

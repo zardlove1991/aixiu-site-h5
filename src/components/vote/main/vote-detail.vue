@@ -180,7 +180,8 @@ export default {
             padding: 0 px2rem(22px);
             color: #fff;
             border-radius: px2rem(34px);
-            background-color: #FC7465;
+            // background-color: #FC7465;
+            @include bg-color('btnColor');
             pointer-events: auto;
           }
         }
