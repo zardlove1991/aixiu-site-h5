@@ -2,13 +2,13 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getAppSign } from '@/utils/utils'
 
-let smartcitySetting = {
-  sign: 'smartcity',
-  jssdk: '//h5.xiuzan.com/p/Tplglobal/js/smartCity_sdk.js',
-  name: '智慧城市',
-  audioTimer: 0,
-  validPlay: false
-}
+// let smartcitySetting = {
+//   sign: 'smartcity',
+//   jssdk: '//h5.xiuzan.com/p/Tplglobal/js/smartCity_sdk.js',
+//   name: '智慧城市',
+//   audioTimer: 0,
+//   validPlay: false
+// }
 
 let smartcity = {
   authorize: (cbk) => {
