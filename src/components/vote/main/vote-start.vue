@@ -110,7 +110,7 @@
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
-    <div class="active-rule-wrap default" @click="isShowRuleDialog = true">活动规则</div>
+    <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
     <count-down v-if="status !== statusCode.endStatus" :status="status" :remainVotes="remainVotes" :voteDate="voteDate"></count-down>
     <!-- 活动规则弹窗 -->
     <tips-dialog
@@ -212,6 +212,7 @@ export default {
   },
   data () {
     return {
+      colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
       statusCode: {
         noStatus: 0, // 未开始
@@ -303,6 +304,8 @@ export default {
         bodyEle.style.setProperty('--normalText', content.normal_text)
         bodyEle.style.setProperty('--themeColor', content.theme_color)
       }
+      this.colorName = setup.color_scheme.name
+      console.log(this.colorName)
       // 当前展示类型
       let showModel = ''
       if (mark.indexOf('video') !== -1) {
@@ -549,6 +552,27 @@ export default {
       align-items: center;
       &.default {
         @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
+      }
+      &.block{
+        @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
+      }
+      &.zihong{
+        @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
+      }
+      &.zangqing{
+        @include img-retina('~@/assets/vote/zangqing@2x.png','~@/assets/vote/zanqging@3x.png', 100%, 100%);
+      }
+      &.heijin{
+        @include img-retina('~@/assets/vote/heijin@2x.png','~@/assets/vote/heijin@3x.png', 100%, 100%);
+      }
+      &.zanglan{
+        @include img-retina('~@/assets/vote/zanglan@2x.png','~@/assets/vote/zanglan@3x.png', 100%, 100%);
+      }
+      &.heilv{
+        @include img-retina('~@/assets/vote/heilv@2x.png','~@/assets/vote/heilv@3x.png', 100%, 100%);
+      }
+      &.heihong{
+        @include img-retina('~@/assets/vote/heihong@2x.png','~@/assets/vote/heihong@3x.png', 100%, 100%);
       }
     }
     .commvote-overview {
