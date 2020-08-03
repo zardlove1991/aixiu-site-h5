@@ -37,7 +37,7 @@ export const oauth = (cbk) => {
   const code = searchParams.get('code')
   const existCode = STORAGE.get('code')
   STORAGE.set('code', code)
-  if (!code || (code === existCode)) {
+  if (!code || !existCode || (code === existCode)) {
     // 获取详情
     let pathname = window.location.pathname
     let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
