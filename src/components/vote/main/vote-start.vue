@@ -135,7 +135,9 @@
       :show="isShowActiveTips"
       @close="isShowActiveTips = false">
       <div class="active-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="active-header">请在<span class="tips"> {{activeTips}} </span>内参与活动</div>
+        <div class="active-header">请在
+          <span v-for="(active, index) in activeTips" :key="index" class="tips"> {{active.name}}<span v-show="index < activeTips.length - 1" class="split-line"> / </span></span> 内参与活动
+        </div>
         <div class="active-img"></div>
         <button class="dialog-ok-btn" @click="isShowActiveTips = false">好的</button>
       </div>
@@ -147,7 +149,7 @@
       <div class="limit-dialog-wrap flex-column-dialog" slot="tips-content">
         <div class="limit-header">活动地区限制</div>
         <div class="limit-content">仅支持
-          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
+          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area.name}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
         </div>
         <button class="dialog-ok-btn" @click="isShowActiveLimit = false">好的</button>
       </div>
@@ -191,9 +193,9 @@ import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime } from '@/utils/utils'
+import { formatSecByTime, getPlat } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   mixins: [mixins],
@@ -225,7 +227,7 @@ export default {
       isShowRuleDialog: false, // 活动规则弹窗显隐
       isShowSearch: false, // 搜索无结果弹窗
       isShowActiveTips: false, // 活动提示
-      activeTips: '微信', // 再xxx内参加活动
+      activeTips: [], // 再xxx内参加活动
       isShowActiveLimit: false, // 活动地区限制弹窗
       limitArea: [], // 限制的地区
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
@@ -251,6 +253,7 @@ export default {
     this.initData()
   },
   computed: {
+    ...mapGetters('vote', ['isModelShow']),
     noMore () {
       // 当起始页数大于总页数时停止加载
       let { page, totalPages } = this.pager
@@ -270,8 +273,10 @@ export default {
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
         this.getVoteWorks()
-        this.handleVoteData()
+        // 时间
         this.initReportTime()
+        // 限制
+        this.handleVoteData()
       }).catch(err => {
         console.log(err)
       })
@@ -279,10 +284,10 @@ export default {
     handleVoteData () {
       let detailInfo = this.detailInfo
       if (!detailInfo) {
-        return
+        return false
       }
       let { mark, rule, my_work: myWork } = detailInfo
-      let { area_limit: areaLimit, page_setup: setup } = rule
+      let { limit, page_setup: setup } = rule
       if (myWork && myWork.id) {
         myWork.is_my = 1
         this.myWork = myWork
@@ -318,10 +323,22 @@ export default {
         showModel = 'text'
       }
       this.showModel = showModel
-      // 是否活动地区限制
-      if (areaLimit && areaLimit.is_area_limit) {
-        this.isShowActiveLimit = true
-        this.limitArea = areaLimit.area
+      // 来源限制
+      let { source_limit: sourceLimit } = limit
+      if (sourceLimit) {
+        let { user_app_source: appSource, source_limit: limitTxt } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getPlat()
+          let limitArr = limitTxt.split(',')
+          if (!limitArr.includes(plat)) {
+            if (!this.isModelShow) {
+              this.isShowActiveTips = true
+            }
+            this.setIsModelShow(true)
+            this.activeTips = appSource
+            STORAGE.set('isBtnAuth', 0)
+          }
+        }
       }
     },
     initReportTime () {
@@ -342,7 +359,7 @@ export default {
         if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
           this.status = status
-          STORAGE.set('voteStatus', status)
+          STORAGE.set('isBtnAuth', 0)
           // 检查是否报名
           this.checkUserReport(id)
           this.startCountTime(reportEndTimeMS, (timeArr) => {
@@ -372,13 +389,13 @@ export default {
       if (endTimeMS <= nowTime) {
         // 已经结束
         this.status = endStatus
-        STORAGE.set('voteStatus', endStatus)
+        STORAGE.set('isBtnAuth', 0)
         return
       }
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
-      STORAGE.set('voteStatus', status)
+      STORAGE.set('isBtnAuth', status === noStatus ? 0 : 1)
       if (status === voteStatus) {
         this.getRemainVotes(id)
       }
@@ -392,7 +409,7 @@ export default {
         } else {
           // 结束后关闭
           this.status = endStatus
-          STORAGE.set('voteStatus', endStatus)
+          STORAGE.set('isBtnAuth', 0)
         }
       })
     },
@@ -528,6 +545,7 @@ export default {
       this.isShowWorkVote = false
     },
     ...mapActions('vote', {
+      setIsModelShow: 'SET_IS_MODEL_SHOW',
       setShareData: 'SET_SHARE_DATA'
     })
   }
@@ -878,8 +896,7 @@ export default {
       }
     }
     .active-dialog-wrap, .limit-dialog-wrap, .workvote-dialog-wrap {
-      padding-bottom: px2rem(91px);
-      padding-top: px2rem(86px);
+      padding: px2rem(86px) px2rem(30px) px2rem(91px) px2rem(30px);
       &.limit-dialog-wrap {
         padding-left: px2rem(60px);
         padding-right: px2rem(60px);

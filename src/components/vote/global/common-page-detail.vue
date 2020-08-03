@@ -25,8 +25,8 @@
         <span class="desc">可投票数</span>
       </div>
       <button class="option-vote"
-        :class="{ disabled: !info.remain_votes || voteStatus !== 2 }"
-        :disabled="!info.remain_votes || voteStatus !== 2"
+        :class="{ disabled: !info.remain_votes || !isBtnAuth }"
+        :disabled="!info.remain_votes || !isBtnAuth"
         @click.stop="triggerMenu('vote')">给ta投票</button>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default {
   },
   data () {
     return {
-      voteStatus: STORAGE.get('voteStatus'),
+      isBtnAuth: STORAGE.get('isBtnAuth'),
       remarkList: [],
       remarkParams: { id: '', count: 20, page: 1 }
     }

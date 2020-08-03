@@ -1,16 +1,16 @@
 const state = {
-  voteStatus: null,
+  isModelShow: false,
   shareData: null
 }
 
 const getters = {
-  voteStatus: state => state.voteStatus,
+  isModelShow: state => state.isModelShow,
   shareData: state => state.shareData
 }
 
 const mutations = {
-  SET_VOTE_STATUS (state, payload) {
-    state.voteStatus = payload
+  SET_IS_MODEL_SHOW (state, payload) {
+    state.isModelShow = payload
   },
   SET_SHARE_DATA (state, payload) {
     state.shareData = payload
@@ -18,8 +18,8 @@ const mutations = {
 }
 
 const actions = {
-  SET_VOTE_STATUS ({ commit }, data) {
-    commit('SET_VOTE_STATUS', data)
+  SET_IS_MODEL_SHOW ({ commit }, data) {
+    commit('SET_IS_MODEL_SHOW', data)
   },
   SET_SHARE_DATA ({ commit }, data) {
     commit('SET_SHARE_DATA', data)
