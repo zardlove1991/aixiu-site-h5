@@ -138,9 +138,9 @@ const mutations = {
   SET_EXAM_DETAIL (state, payload) {
     payload.time = payload.start_time
     payload.times = payload.end_time
-    if (new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
+    if (payload.time && new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
       payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
-    } else if (new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
+    } else if (payload.times && new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
       payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
     } else {
       payload.timeStatus = 0
