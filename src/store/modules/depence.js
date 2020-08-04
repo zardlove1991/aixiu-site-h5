@@ -138,9 +138,9 @@ const mutations = {
   SET_EXAM_DETAIL (state, payload) {
     payload.time = payload.start_time
     payload.times = payload.end_time
-    if (new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
+    if (payload.time && new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
       payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
-    } else if (new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
+    } else if (payload.times && new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
       payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
     } else {
       payload.timeStatus = 0
@@ -255,6 +255,9 @@ function dealSaveRecord ({
   blankAnswerInfo
 }, optionFlag) {
   let dataIsEmpty = false
+  if (!subject) {
+    subject = {}
+  }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
   if (subject.type === 'essay') {
@@ -290,9 +293,11 @@ function dealSaveRecord ({
     params.options_id = null
     // 筛选当前选中的数据
     let optionsArr = []
-    subject.options.forEach(item => {
-      if (item.active) optionsArr.push(item.id)
-    })
+    if (subject.options) {
+      subject.options.forEach(item => {
+        if (item.active) optionsArr.push(item.id)
+      })
+    }
     // 针对单选和判断做处理
     if (optionsArr.length === 1 && subject.type !== 'checkbox') {
       optionsArr = optionsArr.join('')
@@ -564,6 +569,9 @@ const actions = {
       // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
+      if (!subject) {
+        subject = {}
+      }
       if (isEmpty) subjectAnswerInfo[subject.id] = false
       else subjectAnswerInfo[subject.id] = true
       // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
