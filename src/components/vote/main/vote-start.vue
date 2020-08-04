@@ -280,7 +280,6 @@ export default {
       // 主题颜色
       if (setup && setup.color_scheme && setup.color_scheme.content) {
         let content = setup.color_scheme.content
-        let bodyEle = document.getElementsByTagName('body')[0]
         document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
         document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
         document.getElementsByTagName('body')[0].style.setProperty('--component', content.component)
@@ -710,6 +709,18 @@ export default {
             background-repeat: no-repeat;
             background-size: contain;
             background-position: right center;
+          }
+          &:after{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            content: '';
+            width: 100%;
+            height:100%;
+            background-color:#fff;
+            opacity: 0.2;
           }
           &:nth-child(2) {
             margin: 0 px2rem(30px);
