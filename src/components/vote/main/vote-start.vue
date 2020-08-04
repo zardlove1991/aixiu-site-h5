@@ -321,26 +321,22 @@ export default {
     },
     setLocation () {
       STORAGE.remove('location')
-      STORAGE.set('location', {
-        lat: 31.99226,
-        lng: 118.7787
+      this.getLocation({
+        type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
+        success: (res) => {
+          if (res) {
+            let { latitude, longitude } = res
+            let location = {
+              lat: latitude,
+              lng: longitude
+            }
+            STORAGE.set('location', location)
+          }
+        },
+        fail: (err) => {
+          console.log('error', err)
+        }
       })
-      // this.getLocation({
-      //   type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
-      //   success: (res) => {
-      //     if (res) {
-      //       let { latitude, longitude } = res
-      //       let location = {
-      //         lat: latitude,
-      //         lng: longitude
-      //       }
-      //       STORAGE.set('location', location)
-      //     }
-      //   },
-      //   fail: (err) => {
-      //     console.log('error', err)
-      //   }
-      // })
     },
     initReportTime () {
       let detailInfo = this.detailInfo
