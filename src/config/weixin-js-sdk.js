@@ -15,7 +15,8 @@ const API_CONFIG = {
   playVoice: 'playVoice', // 播放语音
   stopVoice: 'stopVoice', // 停止播放
   uploadVoice: 'uploadVoice', // 上传录音
-  downloadVoice: 'downloadVoice' // 下载录音为本地
+  downloadVoice: 'downloadVoice', // 下载录音为本地
+  getLocation: 'getLocation'
 }
 
 const WX_API = {
@@ -142,6 +143,9 @@ const WX_API = {
         }
       })
     })
+  },
+  getLocation (params) {
+    wx.getLocation(params)
   },
   /* 选择小程序首页菜单 */
   switchTab (url) {

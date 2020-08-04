@@ -149,7 +149,7 @@
       <div class="limit-dialog-wrap flex-column-dialog" slot="tips-content">
         <div class="limit-header">活动地区限制</div>
         <div class="limit-content">仅支持
-          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area.name}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
+          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
         </div>
         <button class="dialog-ok-btn" @click="isShowActiveLimit = false">好的</button>
       </div>
@@ -272,7 +272,7 @@ export default {
         return false
       }
       let { mark, rule, my_work: myWork } = detailInfo
-      let { limit, page_setup: setup } = rule
+      let { limit, page_setup: setup, area_limit: areaLimit } = rule
       if (myWork && myWork.id) {
         myWork.is_my = 1
         this.myWork = myWork
@@ -314,6 +314,20 @@ export default {
             STORAGE.set('isBtnAuth', 0)
           }
         }
+      }
+      // 区域限制
+      this.getLocation({
+        type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
+        success: (res) => {
+          console.log('getLocation', res)
+        },
+        fail: (err) => {
+          console.log('error', err)
+        }
+      })
+      if (areaLimit && areaLimit.is_area_limit) {
+        this.isShowActiveLimit = true
+        this.limitArea = areaLimit.area
       }
     },
     initReportTime () {
@@ -654,6 +668,7 @@ export default {
           padding-right: 8px;
           margin-right: 6px;
           vertical-align: top;
+          margin-bottom: px2rem(10px);
           &::after {
             position: absolute;
             right: 0;
