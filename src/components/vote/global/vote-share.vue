@@ -28,6 +28,10 @@
       :show="isShowLottery"
       :lottery="lottery"
       @close="isShowLottery = false"></lottery-vote>
+    <area-vote
+      :show="isShowArea"
+      :limitArea="limitArea"
+      @close="isShowArea = false"></area-vote>
   </div>
 </template>
 
@@ -36,6 +40,7 @@ import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
 import QrcodeVote from '@/components/vote/global/vote-qrcode'
 import LotteryVote from '@/components/vote/global/vote-lottery'
+import AreaVote from '@/components/vote/global/vote-area'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
@@ -55,7 +60,7 @@ export default {
     }
   },
   components: {
-    TipsDialog, CheckVote, QrcodeVote, LotteryVote
+    TipsDialog, CheckVote, QrcodeVote, LotteryVote, AreaVote
   },
   computed: {
     ...mapGetters('vote', ['shareData'])
@@ -65,6 +70,8 @@ export default {
       isCheckVote: false,
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowLottery: false, // 抽奖弹窗
+      isShowArea: false, // 区域限制弹窗
+      limitArea: [], // 区域限制
       lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: ''
@@ -111,19 +118,38 @@ export default {
       }
     },
     saveShare (memberId = '') {
+      let detailInfo = STORAGE.get('detailInfo')
       let config = this.config
-      if (!config) {
+      if (!config || !detailInfo) {
         return
       }
       let obj = {
         ...config,
         member_id: memberId
       }
+      // 区域限制
+      let { rule } = detailInfo
+      let { area_limit: areaLimit } = rule
+      if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
+        // 区域限制，传入经纬度
+        let location = STORAGE.get('location')
+        if (location) {
+          obj.lat = location.lat ? location.lat : 0
+          obj.lng = location.lng ? location.lng : 0
+          this.limitArea = areaLimit.area
+        }
+      }
       API.workVote({
         data: obj
       }).then(res => {
-        if (res.error_code) {
+        let errCode = res.error_code
+        if (errCode && errCode !== 'AREA_CAN_NOT_VOTE') {
           Toast(res.error_message)
+          return
+        }
+        if (errCode && errCode === 'AREA_CAN_NOT_VOTE') {
+          this.isShowArea = true
+          this.$emit('close')
           return
         }
         let qrcodeUrl = res.url

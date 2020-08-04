@@ -139,19 +139,16 @@
           <span v-for="(active, index) in activeTips" :key="index" class="tips"> {{active.name}}<span v-show="index < activeTips.length - 1" class="split-line"> / </span></span> 内参与活动
         </div>
         <div class="active-img"></div>
-        <button class="dialog-ok-btn" @click="isShowActiveTips = false">好的</button>
+        <button class="dialog-ok-btn" v-if="!downloadLink" @click="isShowActiveTips = false">好的</button>
+        <button class="dialog-ok-btn" v-else @click="goDownload()">去下载</button>
       </div>
     </tips-dialog>
-    <!-- 活动地区限制弹窗 -->
     <tips-dialog
-      :show="isShowActiveLimit"
-      @close="isShowActiveLimit = false">
-      <div class="limit-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="limit-header">活动地区限制</div>
-        <div class="limit-content">仅支持
-          <span v-for="(area, index) in limitArea" :key="index" class="tips"> {{area}}<span v-show="index < limitArea.length - 1" class="split-line"> / </span></span> 地区用户参与活动
-        </div>
-        <button class="dialog-ok-btn" @click="isShowActiveLimit = false">好的</button>
+      :show="isShowEnd"
+      @close="isShowEnd = false">
+      <div class="search-dialog-wrap flex-column-dialog" slot="tips-content">
+        <div class="search-header">活动已经结束</div>
+        <button class="dialog-ok-btn" @click="isShowEnd = false">好的</button>
       </div>
     </tips-dialog>
     <share-vote
@@ -214,8 +211,8 @@ export default {
       isShowSearch: false, // 搜索无结果弹窗
       isShowActiveTips: false, // 活动提示
       activeTips: [], // 再xxx内参加活动
-      isShowActiveLimit: false, // 活动地区限制弹窗
-      limitArea: [], // 限制的地区
+      downloadLink: '', // 下载链接
+      isShowEnd: false,
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
@@ -252,6 +249,7 @@ export default {
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
+      this.setLocation()
       API.getVodeDetail({
         query: { id: voteId }
       }).then((res) => {
@@ -272,7 +270,7 @@ export default {
         return false
       }
       let { mark, rule, my_work: myWork } = detailInfo
-      let { limit, page_setup: setup, area_limit: areaLimit } = rule
+      let { limit, page_setup: setup } = rule
       if (myWork && myWork.id) {
         myWork.is_my = 1
         this.myWork = myWork
@@ -301,7 +299,11 @@ export default {
       // 来源限制
       let { source_limit: sourceLimit } = limit
       if (sourceLimit) {
-        let { user_app_source: appSource, source_limit: limitTxt } = sourceLimit
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
         if (limitTxt && appSource && appSource.length > 0) {
           let plat = getPlat()
           let limitArr = limitTxt.split(',')
@@ -309,26 +311,36 @@ export default {
             if (!this.isModelShow) {
               this.isShowActiveTips = true
             }
+            this.downloadLink = downloadLink
             this.setIsModelShow(true)
             this.activeTips = appSource
             STORAGE.set('isBtnAuth', 0)
           }
         }
       }
-      // 区域限制
-      this.getLocation({
-        type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
-        success: (res) => {
-          console.log('getLocation', res)
-        },
-        fail: (err) => {
-          console.log('error', err)
-        }
+    },
+    setLocation () {
+      STORAGE.remove('location')
+      STORAGE.set('location', {
+        lat: 31.99226,
+        lng: 118.7787
       })
-      if (areaLimit && areaLimit.is_area_limit) {
-        this.isShowActiveLimit = true
-        this.limitArea = areaLimit.area
-      }
+      // this.getLocation({
+      //   type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
+      //   success: (res) => {
+      //     if (res) {
+      //       let { latitude, longitude } = res
+      //       let location = {
+      //         lat: latitude,
+      //         lng: longitude
+      //       }
+      //       STORAGE.set('location', location)
+      //     }
+      //   },
+      //   fail: (err) => {
+      //     console.log('error', err)
+      //   }
+      // })
     },
     initReportTime () {
       let detailInfo = this.detailInfo
@@ -378,6 +390,10 @@ export default {
       if (endTimeMS <= nowTime) {
         // 已经结束
         this.status = endStatus
+        if (!this.isModelShow) {
+          this.isShowEnd = true
+        }
+        this.setIsModelShow(true)
         STORAGE.set('isBtnAuth', 0)
         return
       }
@@ -391,13 +407,16 @@ export default {
       this.startCountTime(time, (timeArr) => {
         // 更改当前投票的时间
         this.voteDate = timeArr
-        // console.log('投票的时间', timeArr)
       }, () => {
         if (flag) {
           this.initVoteTime()
         } else {
           // 结束后关闭
           this.status = endStatus
+          if (!this.isModelShow) {
+            this.isShowEnd = true
+          }
+          this.setIsModelShow(true)
           STORAGE.set('isBtnAuth', 0)
         }
       })
@@ -532,6 +551,13 @@ export default {
     closeWorkVote () {
       this.worksId = ''
       this.isShowWorkVote = false
+    },
+    goDownload () {
+      let url = this.downloadLink
+      if (url) {
+        window.location.href = url
+        this.isShowActiveTips = false
+      }
     },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
@@ -896,13 +922,9 @@ export default {
         margin-bottom: px2rem(58px);
       }
     }
-    .active-dialog-wrap, .limit-dialog-wrap, .workvote-dialog-wrap {
+    .active-dialog-wrap, .workvote-dialog-wrap {
       padding: px2rem(86px) px2rem(30px) px2rem(91px) px2rem(30px);
-      &.limit-dialog-wrap {
-        padding-left: px2rem(60px);
-        padding-right: px2rem(60px);
-      }
-      .active-header, .limit-header, .workvote-header {
+      .active-header, .workvote-header {
         text-align: center;
         @include font-dpr(16px);
         color: #333333;
@@ -910,31 +932,9 @@ export default {
       .active-header {
         margin-bottom: px2rem(50px);
       }
-      .limit-header {
-        margin-bottom: px2rem(15px);
-      }
-      .workvote-all-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: px2rem(56px);
-        .workvote-right {
-          margin-right: px2rem(60px);
-        }
-      }
       .tips {
         color: #151515;
         font-weight: 500;
-      }
-      .limit-content {
-        text-align: center;
-        margin-bottom: px2rem(60px);
-        @include font-dpr(14px);
-        line-height: px2rem(44px);
-        color: #333333;
-        .split-line {
-          color: #999;
-        }
       }
       .active-img {
         margin-bottom: px2rem(55px);
