@@ -24,6 +24,10 @@
       :qrcodeUrl="qrcodeUrl"
       @close="isShowQrcode = false">
     </qrcode-vote>
+    <lottery-vote
+      :show="isShowLottery"
+      :lottery="lottery"
+      @close="isShowLottery = false"></lottery-vote>
   </div>
 </template>
 
@@ -31,6 +35,7 @@
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import CheckVote from '@/components/vote/global/check-vote'
 import QrcodeVote from '@/components/vote/global/vote-qrcode'
+import LotteryVote from '@/components/vote/global/vote-lottery'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
@@ -50,7 +55,7 @@ export default {
     }
   },
   components: {
-    TipsDialog, CheckVote, QrcodeVote
+    TipsDialog, CheckVote, QrcodeVote, LotteryVote
   },
   computed: {
     ...mapGetters('vote', ['shareData'])
@@ -59,6 +64,8 @@ export default {
     return {
       isCheckVote: false,
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
+      isShowLottery: false, // 抽奖弹窗
+      lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: ''
     }
@@ -124,6 +131,14 @@ export default {
           this.qrcodeUrl = qrcodeUrl
           this.$emit('close')
           this.isShowQrcode = true
+          return
+        }
+        let lottery = res.lottery
+        // lottery.remain_lottery_counts = 10
+        if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
+          this.isShowLottery = true
+          this.lottery = lottery
+          this.$emit('close')
           return
         }
         this.$emit('close')
