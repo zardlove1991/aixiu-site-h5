@@ -12,6 +12,7 @@ let QCloundUrl = {
 
 // 投票相关接口
 let voteUrl = {
+  getVoteMember: 'client/voting/works/member', // 获取投票人员列表
   getVideoUrl: 'video/detail', // 获取视频地址
   getUploadSign: 'ali/signature', // 获取文件上传签名
   getUploadVideoCrdl: 'video/upload/credential', // 获取视频上传凭证
@@ -63,6 +64,7 @@ let configUrl = {
 }
 
 export default {
+  getVoteMember: config => createVote(configUrl.getVoteMember, 'get', config, API_FLAG),
   setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),

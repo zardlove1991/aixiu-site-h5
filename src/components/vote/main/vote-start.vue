@@ -286,7 +286,6 @@ export default {
         document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
       }
       this.colorName = setup.color_scheme.name
-      console.log(this.colorName)
       // 当前展示类型
       let showModel = ''
       if (mark.indexOf('video') !== -1) {

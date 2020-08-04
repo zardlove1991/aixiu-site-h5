@@ -36,7 +36,7 @@
 
 <script>
 import STORAGE from '@/utils/storage'
-
+import API from '@/api/module/examination'
 export default {
   props: {
     info: {
@@ -49,39 +49,49 @@ export default {
   data () {
     return {
       mark: 0,
+      marks: 0,
       isBtnAuth: STORAGE.get('isBtnAuth'),
-      remarkList: [{
-        member_id: 'aaaa',
-        member_name: 'nick_name',
-        member_avatar: 'http://qqqq.com/avatar.png'
-      }, {
-        member_id: 'aaaa',
-        member_name: 'nick_name2',
-        member_avatar: 'http://qqqq.com/avatar.png'
-      }, {
-        member_id: 'aaaa',
-        member_name: 'nick_name3',
-        member_avatar: 'http://qqqq.com/avatar.png'
-      }],
+      remarkList: [],
       remarkParams: { id: '', count: 20, page: 1 }
     }
   },
-  mounted () {
-    this.play()
-    this.remarkList.push(this.remarkList[0])
+  watch: {
+    info: 'getVoteList'
   },
   methods: {
+    getVoteList () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return
+      }
+      let that = this
+      API.getVoteMember({params: {
+        voting_id: detailInfo.id,
+        id: this.info.id,
+        total: 1000
+      }}).then((res) => {
+        if (res.data && res.data[0]) {
+          that.remarkList = res.data
+          that.remarkList = this.remarkList.concat(res.data)
+          if (that.remarkList.length < 3) {
+            that.remarkList.push(that.remarkList[0])
+          }
+          that.play()
+        }
+      })
+    },
     autoPlay () {
-      this.mark--
-      document.getElementsByClassName('reamk-wrap')[0].style.marginLeft = this.mark-- + 'px'
-      if (Math.abs(this.mark) >= document.getElementsByClassName('remark-item')[0].offsetWidth) {
-        this.remarkList.push(this.remarkList[0])
-        this.remarkList.splice(0, 1)
-        this.mark = 0
+      if (this.remarkList && this.remarkList[0]) {
+        this.mark--
+        document.getElementsByClassName('reamk-wrap')[0].style.marginLeft = this.mark-- + 'px'
+        if (Math.abs(this.mark) >= document.getElementsByClassName('remark-item')[0].offsetWidth) {
+          this.remarkList.push(this.remarkList[this.marks])
+          this.marks++
+        }
       }
     },
     play () {
-      setInterval(this.autoPlay, 100)
+      setInterval(this.autoPlay, 200)
     },
     init () {
       // let _this = this
@@ -184,36 +194,33 @@ export default {
     height: 230px;
     background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
     .reamk-wrap {
-      position: relative;
       width: 100%;
       height: px2rem(70px);
       margin-left:0;
-      // .remark-item {
-      //   position: absolute;
-      //   top:0;
-      //   right:0;
-      //   display: inline-flex;
-      //   align-items: center;
-      //   padding: 0 px2rem(22px) 0 px2rem(10px);
-      //   height: 100%;
-      //   background-color: rgba(0,0,0,0.5);
-      //   border-radius: px2rem(35px);
-      //   transform: translate3d(100%,0,0);
-      //   .remark-avatar {
-      //     width: px2rem(50px);
-      //     height: px2rem(50px);
-      //     border-radius: 50%;
-      //     object-fit: cover;
-      //     margin-right: px2rem(14px);
-      //   }
-      //   .remark-desc {
-      //     font-size: px2rem(24px);
-      //     color: #fff;
-      //     .name {
-      //       color: #FB5936
-      //     }
-      //   }
-      // }
+      margin-right:px2rem(14px);
+      .remark-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 px2rem(22px) 0 px2rem(10px);
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        border-radius: px2rem(35px);
+        transform: translate3d(100%,0,0);
+        .remark-avatar {
+          width: px2rem(50px);
+          height: px2rem(50px);
+          border-radius: 50%;
+          object-fit: cover;
+          margin-right: px2rem(14px);
+        }
+        .remark-desc {
+          font-size: px2rem(24px);
+          color: #fff;
+          .name {
+            color: #FB5936
+          }
+        }
+      }
     }
     .detail-info-wrap {
       padding: px2rem(30px);
