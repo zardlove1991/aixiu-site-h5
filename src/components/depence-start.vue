@@ -92,6 +92,18 @@
         <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
+    <my-model
+      :show="isShowBreak"
+      :isLock="true"
+      doneText="直接交卷"
+      cancelText="继续答题"
+      @confirm="downBreakModel"
+      @cancel="cancelBreakModel">
+      <div class="suspend-model" slot="content">
+        <div class="tip-bg"></div>
+        <div class="tip tip-center">考试意外中断了</div>
+      </div>
+    </my-model>
     <!--底部已考按钮组-->
     <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
@@ -136,7 +148,8 @@ export default {
       password: '',
       visitPasswordLimit: false,
       passwordTips: '',
-      errTips: ''
+      errTips: '',
+      isShowBreak: false
     }
   },
   components: { MyModel },
@@ -168,6 +181,18 @@ export default {
     this.initStartInfo()
   },
   methods: {
+    downBreakModel () {
+      // 直接交卷
+      console.log('downBreakModel')
+      let examId = this.id
+      this.endExam({ id: examId })
+      this.isShowBreak = false
+    },
+    cancelBreakModel () {
+      // 继续答题
+      this.isShowBreak = false
+      this.goExamPage()
+    },
     goDownload () {
       if (this.appDownloadUrl) {
         this.errTips = ''
@@ -195,6 +220,10 @@ export default {
         // 分享
         this.sharePage()
         let info = this.examInfo
+        if (info.person_status === 2) {
+          // 考试中
+          this.isShowBreak = true
+        }
         if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
           let content = info.limit.color_scheme.content
           document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
@@ -346,7 +375,8 @@ export default {
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
-      getAnswerCardInfo: 'GET_ANSWERCARD_INFO'
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
+      endExam: 'END_EXAM'
     })
   }
 }
@@ -638,6 +668,14 @@ export default {
       margin-bottom: px2rem(47px);
       text-align: center;
     }
+    .tip-bg {
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     .app-bg{
       width: px2rem(370px);
       height: px2rem(224px);
@@ -656,6 +694,9 @@ export default {
       @include font-dpr(15px);
       color:#666666;
       position: relative;
+      &.tip-center {
+        margin: px2rem(20px) 0;
+      }
       .err-tip {
         position: absolute;
         top: px2rem(40px);
