@@ -1,10 +1,12 @@
 <template>
   <div class="common-page-detail-wrap">
     <div class="reamk-wrap">
-      <div class="remark-item" v-for="(item, index) in remarkList" :ref="'reamk-item-' + index"  :key="index">
-        <img :src="item.member_avatar" alt="" class="remark-avatar" />
-        <p class="remark-desc"><span class="name">{{item.member_name}}</span>投了一票</p>
-      </div>
+        <div v-for="(item, index) in remarkList" class="remark-item" :key="index">
+          <img :src="item.member_avatar" alt="" class="remark-avatar" />
+          <p class="remark-desc"><span class="name">{{item.member_name}}</span>投了一票</p>
+        </div>
+      <!-- <div class="remark-item" v-for="(item, index) in remarkList" :ref="'reamk-item-' + index"  :key="index">
+      </div> -->
     </div>
     <div class="detail-info-wrap">
       <div class="info-numbers-wrap">
@@ -46,17 +48,41 @@ export default {
   },
   data () {
     return {
+      mark: 0,
       isBtnAuth: STORAGE.get('isBtnAuth'),
-      remarkList: [],
+      remarkList: [{
+        member_id: 'aaaa',
+        member_name: 'nick_name',
+        member_avatar: 'http://qqqq.com/avatar.png'
+      }, {
+        member_id: 'aaaa',
+        member_name: 'nick_name2',
+        member_avatar: 'http://qqqq.com/avatar.png'
+      }, {
+        member_id: 'aaaa',
+        member_name: 'nick_name3',
+        member_avatar: 'http://qqqq.com/avatar.png'
+      }],
       remarkParams: { id: '', count: 20, page: 1 }
     }
   },
-  watch: {
-    // info: (newinfo) => {
-    //   newinfo && this.init()
-    // }
+  mounted () {
+    this.play()
+    this.remarkList.push(this.remarkList[0])
   },
   methods: {
+    autoPlay () {
+      this.mark--
+      document.getElementsByClassName('reamk-wrap')[0].style.marginLeft = this.mark-- + 'px'
+      if (Math.abs(this.mark) >= document.getElementsByClassName('remark-item')[0].offsetWidth) {
+        this.remarkList.push(this.remarkList[0])
+        this.remarkList.splice(0, 1)
+        this.mark = 0
+      }
+    },
+    play () {
+      setInterval(this.autoPlay, 100)
+    },
     init () {
       // let _this = this
       // let curId = _this.info.works_id || _this.info.id
@@ -161,32 +187,33 @@ export default {
       position: relative;
       width: 100%;
       height: px2rem(70px);
-      .remark-item {
-        position: absolute;
-        top:0;
-        right:0;
-        display: inline-flex;
-        align-items: center;
-        padding: 0 px2rem(22px) 0 px2rem(10px);
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        border-radius: px2rem(35px);
-        transform: translate3d(100%,0,0);
-        .remark-avatar {
-          width: px2rem(50px);
-          height: px2rem(50px);
-          border-radius: 50%;
-          object-fit: cover;
-          margin-right: px2rem(14px);
-        }
-        .remark-desc {
-          font-size: px2rem(24px);
-          color: #fff;
-          .name {
-            color: #FB5936
-          }
-        }
-      }
+      margin-left:0;
+      // .remark-item {
+      //   position: absolute;
+      //   top:0;
+      //   right:0;
+      //   display: inline-flex;
+      //   align-items: center;
+      //   padding: 0 px2rem(22px) 0 px2rem(10px);
+      //   height: 100%;
+      //   background-color: rgba(0,0,0,0.5);
+      //   border-radius: px2rem(35px);
+      //   transform: translate3d(100%,0,0);
+      //   .remark-avatar {
+      //     width: px2rem(50px);
+      //     height: px2rem(50px);
+      //     border-radius: 50%;
+      //     object-fit: cover;
+      //     margin-right: px2rem(14px);
+      //   }
+      //   .remark-desc {
+      //     font-size: px2rem(24px);
+      //     color: #fff;
+      //     .name {
+      //       color: #FB5936
+      //     }
+      //   }
+      // }
     }
     .detail-info-wrap {
       padding: px2rem(30px);
@@ -283,6 +310,12 @@ export default {
           color: rgba(255,255,255,0.67);
         }
       }
+    }
+    .remark-item{
+      display:inline-block;
+    }
+    .reamk-wrap{
+      white-space:nowrap;
     }
   }
 </style>
