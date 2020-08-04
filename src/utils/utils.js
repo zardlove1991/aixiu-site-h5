@@ -26,17 +26,9 @@ export const setTheme = (id, name) => {
         let content = info.rule.page_setup.color_scheme.content
         let bodyEle = document.getElementsByTagName('body')[0]
         bodyEle.style.setProperty('--bgColor', content.bg_color)
-        bodyEle.style.setProperty('--buttonBorder', content.button_border)
         bodyEle.style.setProperty('--buttonColor', content.button_color)
-        bodyEle.style.setProperty('--buttonText', content.button_text)
         bodyEle.style.setProperty('--component', content.component)
-        bodyEle.style.setProperty('--content', content.content)
         bodyEle.style.setProperty('--decorated', content.decorated)
-        bodyEle.style.setProperty('--grayText', content.gray_text)
-        bodyEle.style.setProperty('--highText', content.high_text)
-        bodyEle.style.setProperty('--linkText', content.link_text)
-        bodyEle.style.setProperty('--normalText', content.normal_text)
-        bodyEle.style.setProperty('--themeColor', content.theme_color)
         STORAGE.set('detailInfo', info)
       }
     })
