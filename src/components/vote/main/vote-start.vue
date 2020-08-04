@@ -281,18 +281,10 @@ export default {
       if (setup && setup.color_scheme && setup.color_scheme.content) {
         let content = setup.color_scheme.content
         let bodyEle = document.getElementsByTagName('body')[0]
-        bodyEle.style.setProperty('--bgColor', content.bg_color)
-        bodyEle.style.setProperty('--buttonBorder', content.button_border)
-        bodyEle.style.setProperty('--buttonColor', content.button_color)
-        bodyEle.style.setProperty('--buttonText', content.button_text)
-        bodyEle.style.setProperty('--component', content.component)
-        bodyEle.style.setProperty('--content', content.content)
-        bodyEle.style.setProperty('--decorated', content.decorated)
-        bodyEle.style.setProperty('--grayText', content.gray_text)
-        bodyEle.style.setProperty('--highText', content.high_text)
-        bodyEle.style.setProperty('--linkText', content.link_text)
-        bodyEle.style.setProperty('--normalText', content.normal_text)
-        bodyEle.style.setProperty('--themeColor', content.theme_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--component', content.component)
+        document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
       }
       this.colorName = setup.color_scheme.name
       console.log(this.colorName)
@@ -612,7 +604,7 @@ export default {
             padding: px2rem(22px) px2rem(45px);
             padding-bottom: px2rem(10px);
             text-align: center;
-            background: linear-gradient(90deg, rgba(91, 74, 188, 1) 0%, rgba(69, 67, 186, 1) 100%);
+            @include bg-color('compColor');
             border-radius: px2rem(16px) px2rem(16px) 0 0;
             box-sizing: border-box;
             font-weight: 500;
@@ -707,7 +699,7 @@ export default {
           height: px2rem(130px);
           padding: px2rem(20px);
           border-radius: px2rem(8px);
-          background: linear-gradient(90deg, rgba(96, 74, 196, 0.3) 0%, rgba(69, 67, 186, 0.3) 100%);
+          @include bg-color('compColor');
           &:before {
             position: absolute;
             top: 0;
