@@ -4,8 +4,10 @@
     @touchmove.prevent="">
     <!--弹窗模块-->
     <div class="lottery-dialog-content">
-      抽奖图
+      <div class="tips">恭喜您，投票有礼</div>
+      <div class="tips">感谢您的鼓励与认可</div>
       <div class="go-lottery-btn" @click.stop="goLottery()">参与抽奖</div>
+      <div class="lottery-count">有{{lottery.remain_lottery_counts ? lottery.remain_lottery_counts : 0}}次抽奖机会</div>
     </div>
     <div class="close-btn" @click.stop="close()"></div>
   </div>
@@ -69,23 +71,38 @@ export default {
     pointer-events: auto;
     z-index: 99;
     .lottery-dialog-content {
-      width: px2rem(600px);
+      padding-top: px2rem(60px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      // justify-content: center;
+      width: px2rem(522px);
+      height: px2rem(402px);
       border-radius: px2rem(8px);
       box-sizing: border-box;
       pointer-events: auto;
-      background-color:#fff;
-      @include img-retina('~@/assets/vote/tips-dialog-bg@2x.png', '~@/assets/vote/tips-dialog-bg@3x.png', px2rem(600px), px2rem(89px));
+      @include img-retina('~@/assets/vote/lottery-bg@2x.png', '~@/assets/vote/lottery-bg@3x.png', px2rem(522px), px2rem(402px));
       background-repeat: no-repeat;
-      background-position: bottom;
+      // background-position: bottom;
+      .tips {
+       @include font-dpr(17px);
+       color: #fff;
+      }
       .go-lottery-btn {
+        margin-top: px2rem(85px);
         width: px2rem(200px);
         height: px2rem(70px);
         line-height: px2rem(70px);
         text-align: center;
-        background: red;
+        background-color: #FB5936;
         border-radius: px2rem(35px);
         @include font-dpr(14px);
-        color: #666666;
+        color: #fff;
+      }
+      .lottery-count {
+        margin-top: px2rem(10px);
+        @include font-dpr(12px);
+        color: #666;
       }
     }
     .close-btn {

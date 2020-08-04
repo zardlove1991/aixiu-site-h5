@@ -199,6 +199,7 @@ export default {
         .detail-video-wrap {
           width: 100%;
           height: px2rem(390px);
+          margin-bottom: px2rem(40px);
         }
         .base-video, .base-audio, .base-image {
           width: 100%;

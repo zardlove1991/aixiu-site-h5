@@ -134,7 +134,6 @@ export default {
           return
         }
         let lottery = res.lottery
-        // lottery.remain_lottery_counts = 10
         if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
           this.isShowLottery = true
           this.lottery = lottery
