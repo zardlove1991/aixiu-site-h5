@@ -32,6 +32,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['mlink']
       break
     }
+    case 'reserve': {
+      host = globalConfig['reserve']
+      break
+    }
     default: {
       host = globalConfig['exam']
     }

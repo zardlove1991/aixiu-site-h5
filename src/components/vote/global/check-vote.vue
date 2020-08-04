@@ -16,6 +16,12 @@
             <el-input placeholder="手机号" v-model.number="checkData.phone"></el-input>
           </div>
           <div class="check-item" v-if="checkVote.code">
+            <el-input placeholder="图形验证码" maxlength="10" v-model="checkData.imgCode"></el-input>
+            <div class="get-img-code"
+              @click.stop="getImgCode()"
+              :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div>
+          </div>
+          <div class="check-item" v-if="checkVote.code">
             <el-input placeholder="验证码" maxlength="10" v-model="checkData.code"></el-input>
             <div class="get-code" @click="getCode()">获取验证码</div>
           </div>
@@ -71,14 +77,23 @@ export default {
           name: '',
           sex: '',
           phone: '',
+          imgCode: '',
           code: '',
           birthday: '',
           email: '',
           address: ''
         }
+        this.imgCodeUrl = ''
+        this.imgCodeKey = ''
       }
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
+    },
+    checkVote: {
+      handler (val) {
+        this.getImgCode()
+      },
+      deep: true
     }
   },
   data () {
@@ -87,19 +102,58 @@ export default {
         name: '',
         sex: '',
         phone: '',
+        imgCode: '',
         code: '',
         birthday: '',
         email: '',
         address: ''
-      }
+      },
+      imgCodeUrl: '',
+      imgCodeKey: ''
     }
   },
   methods: {
+    getImgCode () {
+      API.getCaptchaCode().then(res => {
+        let { key, img } = res
+        this.imgCodeUrl = img
+        this.imgCodeKey = key
+      })
+    },
     closeCheckVote () {
       this.$emit('close')
     },
     getCode () {
       console.log('getCode')
+      let imgCodeKey = this.imgCodeKey
+      let { phone, imgCode } = this.checkData
+      if (!phone) {
+        Toast('请输入手机号')
+        return
+      }
+      if (!imgCode) {
+        Toast('请输入图片验证码')
+        return
+      }
+      if (!imgCodeKey) {
+        Toast('图片验证码已过期')
+        return
+      }
+      let params = {
+        mobile: phone,
+        sign: 'mobile',
+        captcha: imgCode,
+        captcha_key: imgCodeKey
+      }
+      API.getMobileSend({
+        params
+      }).then(res => {
+        if (res.ErrorCode) {
+          Toast(res.ErrorText)
+          return
+        }
+        Toast('已发送验证码')
+      })
     },
     sureCheckVote () {
       let checkVote = this.checkVote
@@ -114,6 +168,10 @@ export default {
       }
       if (checkVote.phone && !checkData.phone) {
         Toast('请输入手机号')
+        return
+      }
+      if (checkVote.code && !checkData.code) {
+        Toast('请输入验证码')
         return
       }
       if (checkVote.birthday && !checkData.birthday) {
@@ -216,6 +274,14 @@ export default {
               resize: none;
               height: px2rem(140px);
             }
+          }
+          .get-img-code {
+            position: absolute;
+            right: px2rem(28px);
+            top: px2rem(15px);
+            width: px2rem(180px);
+            height: px2rem(60px);
+            background-size: px2rem(180px) px2rem(60px);
           }
           .get-code {
             position: absolute;

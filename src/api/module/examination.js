@@ -26,7 +26,9 @@ let voteUrl = {
   workVote: 'client/voting', // 给他投票
   saveSharer: 'client/voting/save_sharer', // 点击拉票将分享者信息，投票id和作品id入库
   shareMake: 'share/make', // 生成海报
-  getSharer: 'client/voting/get_sharer' // 用户扫描二维码后获得分享者信息
+  getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
+  getCaptchaCode: 'captcha/code', // 图片二维码
+  getMobileSend: '/mobile/verify/send' // 获取手机code
 }
 
 // 不带GUID
@@ -104,5 +106,7 @@ export default {
   saveSharer: config => createVote(configUrl.saveSharer, 'GET', config, API_FLAG),
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
   getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
-  collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG)
+  collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
+  getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
 }
