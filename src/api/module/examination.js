@@ -12,6 +12,7 @@ let QCloundUrl = {
 
 // 投票相关接口
 let voteUrl = {
+  getAuthScope2: 'client/voting/base/{id}', // 检验密码是否正确
   getVoteMember: 'client/voting/works/member', // 获取投票人员列表
   getVideoUrl: 'video/detail', // 获取视频地址
   getUploadSign: 'ali/signature', // 获取文件上传签名
@@ -109,6 +110,7 @@ export default {
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
   getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
+  getAuthScope2: config => createVote(configUrl.getAuthScope2, 'get', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
 }
