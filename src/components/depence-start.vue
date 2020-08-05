@@ -2,7 +2,7 @@
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
     <div class="header-top"
-      v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
+      v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">测评已提交</span>
@@ -100,6 +100,7 @@
       @confirm="downBreakModel"
       @cancel="cancelBreakModel">
       <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
         <div class="tip tip-center">考试意外中断了</div>
       </div>
@@ -663,6 +664,7 @@ export default {
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
     .tip-title {
+      color: #333333;
       font-size: px2rem(34px);
       font-weight: 500;
       margin-bottom: px2rem(47px);
