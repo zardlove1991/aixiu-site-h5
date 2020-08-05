@@ -18,13 +18,13 @@
             :data="video">
           </vote-video>
         </div>
-        <div v-if="flag === 'audio'">
+        <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
           <vote-audio class="base-audio"
             v-for="(audio, index) in workDetail.material.audio" :key="index"
             :data="audio">
           </vote-audio>
         </div>
-        <div v-if="flag === 'picture'">
+        <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
           <img class="base-image"
             v-for="(image, index) in workDetail.material.image" :key="index"
             :src="image.url" />
