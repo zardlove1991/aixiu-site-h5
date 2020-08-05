@@ -58,8 +58,8 @@ export const oauth = (cbk) => {
             let compAppid = res.rule.limit.source_limit.app_id ? res.rule.limit.source_limit.app_id : ''
             STORAGE.set('component_appid', compAppid)
           }
-          STORAGE.set('scope_limit', 'snsapi_base')
-          const url = wechat.getAuthUrl('snsapi_base')
+          STORAGE.set('scope_limit', 'snsapi_userinfo')
+          const url = wechat.getAuthUrl('snsapi_userinfo')
           window.location.href = url
         })
       } else {
