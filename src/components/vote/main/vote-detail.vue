@@ -27,7 +27,7 @@
         <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
           <img class="base-image"
             v-for="(image, index) in workDetail.material.image" :key="index"
-            :src="image.url" />
+            :src="image.url + '?x-oss-process=image/resize,w_400'" />
         </div>
         <!--详情页面内容-->
         <p class="detail-cotent" v-show="workDetail.introduce" v-html="workDetail.introduce"></p>
@@ -106,7 +106,6 @@ export default {
           worksId
         }
       }).then(res => {
-        console.log('xxxxxxxxxxxx', res)
         if (!res) {
           return
         }
