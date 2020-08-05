@@ -140,7 +140,7 @@ export default {
   @import "@/styles/components/vote/base.scss";
   .commvote-mine {
     // background-color: #221A6E;
-    @include bg-color('bgColor');
+    // @include bg-color('bgColor');
     min-height: 100vh;
     .mine-list-wrap {
       padding: px2rem(50px) 0 px2rem(50px) px2rem(30px);

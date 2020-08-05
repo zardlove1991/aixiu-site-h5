@@ -63,7 +63,7 @@ export default {
     left: px2rem(50px);
     right: px2rem(50px);
     height: px2rem(140px);
-    @include bg-color('compColor');
+    @include bg-linear-color('compColor');
     box-shadow: 0 2px 5px 5px rgba(0,0,0,0.10);
     box-sizing: border-box;
     border-radius: px2rem(8px);

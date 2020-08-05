@@ -24,7 +24,7 @@
             :data="audio">
           </vote-audio>
         </div>
-        <div v-if="flag === 'image'">
+        <div v-if="flag === 'picture'">
           <img class="base-image"
             v-for="(image, index) in workDetail.material.image" :key="index"
             :src="image.url" />
@@ -106,6 +106,7 @@ export default {
           worksId
         }
       }).then(res => {
+        console.log('xxxxxxxxxxxx', res)
         if (!res) {
           return
         }
@@ -152,7 +153,7 @@ export default {
   @import "@/styles/index.scss";
   .commvote-detail {
     // background-color: #221A6E;
-    @include bg-color('bgColor');
+    // @include bg-color('bgColor');
     min-height: 100vh;
     .detal-content-scroll-wrap {
       width: 100%;

@@ -14,7 +14,6 @@ setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   if ((to.name === 'depencestart' || to.name === 'votebegin') && !from.name) {
     oauth((res) => {
-      console.log(res)
       if (res && res.id) {
         next()
       }

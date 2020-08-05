@@ -271,17 +271,32 @@ export default {
       }
       let { mark, rule, my_work: myWork } = detailInfo
       let { limit, page_setup: setup } = rule
-      if (myWork && myWork.id) {
+      if (myWork && myWork.id && myWork.audit_status === 1) {
         myWork.is_my = 1
         this.myWork = myWork
       }
       // 主题颜色
       if (setup && setup.color_scheme && setup.color_scheme.content) {
         let content = setup.color_scheme.content
+        let background = setup.background
         document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
         document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
         document.getElementsByTagName('body')[0].style.setProperty('--component', content.component)
         document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+        // 改背景图片
+        if (background.indexpic && background.indexpic.length) {
+          let picObj = background.indexpic[0]
+          let url = picObj.host + picObj.filename
+          window.document.getElementById('app').style.backgroundImage = 'url(' + url + ')'
+          if (background.mode && background.mode === 1) {
+            // 固定
+            window.document.getElementById('app').style.backgroundSize = '100%'
+            window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
+          } else {
+            // 平铺
+            window.document.getElementById('app').style.backgroundSize = '100%'
+          }
+        }
       }
       this.colorName = setup.color_scheme.name
       // 当前展示类型
@@ -606,7 +621,7 @@ export default {
     }
     .commvote-overview {
       // background-color: #221A6E;
-      @include bg-color('bgColor');
+      // @include bg-color('bgColor');
       transform: translateX(0);
       &.status-no-end {
         padding-bottom: px2rem(200px);
@@ -638,7 +653,7 @@ export default {
             padding: px2rem(22px) px2rem(45px);
             padding-bottom: px2rem(10px);
             text-align: center;
-            @include bg-color('compColor');
+            @include bg-linear-color('compColor');
             border-radius: px2rem(16px) px2rem(16px) 0 0;
             box-sizing: border-box;
             font-weight: 500;
@@ -753,7 +768,7 @@ export default {
             content: '';
             width: 100%;
             height:100%;
-            @include bg-color('compColor');
+            @include bg-linear-color('compColor');
             opacity: 0.3;
             border-radius: px2rem(8px);
           }

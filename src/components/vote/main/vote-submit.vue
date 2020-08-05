@@ -181,7 +181,7 @@ export default {
   @import "@/styles/index.scss";
   .form-submit-wrap {
     // background-color: #221A6E;
-    @include bg-color('bgColor');
+    // @include bg-color('bgColor');
     padding: px2rem(30px);
     min-height: 100vh;
     .form-item {

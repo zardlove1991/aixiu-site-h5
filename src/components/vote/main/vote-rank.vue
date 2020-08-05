@@ -159,7 +159,7 @@ export default {
   @import "@/styles/index.scss";
   .commvote-rank {
     // background-color: #221A6E;
-    @include bg-color('bgColor');
+    // @include bg-color('bgColor');
     min-height: 100vh;
     .rank-list-wrap {
       position: relative;

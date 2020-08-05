@@ -22,14 +22,31 @@ export const setTheme = (id, name) => {
     // 投票
     API.getVodeDetail({ query: { id } }).then((res) => {
       let info = res
-      if (info.rule && info.rule.page_setup && info.rule.page_setup.color_scheme && info.rule.page_setup.color_scheme.content) {
-        let content = info.rule.page_setup.color_scheme.content
-        let bodyEle = document.getElementsByTagName('body')[0]
-        bodyEle.style.setProperty('--bgColor', content.bg_color)
-        bodyEle.style.setProperty('--buttonColor', content.button_color)
-        bodyEle.style.setProperty('--component', content.component)
-        bodyEle.style.setProperty('--decorated', content.decorated)
-        STORAGE.set('detailInfo', info)
+      if (info.rule && info.rule.page_setup) {
+        let { background, color_scheme: colorScheme } = info.rule.page_setup
+        if (background && colorScheme && colorScheme.content) {
+          let content = colorScheme.content
+          let bodyEle = document.getElementsByTagName('body')[0]
+          bodyEle.style.setProperty('--bgColor', content.bg_color)
+          bodyEle.style.setProperty('--buttonColor', content.button_color)
+          bodyEle.style.setProperty('--component', content.component)
+          bodyEle.style.setProperty('--decorated', content.decorated)
+          // 改背景图片
+          if (background.indexpic && background.indexpic.length) {
+            let picObj = background.indexpic[0]
+            let url = picObj.host + picObj.filename
+            window.document.getElementById('app').style.backgroundImage = 'url(' + url + ')'
+            if (background.mode && background.mode === 1) {
+              // 固定
+              window.document.getElementById('app').style.backgroundSize = '100%'
+              window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
+            } else {
+              // 平铺
+              window.document.getElementById('app').style.backgroundSize = '100%'
+            }
+          }
+          STORAGE.set('detailInfo', info)
+        }
       }
     })
   } else {
