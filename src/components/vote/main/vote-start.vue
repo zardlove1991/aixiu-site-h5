@@ -495,7 +495,6 @@ export default {
       } else if (flag === 'input-search' && !name) {
         this.myWork = this.myVote ? this.myVote : {}
       }
-      console.log('xxxxxxxx', this.myWork)
       this.pager = {
         total: 0,
         page: 0,
@@ -537,6 +536,7 @@ export default {
         }
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
+        this.getRemainVotes(voteId)
         this.loading = false
       })
     },
