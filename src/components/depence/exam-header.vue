@@ -428,6 +428,7 @@ export default {
     padding: px2rem(61px) px2rem(77px) px2rem(49px);
     box-sizing: border-box;
     .tip-title {
+      color: #333333;
       text-align: center;
       font-size: px2rem(34px);
       font-weight: 500;
