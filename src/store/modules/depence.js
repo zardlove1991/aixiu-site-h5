@@ -151,6 +151,14 @@ const mutations = {
     if (payload.limit.background && payload.limit.background.indexpic) {
       payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
       window.document.getElementById('app').style.backgroundImage = 'url(' + payload.limit.background.indexpic.url + ')'
+      if (payload.limit.mode && payload.limit.mode === 1) {
+        // 固定
+        window.document.getElementById('app').style.backgroundSize = '100%'
+        window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
+      } else {
+        // 平铺
+        window.document.getElementById('app').style.backgroundSize = '100%'
+      }
     }
     payload.start_time = payload.start_time.substring(5, payload.start_time.length)
     payload.end_time = payload.end_time.substring(5, payload.end_time.length)
