@@ -8,7 +8,12 @@ let wechat = {
     let appid = globalConfig['APPID']
     let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let backUrl = window.location.href
+    let indexOf = backUrl.indexOf('?')
+    if (indexOf !== -1) {
+      backUrl = backUrl.substring(0, indexOf)
+    }
+    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
   async h5Signature (info, cbk, scope, compAppid) {
@@ -36,13 +41,11 @@ let wechat = {
 export const oauth = (cbk) => {
   const searchParams = new URLSearchParams(window.location.search)
   const code = searchParams.get('code')
-  const existCode = STORAGE.get('code')
-  if (code) {
-    STORAGE.set('code', code)
-  } else {
-    STORAGE.set('code', '')
-  }
+  const existCode = STORAGE.get('code') ? STORAGE.get('code') : ''
+  STORAGE.set('code', code)
   if (!code || (code && !existCode) || (code === existCode)) {
+    // if (!code || (code === existCode)) {
+    // STORAGE.set('code', '')
     // 获取详情
     let pathname = window.location.pathname
     let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
@@ -55,7 +58,6 @@ export const oauth = (cbk) => {
             let compAppid = res.rule.limit.source_limit.app_id ? res.rule.limit.source_limit.app_id : ''
             STORAGE.set('component_appid', compAppid)
           }
-          console.log('getAuthScope2', res)
           STORAGE.set('scope_limit', 'snsapi_base')
           const url = wechat.getAuthUrl('snsapi_base')
           window.location.href = url
@@ -76,6 +78,7 @@ export const oauth = (cbk) => {
       }
     }
   } else {
+    // STORAGE.set('code', code)
     wechat.h5Signature(code, cbk, STORAGE.get('scope_limit'), STORAGE.get('component_appid'))
   }
 }
