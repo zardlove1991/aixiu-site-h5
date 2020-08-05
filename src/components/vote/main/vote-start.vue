@@ -447,6 +447,16 @@ export default {
         this.isExamine = isExamine
       })
     },
+    getVodeDetail (id) {
+      API.getVodeDetail({
+        query: { id }
+      }).then((res) => {
+        this.detailInfo = res
+        STORAGE.set('detailInfo', res)
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     getRemainVotes (id) {
       if (!id) {
         return
@@ -537,6 +547,7 @@ export default {
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
         this.getRemainVotes(voteId)
+        this.getVodeDetail(voteId)
         this.loading = false
       })
     },
