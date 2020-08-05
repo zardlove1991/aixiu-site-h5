@@ -124,7 +124,7 @@ export default {
       this.$emit('close')
     },
     getCode () {
-      console.log('getCode')
+      // console.log('getCode')
       let imgCodeKey = this.imgCodeKey
       let { phone, imgCode } = this.checkData
       if (!phone) {

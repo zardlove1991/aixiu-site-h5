@@ -147,11 +147,13 @@ export default {
           Toast(res.error_message)
           return
         }
+        // 区域限制
         if (errCode && errCode === 'AREA_CAN_NOT_VOTE') {
           this.isShowArea = true
           this.$emit('close')
           return
         }
+        // 关注公众号
         let qrcodeUrl = res.url
         if (qrcodeUrl) {
           this.qrcodeUrl = qrcodeUrl
@@ -159,6 +161,7 @@ export default {
           this.isShowQrcode = true
           return
         }
+        // 抽奖
         let lottery = res.lottery
         if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
           this.isShowLottery = true
@@ -167,6 +170,7 @@ export default {
           return
         }
         this.$emit('close')
+        Toast('成功投票')
         this.$emit('success')
       })
     }

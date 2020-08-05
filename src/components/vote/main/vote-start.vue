@@ -595,7 +595,6 @@ export default {
       }
     },
     closeWorkVote () {
-      this.worksId = ''
       this.isShowWorkVote = false
     },
     goDownload () {
