@@ -37,7 +37,7 @@
         <div class="list-item-content">
           <div class="indexpic-wrap"
             v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
-            :style="{ backgroundImage: 'url(' + item.material.image[0]._src + '?x-oss-process=image/resize,w_400)'}">
+            :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">{{item.numbering}}号</div>
           </div>
           <div class="indexpic-wrap"
@@ -187,7 +187,8 @@ export default {
         &.rank-my-item {
           padding-left: px2rem(30px);
           margin: px2rem(30px) px2rem(30px) px2rem(30px) 0;
-          background: linear-gradient(-90deg, #604AC4 0%, #4543BA 100%);
+          // background: linear-gradient(-90deg, #604AC4 0%, #4543BA 100%);
+          @include bg-linear-color('compColor');
           border-radius: px2rem(4px);
           .list-item-content {
             border-bottom: 0;

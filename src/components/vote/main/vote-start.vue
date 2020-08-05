@@ -76,7 +76,7 @@
         <div class="overview-search-bar-wrap color-component">
           <input class="search-input" type="text" placeholder="请输入作品名称/来源/编号" v-model="searchVal"
               @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
-          <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch()">
+          <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@ export default {
     this.initData()
   },
   computed: {
-    ...mapGetters('vote', ['isModelShow']),
+    ...mapGetters('vote', ['isModelShow', 'myVote']),
     noMore () {
       // 当起始页数大于总页数时停止加载
       let { page, totalPages } = this.pager
@@ -274,6 +274,7 @@ export default {
       if (myWork && myWork.id && myWork.audit_status === 1) {
         myWork.is_my = 1
         this.myWork = myWork
+        this.setMyVote(myWork)
       }
       // 主题颜色
       if (setup && setup.color_scheme && setup.color_scheme.content) {
@@ -487,8 +488,14 @@ export default {
       // 开始倒计时
       timer = setInterval(computedTime, 1000)
     },
-    dealSearch () {
+    dealSearch (flag = '') {
       let name = this.searchVal.trim()
+      if (flag === 'input-search' && name) {
+        this.myWork = {}
+      } else if (flag === 'input-search' && !name) {
+        this.myWork = this.myVote ? this.myVote : {}
+      }
+      console.log('xxxxxxxx', this.myWork)
       this.pager = {
         total: 0,
         page: 0,
@@ -572,7 +579,8 @@ export default {
     },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
-      setShareData: 'SET_SHARE_DATA'
+      setShareData: 'SET_SHARE_DATA',
+      setMyVote: 'SET_MY_VOTE'
     })
   }
 }
