@@ -87,7 +87,7 @@ export default {
           if (!res || !res.image) {
             return
           }
-          console.log('shareMake', res.image)
+          // console.log('shareMake', res.image)
           this.sharePoster = res.image
           this.show = true
         })
