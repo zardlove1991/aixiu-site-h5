@@ -52,11 +52,16 @@ export default {
       marks: 0,
       isBtnAuth: STORAGE.get('isBtnAuth'),
       remarkList: [],
-      remarkParams: { id: '', count: 20, page: 1 }
+      remarkParams: { id: '', count: 20, page: 1 },
+      interval: null
     }
   },
   watch: {
     info: 'getVoteList'
+  },
+  beforeDestroy () {
+    // 清除定时器
+    this.clearSetInterval()
   },
   methods: {
     getVoteList () {
@@ -83,103 +88,26 @@ export default {
     autoPlay () {
       if (this.remarkList && this.remarkList[0]) {
         this.mark--
-        document.getElementsByClassName('reamk-wrap')[0].style.marginLeft = this.mark-- + 'px'
-        if (Math.abs(this.mark) >= document.getElementsByClassName('remark-item')[0].offsetWidth) {
-          this.remarkList.push(this.remarkList[this.marks])
-          this.marks++
+        let reamkWrap = document.getElementsByClassName('reamk-wrap')
+        if (reamkWrap && reamkWrap.length) {
+          reamkWrap[0].style.marginLeft = this.mark-- + 'px'
+          if (Math.abs(this.mark) >= reamkWrap[0].offsetWidth) {
+            this.remarkList.push(this.remarkList[this.marks])
+            this.marks++
+          }
         }
       }
     },
+    clearSetInterval () {
+      if (this.interval) {
+        clearInterval(this.interval)
+      }
+    },
     play () {
-      setInterval(this.autoPlay, 200)
-    },
-    init () {
-      // let _this = this
-      // let curId = _this.info.works_id || _this.info.id
-      // // 先重置列表参数
-      // _this._resetRemarkList()
-      // // 设置ID
-      // _this.remarkRenderSlug = 'init'
-      // _this.remarkParams.id = curId
-      // // 等待更新完毕后在去处理评论
-      // _this.$nextTick(function () {
-      //   _this.getRemarkList()
-      // })
-    },
-    getRemarkList () {
-      let _this = this
-      let remarkParams = _this.remarkParams
-      let remarkRenderSlug = _this.remarkRenderSlug // 列表渲染标识 代表是初始化还是css动效渲染
-      let virtualMemberList = _this.info.virtual_members || []
-      // 渲染虚拟列表
-      function renerList (list) {
-        // 赋值
-        _this.remarkParams = remarkParams
-        _this.remarkList = list
-        // 执行动画 PS：等待列表更新完毕
-        _this.$nextTick(function () {
-          _this.createMarkAnimation()
-        })
-      }
-      // 判断是否需要添加虚拟票数展示 PS: 条件为: 动效渲染标识、有虚拟投票人数据、并且渲染页数为最终页结束的时候
-      let isLastRenderPage = _this.curRemarkInfo && remarkParams.page > _this.curRemarkInfo.page.last_page
-      if (remarkRenderSlug === 'animate' && virtualMemberList.length && isLastRenderPage) {
-        remarkParams.page = -1
-        renerList(virtualMemberList)
-      } else {
-        // 如果虚拟加载完毕在回归正常列表请求页数 PS: 条件: 初始化渲染标识、虚拟票数加载完毕、是否是最后一页
-        if (remarkParams.page === -1 || remarkRenderSlug === 'init' || isLastRenderPage) remarkParams.page = 1
-        // 请求列表
-        /*
-        _GThis.getVideoVoteUserList(remarkParams).done(function (remarkInfo) {
-          let page = remarkInfo.page
-          let list = remarkInfo.data
-          // let noMove = page.total <= 3
-          _this.curRemarkInfo = remarkInfo
-          // 判断是否有数据存在 没有的话就去渲染虚拟投票列表 如果存在的话
-          if (page.total === 0) {
-            virtualMemberList.length && renerList(virtualMemberList)
-            return
-          }
-          // 执行页面增加
-          remarkParams.page++
-          renerList(list)
-        })
-        */
-      }
-    },
-    createMarkAnimation () {
-      let _this = this
-      let remarkList = _this.remarkList
-      // let remarkWrap = _this.$refs['reamk-wrap-ref']
-      // $('.xz-commvote-image').find('.common-page-detail-wrap').find('.detail-footer').find('.reamk-wrap')
-      let delayTime = 0
-      remarkList.forEach((index, key) => {
-        let remarkEl = _this.$refs['reamk-item-' + key]
-        // remarkWrap.find('.remark-item').eq(index)
-        delayTime = (index * 2.3).toFixed(2)
-        remarkEl.addEventListener('webkitAnimationEnd', function () {
-          // 当执行最后一个动画结束的时候 重新去请求 先清除原先的结构
-          if (index === remarkList.length - 1) {
-            _this.remarkRenderSlug = 'animate'
-            _this.remarkList = []
-            _this.$nextTick(function () {
-              _this.getRemarkList()
-            })
-          }
-        })
-        remarkEl.css('animation', 'sliderMove 7s linear ' + delayTime + 's')
-      })
+      this.interval = setInterval(this.autoPlay, 200)
     },
     triggerMenu (slug) {
-      if (slug === 'back') {
-        this._resetRemarkList()
-      }
       this.$emit('detail-menu', slug)
-    },
-    _resetRemarkList () {
-      this.remarkList = [] // 清空数据
-      this.remarkParams = { id: '', count: 20, page: 1 }
     }
   }
 }
