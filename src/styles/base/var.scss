@@ -94,7 +94,7 @@ $colorMaps: (
     @each $varName,$val in $list {
       @if $colorName == $varName {
         [data-theme= #{$key}] & {
-          background-color: $val;
+          background: $val;
         }
       }
     }
