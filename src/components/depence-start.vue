@@ -184,9 +184,9 @@ export default {
   methods: {
     downBreakModel () {
       // 直接交卷
-      console.log('downBreakModel')
       let examId = this.id
       this.endExam({ id: examId })
+      this.initStartInfo()
       this.isShowBreak = false
     },
     cancelBreakModel () {
@@ -690,7 +690,7 @@ export default {
       line-height: 1;
     }
     .tip{
-      font-weight: bold;
+      // font-weight: bold;
       text-align: center;
       margin-bottom:px2rem(80px);
       @include font-dpr(15px);
