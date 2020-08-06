@@ -17,7 +17,7 @@
       <div v-if="flag === 'audio'" class="form-item">
         <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3，时长不能超过60s)</span></div>
         <div class="form-content">
-          <file-upload :flag="flag" :fileList="fileList"></file-upload>
+          <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="flag === 'text'" class="form-item">
@@ -114,6 +114,16 @@ export default {
             return
           }
           this.worksId = worksId
+          let flag = this.flag
+          if (res.material) {
+            if (flag === 'picture') {
+              this.fileList = res.material.image
+            } else if (flag === 'video') {
+              this.fileList = res.material.video
+            } else if (flag === 'audio') {
+              this.fileList = res.material.audio
+            }
+          }
           this.examineData = {
             name: res.name,
             source: res.source,
@@ -161,7 +171,6 @@ export default {
     },
     changeFile () {
       let fileList = this.fileList
-      // console.log('changeFile', fileList)
       if (!fileList || fileList.length <= 0) {
         this.material = {...this.material}
       }

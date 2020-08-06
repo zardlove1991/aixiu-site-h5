@@ -138,7 +138,7 @@ export default {
       }
       this.fileList.push(tmp)
       this.$emit('update:loading', false)
-      this.$emit('changeFile', response)
+      this.$emit('changeFile')
     }
   }
 }
