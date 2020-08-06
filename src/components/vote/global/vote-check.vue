@@ -32,9 +32,7 @@
       <div class="check-item" v-if="checkVote.address">
         <el-input placeholder="详细地址" type="textarea" v-model="checkData.address"></el-input>
       </div>
-      <div class="submit-btn-wrap color-button_color" @click="sureCheckVote()">
-        <span class="menu-text color-button_text">确认</span>
-      </div>
+      <div class="submit-btn-wrap color-button_color" @click.stop="sureCheckVote()">确认</div>
     </div>
   </tips-dialog>
 </template>
@@ -262,10 +260,8 @@ export default {
       border-radius: px2rem(40px);
       // background-color: #FC7465;
       @include bg-color('btnColor');
-      .menu-text {
-        @include font-dpr(14px);
-        color: #fff;
-      }
+      @include font-dpr(14px);
+      color: #fff;
     }
   }
 </style>
