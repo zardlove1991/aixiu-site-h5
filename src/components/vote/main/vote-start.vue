@@ -255,11 +255,15 @@ export default {
       }).then((res) => {
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
+        // 点击量
         this.setClick(voteId, res.title, res.mark)
+        // 分享
+        this.sharePage()
+        // 作品列表
         this.getVoteWorks()
-        // 时间
+        // 初始化时间
         this.initReportTime()
-        // 限制
+        // 其他限制
         this.handleVoteData()
       }).catch(err => {
         console.log(err)
@@ -280,6 +284,24 @@ export default {
         }
       }
       API.setClick({ params: datas }).then(() => {})
+    },
+    sharePage () {
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return false
+      }
+      let { title, introduce, indexpic } = detailInfo
+      let imgUrl = ''
+      if (indexpic && indexpic.host && indexpic.filename) {
+        imgUrl = 'http:' + indexpic.host + indexpic.filename
+      }
+      this.initPageShareInfo({
+        id: detailInfo.id,
+        title,
+        desc: introduce,
+        indexpic: imgUrl,
+        link: window.location.href
+      })
     },
     handleVoteData () {
       let detailInfo = this.detailInfo
