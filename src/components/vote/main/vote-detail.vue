@@ -1,37 +1,33 @@
 <template>
   <div class="commvote-detail color-bg_color">
-    <!--详情滚动包裹-->
-    <div class="detal-content-scroll-wrap">
-      <!--详情内容展示-->
-      <div class="detail-page-content-wrap">
-        <div class="detail-header">
-          <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
-          <div class="lottery-button color-button_color color-button_text"
-            v-if="workDetail.lottery && workDetail.lottery.remain_counts"
-            @click.stop="goLottery('lottery')">有{{workDetail.lottery.remain_counts}}次抽奖机会</div>
-        </div>
-        <!--媒体组件渲染-->
-        <div class="detail-video-wrap"
-          v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
-          <vote-video class="base-video"
-            v-for="(video, index) in workDetail.material.video" :key="index"
-            :data="video">
-          </vote-video>
-        </div>
-        <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
-          <vote-audio class="base-audio"
-            v-for="(audio, index) in workDetail.material.audio" :key="index"
-            :data="audio">
-          </vote-audio>
-        </div>
-        <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
-          <img class="base-image"
-            v-for="(image, index) in workDetail.material.image" :key="index"
-            :src="image.url + '?x-oss-process=image/resize,w_400'" />
-        </div>
-        <!--详情页面内容-->
-        <p class="detail-cotent" v-show="workDetail.introduce" v-html="workDetail.introduce"></p>
+    <div class="detail-page-content-wrap">
+      <div class="detail-header">
+        <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
+        <div class="lottery-button color-button_color color-button_text"
+          v-if="workDetail.lottery && workDetail.lottery.remain_counts"
+          @click.stop="goLottery('lottery')">有{{workDetail.lottery.remain_counts}}次抽奖机会</div>
       </div>
+      <!--媒体组件渲染-->
+      <div class="detail-video-wrap"
+        v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
+        <vote-video class="base-video"
+          v-for="(video, index) in workDetail.material.video" :key="index"
+          :data="video">
+        </vote-video>
+      </div>
+      <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
+        <vote-audio class="base-audio"
+          v-for="(audio, index) in workDetail.material.audio" :key="index"
+          :data="audio">
+        </vote-audio>
+      </div>
+      <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
+        <img class="base-image"
+          v-for="(image, index) in workDetail.material.image" :key="index"
+          :src="image.url + '?x-oss-process=image/resize,w_400'" />
+      </div>
+      <!--详情页面内容-->
+      <p class="detail-cotent" v-show="workDetail.introduce" v-html="workDetail.introduce"></p>
     </div>
     <!--导入详情页模板-->
     <common-page-detail
@@ -153,64 +149,63 @@ export default {
   .commvote-detail {
     // background-color: #221A6E;
     // @include bg-color('bgColor');
-    min-height: 100vh;
-    .detal-content-scroll-wrap {
+    width: 100%;
+    min-height: calc(100vh);
+    .detail-page-content-wrap {
       width: 100%;
-      padding-bottom: 230px;
-      .detail-page-content-wrap {
-        padding: 0 px2rem(30px);
-        .detail-header {
-          display: flex;
-          justify-content: space-between;
-          padding: px2rem(30px);
-          .common-page-detail-back {
-            position: relative;
-            width: px2rem(68px);
-            height: px2rem(68px);
-            border-radius: 50%;
-            background-color: rgba(0,0,0,0.5);
-            pointer-events: auto;
-            &::after {
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-30%, -50%) rotate(45deg);
-              width: px2rem(20px);
-              height: px2rem(20px);
-              border: 1px solid #fff;
-              border-top: none;
-              border-right: none;
-              content: '';
-            }
-          }
-          .lottery-button{
-            height: px2rem(68px);
-            line-height: px2rem(68px);
-            text-align: center;
-            font-size: px2rem(22px);
-            padding: 0 px2rem(22px);
-            color: #fff;
-            border-radius: px2rem(34px);
-            // background-color: #FC7465;
-            @include bg-color('btnColor');
-            pointer-events: auto;
+      padding: 0 px2rem(30px);
+      padding-bottom: 250px;
+      .detail-header {
+        display: flex;
+        justify-content: space-between;
+        padding: px2rem(30px);
+        .common-page-detail-back {
+          position: relative;
+          width: px2rem(68px);
+          height: px2rem(68px);
+          border-radius: 50%;
+          background-color: rgba(0,0,0,0.5);
+          pointer-events: auto;
+          &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-30%, -50%) rotate(45deg);
+            width: px2rem(20px);
+            height: px2rem(20px);
+            border: 1px solid #fff;
+            border-top: none;
+            border-right: none;
+            content: '';
           }
         }
-        .detail-video-wrap {
-          width: 100%;
-          height: px2rem(390px);
-          margin-bottom: px2rem(40px);
-        }
-        .base-video, .base-audio, .base-image {
-          width: 100%;
-          margin-bottom: px2rem(40px);
-        }
-        .detail-cotent {
-          font-size: px2rem(30px);
+        .lottery-button{
+          height: px2rem(68px);
+          line-height: px2rem(68px);
+          text-align: center;
+          font-size: px2rem(22px);
+          padding: 0 px2rem(22px);
           color: #fff;
-          line-height: px2rem(48px);
-          white-space: pre-line;
+          border-radius: px2rem(34px);
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
+          pointer-events: auto;
         }
+      }
+      .detail-video-wrap {
+        width: 100%;
+        height: px2rem(390px);
+        margin-bottom: px2rem(40px);
+      }
+      .base-video, .base-audio, .base-image {
+        width: 100%;
+        margin-bottom: px2rem(40px);
+      }
+      .detail-cotent {
+        font-size: px2rem(30px);
+        color: #fff;
+        line-height: px2rem(48px);
+        white-space: pre-line;
       }
     }
   }

@@ -119,7 +119,6 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 230px;
     background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
     .reamk-wrap {
       width: 100%;
@@ -181,9 +180,7 @@ export default {
         }
       }
       .info-source {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
+        @include line-overflow(1);
         font-size: px2rem(28px);
         color: rgba(255,255,255,0.7);
       }
@@ -191,11 +188,7 @@ export default {
         font-size: px2rem(36px);
         color: #fff;
         padding: px2rem(22px) 0 px2rem(12px);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        @include line-overflow(1);
       }
     }
     .detail-options-wrap {
