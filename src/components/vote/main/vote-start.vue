@@ -312,12 +312,9 @@ export default {
         }
       }
       if (!shareLink) {
-        let link = window.location.href
-        let indexOf = link.indexOf('?')
-        if (indexOf !== -1) {
-          link = link.substring(0, indexOf)
-        }
-        shareLink = link
+        let searchParams = new URLSearchParams(window.location.search)
+        searchParams.delete('code')
+        shareLink = window.location.href
       }
       this.initPageShareInfo({
         id: detailInfo.id,
