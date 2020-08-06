@@ -37,7 +37,7 @@
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
-import CheckVote from '@/components/vote/global/check-vote'
+import CheckVote from '@/components/vote/global/vote-check'
 import QrcodeVote from '@/components/vote/global/vote-qrcode'
 import LotteryVote from '@/components/vote/global/vote-lottery'
 import AreaVote from '@/components/vote/global/vote-area'
