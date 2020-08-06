@@ -30,6 +30,7 @@
       @close="isShowLottery = false"></lottery-vote>
     <area-vote
       :show="isShowArea"
+      :limitArea="limitArea"
       @close="isShowArea = false"></area-vote>
     <!-- <tips-dialog
       :show="isShowMax"
@@ -81,6 +82,7 @@ export default {
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowLottery: false, // 抽奖弹窗
       isShowArea: false, // 区域限制弹窗
+      limitArea: [],
       // isShowMax: true,
       // voteTime: 0,
       lottery: {}, // 抽奖信息
@@ -142,6 +144,7 @@ export default {
       let { rule } = detailInfo
       let { area_limit: areaLimit } = rule
       if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
+        this.limitArea = areaLimit.area
         // 区域限制，传入经纬度
         let location = STORAGE.get('location')
         if (location) {

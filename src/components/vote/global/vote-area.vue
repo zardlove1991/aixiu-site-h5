@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import STORAGE from '@/utils/storage'
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import { mapMutations } from 'vuex'
 
@@ -22,24 +21,16 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    limitArea: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   components: {
     TipsDialog
-  },
-  computed: {
-    limitArea () {
-      let detailInfo = STORAGE.get('detailInfo')
-      if (!detailInfo) {
-        return []
-      }
-      let { rule } = detailInfo
-      let { area_limit: areaLimit } = rule
-      if (areaLimit && areaLimit.area && areaLimit.area.length) {
-        return areaLimit.area
-      }
-      return []
-    }
   },
   watch: {
     show (newState) {
