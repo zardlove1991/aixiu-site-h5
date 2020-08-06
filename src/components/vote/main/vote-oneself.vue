@@ -30,7 +30,7 @@
         </div>
         <vote-audio
           v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>
-        <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.desc}}</div>
+        <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
         <div class="header first-header">
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>

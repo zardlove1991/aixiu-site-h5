@@ -57,12 +57,10 @@ export default {
     top: 0;
     width: 100%;
     height: 100vh;
-    overflow-y: scroll;
     padding: 20px 0;
     background: rgba(0,0,0,0.5);
     z-index: 99;
     .dialog-main-wrap {
-      max-height: calc(100vh - 40px);
       position: relative;
       top: 50%;
       transform: translateY(-50%);

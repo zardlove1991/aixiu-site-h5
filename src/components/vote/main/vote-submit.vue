@@ -56,7 +56,7 @@
           <el-input v-model.number="examineData.contact_phone" maxlength="11"></el-input>
         </div>
       </div>
-      <div class="submit-btn-wrap color-button_color" @click="!disabled && commitVote()">
+      <div class="submit-btn-wrap" @click="!disabled && commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
     </form>
@@ -136,6 +136,7 @@ export default {
     },
     commitVote () {
       let id = this.id
+      let examineData = this.examineData
       if (!id) {
         return
       }
@@ -143,12 +144,36 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
+      if (!examineData.name || !examineData.name.trim()) {
+        Toast('请输入名称')
+        return
+      }
+      if (!examineData.source || !examineData.source.trim()) {
+        Toast('请输入来源')
+        return
+      }
+      if (!examineData.introduce || !examineData.introduce.trim()) {
+        if (this.disabledflag === 'text') {
+          Toast('请输入文字内容')
+        } else {
+          Toast('请输入描述')
+        }
+        return
+      }
+      if (!examineData.contact_name || !examineData.contact_name.trim()) {
+        Toast('请输入联系人姓名')
+        return
+      }
+      if (!examineData.contact_phone || !examineData.contact_phone.trim()) {
+        Toast('请输入联系人电话')
+        return
+      }
       let data = {
         voting_id: id,
         material: {
           ...this.material
         },
-        ...this.examineData
+        ...examineData
       }
       if (this.worksId) {
         data.id = this.worksId
@@ -157,11 +182,11 @@ export default {
       API.workReport({
         data
       }).then(res => {
+        this.disabled = false
         if (res.error_code) {
           Toast(res.error_message)
           return
         }
-        this.disabled = false
         Toast('报名成功')
         this.$router.replace({
           name: 'votebegin',
