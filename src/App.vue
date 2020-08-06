@@ -20,7 +20,8 @@ export default {
 
 <style lang="scss">
 #app{
-  height: 100vh;
+  // height: 100vh;
+  min-height: 100vh;
   background-color: var(--bgColor, #fff);
   overflow: scroll;
   -webkit-overflow-scrolling:touch;

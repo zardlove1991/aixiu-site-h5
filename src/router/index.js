@@ -9,6 +9,10 @@ Vue.use(Router)
 
 let router = new Router({
   mode: 'history',
+  // base: '/pre/',
+  scrollBehavior () {
+    return { x: 0, y: 0 }
+  },
   routes: [
     {
       path: '/depencelist/:id',
