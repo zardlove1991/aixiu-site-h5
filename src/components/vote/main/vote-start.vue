@@ -949,7 +949,6 @@ export default {
         @include font-dpr(15px);
         line-height: px2rem(48px);
         color: #666;
-        @include line-overflow(10);
       }
     }
     .flex-column-dialog {
