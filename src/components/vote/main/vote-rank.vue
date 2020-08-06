@@ -142,7 +142,7 @@ export default {
       })
     },
     jumpPage (page, data) {
-      this.$router.replace({
+      this.$router.push({
         name: page,
         params: {
           flag: this.flag,

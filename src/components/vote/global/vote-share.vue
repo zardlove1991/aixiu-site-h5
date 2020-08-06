@@ -31,6 +31,17 @@
     <area-vote
       :show="isShowArea"
       @close="isShowArea = false"></area-vote>
+    <!-- <tips-dialog
+      :show="isShowMax"
+      @close="isShowMax = false">
+      <div class="workvote-dialog-wrap" slot="tips-content">
+        <div class="workvote-header">这个作品太火爆了</div>
+        <div class="workvote-header">{{voteTime}}分钟后在给Ta投票吧！</div>
+        <div class="workvote-all-btn">
+          <button class="dialog-ok-btn" @click.stop="isShowArea = false">好的</button>
+        </div>
+      </div>
+    </tips-dialog> -->
   </div>
 </template>
 
@@ -70,6 +81,8 @@ export default {
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowLottery: false, // 抽奖弹窗
       isShowArea: false, // 区域限制弹窗
+      // isShowMax: true,
+      // voteTime: 0,
       lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: ''
