@@ -29,13 +29,13 @@
       <div class="form-item">
         <div class="form-title">名称</div>
         <div class="form-content">
-          <el-input v-model="examineData.name"></el-input>
+          <el-input v-model="examineData.name" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">来源</div>
         <div class="form-content">
-          <el-input v-model="examineData.source"></el-input>
+          <el-input v-model="examineData.source" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="flag !== 'text'">
@@ -47,13 +47,13 @@
       <div class="form-item">
         <div class="form-title">联系人姓名</div>
         <div class="form-content">
-          <el-input v-model="examineData.contact_name"></el-input>
+          <el-input v-model="examineData.contact_name" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">联系人电话</div>
         <div class="form-content">
-          <el-input v-model.number="examineData.contact_phone"></el-input>
+          <el-input v-model.number="examineData.contact_phone" maxlength="11"></el-input>
         </div>
       </div>
       <div class="submit-btn-wrap color-button_color" @click="!disabled && commitVote()">

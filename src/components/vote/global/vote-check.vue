@@ -5,13 +5,13 @@
     <div class="check-dialog-wrap" slot="tips-content">
       <div class="check-header">投票验证</div>
       <div class="check-item" v-if="checkVote.name">
-        <el-input placeholder="姓名" v-model="checkData.name"></el-input>
+        <el-input placeholder="姓名" maxlength="20" v-model="checkData.name"></el-input>
       </div>
       <div class="check-item" v-if="checkVote.sex">
         <el-input placeholder="性别" v-model="checkData.sex"></el-input>
       </div>
       <div class="check-item" v-if="checkVote.phone">
-        <el-input placeholder="手机号" v-model.number="checkData.phone"></el-input>
+        <el-input placeholder="手机号" maxlength="11" v-model.number="checkData.phone"></el-input>
       </div>
       <div class="check-item" v-if="checkVote.code">
         <el-input placeholder="图形验证码" maxlength="10" v-model="checkData.imgCode"></el-input>
@@ -27,10 +27,10 @@
         <el-input placeholder="生日" v-model="checkData.birthday"></el-input>
       </div>
       <div class="check-item" v-if="checkVote.email">
-        <el-input placeholder="邮箱" v-model="checkData.email"></el-input>
+        <el-input placeholder="邮箱" maxlength="100" v-model="checkData.email"></el-input>
       </div>
       <div class="check-item" v-if="checkVote.address">
-        <el-input placeholder="详细地址" type="textarea" v-model="checkData.address"></el-input>
+        <el-input placeholder="详细地址" maxlength="200" type="textarea" v-model="checkData.address"></el-input>
       </div>
       <div class="submit-btn-wrap color-button_color" @click.stop="sureCheckVote()">确认</div>
     </div>
