@@ -54,7 +54,7 @@ export default {
       state ? audio.play() : audio.pause()
     },
     percent: function (val) {
-      console.log('当前播放的百分比', val)
+      // console.log('当前播放的百分比', val)
       let processEl = this.$refs['audio-process']
       let barEl = this.$refs['audio-bar']
       processEl.animate({ width: val + '%' }, 'normal')
@@ -96,7 +96,9 @@ export default {
     timeUpdate (e) {
       let time = e.target.currentTime
       this.duration = formatTimeBySec(time)
-      this.percent = Math.round(time / this.data.duration * 100)
+      if (this.data.duration !== 0) {
+        this.percent = Math.round(time / this.data.duration * 100)
+      }
     },
     deleteFile (item) {
       let audio = this.audio

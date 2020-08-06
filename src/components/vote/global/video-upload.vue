@@ -25,7 +25,6 @@
 
 <script>
 import VoteVideo from '@/components/vote/global/vote-video'
-import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 
 export default {
@@ -42,7 +41,7 @@ export default {
     }
   },
   components: {
-    VoteVideo, VoteAudio
+    VoteVideo
   },
   mounted () {
     this.init()
