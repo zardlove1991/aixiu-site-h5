@@ -176,7 +176,7 @@ import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, randomNum } from '@/utils/utils'
+import { formatSecByTime, getPlat } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -255,8 +255,6 @@ export default {
       }).then((res) => {
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
-        // 点击量
-        this.setClick(voteId, res.title, res.mark)
         // 分享
         this.sharePage()
         // 作品列表
@@ -268,22 +266,6 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-    },
-    setClick (id, title, mark) {
-      let datas = {
-        param: {
-          data: [{
-            id,
-            mark,
-            title,
-            member_id: STORAGE.get('userinfo').id,
-            start_time: parseInt((new Date().getTime()) / 1000),
-            from: null,
-            hash: randomNum(13)
-          }]
-        }
-      }
-      API.setClick({ params: datas }).then(() => {})
     },
     sharePage () {
       let detailInfo = this.detailInfo
