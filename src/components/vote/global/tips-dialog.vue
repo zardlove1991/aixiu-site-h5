@@ -57,7 +57,7 @@ export default {
     top: 0;
     width: 100%;
     height: 100vh;
-    overflow: auto;
+    overflow-y: scroll;
     padding: 20px 0;
     background: rgba(0,0,0,0.5);
     z-index: 99;
