@@ -290,17 +290,41 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { title, introduce, indexpic } = detailInfo
+      let { title, introduce, indexpic, rule } = detailInfo
       let imgUrl = ''
-      if (indexpic && indexpic.host && indexpic.filename) {
-        imgUrl = 'http:' + indexpic.host + indexpic.filename
+      let shareLink = ''
+      let shareTitle = title
+      let shareBrief = introduce
+      if (rule.share_settings) {
+        let share = rule.share_settings
+        let sharePic = share.indexpic
+        if (share.title) {
+          shareTitle = share.title
+        }
+        if (share.brief) {
+          shareBrief = share.brief
+        }
+        shareLink = share.link
+        if (sharePic && sharePic.host && sharePic.filename) {
+          imgUrl = 'http:' + sharePic.host + sharePic.filename
+        } else if (indexpic && indexpic.host && indexpic.filename) {
+          imgUrl = 'http:' + indexpic.host + indexpic.filename
+        }
+      }
+      if (!shareLink) {
+        let link = window.location.href
+        let indexOf = link.indexOf('?')
+        if (indexOf !== -1) {
+          link = link.substring(0, indexOf)
+        }
+        shareLink = link
       }
       this.initPageShareInfo({
         id: detailInfo.id,
-        title,
-        desc: introduce,
+        title: shareTitle,
+        desc: shareBrief,
         indexpic: imgUrl,
-        link: window.location.href
+        link: shareLink
       })
     },
     handleVoteData () {
