@@ -30,7 +30,6 @@
       @close="isShowLottery = false"></lottery-vote>
     <area-vote
       :show="isShowArea"
-      :limitArea="limitArea"
       @close="isShowArea = false"></area-vote>
   </div>
 </template>
@@ -71,7 +70,6 @@ export default {
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowLottery: false, // 抽奖弹窗
       isShowArea: false, // 区域限制弹窗
-      limitArea: [], // 区域限制
       lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: ''
@@ -136,7 +134,6 @@ export default {
         if (location) {
           obj.lat = location.lat ? location.lat : 0
           obj.lng = location.lng ? location.lng : 0
-          this.limitArea = areaLimit.area
         }
       }
       API.workVote({
