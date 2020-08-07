@@ -145,6 +145,24 @@ export const getPlat = () => {
   }
   return 'browser'
 }
+
+export const setClick = (id, title, mark) => {
+  let datas = {
+    param: {
+      data: [{
+        id,
+        mark,
+        title,
+        member_id: STORAGE.get('userinfo').id,
+        start_time: parseInt((new Date().getTime()) / 1000),
+        from: null,
+        hash: randomNum(13)
+      }]
+    }
+  }
+  API.setClick({ params: datas }).then(() => {})
+}
+
 /*
 * 动态set head title
 * */
