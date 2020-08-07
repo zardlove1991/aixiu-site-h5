@@ -968,7 +968,7 @@ export default {
         color: #333333;
       }
       .rule-content {
-        max-height: px2rem(700px);
+        max-height: px2rem(650px);
         overflow-y: auto;
         width: 100%;
         @include font-dpr(15px);
