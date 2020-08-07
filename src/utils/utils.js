@@ -203,6 +203,23 @@ export const setPlatCssInclude = () => {
   window.document.documentElement.setAttribute('data-theme', theme)
 }
 
+export const delUrlParams = (delArr = []) => {
+  let backUrl = window.location.href
+  let indexOf = backUrl.indexOf('?')
+  if (indexOf !== -1) {
+    backUrl = backUrl.substring(0, indexOf)
+  }
+  let searchParams = new URLSearchParams(window.location.search)
+  for (let item of delArr) {
+    searchParams.delete(item)
+  }
+  let params = searchParams.toString()
+  if (params) {
+    backUrl = backUrl + '?' + params
+  }
+  return backUrl
+}
+
 export const getFontsize = () => {
 // 初始值
   const defaultDpr = 1

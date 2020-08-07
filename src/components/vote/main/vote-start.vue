@@ -176,7 +176,7 @@ import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat } from '@/utils/utils'
+import { formatSecByTime, getPlat, delUrlParams } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -294,9 +294,7 @@ export default {
         }
       }
       if (!shareLink) {
-        let searchParams = new URLSearchParams(window.location.search)
-        searchParams.delete('code')
-        shareLink = window.location.href
+        shareLink = delUrlParams(['code'])
       }
       this.initPageShareInfo({
         id: detailInfo.id,

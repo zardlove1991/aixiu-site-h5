@@ -1,4 +1,4 @@
-import { randomNum } from '@/utils/utils'
+import { randomNum, delUrlParams } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import globalConfig from '@/api/config'
@@ -8,11 +8,7 @@ let wechat = {
     let appid = globalConfig['APPID']
     let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let searchParams = new URLSearchParams(window.location.search)
-    searchParams.delete('code')
-    // searchParams.delete('pre')
-    // searchParams.append('pre', 1)
-    let backUrl = window.location.href
+    let backUrl = delUrlParams(['code'])
     let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
