@@ -1,22 +1,25 @@
 import { randomNum } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import globalConfig from '@/api/config'
 
 let wechat = {
   getAuthUrl: (scope) => {
+    let appid = globalConfig['APPID']
+    let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     let backUrl = window.location.href
     let indexOf = backUrl.indexOf('?')
     if (indexOf !== -1) {
-      backUrl = backUrl.substring(0, indexOf)
+      backUrl = backUrl.substring(0, indexOf) + '?test'
     }
-    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
   async h5Signature (info, cbk, scope) {
     let params = {
       code: info,
-      appid: 'wx63a3a30d3880a56e',
+      appid: globalConfig['APPID'],
       sign: 'wechat',
       scope,
       mark: 'marketing'

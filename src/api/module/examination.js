@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createBase } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -9,15 +9,24 @@ let QCloundUrl = {
   getQcloudVideoInfo: 'client/material/video/info', // 获取腾讯云视频信息
   getMaterialInfo: 'client/material/save' // 获取素材信息
 }
-// 不带GUID
-let configUrl = {
-  ...QCloundUrl,
+
+// 公共的url
+let baseUrl = {
   sumbitUV: 'setSubmit', // 提交次数
-  setClick: 'setClick', // click
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
   getWeixinInfo: 'signature', // 获得微信公众号信息
+  getCaptchaCode: 'captcha/code', // 图片二维码
+  getMobileSend: '/mobile/verify/send', // 获取手机code
+  setClick: 'setClick', // click
+  setShare: 'setShare' // 分享活动时请求分享接口
+}
+
+// 不带GUID
+let configUrl = {
+  ...QCloundUrl,
+  ...baseUrl,
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -35,7 +44,7 @@ let configUrl = {
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getAuthScope: 'open/examination/detail', // 检验密码是否正确
-  setShare: 'setShare' // 分享活动时请求分享接口
+  saveDrawRecord: 'collection/form/record' // 投票信息采集
 }
 
 export default {
@@ -65,5 +74,8 @@ export default {
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
-  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG)
+  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
+  saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public')
 }
