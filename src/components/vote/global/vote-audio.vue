@@ -1,11 +1,13 @@
 <template>
-  <div class="commvote-base-audio-wrap" ref="audio-wrap">
+  <div class="commvote-base-audio-wrap">
     <p class="audio-name">{{data.name}}</p>
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
       <div class="process-wrap">
-        <div class="process" ref="audio-process"></div>
-        <div class="bar" ref="audio-bar" v-show="duration !== '00:00'"></div>
+        <div class="process" >
+          <div class="audio-bar" v-show="duration !== '00:00'"></div>
+          <div class="audio-bar-spot" v-show="duration !== '00:00'"></div>
+        </div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
       <div class="audio-play-icon" :class="{ play: isPlay }" @click.stop="setPlay"></div>
@@ -55,11 +57,12 @@ export default {
     },
     percent: function (val) {
       // console.log('当前播放的百分比', val)
-      let processEl = this.$refs['audio-process']
-      let barEl = this.$refs['audio-bar']
-      processEl.animate({ width: val + '%' }, 'normal')
-      barEl.animate({ left: val + '%' }, 'normal')
-      // 关闭播放
+      let audioBar = document.getElementsByClassName('audio-bar')
+      let audioBarSpot = document.getElementsByClassName('audio-bar-spot')
+      if (audioBar && audioBarSpot && audioBar.length && audioBarSpot.length) {
+        audioBar[0].style.width = val + '%'
+        audioBarSpot[0].style.left = val + '%'
+      }// 关闭播放
       if (val === 100) this.isPlay = false
     }
   },
@@ -75,7 +78,7 @@ export default {
         this.audio.src = this.data.url
         this.totalDuration = formatTimeBySec(this.data.duration)
         // 获得当前音频包裹元素
-        this.audioWrapEl = this.$refs['audio-wrap']
+        // this.audioWrapEl = this.$refs['audio-wrap']
         // 监听客户端请求数据
         this.audio.load()
       })
@@ -137,30 +140,36 @@ export default {
         color: rgba(255,255,255,0.7);
       }
       .process-wrap {
-        position: relative;
         flex: 1;
         height: 2px;
-        border-radius: 2px;
+        border-radius: px2rem(4px);
         margin: 0 px2rem(20px);
         background-color: rgba(255,255,255,0.5);
         .process {
-          width: 0;
-          height: 100%;
-          border-radius: 2px;
-          // background-color: #FC7465;
-          @include bg-color('btnColor');
-        }
-        .bar {
-          position: absolute;
-          top:50%;
-          left: 0;
-          transform: translate3d(-50%, -50%, 0);
-          width: 0.22rem;
-          height: 0.22rem;
-          border-radius: 50%;
-          // background-color: #FC7465;
-          @include bg-color('btnColor');
-          // box-shadow: 0 0 5px #FC7465;
+          position: relative;
+          width: 100%;
+          height: 2px;
+          border-radius: px2rem(4px);
+          background-color: rgba(255,255,255,0.5);
+          .audio-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: px2rem(16px);
+            height: 2px;
+            border-radius: px2rem(4px);
+            @include bg-color('btnColor');
+          }
+          .audio-bar-spot {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: px2rem(16px);
+            height: px2rem(16px);
+            border-radius: 50%;
+            @include bg-color('btnColor');
+          }
         }
       }
       .audio-play-icon {
