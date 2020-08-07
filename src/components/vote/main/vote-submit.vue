@@ -53,7 +53,7 @@
       <div class="form-item">
         <div class="form-title">联系人电话</div>
         <div class="form-content">
-          <el-input v-model.number="examineData.contact_phone" maxlength="11"></el-input>
+          <el-input v-model="examineData.contact_phone" maxlength="11"></el-input>
         </div>
       </div>
       <div class="submit-btn-wrap" @click="!disabled && commitVote()">

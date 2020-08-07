@@ -12,7 +12,7 @@
           <el-input placeholder="性别" v-model="checkData.sex"></el-input>
         </div>
         <div class="check-item" v-if="checkVote.phone">
-          <el-input placeholder="手机号" maxlength="11" v-model.number="checkData.phone"></el-input>
+          <el-input placeholder="手机号" maxlength="11" v-model="checkData.phone"></el-input>
         </div>
         <div class="check-item" v-if="checkVote.code">
           <el-input placeholder="图形验证码" maxlength="10" v-model="checkData.imgCode"></el-input>
