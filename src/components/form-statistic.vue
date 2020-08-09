@@ -21,6 +21,9 @@
           </div>
         </div>
         <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
+        <!-- <div class="score-box"></div> -->
+        <div class="score-share" v-if="!shareLoading" @click.stop="shareScore()">成绩分享<span class="score-share-icon"></span></div>
+        <div class="score-share" v-else>成绩分享<span class="score-share-icon"></span></div>
       </div>
     </div>
     <div class="content">
@@ -123,6 +126,11 @@
           <div class="luck-pop-tips">点击抽奖</div>
         </div>
       </div>
+      <share-dialog
+        :show="isShowShare"
+        :shareUrl="shareUrl"
+        @close="isShowShare = false">
+      </share-dialog>
     </div>
   </div>
 </template>
@@ -135,11 +143,13 @@ import API from '@/api/module/examination'
 import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
+import ShareDialog from '@/components/dialog/share-dialog'
+import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   name: 'form-statistic',
   components: {
-    Pie
+    Pie, ShareDialog
   },
   mixins: [ SubjectMixin ],
   props: ['params'],
@@ -167,7 +177,10 @@ export default {
       statMsg: '',
       statMsgVisible: false,
       displayTrueAnswer: false,
-      raffleUrl: ''
+      raffleUrl: '',
+      shareLoading: false,
+      isShowShare: false,
+      shareUrl: '' // 分享海报地址
     }
   },
   computed: {
@@ -385,6 +398,49 @@ export default {
         path: `/depencestart/${examId}`
       })
     },
+    shareScore () {
+      let optionData = this.optionData
+      console.log('shareScore', this.optionData)
+      if (!optionData || !optionData.title) {
+        return
+      }
+      this.shareLoading = true
+      let {
+        title,
+        score,
+        use_time: userTime,
+        submit_time: submitTime,
+        total_score: totalScore,
+        correct_num: correntNum
+      } = this.optionData
+      userTime = formatTimeBySec(userTime)
+      submitTime = formatTimeBySec(submitTime)
+      let name = ''
+      let userinfo = STORAGE.get('userinfo')
+      if (userinfo) {
+        name = userinfo.nick_name
+      }
+      let data = {
+        title,
+        score,
+        total_score: totalScore,
+        question_num: optionData.questions.length,
+        correct_num: correntNum,
+        use_time: userTime,
+        submit_time: submitTime,
+        name
+      }
+      API.shareExamination({
+        data
+      }).then(res => {
+        console.log(res)
+        this.shareLoading = false
+        if (res && res.image) {
+          this.isShowShare = true
+          this.shareUrl = res.image
+        }
+      })
+    },
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
@@ -494,19 +550,39 @@ $font-weight: 400;
         padding: 0;
         padding-top:px2rem(78px);
         .exam-statInfo{
-            margin:0 px2rem(28px);
-            height:px2rem(290px);
-            background-color:#fff;
-            box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
-            border-radius: 5px;
-            padding:px2rem(50px) px2rem(50px) px2rem(50px) px2rem(67px);
-
+          position: relative;
+          margin:0 px2rem(28px);
+          height:px2rem(290px);
+          background-color:#fff;
+          box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
+          border-radius: 5px;
+          padding:px2rem(110px) px2rem(50px) px2rem(50px) px2rem(67px);
+          .score-box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: px2rem(5px);
+            background-color: #FF8C5F;
+          }
+          .score-share {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: px2rem(75px);
+            line-height: px2rem(75px);
+            padding: 0 px2rem(20px);
+            @include font-dpr(14px);
+            background-color: #FF8C5F;
+            border-radius: 0 0 0 px2rem(20px);
+            color: #fff;
+          }
         }
-        .score-tips{
+        .score-tips {
             color: #333;
             margin-top:px2rem(48px);
         }
-        .score-line{
+        .score-line {
             display:flex;
             align-items: center;
             text-align: left;

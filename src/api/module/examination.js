@@ -39,6 +39,7 @@ let configUrl = {
   saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
   getExamDetail: 'client/examination/{id}',
+  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
   getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
@@ -70,6 +71,7 @@ export default {
   getExamDetailsStatistics: config => createAPI(configUrl.getExamDetailsStatistics, 'get', config, API_FLAG),
   submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
+  shareExamination: config => createAPI(configUrl.shareExamination, 'post', config, API_FLAG),
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
