@@ -10,6 +10,7 @@
             :maxlength="item.maxlength"
             :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address'"
             @focus="focusAction(item.unique_name)"
+            @blur="blurAction()"
             v-model="checkData[item.unique_name]"></el-input>
           <div
             v-if="item.unique_name === 'mobile'"
@@ -126,6 +127,9 @@ export default {
       } else if (key === 'address') {
         this.isShowCitySelect = true
       }
+    },
+    blurAction () {
+      document.body.scrollTop = 0
     },
     selectSuccessAction (val) {
       let key = this.focusKey
