@@ -41,6 +41,11 @@ export default {
     show (val) {
       if (val) {
         this.openPicker(val)
+        if (val) {
+          document.getElementsByTagName('body')[0].addEventListener('touchmove', this.handler, { passive: false })
+        } else {
+          document.getElementsByTagName('body')[0].removeEventListener('touchmove', this.handler, { passive: false })
+        }
       }
     }
   },
