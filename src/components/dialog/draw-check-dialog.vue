@@ -1,5 +1,5 @@
 <template>
-  <div class="check-dialog-wrap" v-if="show">
+  <div :class="['check-dialog-wrap', isScroll]" v-if="show">
     <div class="check-dialog-content">
       <div class="check-dialog-main">
         <div class="check-header">答题验证</div>
@@ -71,6 +71,12 @@ export default {
     SelectDialog, DateSelectDialog, CitySelectDialog
   },
   computed: {
+    isScroll () {
+      if (this.isShowSelect || this.isShowDateSelect || this.isShowCitySelect) {
+        return 'is-noscroll'
+      }
+      return ''
+    },
     ...mapGetters('depence', ['examInfo'])
   },
   watch: {
@@ -231,6 +237,9 @@ export default {
     overflow-y: auto;
     background: rgba(0,0,0,0.5);
     z-index: 99;
+    &.is-noscroll {
+      overflow: hidden;
+    }
     .check-dialog-content {
       max-height: 100vh;
       position: relative;
@@ -260,6 +269,7 @@ export default {
           margin-bottom: px2rem(30px);
           position: relative;
           .el-input__inner, .el-textarea__inner {
+            -webkit-appearance: none;
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: px2rem(4px);
             padding: px2rem(20px);
