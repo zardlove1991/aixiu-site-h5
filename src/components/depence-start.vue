@@ -382,7 +382,7 @@ export default {
                 name: '验证码',
                 unique_name: 'code',
                 type: 'text',
-                maxlength: 10
+                maxlength: 4
               }
             } else {
               item.maxlength = 100
