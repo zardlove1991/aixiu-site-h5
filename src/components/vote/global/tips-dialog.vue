@@ -2,9 +2,7 @@
   <div class="tips-dialog-wrap"
     ref="tipsDialogWrap"
     v-if="show"
-    :class="{'lock': isLock}"
-    @touchmove.prevent=""
-    >
+    :class="{'lock': isLock}">
     <div class="dialog-main-wrap">
       <!--弹窗模块-->
       <div class="tips-dialog-content">
