@@ -79,7 +79,6 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .city-wrap {
-    height: px2rem(500px);
     .city-tool-bar {
       box-sizing: border-box;
       padding-right: px2rem(30px);
@@ -90,6 +89,9 @@ export default {
       font-size: px2rem(30px);
       color: #666;
       border-bottom: px2rem(1px) solid #eaeaea;
+    }
+    .distpicker-address-wrapper .address-container ul {
+      height: px2rem(380px);
     }
   }
   .mint-popup-bottom {
