@@ -352,8 +352,8 @@ export default {
     },
     isShowCheckDraw () {
       // 判断是否需要信息采集
-      let limit = this.examInfo.limit
-      if (limit.collection_form && limit.collection_form.is_open_collect) {
+      let { limit, collection_status: status } = this.examInfo
+      if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
           let checkDraw = [...obj]

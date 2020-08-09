@@ -218,7 +218,6 @@ export default {
           Toast(res.ErrorText)
           return
         }
-        Toast('提交成功')
         this.$emit('close')
         this.$emit('success')
       })
