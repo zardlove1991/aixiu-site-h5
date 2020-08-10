@@ -20,8 +20,11 @@
             <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
-        <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
-        <!-- <div class="score-box"></div> -->
+        <div class="score-tips" v-show="statMsgVisible">
+          <span class="tips-icon"></span>
+          <span class="score-tips-txt">{{statMsg}}</span>
+        </div>
+        <div class="score-box"></div>
         <div class="score-share" v-if="!shareLoading" @click.stop="shareScore()">成绩分享<span class="score-share-icon"></span></div>
         <div class="score-share" v-else>成绩分享<span class="score-share-icon"></span></div>
       </div>
@@ -548,8 +551,8 @@ $font-weight: 400;
     }
     .header-bg{
         width: 100%;
-        height: px2rem(315px);
-        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%, 100%);
+        // height: px2rem(315px);
+        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%,  px2rem(315px));
         background-repeat: no-repeat;
         position: relative;
         padding: 0;
@@ -557,7 +560,7 @@ $font-weight: 400;
         .exam-statInfo{
           position: relative;
           margin:0 px2rem(28px);
-          height:px2rem(290px);
+          // height:px2rem(290px);
           background-color:#fff;
           box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
           border-radius: 5px;
@@ -567,25 +570,49 @@ $font-weight: 400;
             top: 0;
             left: 0;
             right: 0;
-            height: px2rem(5px);
-            background-color: #FF8C5F;
+            height: px2rem(67px);
+            @include img-retina("~@/assets/common/share-bg@2x.png","~@/assets/common/share-bg@3x.png", 100%, 100%);
           }
           .score-share {
             position: absolute;
             right: 0;
             top: 0;
-            height: px2rem(75px);
-            line-height: px2rem(75px);
+            height: px2rem(67px);
+            line-height: px2rem(67px);
             padding: 0 px2rem(20px);
             @include font-dpr(14px);
-            background-color: #FF8C5F;
-            border-radius: 0 0 0 px2rem(20px);
             color: #fff;
+            .score-share-icon {
+              display: inline-block;
+              width: px2rem(26px);
+              height: px2rem(28px);
+              line-height: px2rem(67px);
+              margin-left: px2rem(15px);
+              @include img-retina("~@/assets/common/share-icon@2x.png","~@/assets/common/share-icon@3x.png", 100%, 100%);
+            }
           }
         }
         .score-tips {
+          margin-top:px2rem(48px);
+          background:#fff1ed;
+          padding: px2rem(20px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .tips-icon {
+            display: inline-block;
+            width: px2rem(29px);
+            height: px2rem(32px);
+            @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
+          }
+          .score-tips-txt {
+            flex: 1;
+            margin-left: px2rem(15px);
+            display: inline-block;
             color: #333;
-            margin-top:px2rem(48px);
+            @include font-dpr(14px);
+            @include line-overflow(1);
+          }
         }
         .score-line {
             display:flex;
@@ -644,7 +671,7 @@ $font-weight: 400;
     }
     .content{
         padding: 15px;
-        margin-top:px2rem(78px);
+        margin-top:px2rem(80px);
         .operate-wrap{
             .btn{
                 display: inline-block;
