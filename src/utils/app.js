@@ -30,6 +30,7 @@ export const getAPIfix = (api) => {
     }
     case 'public': {
       host = globalConfig['public']
+      break
     }
     case 'vote': {
       host = globalConfig['vote']
