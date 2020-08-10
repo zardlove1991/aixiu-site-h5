@@ -380,7 +380,7 @@ export default {
               }
               codeObj = {
                 name: '验证码',
-                unique_name: 'code',
+                unique_name: 'verify_code',
                 type: 'text',
                 maxlength: 4
               }

@@ -13,9 +13,12 @@
             @blur="blurAction()"
             v-model="checkData[item.unique_name]"></el-input>
           <div
-            v-if="item.unique_name === 'mobile'"
+            v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code"
             @click="getCode()">获取验证码</div>
+          <div
+            v-if="item.unique_name === 'mobile' && codeTime !== 0"
+            class="get-code-time">{{codeTime}}秒</div>
           <div class="get-img-code"
             v-if="item.unique_name === 'imgCode'"
             @click.stop="getImgCode()"
@@ -86,6 +89,7 @@ export default {
         this.checkData = {}
         this.imgCodeUrl = ''
         this.imgCodeKey = ''
+        this.clearSetInterval()
       }
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
@@ -107,7 +111,10 @@ export default {
       isShowCitySelect: false,
       selectData: [],
       defaultSelect: '',
-      focusKey: ''
+      focusKey: '',
+      codeTime: 0,
+      codeTimer: null,
+      totalTime: 60
     }
   },
   methods: {
@@ -154,6 +161,21 @@ export default {
     closeCheckDraw () {
       this.$emit('close')
     },
+    getCodeTimer () {
+      let codeTime = this.codeTime
+      if (codeTime === 0) {
+        console.log('codeTime')
+        this.clearSetInterval()
+      } else {
+        codeTime--
+        this.codeTime = codeTime
+        console.log(this.codeTime)
+        this.clearSetInterval()
+        this.codeTimer = setTimeout(() => {
+          this.getCodeTimer()
+        }, 1000)
+      }
+    },
     getCode () {
       let imgCodeKey = this.imgCodeKey
       let { mobile, imgCode } = this.checkData
@@ -183,7 +205,15 @@ export default {
           return
         }
         Toast('已发送验证码')
+        this.codeTime = this.totalTime
+        this.clearSetInterval()
+        this.getCodeTimer()
       })
+    },
+    clearSetInterval () {
+      if (this.codeTimer) {
+        clearInterval(this.codeTimer)
+      }
     },
     sureCheckDraw () {
       let checkData = this.checkData
@@ -309,6 +339,13 @@ export default {
             @include font-dpr(14px);
             // color: #FF6A45;
             @include font-color('btnColor');
+          }
+          .get-code-time {
+            position: absolute;
+            right: px2rem(28px);
+            top: px2rem(25px);
+            @include font-dpr(14px);
+            color: #666;
           }
         }
         .submit-btn-wrap {
