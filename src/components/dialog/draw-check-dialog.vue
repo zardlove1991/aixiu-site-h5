@@ -18,7 +18,7 @@
             @click="getCode()">获取验证码</div>
           <div
             v-if="item.unique_name === 'mobile' && codeTime !== 0"
-            class="get-code-time">{{codeTime}}秒</div>
+            class="get-code">{{codeTime}}秒</div>
           <div class="get-img-code"
             v-if="item.unique_name === 'imgCode'"
             @click.stop="getImgCode()"
@@ -164,12 +164,12 @@ export default {
     getCodeTimer () {
       let codeTime = this.codeTime
       if (codeTime === 0) {
-        console.log('codeTime')
+        // console.log('codeTime')
         this.clearSetInterval()
       } else {
         codeTime--
         this.codeTime = codeTime
-        console.log(this.codeTime)
+        // console.log(this.codeTime)
         this.clearSetInterval()
         this.codeTimer = setTimeout(() => {
           this.getCodeTimer()
@@ -339,13 +339,6 @@ export default {
             @include font-dpr(14px);
             // color: #FF6A45;
             @include font-color('btnColor');
-          }
-          .get-code-time {
-            position: absolute;
-            right: px2rem(28px);
-            top: px2rem(25px);
-            @include font-dpr(14px);
-            color: #666;
           }
         }
         .submit-btn-wrap {
