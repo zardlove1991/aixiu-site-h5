@@ -30,6 +30,13 @@ export const getAPIfix = (api) => {
     }
     case 'public': {
       host = globalConfig['public']
+    }
+    case 'vote': {
+      host = globalConfig['vote']
+      break
+    }
+    case 'mlink': {
+      host = globalConfig['mlink']
       break
     }
     default: {

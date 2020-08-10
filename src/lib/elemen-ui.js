@@ -4,7 +4,9 @@ import {
   Tooltip,
   Radio,
   Checkbox,
-  Input
+  Input,
+  Upload,
+  Loading
 } from 'element-ui'
 
 export default function (Vue) {
@@ -13,4 +15,6 @@ export default function (Vue) {
   Vue.use(Radio)
   Vue.use(Checkbox)
   Vue.use(Input)
+  Vue.use(Upload)
+  Vue.use(Loading)
 }

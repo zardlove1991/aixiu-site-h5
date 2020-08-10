@@ -1,0 +1,212 @@
+<template>
+  <div class="commvote-detail color-bg_color">
+    <div class="detail-page-content-wrap">
+      <div class="detail-header">
+        <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
+        <div class="lottery-button color-button_color color-button_text"
+          v-if="workDetail.lottery && workDetail.lottery.remain_counts"
+          @click.stop="goLottery('lottery')">有{{workDetail.lottery.remain_counts}}次抽奖机会</div>
+      </div>
+      <!--媒体组件渲染-->
+      <div class="detail-video-wrap"
+        v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
+        <vote-video class="base-video"
+          v-for="(video, index) in workDetail.material.video" :key="index"
+          :data="video">
+        </vote-video>
+      </div>
+      <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
+        <vote-audio class="base-audio"
+          v-for="(audio, index) in workDetail.material.audio" :key="index"
+          :data="audio">
+        </vote-audio>
+      </div>
+      <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
+        <img class="base-image"
+          v-for="(image, index) in workDetail.material.image" :key="index"
+          :src="image.url + '?x-oss-process=image/resize,w_400'" />
+      </div>
+      <!--详情页面内容-->
+      <p class="detail-cotent" v-show="workDetail.introduce" v-html="workDetail.introduce"></p>
+    </div>
+    <!--导入详情页模板-->
+    <common-page-detail
+      :info="workDetail"
+      @detail-menu="dealDetailMenu">
+    </common-page-detail>
+    <share-vote
+      :show="isShowWorkVote"
+      :config="{
+        voting_id: id,
+        works_id: workDetail.id,
+        mark: mark
+      }"
+      @success="inintDetail()"
+      @close="isShowWorkVote = false"
+    ></share-vote>
+    <canvass-vote :flag="flag" ref="canvass-vote-detail" />
+</div>
+</template>
+
+<script>
+import VoteAudio from '@/components/vote/global/vote-audio'
+import VoteVideo from '@/components/vote/global/vote-video'
+import CommonPageDetail from '@/components/vote/global/common-page-detail'
+import ShareVote from '@/components/vote/global/vote-share'
+import CanvassVote from '@/components/vote/global/vote-canvass'
+import API from '@/api/module/examination'
+import { mapActions } from 'vuex'
+import STORAGE from '@/utils/storage'
+
+export default {
+  components: {
+    VoteVideo,
+    VoteAudio,
+    CommonPageDetail,
+    ShareVote,
+    CanvassVote
+  },
+  data () {
+    return {
+      workDetail: {},
+      isShowWorkVote: false,
+      mark: '',
+      relatedLink: '' // 抽奖链接
+    }
+  },
+  created () {
+    this.inintDetail()
+  },
+  props: {
+    id: String,
+    flag: String
+  },
+  methods: {
+    inintDetail () {
+      let { worksId, sign, invotekey } = this.$route.query
+      if (sign && invotekey) {
+        this.setShareData({ sign, invotekey })
+      }
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return
+      }
+      let { mark, rule } = detailInfo
+      if (rule && rule.related_lottery && rule.related_lottery.link) {
+        this.relatedLink = rule.related_lottery.link
+      }
+      this.mark = mark
+      API.getVoteWorksDetail({
+        query: {
+          id: this.id,
+          worksId
+        }
+      }).then(res => {
+        if (!res) {
+          return
+        }
+        let { remain_votes: remainVotes } = res
+        let newVotes = 0
+        if (remainVotes > 0) {
+          newVotes = remainVotes
+        }
+        res.remain_votes = newVotes
+        this.workDetail = res
+      })
+    },
+    dealDetailMenu (slug) {
+      if (slug === 'back') {
+        this.$router.replace({
+          name: 'votebegin',
+          params: {
+            id: this.id
+          }
+        })
+      } else if (slug === 'vote') {
+        this.isShowWorkVote = true
+      } else if (slug === 'invote') {
+        let obj = this.$refs['canvass-vote-detail']
+        if (obj) {
+          obj.saveSharer(this.workDetail.id)
+        }
+      }
+    },
+    goLottery () {
+      let link = this.relatedLink
+      if (link) {
+        window.location.href = link
+      }
+    },
+    ...mapActions('vote', {
+      setShareData: 'SET_SHARE_DATA'
+    })
+  }
+}
+</script>
+
+<style lang="scss">
+  @import "@/styles/index.scss";
+  .commvote-detail {
+    // background-color: #221A6E;
+    // @include bg-color('bgColor');
+    width: 100%;
+    min-height: calc(100vh);
+    .detail-page-content-wrap {
+      width: 100%;
+      padding: 0 px2rem(30px);
+      padding-bottom: 250px;
+      .detail-header {
+        display: flex;
+        justify-content: space-between;
+        padding: px2rem(30px);
+        .common-page-detail-back {
+          position: relative;
+          width: px2rem(68px);
+          height: px2rem(68px);
+          border-radius: 50%;
+          background-color: rgba(0,0,0,0.5);
+          pointer-events: auto;
+          &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-30%, -50%) rotate(45deg);
+            width: px2rem(20px);
+            height: px2rem(20px);
+            border: 1px solid #fff;
+            border-top: none;
+            border-right: none;
+            content: '';
+          }
+        }
+        .lottery-button{
+          height: px2rem(68px);
+          line-height: px2rem(68px);
+          text-align: center;
+          font-size: px2rem(22px);
+          padding: 0 px2rem(22px);
+          color: #fff;
+          border-radius: px2rem(34px);
+          // background-color: #FC7465;
+          @include bg-color('btnColor');
+          pointer-events: auto;
+        }
+      }
+      .detail-video-wrap {
+        width: 100%;
+        height: px2rem(390px);
+        margin-bottom: px2rem(40px);
+      }
+      .base-video, .base-audio, .base-image {
+        width: 100%;
+        margin-bottom: px2rem(40px);
+      }
+      .detail-cotent {
+        font-size: px2rem(30px);
+        color: #fff;
+        line-height: px2rem(48px);
+        white-space: pre-line;
+      }
+    }
+  }
+</style>

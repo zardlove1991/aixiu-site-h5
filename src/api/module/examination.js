@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createBase } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -12,6 +12,45 @@ let QCloundUrl = {
 
 // 公共的url
 let baseUrl = {
+  sumbitUV: 'setSubmit', // 提交次数
+  getDingdingUser: 'ding/signature', // 钉钉会员
+  getSmartCityUser: 'member/signature', // 智慧城市登录
+  getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
+  getWeixinInfo: 'signature', // 获得微信公众号信息
+  getCaptchaCode: 'captcha/code', // 图片二维码
+  getMobileSend: '/mobile/verify/send', // 获取手机code
+  setClick: 'setClick', // click
+  setShare: 'setShare' // 分享活动时请求分享接口
+}
+
+// 投票相关接口
+let voteUrl = {
+  getAuthScope2: 'client/voting/base/{id}', // 检验密码是否正确
+  getVoteMember: 'client/voting/works/member', // 获取投票人员列表
+  getVideoUrl: 'video/detail', // 获取视频地址
+  getUploadSign: 'ali/signature', // 获取文件上传签名
+  getUploadVideoCrdl: 'video/upload/credential', // 获取视频上传凭证
+  getVodeDetail: 'client/voting/{id}', // 投票详情
+  getVoteWorks: 'client/voting/{id}/works', // 投票数据列表
+  getVoteWorksDetail: 'client/voting/{id}/works/{worksId}', // 投票数据详情
+  getUserVoteRemains: 'client/voting/{id}/remains', // 获取会员剩余票数
+  getMineVoteList: 'client/voting/mine', // 我的投票列表
+  checkUserReport: 'client/report/{id}', // 检查用户是否报名
+  workReport: 'client/report/work', // 用户创建/编辑报名
+  getReportDetail: 'client/report/work/{id}', // 获取报名内容详情
+  workVote: 'client/voting', // 给他投票
+  saveSharer: 'client/voting/save_sharer', // 点击拉票将分享者信息，投票id和作品id入库
+  shareMake: 'share/make', // 生成海报
+  getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
+  getCaptchaCode: 'captcha/code', // 图片二维码
+  getMobileSend: '/mobile/verify/send' // 获取手机code
+}
+
+// 不带GUID
+let configUrl = {
+  ...QCloundUrl,
+  ...voteUrl,
+  ...baseUrl,
   sumbitUV: 'setSubmit', // 提交次数
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
@@ -45,10 +84,13 @@ let configUrl = {
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getAuthScope: 'open/examination/detail', // 检验密码是否正确
-  saveDrawRecord: 'collection/form/record' // 投票信息采集
+  saveDrawRecord: 'collection/form/record', // 投票信息采集
+  setShare: 'setShare', // 分享活动时请求分享接口
+  collectInfo: 'client/report/collect/{id}' // 收集信息
 }
 
 export default {
+  getVoteMember: config => createVote(configUrl.getVoteMember, 'get', config, API_FLAG),
   setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
@@ -77,7 +119,25 @@ export default {
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public'),
+  // 投票
+  getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
+  getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
+  getUploadVideoCrdl: config => createSumbit(configUrl.getUploadVideoCrdl, 'GET', config, API_FLAG),
+  getVodeDetail: config => createVote(configUrl.getVodeDetail, 'GET', config, API_FLAG),
+  getVoteWorks: config => createVote(configUrl.getVoteWorks, 'GET', config, API_FLAG),
+  getVoteWorksDetail: config => createVote(configUrl.getVoteWorksDetail, 'GET', config, API_FLAG),
+  getUserVoteRemains: config => createVote(configUrl.getUserVoteRemains, 'GET', config, API_FLAG),
+  getMineVoteList: config => createVote(configUrl.getMineVoteList, 'GET', config, API_FLAG),
+  checkUserReport: config => createVote(configUrl.checkUserReport, 'GET', config, API_FLAG),
+  workReport: config => createVote(configUrl.workReport, 'POST', config, API_FLAG),
+  getReportDetail: config => createVote(configUrl.getReportDetail, 'GET', config, API_FLAG),
+  workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG),
+  saveSharer: config => createVote(configUrl.saveSharer, 'GET', config, API_FLAG),
+  shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
+  getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
+  collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
+  getAuthScope2: config => createVote(configUrl.getAuthScope2, 'get', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
-  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
-  saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public')
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
 }

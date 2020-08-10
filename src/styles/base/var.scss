@@ -101,6 +101,19 @@ $colorMaps: (
   }
 }
 
+// 更改渐变颜色
+@mixin bg-linear-color($colorName) {
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $colorName == $varName {
+        [data-theme= #{$key}] & {
+          background: $val;
+        }
+      }
+    }
+  }
+}
+
 // 更改背景颜色
 @mixin font-color($fontName) {
   @each $key,$list in $colorMaps {

@@ -111,6 +111,7 @@ const getUrl = (url, config = {}, api = 'exam') => {
   url = url
     .replace('{guid}', guid)
     .replace('{id}', config.query.id)
+    .replace('{worksId}', config.query.worksId)
   return getAPIfix(api) + url
 }
 
@@ -146,6 +147,16 @@ export const creataUser = (url, method, config = {}, api) => {
 
 export const createExam = (url, method, config = {}, api) => {
   api = 'exam'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
+export const createVote = (url, method, config = {}, api) => {
+  api = 'vote'
   return instance({
     url: getUrl(url, config, api),
     method,

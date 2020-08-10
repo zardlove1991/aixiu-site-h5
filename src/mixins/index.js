@@ -62,6 +62,9 @@ export default {
         })
       })
     },
+    getLocation (params) {
+      wx.getLocation(params)
+    },
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
       let redirect = this.redirect
