@@ -22,7 +22,7 @@ let router = new Router({
         listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
       }),
       meta: {
-        title: '加载中...'
+        title: '答题中...'
       }
     },
     {
@@ -38,7 +38,7 @@ let router = new Router({
         listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
       }),
       meta: {
-        title: '加载中...'
+        title: '答题中...'
       }
     },
     {
@@ -51,7 +51,7 @@ let router = new Router({
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
-        title: '加载中...'
+        title: '测评结果'
       }
     },
     {
@@ -77,7 +77,7 @@ let router = new Router({
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
-        title: '加载中...'
+        title: '测评'
       }
     },
     {

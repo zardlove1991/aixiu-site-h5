@@ -153,3 +153,12 @@ export const createExam = (url, method, config = {}, api) => {
     ...config
   })
 }
+
+export const createBase = (url, method, config = {}, api) => {
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}

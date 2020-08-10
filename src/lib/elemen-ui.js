@@ -3,7 +3,8 @@ import {
   Progress,
   Tooltip,
   Radio,
-  Checkbox
+  Checkbox,
+  Input
 } from 'element-ui'
 
 export default function (Vue) {
@@ -11,4 +12,5 @@ export default function (Vue) {
   Vue.use(Tooltip)
   Vue.use(Radio)
   Vue.use(Checkbox)
+  Vue.use(Input)
 }

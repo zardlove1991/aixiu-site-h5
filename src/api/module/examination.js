@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createBase } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -9,15 +9,24 @@ let QCloundUrl = {
   getQcloudVideoInfo: 'client/material/video/info', // 获取腾讯云视频信息
   getMaterialInfo: 'client/material/save' // 获取素材信息
 }
-// 不带GUID
-let configUrl = {
-  ...QCloundUrl,
+
+// 公共的url
+let baseUrl = {
   sumbitUV: 'setSubmit', // 提交次数
-  setClick: 'setClick', // click
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
   getWeixinInfo: 'signature', // 获得微信公众号信息
+  getCaptchaCode: 'captcha/code', // 图片二维码
+  getMobileSend: '/mobile/verify/send', // 获取手机code
+  setClick: 'setClick', // click
+  setShare: 'setShare' // 分享活动时请求分享接口
+}
+
+// 不带GUID
+let configUrl = {
+  ...QCloundUrl,
+  ...baseUrl,
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -30,12 +39,13 @@ let configUrl = {
   saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
   getExamDetail: 'client/examination/{id}',
+  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
   getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getAuthScope: 'open/examination/detail', // 检验密码是否正确
-  setShare: 'setShare' // 分享活动时请求分享接口
+  saveDrawRecord: 'collection/form/record' // 投票信息采集
 }
 
 export default {
@@ -61,9 +71,13 @@ export default {
   getExamDetailsStatistics: config => createAPI(configUrl.getExamDetailsStatistics, 'get', config, API_FLAG),
   submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
+  shareExamination: config => createAPI(configUrl.shareExamination, 'post', config, API_FLAG),
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
-  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG)
+  setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
+  saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public')
 }

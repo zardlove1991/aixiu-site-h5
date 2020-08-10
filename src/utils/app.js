@@ -24,6 +24,14 @@ export const getAPIfix = (api) => {
       host = globalConfig['exam']
       break
     }
+    case 'reserve': {
+      host = globalConfig['reserve']
+      break
+    }
+    case 'public': {
+      host = globalConfig['public']
+      break
+    }
     default: {
       host = globalConfig['exam']
     }

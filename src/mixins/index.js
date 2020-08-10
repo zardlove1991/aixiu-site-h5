@@ -2,6 +2,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
+import globalConfig from '@/api/config'
 
 export default {
   props: {
@@ -49,7 +50,7 @@ export default {
       this.getWeixinInfo({
         url,
         sign: 'wechat',
-        appid: 'wx63a3a30d3880a56e'
+        appid: globalConfig['APPID']
       }).then(res => {
         console.log(res)
         let { appId, timestamp, nonceStr, signature } = res

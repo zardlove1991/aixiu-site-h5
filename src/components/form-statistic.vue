@@ -20,7 +20,13 @@
             <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
-        <div class="score-tips" v-show="statMsgVisible">{{statMsg}}</div>
+        <div class="score-tips" v-show="statMsgVisible">
+          <span class="tips-icon"></span>
+          <span class="score-tips-txt">{{statMsg}}</span>
+        </div>
+        <div class="score-box"></div>
+        <div class="score-share" v-if="!shareLoading" @click.stop="shareScore()">成绩分享<span class="score-share-icon"></span></div>
+        <div class="score-share" v-else>成绩分享<span class="score-share-icon"></span></div>
       </div>
     </div>
     <div class="content">
@@ -123,6 +129,11 @@
           <div class="luck-pop-tips">点击抽奖</div>
         </div>
       </div>
+      <share-dialog
+        :show="isShowShare"
+        :shareUrl="shareUrl"
+        @close="isShowShare = false">
+      </share-dialog>
     </div>
   </div>
 </template>
@@ -135,11 +146,13 @@ import API from '@/api/module/examination'
 import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
+import ShareDialog from '@/components/dialog/share-dialog'
+import { formatDate } from '@/utils/utils'
 
 export default {
   name: 'form-statistic',
   components: {
-    Pie
+    Pie, ShareDialog
   },
   mixins: [ SubjectMixin ],
   props: ['params'],
@@ -167,7 +180,10 @@ export default {
       statMsg: '',
       statMsgVisible: false,
       displayTrueAnswer: false,
-      raffleUrl: ''
+      raffleUrl: '',
+      shareLoading: false,
+      isShowShare: false,
+      shareUrl: '' // 分享海报地址
     }
   },
   computed: {
@@ -222,9 +238,9 @@ export default {
         }
       }
     },
-    getExamList () {
+    async getExamList () {
       let id = this.$route.params.id
-      this.initPage(id)
+      await this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
         let correctNum = res.correct_num
         let count = res.questions.length
@@ -236,7 +252,7 @@ export default {
           let raffleUrl = submitRules.raffle_url
           let tempUrl = ''
           // 开启抽奖
-          if (submitRules.is_open_raffle && submitRules.jump_conditions) {
+          if (submitRules.is_open_raffle) {
             let { type, value } = submitRules.jump_conditions
             if (type && value) {
               if (type === 'score') {
@@ -249,6 +265,8 @@ export default {
                   tempUrl = raffleUrl
                 }
               }
+            } else {
+              tempUrl = raffleUrl
             }
           }
           this.raffleUrl = tempUrl
@@ -385,6 +403,54 @@ export default {
         path: `/depencestart/${examId}`
       })
     },
+    shareScore () {
+      let optionData = this.optionData
+      // console.log('shareScore', this.optionData)
+      if (!optionData || !optionData.title) {
+        return
+      }
+      this.shareLoading = true
+      let {
+        title,
+        score,
+        use_time: userTime,
+        submit_time: submitTime,
+        total_score: totalScore,
+        correct_num: correntNum,
+        collection_form: collectionForm
+      } = this.optionData
+      userTime = formatDate(userTime, 'mm分ss秒')
+      submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
+      let name = ''
+      if (collectionForm && collectionForm.length) {
+        for (let item of collectionForm) {
+          if (item.unique_name === 'name') {
+            name = item.value
+            break
+          }
+        }
+      }
+      let data = {
+        title,
+        score,
+        total_score: totalScore,
+        question_num: optionData.questions.length,
+        correct_num: correntNum,
+        use_time: userTime,
+        submit_time: submitTime,
+        name
+      }
+      API.shareExamination({
+        data
+      }).then(res => {
+        console.log(res)
+        this.shareLoading = false
+        if (res && res.image) {
+          this.isShowShare = true
+          this.shareUrl = res.image
+        }
+      })
+    },
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
@@ -487,26 +553,70 @@ $font-weight: 400;
     }
     .header-bg{
         width: 100%;
-        height: px2rem(315px);
-        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%, 100%);
+        // height: px2rem(315px);
+        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%,  px2rem(315px));
         background-repeat: no-repeat;
         position: relative;
         padding: 0;
         padding-top:px2rem(78px);
         .exam-statInfo{
-            margin:0 px2rem(28px);
-            height:px2rem(290px);
-            background-color:#fff;
-            box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
-            border-radius: 5px;
-            padding:px2rem(50px) px2rem(50px) px2rem(50px) px2rem(67px);
-
+          position: relative;
+          margin:0 px2rem(28px);
+          // height:px2rem(290px);
+          background-color:#fff;
+          box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
+          border-radius: 5px;
+          padding:px2rem(110px) px2rem(50px) px2rem(50px) px2rem(67px);
+          .score-box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: px2rem(67px);
+            @include img-retina("~@/assets/common/share-bg@2x.png","~@/assets/common/share-bg@3x.png", 100%, 100%);
+          }
+          .score-share {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: px2rem(67px);
+            line-height: px2rem(67px);
+            padding: 0 px2rem(20px);
+            @include font-dpr(14px);
+            color: #fff;
+            .score-share-icon {
+              display: inline-block;
+              width: px2rem(26px);
+              height: px2rem(28px);
+              line-height: px2rem(67px);
+              margin-left: px2rem(15px);
+              @include img-retina("~@/assets/common/share-icon@2x.png","~@/assets/common/share-icon@3x.png", 100%, 100%);
+            }
+          }
         }
-        .score-tips{
+        .score-tips {
+          margin-top:px2rem(48px);
+          background:#fff1ed;
+          padding: px2rem(20px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .tips-icon {
+            display: inline-block;
+            width: px2rem(29px);
+            height: px2rem(32px);
+            @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
+          }
+          .score-tips-txt {
+            flex: 1;
+            margin-left: px2rem(15px);
+            display: inline-block;
             color: #333;
-            margin-top:px2rem(48px);
+            @include font-dpr(14px);
+            @include line-overflow(1);
+          }
         }
-        .score-line{
+        .score-line {
             display:flex;
             align-items: center;
             text-align: left;
@@ -563,7 +673,7 @@ $font-weight: 400;
     }
     .content{
         padding: 15px;
-        margin-top:px2rem(78px);
+        margin-top:px2rem(80px);
         .operate-wrap{
             .btn{
                 display: inline-block;
