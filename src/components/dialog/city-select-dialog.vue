@@ -91,11 +91,28 @@ export default {
       color: #666;
       border-bottom: px2rem(1px) solid #eaeaea;
     }
-    .distpicker-address-wrapper .address-container ul {
-      height: px2rem(380px);
+    .distpicker-address-wrapper {
+      .address-header ul {
+        color: #707274;
+        li {
+          &.active {
+            border-bottom: #000 solid 3px;
+            color: #000;
+          }
+        }
+      }
+      .address-container ul {
+        height: px2rem(380px);
+        color: #707274;
+        li {
+          &.active {
+            color: #000;
+          }
+        }
+      }
     }
-  }
-  .mint-popup-bottom {
-    width: 100%;
+    .mint-popup-bottom {
+      width: 100%;
+    }
   }
 </style>

@@ -201,6 +201,7 @@ export default {
         params
       }).then(res => {
         if (res.ErrorCode) {
+          this.getImgCode()
           Toast(res.ErrorText)
           return
         }
@@ -245,6 +246,7 @@ export default {
         data
       }).then(res => {
         if (res.ErrorCode) {
+          this.getImgCode()
           Toast(res.ErrorText)
           return
         }
