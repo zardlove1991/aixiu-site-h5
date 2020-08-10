@@ -358,16 +358,25 @@ export default {
         if (obj && obj.length) {
           let checkDraw = [...obj]
           let indexMobile = -1
+          let indexAddress = -1
           let codeObj = null
           let imgCodeObj = null
+          let addressObj = null
           for (let i = 0; i < checkDraw.length; i++) {
             let item = checkDraw[i]
             if (item.unique_name === 'name') {
               item.maxlength = 20
               item.type = 'text'
             } else if (item.unique_name === 'address') {
-              item.maxlength = 500
-              item.type = 'textarea'
+              item.maxlength = 50
+              item.type = 'text'
+              indexAddress = i
+              addressObj = {
+                name: '详细地址',
+                unique_name: 'detail_address',
+                type: 'textarea',
+                maxlength: 500
+              }
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
@@ -389,9 +398,21 @@ export default {
               item.type = 'text'
             }
           }
-          if (indexMobile !== -1 && codeObj && imgCodeObj) {
+          if (indexMobile !== -1 && indexAddress !== -1) {
+            if (indexMobile < indexAddress) {
+              checkDraw.splice(indexMobile + 1, 0, codeObj)
+              checkDraw.splice(indexMobile, 0, imgCodeObj)
+              checkDraw.splice(indexAddress + 3, 0, addressObj)
+            } else {
+              checkDraw.splice(indexAddress + 1, 0, addressObj)
+              checkDraw.splice(indexMobile + 2, 0, codeObj)
+              checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
+            }
+          } else if (indexMobile === -1 && indexAddress !== -1) {
+            checkDraw.splice(indexAddress + 1, 0, addressObj)
+          } else if (indexMobile !== -1 && indexAddress === -1) {
+            checkDraw.splice(indexMobile + 1, 0, codeObj)
             checkDraw.splice(indexMobile, 0, imgCodeObj)
-            checkDraw.splice(indexMobile + 2, 0, codeObj)
           }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw

@@ -243,6 +243,11 @@ export default {
         activity_mark: 'examination',
         ...checkData
       }
+      let address = ''
+      if (checkData.address && checkData.detail_address) {
+        address = checkData.address + ' ' + checkData.detail_address
+        data.address = address
+      }
       API.saveDrawRecord({
         data
       }).then(res => {

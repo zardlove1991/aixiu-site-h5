@@ -252,7 +252,7 @@ export default {
           let raffleUrl = submitRules.raffle_url
           let tempUrl = ''
           // 开启抽奖
-          if (submitRules.is_open_raffle && submitRules.jump_conditions) {
+          if (submitRules.is_open_raffle) {
             let { type, value } = submitRules.jump_conditions
             if (type && value) {
               if (type === 'score') {
@@ -265,6 +265,8 @@ export default {
                   tempUrl = raffleUrl
                 }
               }
+            } else {
+              tempUrl = raffleUrl
             }
           }
           this.raffleUrl = tempUrl
