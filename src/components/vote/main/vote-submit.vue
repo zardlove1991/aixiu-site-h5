@@ -23,37 +23,37 @@
       <div v-if="flag === 'text'" class="form-item">
         <div class="form-title">文字内容</div>
         <div class="form-content">
-          <el-input type="textarea" v-model="examineData.introduce"></el-input>
+          <el-input type="textarea" v-model="examineData.introduce" @blur="blurAction()"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">名称</div>
         <div class="form-content">
-          <el-input v-model="examineData.name" maxlength="20"></el-input>
+          <el-input v-model="examineData.name" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">来源</div>
         <div class="form-content">
-          <el-input v-model="examineData.source" maxlength="20"></el-input>
+          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="flag !== 'text'">
         <div class="form-title">描述</div>
         <div class="form-content">
-          <el-input type="textarea" maxlength="500" show-word-limit v-model="examineData.introduce"></el-input>
+          <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">联系人姓名</div>
         <div class="form-content">
-          <el-input v-model="examineData.contact_name" maxlength="20"></el-input>
+          <el-input v-model="examineData.contact_name" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item">
         <div class="form-title">联系人电话</div>
         <div class="form-content">
-          <el-input v-model="examineData.contact_phone" maxlength="11"></el-input>
+          <el-input v-model="examineData.contact_phone" @blur="blurAction()" maxlength="11"></el-input>
         </div>
       </div>
       <div class="submit-btn-wrap" @click="!disabled && commitVote()">
@@ -133,6 +133,9 @@ export default {
           }
         })
       }
+    },
+    blurAction () {
+      document.body.scrollTop = 0
     },
     commitVote () {
       let id = this.id
@@ -233,6 +236,7 @@ export default {
       .form-content {
         margin-top: px2rem(20px);
         .el-input__inner, .el-textarea__inner {
+          -webkit-appearance: none;
           background-color: rgba(255, 255, 255, 0.2);
           border-radius: px2rem(8px);
           padding: 0 px2rem(30px);

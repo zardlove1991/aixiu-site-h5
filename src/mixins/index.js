@@ -51,6 +51,8 @@ export default {
         url,
         sign: 'wechat',
         appid: globalConfig['APPID']
+        // appid: 'wx025937621152c396' // 测试账号
+        // appid: 'wx63a3a30d3880a56e'
       }).then(res => {
         console.log(res)
         let { appId, timestamp, nonceStr, signature } = res
