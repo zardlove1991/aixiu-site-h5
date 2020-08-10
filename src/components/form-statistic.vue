@@ -420,7 +420,7 @@ export default {
         collection_form: collectionForm
       } = this.optionData
       userTime = formatDate(userTime, 'mm分ss秒')
-      submitTime = formatDate(submitTime, 'MM/DD mm:ss')
+      submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
       let name = ''
       if (collectionForm && collectionForm.length) {
         for (let item of collectionForm) {
