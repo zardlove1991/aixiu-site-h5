@@ -2,7 +2,8 @@
   <div class="tips-dialog-wrap"
     ref="tipsDialogWrap"
     v-if="show"
-    @touchmove.prevent=""
+    :visibleItemCount="2"
+    @touchmove.native.stop.prevent
     >
     <img class="share-img" :src="shareUrl" />
     <div class="close-btn" @click.stop="close()"></div>

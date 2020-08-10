@@ -56,7 +56,7 @@ let router = new Router({
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
-        title: '加载中...'
+        title: '测评结果'
       }
     },
     {
@@ -82,7 +82,7 @@ let router = new Router({
         delta: route.query.delta // 小程序需要回退的页面层级
       }),
       meta: {
-        title: '加载中...'
+        title: '测评'
       }
     },
     {

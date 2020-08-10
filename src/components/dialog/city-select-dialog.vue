@@ -66,7 +66,6 @@ export default {
       }
     },
     success () {
-      console.log('success', this.selectData)
       let selectData = this.selectData
       if (!selectData) {
         selectData = this.valueKey
@@ -91,11 +90,30 @@ export default {
       color: #666;
       border-bottom: px2rem(1px) solid #eaeaea;
     }
-    .distpicker-address-wrapper .address-container ul {
-      height: px2rem(380px);
+    .distpicker-address-wrapper {
+      .address-header ul {
+        @include font-dpr(15px);
+        color: #707274;
+        li {
+          &.active {
+            border-bottom: #000 solid 3px;
+            color: #000;
+          }
+        }
+      }
+      .address-container ul {
+        height: px2rem(380px);
+        color: #707274;
+        @include font-dpr(15px);
+        li {
+          &.active {
+            color: #000;
+          }
+        }
+      }
     }
-  }
-  .mint-popup-bottom {
-    width: 100%;
+    .mint-popup-bottom {
+      width: 100%;
+    }
   }
 </style>

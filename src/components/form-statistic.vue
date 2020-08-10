@@ -238,9 +238,9 @@ export default {
         }
       }
     },
-    getExamList () {
+    async getExamList () {
       let id = this.$route.params.id
-      this.initPage(id)
+      await this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
         let correctNum = res.correct_num
         let count = res.questions.length
@@ -252,7 +252,7 @@ export default {
           let raffleUrl = submitRules.raffle_url
           let tempUrl = ''
           // 开启抽奖
-          if (submitRules.is_open_raffle && submitRules.jump_conditions) {
+          if (submitRules.is_open_raffle) {
             let { type, value } = submitRules.jump_conditions
             if (type && value) {
               if (type === 'score') {
@@ -265,6 +265,8 @@ export default {
                   tempUrl = raffleUrl
                 }
               }
+            } else {
+              tempUrl = raffleUrl
             }
           }
           this.raffleUrl = tempUrl
@@ -418,7 +420,7 @@ export default {
         collection_form: collectionForm
       } = this.optionData
       userTime = formatDate(userTime, 'mm分ss秒')
-      submitTime = formatDate(submitTime, 'MM/DD mm:ss')
+      submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
       let name = ''
       if (collectionForm && collectionForm.length) {
         for (let item of collectionForm) {

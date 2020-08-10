@@ -113,7 +113,7 @@
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
       <div class="password-limit-wrap" @click.stop>
         <div class="password-limit-title">请输入密码参与答题</div>
-        <input class="password-limit" placeholder='请输入密码' v-model="password" type="text" />
+        <input class="password-limit" @blur="blurAction()" placeholder='请输入密码' v-model="password" type="text" />
         <div class="password-tips">{{passwordTips}}</div>
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
@@ -191,10 +191,10 @@ export default {
     this.initStartInfo()
   },
   methods: {
-    downBreakModel () {
+    async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      this.endExam({ id: examId })
+      await this.endExam({ id: examId })
       this.initStartInfo()
       this.isShowBreak = false
     },
@@ -202,6 +202,9 @@ export default {
       // 继续答题
       this.isShowBreak = false
       this.goExamPage()
+    },
+    blurAction () {
+      document.body.scrollTop = 0
     },
     goDownload () {
       if (this.appDownloadUrl) {
@@ -358,20 +361,29 @@ export default {
         if (obj && obj.length) {
           let checkDraw = [...obj]
           let indexMobile = -1
+          let indexAddress = -1
           let codeObj = null
           let imgCodeObj = null
+          let addressObj = null
           for (let i = 0; i < checkDraw.length; i++) {
             let item = checkDraw[i]
             if (item.unique_name === 'name') {
               item.maxlength = 20
               item.type = 'text'
             } else if (item.unique_name === 'address') {
-              item.maxlength = 500
-              item.type = 'textarea'
+              item.maxlength = 50
+              item.type = 'text'
+              indexAddress = i
+              addressObj = {
+                name: '详细地址',
+                unique_name: 'detail_address',
+                type: 'textarea',
+                maxlength: 500
+              }
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              indexMobile = i + 1
+              indexMobile = i
               imgCodeObj = {
                 name: '图形验证码',
                 unique_name: 'imgCode',
@@ -389,8 +401,20 @@ export default {
               item.type = 'text'
             }
           }
-          if (indexMobile !== -1 && codeObj && imgCodeObj) {
-            checkDraw.splice(indexMobile, 0, codeObj)
+          if (indexMobile !== -1 && indexAddress !== -1) {
+            if (indexMobile < indexAddress) {
+              checkDraw.splice(indexMobile + 1, 0, codeObj)
+              checkDraw.splice(indexMobile, 0, imgCodeObj)
+              checkDraw.splice(indexAddress + 3, 0, addressObj)
+            } else {
+              checkDraw.splice(indexAddress + 1, 0, addressObj)
+              checkDraw.splice(indexMobile + 2, 0, codeObj)
+              checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
+            }
+          } else if (indexMobile === -1 && indexAddress !== -1) {
+            checkDraw.splice(indexAddress + 1, 0, addressObj)
+          } else if (indexMobile !== -1 && indexAddress === -1) {
+            checkDraw.splice(indexMobile + 1, 0, codeObj)
             checkDraw.splice(indexMobile, 0, imgCodeObj)
           }
           this.isShowDrawCheck = true
@@ -830,6 +854,7 @@ export default {
         margin-bottom: px2rem(60px);
       }
       .password-limit {
+        -webkit-appearance: none;
         width: px2rem(540px);
         height: px2rem(90px);
         padding: px2rem(27px) px2rem(38px);
