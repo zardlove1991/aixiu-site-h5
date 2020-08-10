@@ -191,10 +191,10 @@ export default {
     this.initStartInfo()
   },
   methods: {
-    downBreakModel () {
+    async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      this.endExam({ id: examId })
+      await this.endExam({ id: examId })
       this.initStartInfo()
       this.isShowBreak = false
     },
@@ -851,6 +851,7 @@ export default {
         margin-bottom: px2rem(60px);
       }
       .password-limit {
+        -webkit-appearance: none;
         width: px2rem(540px);
         height: px2rem(90px);
         padding: px2rem(27px) px2rem(38px);
