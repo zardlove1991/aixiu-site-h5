@@ -371,7 +371,7 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              indexMobile = i + 1
+              indexMobile = i
               imgCodeObj = {
                 name: '图形验证码',
                 unique_name: 'imgCode',
@@ -390,8 +390,8 @@ export default {
             }
           }
           if (indexMobile !== -1 && codeObj && imgCodeObj) {
-            checkDraw.splice(indexMobile, 0, codeObj)
             checkDraw.splice(indexMobile, 0, imgCodeObj)
+            checkDraw.splice(indexMobile + 2, 0, codeObj)
           }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw

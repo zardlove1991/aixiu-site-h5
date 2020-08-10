@@ -283,7 +283,7 @@ export default {
       .check-dialog-main {
         margin: 0 auto;
         background-color: #fff;
-        width: px2rem(600px);
+        width: px2rem(620px);
         border-radius: px2rem(8px);
         padding: px2rem(48px) px2rem(38px) px2rem(58px) px2rem(38px);
         display: flex;
