@@ -144,7 +144,7 @@ import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
-import { formatTimeBySec } from '@/utils/utils'
+import { formatDate } from '@/utils/utils'
 
 export default {
   name: 'form-statistic',
@@ -400,7 +400,7 @@ export default {
     },
     shareScore () {
       let optionData = this.optionData
-      console.log('shareScore', this.optionData)
+      // console.log('shareScore', this.optionData)
       if (!optionData || !optionData.title) {
         return
       }
@@ -411,14 +411,19 @@ export default {
         use_time: userTime,
         submit_time: submitTime,
         total_score: totalScore,
-        correct_num: correntNum
+        correct_num: correntNum,
+        collection_form: collectionForm
       } = this.optionData
-      userTime = formatTimeBySec(userTime)
-      submitTime = formatTimeBySec(submitTime)
+      userTime = formatDate(userTime, 'mm分ss秒')
+      submitTime = formatDate(submitTime, 'MM/DD mm:ss')
       let name = ''
-      let userinfo = STORAGE.get('userinfo')
-      if (userinfo) {
-        name = userinfo.nick_name
+      if (collectionForm && collectionForm.length) {
+        for (let item of collectionForm) {
+          if (item.unique_name === 'name') {
+            name = item.value
+            break
+          }
+        }
       }
       let data = {
         title,
