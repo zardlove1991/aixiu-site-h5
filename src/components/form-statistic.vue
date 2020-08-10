@@ -238,9 +238,9 @@ export default {
         }
       }
     },
-    getExamList () {
+    async getExamList () {
       let id = this.$route.params.id
-      this.initPage(id)
+      await this.initPage(id)
       API.getExamDetailsStatistics({params: {id}}).then(res => {
         let correctNum = res.correct_num
         let count = res.questions.length
