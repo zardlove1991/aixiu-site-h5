@@ -113,7 +113,7 @@
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
       <div class="password-limit-wrap" @click.stop>
         <div class="password-limit-title">请输入密码参与答题</div>
-        <input class="password-limit" placeholder='请输入密码' v-model="password" type="text" />
+        <input class="password-limit" @blur="blurAction()" placeholder='请输入密码' v-model="password" type="text" />
         <div class="password-tips">{{passwordTips}}</div>
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
@@ -202,6 +202,9 @@ export default {
       // 继续答题
       this.isShowBreak = false
       this.goExamPage()
+    },
+    blurAction () {
+      document.body.scrollTop = 0
     },
     goDownload () {
       if (this.appDownloadUrl) {
