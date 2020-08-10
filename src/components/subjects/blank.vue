@@ -205,7 +205,7 @@ export default {
       }
       // 处理多次操作
       if (this.inputTimer) clearTimeout(this.inputTimer)
-      let delayTime = renderStyle === 'underline' ? 100 : 800
+      let delayTime = renderStyle === 'underline' ? 800 : 800
       this.inputTimer = setTimeout(() => {
         let index = dataset.index
         let value = target.value
