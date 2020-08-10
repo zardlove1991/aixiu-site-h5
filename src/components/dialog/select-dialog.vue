@@ -2,6 +2,7 @@
   <mt-popup v-model="selectShow"
     popup-transition="popup-fade"
     :closeOnClickModal="false"
+    @touchmove.native.stop.prevent
     position="bottom">
     <mt-picker :slots="selectData"
       @change="onValuesChange"
