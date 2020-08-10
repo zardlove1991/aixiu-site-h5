@@ -118,6 +118,12 @@
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
     </div>
+    <draw-check-dialog
+      :show="isShowDrawCheck"
+      :checkDraw="checkDraw"
+      @success="goExamPage()"
+      @close="isShowDrawCheck = false">
+    </draw-check-dialog>
   </div>
 </template>
 
@@ -130,6 +136,7 @@ import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
+import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 
 export default {
   mixins: [mixins],
@@ -150,10 +157,12 @@ export default {
       visitPasswordLimit: false,
       passwordTips: '',
       errTips: '',
-      isShowBreak: false
+      isShowBreak: false,
+      isShowDrawCheck: false,
+      checkDraw: []
     }
   },
-  components: { MyModel },
+  components: { MyModel, DrawCheckDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
     examSubmitCount () {
@@ -312,7 +321,7 @@ export default {
             this.appDownloadUrl = res.app_download_link
             this.limitSource = res.limit_source
           } else {
-            this.goExamPage()
+            this.isShowCheckDraw()
           }
         }).catch(err => {
           console.log(err)
@@ -332,13 +341,65 @@ export default {
         let examId = this.id
         API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
           this.hiddenPasswordLimit()
-          this.goExamPage()
+          this.isShowCheckDraw()
         }).catch(err => {
           // console.log(err)
           if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
             this.passwordTips = err.error_message
           }
         })
+      }
+    },
+    isShowCheckDraw () {
+      // 判断是否需要信息采集
+      let { limit, collection_status: status } = this.examInfo
+      if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
+        let obj = limit.collection_form.collection_form_settings
+        if (obj && obj.length) {
+          let checkDraw = [...obj]
+          let indexMobile = -1
+          let codeObj = null
+          let imgCodeObj = null
+          for (let i = 0; i < checkDraw.length; i++) {
+            let item = checkDraw[i]
+            if (item.unique_name === 'name') {
+              item.maxlength = 20
+              item.type = 'text'
+            } else if (item.unique_name === 'address') {
+              item.maxlength = 500
+              item.type = 'textarea'
+            } else if (item.unique_name === 'mobile') {
+              item.maxlength = 11
+              item.type = 'text'
+              indexMobile = i + 1
+              imgCodeObj = {
+                name: '图形验证码',
+                unique_name: 'imgCode',
+                type: 'text',
+                maxlength: 10
+              }
+              codeObj = {
+                name: '验证码',
+                unique_name: 'verify_code',
+                type: 'text',
+                maxlength: 4
+              }
+            } else {
+              item.maxlength = 100
+              item.type = 'text'
+            }
+          }
+          if (indexMobile !== -1 && codeObj && imgCodeObj) {
+            checkDraw.splice(indexMobile, 0, codeObj)
+            checkDraw.splice(indexMobile, 0, imgCodeObj)
+          }
+          this.isShowDrawCheck = true
+          this.checkDraw = checkDraw
+        } else {
+          this.goExamPage()
+        }
+      } else {
+        this.goExamPage()
       }
     },
     goExamPage () {
