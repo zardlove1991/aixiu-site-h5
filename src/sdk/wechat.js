@@ -11,7 +11,7 @@ let wechat = {
     let backUrl = window.location.href
     let indexOf = backUrl.indexOf('?')
     if (indexOf !== -1) {
-      backUrl = backUrl.substring(0, indexOf) + '?test'
+      backUrl = backUrl.substring(0, indexOf)
     }
     let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
