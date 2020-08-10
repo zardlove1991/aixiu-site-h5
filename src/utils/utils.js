@@ -96,7 +96,6 @@ export const getPlat = () => {
 * */
 export const setBrowserTitle = (title) => {
   let plat = getPlat()
-  document.title = title
   if (plat === 'dingding' || plat === 'dingdone') {
     let i = document.createElement('iframe')
     i.src = '/static/js/browser.js'
@@ -106,6 +105,7 @@ export const setBrowserTitle = (title) => {
         i.remove()
       }, 2)
     }
+    document.title = title
     document.body.appendChild(i)
   } else {
     document.title = title
