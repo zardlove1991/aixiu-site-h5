@@ -195,14 +195,14 @@ export default {
       let renderStyle = data.extra.style
       let answerArr = this.answerArr
       // 选择下一个需要聚焦的元素
-      let nextFoucs = (index) => {
-        let value = target.value
-        if (!value) return
-        // 跳转
-        let inputElArr = this.inputElArr
-        let nextEl = inputElArr[Number(index) + 1]
-        if (nextEl) nextEl.focus()
-      }
+      // let nextFoucs = (index) => {
+      //   let value = target.value
+      //   if (!value) return
+      //   // 跳转
+      //   let inputElArr = this.inputElArr
+      //   let nextEl = inputElArr[Number(index) + 1]
+      //   if (nextEl) nextEl.focus()
+      // }
       // 处理多次操作
       if (this.inputTimer) clearTimeout(this.inputTimer)
       let delayTime = renderStyle === 'underline' ? 800 : 800
@@ -215,12 +215,12 @@ export default {
           let val = answerArr[0] // 暂时不支持多项填充
           if (!val) {
             answerArr[0] = value
-            nextFoucs(index) // 自动跳转下一个文本框
+            // nextFoucs(index) // 自动跳转下一个文本框
           } else if (val[index]) {
             answerArr[0] = val.replace(val[index], value)
           } else {
             answerArr[0] = `${val}${value}`
-            nextFoucs(index) // 自动跳转下一个文本框
+            // nextFoucs(index) // 自动跳转下一个文本框
           }
         }
         // console.log('xxx 最终传送的值', this.answerArr)
