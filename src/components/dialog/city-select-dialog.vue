@@ -66,7 +66,6 @@ export default {
       }
     },
     success () {
-      console.log('success', this.selectData)
       let selectData = this.selectData
       if (!selectData) {
         selectData = this.valueKey
@@ -93,6 +92,7 @@ export default {
     }
     .distpicker-address-wrapper {
       .address-header ul {
+        @include font-dpr(15px);
         color: #707274;
         li {
           &.active {
@@ -104,6 +104,7 @@ export default {
       .address-container ul {
         height: px2rem(380px);
         color: #707274;
+        @include font-dpr(15px);
         li {
           &.active {
             color: #000;
