@@ -165,6 +165,7 @@ export default {
       let codeTime = this.codeTime
       if (codeTime === 0) {
         // console.log('codeTime')
+        this.getImgCode()
         this.clearSetInterval()
       } else {
         codeTime--
