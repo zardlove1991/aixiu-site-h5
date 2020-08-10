@@ -165,6 +165,7 @@ export default {
       let codeTime = this.codeTime
       if (codeTime === 0) {
         // console.log('codeTime')
+        this.getImgCode()
         this.clearSetInterval()
       } else {
         codeTime--
@@ -201,6 +202,7 @@ export default {
         params
       }).then(res => {
         if (res.ErrorCode) {
+          this.getImgCode()
           Toast(res.ErrorText)
           return
         }
@@ -241,10 +243,16 @@ export default {
         activity_mark: 'examination',
         ...checkData
       }
+      let address = ''
+      if (checkData.address && checkData.detail_address) {
+        address = checkData.address + ' ' + checkData.detail_address
+        data.address = address
+      }
       API.saveDrawRecord({
         data
       }).then(res => {
         if (res.ErrorCode) {
+          this.getImgCode()
           Toast(res.ErrorText)
           return
         }
@@ -283,7 +291,7 @@ export default {
       .check-dialog-main {
         margin: 0 auto;
         background-color: #fff;
-        width: px2rem(600px);
+        width: px2rem(620px);
         border-radius: px2rem(8px);
         padding: px2rem(48px) px2rem(38px) px2rem(58px) px2rem(38px);
         display: flex;
