@@ -2,20 +2,20 @@
   <div class="form-submit-wrap">
     <form>
       <div v-if="flag === 'video'" class="form-item">
-        <div class="form-title">上传视频<span class="form-tips">(视频格式为MP4，时长不能超过60s)</span></div>
+        <div class="form-title">上传视频<span class="form-tips">(视频格式为MP4)</span></div>
         <div class="form-content">
           <video-upload :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
         </div>
       </div>
       <div v-if="flag === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips">(图片最多上传9张，支持PNG、JPG、GIF格式，小于5M)</div>
+        <div class="form-tips">(图片最多上传9张，支持PNG、JPG、GIF格式)</div>
         <div class="form-content">
           <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="flag === 'audio'" class="form-item">
-        <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3，时长不能超过60s)</span></div>
+        <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3)</span></div>
         <div class="form-content">
           <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
