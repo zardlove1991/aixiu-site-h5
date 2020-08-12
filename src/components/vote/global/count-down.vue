@@ -76,6 +76,7 @@ export default {
     padding: px2rem(35px) 0;
     display: flex;
     align-items: center;
+    -webkit-overflow-scrolling: touch;
     .left-time-wrap {
       display: flex;
       flex-direction: column;

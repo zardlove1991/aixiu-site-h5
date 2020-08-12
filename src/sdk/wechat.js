@@ -6,10 +6,10 @@ import globalConfig from '@/api/config'
 let wechat = {
   getAuthUrl: (scope) => {
     let appid = globalConfig['APPID']
-    let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let backUrl = delUrlParams(['code'])
-    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let redirectUri = globalConfig['REDIRECT-URI'] + '?backUrl=' + delUrlParams(['code'])
+    redirectUri = encodeURIComponent(redirectUri)
+    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
   async h5Signature (info, cbk, scope, compAppid) {

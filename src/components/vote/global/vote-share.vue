@@ -32,17 +32,17 @@
       :show="isShowArea"
       :limitArea="limitArea"
       @close="isShowArea = false"></area-vote>
-    <!-- <tips-dialog
+    <tips-dialog
       :show="isShowMax"
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">这个作品太火爆了</div>
-        <div class="workvote-header">{{voteTime}}分钟后在给Ta投票吧！</div>
+        <div class="workvote-header">{{voteTime}}秒后在给Ta投票吧！</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowArea = false">好的</button>
         </div>
       </div>
-    </tips-dialog> -->
+    </tips-dialog>
   </div>
 </template>
 
@@ -56,6 +56,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
 import { Toast } from 'mint-ui'
+// import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
@@ -83,8 +84,8 @@ export default {
       isShowLottery: false, // 抽奖弹窗
       isShowArea: false, // 区域限制弹窗
       limitArea: [],
-      // isShowMax: true,
-      // voteTime: 0,
+      isShowMax: false,
+      voteTime: '',
       lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: ''
@@ -156,15 +157,26 @@ export default {
         data: obj
       }).then(res => {
         let errCode = res.error_code
-        if (errCode && errCode !== 'AREA_CAN_NOT_VOTE') {
-          Toast(res.error_message)
-          return
-        }
-        // 区域限制
-        if (errCode && errCode === 'AREA_CAN_NOT_VOTE') {
-          this.isShowArea = true
-          this.$emit('close')
-          return
+        if (errCode) {
+          if (errCode === 'WORKS_LOCKED') {
+            let msg = res.error_message
+            let num = msg.replace(/[^0-9]/ig, '')
+            if (num) {
+              this.isShowMax = true
+              this.voteTime = num
+              // this.voteTime = formatTimeBySec(num)
+              this.$emit('close')
+            }
+            return
+          } else if (errCode === 'AREA_CAN_NOT_VOTE') {
+            // 区域限制
+            this.isShowArea = true
+            this.$emit('close')
+            return
+          } else {
+            Toast(res.error_message)
+            return
+          }
         }
         // 关注公众号
         let qrcodeUrl = res.url
