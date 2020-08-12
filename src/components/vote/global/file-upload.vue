@@ -126,6 +126,7 @@ export default {
       let { host, filename } = obj
       let tmp = {
         name: this.file.name,
+        filename: this.file.name,
         url: host + filename,
         uid: this.file.uid,
         size: this.file.size
