@@ -127,7 +127,8 @@ export default {
       let tmp = {
         name: this.file.name,
         url: host + filename,
-        uid: this.file.uid
+        uid: this.file.uid,
+        size: this.file.size
       }
       if (this.flag === 'audio') {
         let tempDura = 0
