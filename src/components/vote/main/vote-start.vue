@@ -301,7 +301,8 @@ export default {
         title: shareTitle,
         desc: shareBrief,
         indexpic: imgUrl,
-        link: shareLink
+        link: shareLink,
+        mark: detailInfo.mark
       })
     },
     handleVoteData () {

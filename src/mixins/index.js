@@ -86,7 +86,8 @@ export default {
             this.setShare({
               id: data.id,
               title: params.title,
-              from: params.from
+              from: params.from,
+              mark: data.mark
             })
           },
           cancel: function () {

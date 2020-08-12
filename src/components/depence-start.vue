@@ -280,7 +280,8 @@ export default {
         title,
         desc,
         indexpic: imgUrl,
-        link
+        link,
+        mark: 'examination'
       })
     },
     async startReExam () {

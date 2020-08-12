@@ -774,12 +774,12 @@ const actions = {
   },
   SET_SHARE ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
-      let { id, title, from = '' } = payload
+      let { id, title, from = '', mark = '' } = payload
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
       let data = [{
         id: id,
-        mark: 'examination',
+        mark: mark,
         type: 'wechat',
         title: title,
         member_id: STORAGE.get('userinfo').id,
