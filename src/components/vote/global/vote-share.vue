@@ -39,7 +39,7 @@
         <div class="workvote-header">这个作品太火爆了</div>
         <div class="workvote-header">{{voteTime}}秒后在给Ta投票吧！</div>
         <div class="workvote-all-btn">
-          <button class="dialog-ok-btn" @click.stop="isShowArea = false">好的</button>
+          <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
         </div>
       </div>
     </tips-dialog>
