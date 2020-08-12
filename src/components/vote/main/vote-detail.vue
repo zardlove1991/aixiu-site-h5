@@ -116,12 +116,7 @@ export default {
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {
-        this.$router.replace({
-          name: 'votebegin',
-          params: {
-            id: this.id
-          }
-        })
+        window.history.back()
       } else if (slug === 'vote') {
         this.isShowWorkVote = true
       } else if (slug === 'invote') {
