@@ -111,16 +111,12 @@
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
-    <count-down v-if="status !== statusCode.endStatus" :status="status" :remainVotes="remainVotes" :voteDate="voteDate"></count-down>
-    <!-- 活动规则弹窗 -->
-    <!-- <tips-dialog
-      :show="isShowRuleDialog"
-      @close="isShowRuleDialog = false">
-      <div class="rule-dialog-wrap" slot="tips-content">
-        <div class="rule-header">活动规则</div>
-        <div class="rule-content">{{detailInfo.introduce}}</div>
-      </div>
-    </tips-dialog> -->
+    <count-down
+      v-if="status !== statusCode.endStatus"
+      :status="status"
+      :remainVotes="remainVotes"
+      :voteDate="voteDate">
+    </count-down>
     <!-- 未找到搜索内容弹窗 -->
     <tips-dialog
       :show="isShowSearch"
@@ -205,12 +201,13 @@ export default {
   data () {
     return {
       colorName: '', // 配色名称
-      status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束
+      status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
       statusCode: {
         noStatus: 0, // 未开始
         signUpStatus: 1, // 报名中
         voteStatus: 2, // 投票中
-        endStatus: 3 // 已结束
+        endStatus: 3, // 已结束
+        noSignUp: 4 // 未开始报名
       },
       searchVal: '', // 搜索框输入内容
       searchBarFocus: false, // 搜索框是否获取焦点
@@ -411,13 +408,23 @@ export default {
       let nowTime = new Date().getTime()
       let { id, rule } = detailInfo
       // 判断是否需要报名
-      let { signUpStatus } = this.statusCode
+      let { signUpStatus, noSignUp } = this.statusCode
       let { report_status: reportStatus, report_start_time: reportStartTime, report_end_time: reportEndTime } = rule
       if (reportStatus && reportStatus === 2) {
         // 开启了投票报名
         let reportStartTimeMS = reportStartTime * 1000
         let reportEndTimeMS = reportEndTime * 1000
-        if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
+        if (nowTime < reportStartTimeMS) {
+          status = noSignUp
+          this.status = status
+          STORAGE.set('isBtnAuth', 0)
+          this.startCountTime(reportStartTimeMS, (timeArr) => {
+            // 更改当前投票的时间
+            this.voteDate = timeArr
+          }, () => {
+            this.initReportTime()
+          })
+        } else if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
           this.status = status
           STORAGE.set('isBtnAuth', 0)
@@ -432,7 +439,7 @@ export default {
           })
         }
       }
-      if (status !== signUpStatus) {
+      if (status !== signUpStatus && status !== noSignUp) {
         this.initVoteTime()
       }
     },

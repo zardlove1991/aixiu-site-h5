@@ -49,7 +49,12 @@ export default {
   },
   data () {
     return {
-      statusMsg: ['投票开始', '报名结束', '投票结束']
+      statusMsg: {
+        0: '投票开始',
+        1: '报名结束',
+        2: '投票结束',
+        4: '报名开始'
+      }
     }
   }
 }

@@ -8,7 +8,7 @@
       <div class="rank-list-item rank-my-item"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
         v-show="myVoteData && myVoteData.name">
-        <i class="item-rank color-theme_color" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
+        <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
           <div class="indexpic-wrap"
             v-if="flag === 'picture' && myVoteData.material && myVoteData.material.image && myVoteData.material.image.length"
@@ -73,7 +73,7 @@ export default {
   data () {
     return {
       rankList: [],
-      myVoteIndex: 1,
+      myVoteIndex: -1,
       myVoteData: {},
       loading: false,
       pager: { // 投票列表分页
@@ -108,7 +108,12 @@ export default {
         return
       }
       if (detailInfo.my_work) {
-        this.myVoteData = detailInfo.my_work
+        let myWork = detailInfo.my_work
+        if (myWork.audit_status && myWork.audit_status === 1) {
+          // 审核通过
+          this.myVoteData = myWork
+          this.myVoteIndex = myWork.index
+        }
       }
       // console.log('initRankList', this.flag, this.id)
       let voteId = this.id
