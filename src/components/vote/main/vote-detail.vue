@@ -142,10 +142,10 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .commvote-detail {
+    width: 100%;
+    height: 100vh;
     // background-color: #221A6E;
     // @include bg-color('bgColor');
-    width: 100%;
-    min-height: calc(100vh);
     .detail-page-content-wrap {
       width: 100%;
       padding: 0 px2rem(30px);

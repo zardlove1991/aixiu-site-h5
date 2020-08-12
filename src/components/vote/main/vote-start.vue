@@ -113,14 +113,14 @@
     <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
     <count-down v-if="status !== statusCode.endStatus" :status="status" :remainVotes="remainVotes" :voteDate="voteDate"></count-down>
     <!-- 活动规则弹窗 -->
-    <tips-dialog
+    <!-- <tips-dialog
       :show="isShowRuleDialog"
       @close="isShowRuleDialog = false">
       <div class="rule-dialog-wrap" slot="tips-content">
         <div class="rule-header">活动规则</div>
         <div class="rule-content">{{detailInfo.introduce}}</div>
       </div>
-    </tips-dialog>
+    </tips-dialog> -->
     <!-- 未找到搜索内容弹窗 -->
     <tips-dialog
       :show="isShowSearch"
@@ -162,6 +162,11 @@
       @close="closeWorkVote()"
     ></share-vote>
     <canvass-vote :flag="showModel" ref="canvass-vote" />
+    <rule-vote
+      :show="isShowRuleDialog"
+      @close="isShowRuleDialog = false"
+      :introduce="detailInfo.introduce">
+    </rule-vote>
   </div>
 </template>
 
@@ -174,6 +179,7 @@ import CountDown from '@/components/vote/global/count-down'
 import TipsDialog from '@/components/vote/global/tips-dialog'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
+import RuleVote from '@/components/vote/global/vote-rule'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, delUrlParams } from '@/utils/utils'
@@ -193,7 +199,8 @@ export default {
     CountDown,
     TipsDialog,
     ShareVote,
-    CanvassVote
+    CanvassVote,
+    RuleVote
   },
   data () {
     return {
@@ -640,6 +647,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .vote-start-wrap {
+    width: 100%;
+    height: 100vh;
     .active-rule-wrap {
       position: fixed;
       z-index: 10;
@@ -959,24 +968,24 @@ export default {
         }
       }
     }
-    .rule-dialog-wrap {
-      padding: px2rem(60px) px2rem(40px) px2rem(100px) px2rem(40px);
-      .rule-header {
-        margin-bottom: px2rem(45px);
-        text-align: center;
-        font-weight: 500;
-        @include font-dpr(17px);
-        color: #333333;
-      }
-      .rule-content {
-        max-height: px2rem(650px);
-        overflow-y: auto;
-        width: 100%;
-        @include font-dpr(15px);
-        line-height: px2rem(48px);
-        color: #666;
-      }
-    }
+    // .rule-dialog-wrap {
+    //   padding: px2rem(60px) px2rem(40px) px2rem(100px) px2rem(40px);
+    //   .rule-header {
+    //     margin-bottom: px2rem(45px);
+    //     text-align: center;
+    //     font-weight: 500;
+    //     @include font-dpr(17px);
+    //     color: #333333;
+    //   }
+    //   .rule-content {
+    //     max-height: px2rem(650px);
+    //     overflow-y: auto;
+    //     width: 100%;
+    //     @include font-dpr(15px);
+    //     line-height: px2rem(48px);
+    //     color: #666;
+    //   }
+    // }
     .flex-column-dialog {
       display: flex;
       justify-content: center;
