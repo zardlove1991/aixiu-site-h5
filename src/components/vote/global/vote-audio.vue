@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-base-audio-wrap">
-    <p class="audio-name">{{data.name}}</p>
+    <p class="audio-name">{{data.filename}}</p>
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
       <div class="process-wrap">
