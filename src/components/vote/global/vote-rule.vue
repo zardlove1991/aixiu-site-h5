@@ -82,6 +82,11 @@ export default {
           color: #333333;
           font-weight: 500;
         }
+        .rule-content {
+          @include font-dpr(15px);
+          line-height: px2rem(48px);
+          color: #666;
+        }
       }
       .close-btn-wrap {
         margin-top: px2rem(60px);
