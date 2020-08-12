@@ -640,6 +640,8 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .vote-start-wrap {
+    width: 100%;
+    height: 100vh;
     .active-rule-wrap {
       position: fixed;
       z-index: 10;
