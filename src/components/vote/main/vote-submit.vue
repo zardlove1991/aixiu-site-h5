@@ -118,10 +118,13 @@ export default {
           if (res.material) {
             if (flag === 'picture') {
               this.fileList = res.material.image
+              this.material.image = res.material.image
             } else if (flag === 'video') {
               this.fileList = res.material.video
+              this.material.video = res.material.video
             } else if (flag === 'audio') {
               this.fileList = res.material.audio
+              this.material.audio = res.material.audio
             }
           }
           this.examineData = {
