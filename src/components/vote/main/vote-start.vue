@@ -291,8 +291,8 @@ export default {
           shareBrief = share.brief
         }
         shareLink = share.link
-        if (sharePic && sharePic.host && sharePic.filename) {
-          imgUrl = 'http:' + sharePic.host + sharePic.filename
+        if (sharePic && sharePic.length && sharePic[0].host && sharePic[0].filename) {
+          imgUrl = 'http:' + sharePic[0].host + sharePic[0].filename
         } else if (indexpic && indexpic.host && indexpic.filename) {
           imgUrl = 'http:' + indexpic.host + indexpic.filename
         }
