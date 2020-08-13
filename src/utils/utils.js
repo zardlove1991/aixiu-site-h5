@@ -203,7 +203,7 @@ export const setPlatCssInclude = () => {
   window.document.documentElement.setAttribute('data-theme', theme)
 }
 
-export const delUrlParams = (delArr = []) => {
+export const delUrlParams = (delArr = [], isEncode = false) => {
   let backUrl = window.location.href
   let indexOf = backUrl.indexOf('?')
   if (indexOf !== -1) {
@@ -217,7 +217,9 @@ export const delUrlParams = (delArr = []) => {
   if (params) {
     backUrl = backUrl + '?' + params
   }
-  backUrl = encodeURIComponent(backUrl)
+  if (isEncode) {
+    backUrl = encodeURIComponent(backUrl)
+  }
   return backUrl
 }
 
