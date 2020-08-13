@@ -86,12 +86,12 @@ export default {
     async inintDetail () {
       let { worksId, sign, invotekey } = this.$route.query
       if (sign && invotekey) {
+        this.isBackList = true
         this.setShareData({ sign, invotekey })
       }
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         let res = await this.getDetail()
-        this.isBackList = true
         detailInfo = res
       }
       let { mark, rule } = detailInfo
