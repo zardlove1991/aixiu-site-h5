@@ -14,7 +14,8 @@ Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
-  if ((to.name === 'depencestart' || to.name === 'votebegin') && !from.name) {
+  let name = to.name
+  if ((name === 'depencestart' || name === 'votebegin' || name === 'votedetail') && !from.name) {
     // 第一次进入页面
     oauth((res) => {
       if (res && res.id) {

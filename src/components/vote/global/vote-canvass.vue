@@ -58,7 +58,11 @@ export default {
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
         let voteTip = res.index === 1 ? '第2名还差' + Math.abs(res.last_votes) + '票就要赶超' : '距离上一名还差' + Math.abs(res.last_votes) + '票'
         if (detailInfo.works_count === 1) voteTip = '目前是第一名，坚持就是胜利'
-        let qrcode = this.dealUrlConcat({ sign: 'invotefriend', invotekey: code })
+        let qrcode = this.dealUrlConcat({
+          sign: 'invotefriend',
+          invotekey: code,
+          worksId
+        }, detailInfo)
         let params = {
           avatar: avatarUrl,
           numbering: res.numbering,
@@ -87,19 +91,35 @@ export default {
           if (!res || !res.image) {
             return
           }
-          // console.log('shareMake', res.image)
           this.sharePoster = res.image
           this.show = true
         })
       })
     },
-    dealUrlConcat (params) {
+    dealUrlConcat (params, detailInfo) {
       let location = window.location
+      let protocol = location.protocol
+      let host = location.host
+      let pathname = location.pathname
+      if (pathname.indexOf('votebegin') !== -1) {
+        pathname = pathname.substring(0, pathname.indexOf('votebegin'))
+        let { mark, id } = detailInfo
+        if (mark.indexOf('video') !== -1) {
+          mark = 'video'
+        } else if (mark.indexOf('image') !== -1) {
+          mark = 'picture'
+        } else if (mark.indexOf('audio') !== -1) {
+          mark = 'audio'
+        } else {
+          mark = 'text'
+        }
+        pathname = pathname + 'votedetail/' + mark + '/' + id
+      }
       let url = '?'
       for (let key in params) { // 拼接字符串
         url += key + '=' + params[key] + '&'
       }
-      return location.protocol + '//' + location.host + location.pathname + url.substring(0, url.length - 1)
+      return protocol + '//' + host + pathname + url.substring(0, url.length - 1)
     },
     close () {
       this.show = false

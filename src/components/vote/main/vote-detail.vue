@@ -71,7 +71,8 @@ export default {
       workDetail: {},
       isShowWorkVote: false,
       mark: '',
-      relatedLink: '' // 抽奖链接
+      relatedLink: '', // 抽奖链接
+      isBackList: false
     }
   },
   created () {
@@ -82,14 +83,16 @@ export default {
     flag: String
   },
   methods: {
-    inintDetail () {
+    async inintDetail () {
       let { worksId, sign, invotekey } = this.$route.query
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
-        return
+        let res = await this.getDetail()
+        this.isBackList = true
+        detailInfo = res
       }
       let { mark, rule } = detailInfo
       if (rule && rule.related_lottery && rule.related_lottery.link) {
@@ -114,9 +117,27 @@ export default {
         this.workDetail = res
       })
     },
+    getDetail () {
+      return new Promise((resolve, reject) => {
+        API.getVodeDetail({
+          query: { id: this.id }
+        }).then((res) => {
+          resolve(res)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
     dealDetailMenu (slug) {
       if (slug === 'back') {
-        window.history.back()
+        if (this.isBackList) {
+          this.$router.replace({
+            name: 'votebegin',
+            params: { id: this.id }
+          })
+        } else {
+          window.history.back()
+        }
       } else if (slug === 'vote') {
         this.isShowWorkVote = true
       } else if (slug === 'invote') {
