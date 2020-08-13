@@ -217,6 +217,7 @@ export const delUrlParams = (delArr = []) => {
   if (params) {
     backUrl = backUrl + '?' + params
   }
+  backUrl = encodeURIComponent(backUrl)
   return backUrl
 }
 

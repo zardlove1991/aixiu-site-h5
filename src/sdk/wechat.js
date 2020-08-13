@@ -8,8 +8,8 @@ let wechat = {
     let appid = globalConfig['APPID']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     let redirectUri = globalConfig['REDIRECT-URI'] + '?backUrl=' + delUrlParams(['code'])
-    redirectUri = encodeURIComponent(redirectUri)
-    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    let newRedirectUri = encodeURIComponent(redirectUri)
+    let url = host + '?appid=' + appid + '&redirect_uri=' + newRedirectUri + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
   async h5Signature (info, cbk, scope, compAppid) {
