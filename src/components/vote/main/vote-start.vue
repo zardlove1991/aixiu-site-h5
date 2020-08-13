@@ -656,8 +656,9 @@ export default {
   .vote-start-wrap {
     width: 100%;
     height: 100vh;
+    -webkit-overflow-scrolling: touch;
     .active-rule-wrap {
-      position: fixed;
+      position: absolute;
       z-index: 10;
       right: 0;
       bottom: 30%;
