@@ -116,7 +116,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .common-page-detail-wrap {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
     background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);

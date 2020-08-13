@@ -1,5 +1,5 @@
 <template>
-  <div class="count-down-wrap color-decorated">
+  <div class="count-down-wrap">
     <!--时间结构-->
     <div class="left-time-wrap">
       <span class="title-tip color-link_text">距离{{statusMsg[status]}}还有</span>
@@ -63,7 +63,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .count-down-wrap {
-    position: fixed;
+    position: absolute;
     bottom: px2rem(40px);
     left: px2rem(50px);
     right: px2rem(50px);
