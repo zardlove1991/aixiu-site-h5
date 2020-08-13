@@ -7,7 +7,8 @@
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">确定要给这个作品投票吗？</div>
         <div class="workvote-all-btn">
-          <button class="dialog-sure-btn min workvote-right" @click="sureWorkVote()">确定</button>
+          <button class="dialog-sure-btn min workvote-right" v-if="!voteDisable" @click="sureWorkVote()">确定</button>
+          <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
           <button class="dialog-ok-btn min" @click="close()">取消</button>
         </div>
       </div>
@@ -88,7 +89,8 @@ export default {
       voteTime: '',
       lottery: {}, // 抽奖信息
       checkVote: {},
-      qrcodeUrl: ''
+      qrcodeUrl: '',
+      voteDisable: false
     }
   },
   methods: {
@@ -137,6 +139,7 @@ export default {
       if (!config || !detailInfo) {
         return
       }
+      this.voteDisable = true
       let obj = {
         ...config,
         member_id: memberId
@@ -167,14 +170,17 @@ export default {
               // this.voteTime = formatTimeBySec(num)
               this.$emit('close')
             }
+            this.voteDisable = false
             return
           } else if (errCode === 'AREA_CAN_NOT_VOTE') {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
+            this.voteDisable = false
             return
           } else {
             Toast(res.error_message)
+            this.voteDisable = false
             return
           }
         }
@@ -184,6 +190,7 @@ export default {
           this.qrcodeUrl = qrcodeUrl
           this.$emit('close')
           this.isShowQrcode = true
+          this.voteDisable = false
           return
         }
         // 抽奖
@@ -192,9 +199,11 @@ export default {
           this.isShowLottery = true
           this.lottery = lottery
           this.$emit('close')
+          this.voteDisable = false
           return
         }
         this.$emit('close')
+        this.voteDisable = false
         Toast('成功投票')
         this.$emit('success')
       })
