@@ -40,8 +40,6 @@ export const oauth = (cbk) => {
   const existCode = STORAGE.get('code') ? STORAGE.get('code') : ''
   STORAGE.set('code', code)
   if (!code || (code && !existCode) || (code === existCode)) {
-    // if (!code || (code === existCode)) {
-    // STORAGE.set('code', '')
     // 获取详情
     let pathname = window.location.pathname
     let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
@@ -74,7 +72,6 @@ export const oauth = (cbk) => {
       }
     }
   } else {
-    // STORAGE.set('code', code)
     wechat.h5Signature(code, cbk, STORAGE.get('scope_limit'), STORAGE.get('component_appid'))
   }
 }
