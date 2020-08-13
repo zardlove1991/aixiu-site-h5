@@ -112,7 +112,9 @@ export default {
         if (myWork.audit_status && myWork.audit_status === 1) {
           // 审核通过
           this.myVoteData = myWork
-          this.myVoteIndex = myWork.index
+          if (myWork.index > 0) {
+            this.myVoteIndex = myWork.index - 1
+          }
         }
       }
       // console.log('initRankList', this.flag, this.id)
