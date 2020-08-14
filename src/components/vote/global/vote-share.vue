@@ -218,6 +218,7 @@ export default {
           this.lottery = lottery
           this.$emit('close')
           this.voteDisable = false
+          this.$emit('success')
           return
         }
         this.$emit('close')
