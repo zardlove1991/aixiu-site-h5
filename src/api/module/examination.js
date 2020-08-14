@@ -36,6 +36,7 @@ let voteUrl = {
   getUserVoteRemains: 'client/voting/{id}/remains', // 获取会员剩余票数
   getMineVoteList: 'client/voting/mine', // 我的投票列表
   checkUserReport: 'client/report/{id}', // 检查用户是否报名
+  getIsCollect: 'client/report/collect/{id}', // 是否手机用户信息
   workReport: 'client/report/work', // 用户创建/编辑报名
   getReportDetail: 'client/report/work/{id}', // 获取报名内容详情
   workVote: 'client/voting', // 给他投票
@@ -43,7 +44,7 @@ let voteUrl = {
   shareMake: 'share/make', // 生成海报
   getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
   getCaptchaCode: 'captcha/code', // 图片二维码
-  getMobileSend: '/mobile/verify/send' // 获取手机code
+  getMobileSend: 'mobile/verify/send' // 获取手机code
 }
 
 // 不带GUID
@@ -115,6 +116,7 @@ export default {
   getUserVoteRemains: config => createVote(configUrl.getUserVoteRemains, 'GET', config, API_FLAG),
   getMineVoteList: config => createVote(configUrl.getMineVoteList, 'GET', config, API_FLAG),
   checkUserReport: config => createVote(configUrl.checkUserReport, 'GET', config, API_FLAG),
+  getIsCollect: config => createVote(configUrl.getIsCollect, 'GET', config, API_FLAG),
   workReport: config => createVote(configUrl.workReport, 'POST', config, API_FLAG),
   getReportDetail: config => createVote(configUrl.getReportDetail, 'GET', config, API_FLAG),
   workVote: config => createVote(configUrl.workVote, 'POST', config, API_FLAG),

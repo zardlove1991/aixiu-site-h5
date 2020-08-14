@@ -97,25 +97,43 @@ export default {
     close () {
       this.$emit('close')
     },
-    sureWorkVote () {
+    async sureWorkVote () {
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
       }
-      let { rule } = detailInfo
+      let { rule, id } = detailInfo
       let { collect_member_info: collectMemberInfo } = rule
       // 是否验证投票
       if (collectMemberInfo && collectMemberInfo.length > 0) {
-        let newCheckVote = {}
-        for (let coll of collectMemberInfo) {
-          newCheckVote[coll] = true
+        let status = await this.getIsCollect(id)
+        if (status) {
+          let newCheckVote = {}
+          for (let coll of collectMemberInfo) {
+            newCheckVote[coll] = true
+          }
+          this.checkVote = newCheckVote
+          this.$emit('close')
+          this.isCheckVote = true
+        } else {
+          this.isCanvassShare()
         }
-        this.checkVote = newCheckVote
-        this.$emit('close')
-        this.isCheckVote = true
       } else {
         this.isCanvassShare()
       }
+    },
+    getIsCollect (id) {
+      return new Promise(resolve => {
+        API.getIsCollect({
+          query: {
+            id
+          }
+        }).then(res => {
+          if (res) {
+            resolve(res.status)
+          }
+        })
+      })
     },
     isCanvassShare () {
       let shareData = this.shareData
