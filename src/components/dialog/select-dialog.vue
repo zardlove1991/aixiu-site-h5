@@ -6,7 +6,7 @@
     position="bottom">
     <mt-picker :slots="selectData"
       @change="onValuesChange"
-      :visibleItemCount="5"
+      :visibleItemCount="2"
       showToolbar>
       <div class="usi-btn-sure" @click.stop="success()">确定</div>
     </mt-picker>
@@ -35,7 +35,6 @@ export default {
   },
   watch: {
     show (val) {
-      console.log('val', val)
       this.selectShow = val
     }
   },
