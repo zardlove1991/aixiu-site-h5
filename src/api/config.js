@@ -17,5 +17,6 @@ export default {
   'X-CLIENT-VERSION': 1314,
   'X-DEVICE-ID': '000',
   'APPID': env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e',
+  'COMP_APPID': 'wx566758628b7a3fa2',
   'REDIRECT-URI': env === 'test' ? 'http://h5-ceshi.aihoge.com/bridge/index.html' : 'http://h5.ixiuzan.cn/bridge/index.html'
 }

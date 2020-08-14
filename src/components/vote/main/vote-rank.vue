@@ -21,7 +21,7 @@
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
             <div class="play-icon"></div>
           </div>
-          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
+          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'my-text-title-wrap': '']">
             <div class="title color-theme_color">{{myVoteData.name}}</div>
             <div class="source color-theme_color">
               <span v-show="flag === 'text' || flag === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
@@ -288,6 +288,9 @@ export default {
           max-width: px2rem(300px);
           &.text-title-wrap {
             max-width: px2rem(490px);
+          }
+          &.my-text-title-wrap {
+            max-width: px2rem(440px);
           }
           .title {
             font-size: px2rem(30px);

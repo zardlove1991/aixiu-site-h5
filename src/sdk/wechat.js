@@ -5,7 +5,7 @@ import globalConfig from '@/api/config'
 
 let wechat = {
   getAuthUrl: (scope) => {
-    let appid = globalConfig['APPID']
+    let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     let redirectUri = globalConfig['REDIRECT-URI'] + '?backUrl=' + delUrlParams(['code'], true)
     let newRedirectUri = encodeURIComponent(redirectUri)
@@ -13,9 +13,10 @@ let wechat = {
     return url
   },
   async h5Signature (info, cbk, scope, compAppid) {
+    let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
     let params = {
       code: info,
-      appid: globalConfig['APPID'],
+      appid,
       sign: 'wechat',
       scope,
       mark: 'marketing'
@@ -45,12 +46,17 @@ export const oauth = (cbk) => {
     let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
     if (id) {
       let params = { id }
+      STORAGE.remove('component_appid')
+      STORAGE.remove('appid')
       if (pathname.indexOf('votebegin') !== -1) {
         // 投票
         API.getAuthScope2({ query: params }).then(res => {
           if (res && res.rule && res.rule.limit && res.rule.limit.source_limit) {
-            let compAppid = res.rule.limit.source_limit.app_id ? res.rule.limit.source_limit.app_id : ''
-            STORAGE.set('component_appid', compAppid)
+            let limit = res.rule.limit.source_limit
+            if (limit.app_id) {
+              STORAGE.set('component_appid', globalConfig['COMP_APPID'])
+              STORAGE.set('appid', limit.app_id)
+            }
           }
           STORAGE.set('scope_limit', 'snsapi_userinfo')
           const url = wechat.getAuthUrl('snsapi_userinfo')
