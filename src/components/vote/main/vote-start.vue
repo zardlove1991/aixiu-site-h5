@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div :class="['commvote-overview', 'color-bg_color', status !== statusCode.endStatus ? 'status-no-end' : '']">
+    <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
@@ -655,7 +655,7 @@ export default {
   .vote-start-wrap {
     width: 100%;
     height: 100vh;
-    -webkit-overflow-scrolling: touch;
+    position: relative;
     .active-rule-wrap {
       position: absolute;
       z-index: 10;
@@ -695,6 +695,10 @@ export default {
       }
     }
     .commvote-overview {
+      width: 100%;
+      height: 100vh;
+      box-sizing: 100%;
+      overflow-y: auto;
       // background-color: #221A6E;
       // @include bg-color('bgColor');
       transform: translateX(0);

@@ -63,7 +63,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .count-down-wrap {
-    position: fixed;
+    position: absolute;
     bottom: px2rem(40px);
     left: px2rem(50px);
     right: px2rem(50px);

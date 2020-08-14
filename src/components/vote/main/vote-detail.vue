@@ -4,7 +4,7 @@
       <div class="detail-header">
         <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
         <div class="lottery-button color-button_color color-button_text"
-          v-if="workDetail.lottery && workDetail.lottery.link"
+          v-if="workDetail.lottery && workDetail.lottery.link && isBtnAuth === 1"
           @click.stop="goLottery(workDetail.lottery.link)">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
       <!--媒体组件渲染-->
@@ -71,7 +71,8 @@ export default {
       workDetail: {},
       isShowWorkVote: false,
       mark: '',
-      isBackList: false
+      isBackList: false,
+      isBtnAuth: STORAGE.get('isBtnAuth')
     }
   },
   created () {
