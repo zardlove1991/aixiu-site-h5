@@ -253,7 +253,6 @@ export default {
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
-      this.setLocation()
       API.getVodeDetail({
         query: { id: voteId }
       }).then((res) => {
@@ -261,6 +260,7 @@ export default {
         STORAGE.set('detailInfo', res)
         // 分享
         this.sharePage()
+        this.setLocation()
         // 作品列表
         this.getVoteWorks()
         // 初始化时间
@@ -385,8 +385,6 @@ export default {
       let plat = getPlat()
       if (plat === 'smartcity') {
         window.SmartCity.getLocation((res) => {
-          alert(res)
-          console.log(res)
           if (res) {
             let { latitude, longitude } = res
             let location = {
@@ -397,15 +395,7 @@ export default {
           }
         })
       } else if (plat === 'wechat') {
-        let res = this.getLocation()
-        if (res) {
-          let { latitude, longitude } = res
-          let location = {
-            lat: latitude,
-            lng: longitude
-          }
-          STORAGE.set('location', location)
-        }
+        this.getLocation()
       }
     },
     initReportTime () {

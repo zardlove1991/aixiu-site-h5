@@ -64,9 +64,23 @@ export default {
         })
       })
     },
-    async getLocation (params) {
-      let res = await wx.getLocation(params)
-      return res
+    getLocation () {
+      return new Promise((resolve, reject) => {
+        wx.execute('getLocation', {
+          type: 'wgs84',
+          success: (res) => {
+            if (res) {
+              let { latitude, longitude } = res
+              let location = {
+                lat: latitude,
+                lng: longitude
+              }
+              STORAGE.set('location', location)
+            }
+            resolve()
+          }
+        })
+      })
     },
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
