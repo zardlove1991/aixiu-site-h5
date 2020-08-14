@@ -4,8 +4,8 @@
       <div class="detail-header">
         <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
         <div class="lottery-button color-button_color color-button_text"
-          v-if="workDetail.lottery && workDetail.lottery.remain_counts"
-          @click.stop="goLottery('lottery')">有{{workDetail.lottery.remain_counts}}次抽奖机会</div>
+          v-if="workDetail.lottery && workDetail.lottery.link"
+          @click.stop="goLottery(workDetail.lottery.link)">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
       <!--媒体组件渲染-->
       <div class="detail-video-wrap"
@@ -95,9 +95,6 @@ export default {
         detailInfo = res
       }
       let { mark, rule } = detailInfo
-      if (rule && rule.related_lottery && rule.related_lottery.link) {
-        this.relatedLink = rule.related_lottery.link
-      }
       this.mark = mark
       API.getVoteWorksDetail({
         query: {
@@ -147,8 +144,7 @@ export default {
         }
       }
     },
-    goLottery () {
-      let link = this.relatedLink
+    goLottery (link) {
       if (link) {
         window.location.href = link
       }
