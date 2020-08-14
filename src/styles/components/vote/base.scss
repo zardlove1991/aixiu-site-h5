@@ -18,7 +18,7 @@
     border-left-width: px2rem(18px);
     border-left-style: solid;
     // border-left-color: #FC7465;
-    @include bg-color('btnColor');
+    border-left-color: $btnColor;
   }
   .arrow-top {
     position: absolute;
