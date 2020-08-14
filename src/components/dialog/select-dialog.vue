@@ -6,7 +6,7 @@
     position="bottom">
     <mt-picker :slots="selectData"
       @change="onValuesChange"
-      :visibleItemCount="2"
+      :visibleItemCount="4"
       showToolbar>
       <div class="usi-btn-sure" @click.stop="success()">确定</div>
     </mt-picker>
