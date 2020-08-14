@@ -382,9 +382,11 @@ export default {
     },
     setLocation () {
       STORAGE.remove('location')
-      this.getLocation({
-        type: 'wgs84', // gps坐标 百度地图api用的百度坐标可能有偏差
-        success: (res) => {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.getLocation((res) => {
+          alert(res)
+          console.log(res)
           if (res) {
             let { latitude, longitude } = res
             let location = {
@@ -393,11 +395,18 @@ export default {
             }
             STORAGE.set('location', location)
           }
-        },
-        fail: (err) => {
-          console.log('error', err)
+        })
+      } else if (plat === 'wechat') {
+        let res = this.getLocation()
+        if (res) {
+          let { latitude, longitude } = res
+          let location = {
+            lat: latitude,
+            lng: longitude
+          }
+          STORAGE.set('location', location)
         }
-      })
+      }
     },
     initReportTime () {
       let detailInfo = this.detailInfo

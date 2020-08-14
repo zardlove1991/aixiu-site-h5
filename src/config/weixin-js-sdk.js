@@ -145,7 +145,14 @@ const WX_API = {
     })
   },
   getLocation (params) {
-    wx.getLocation(params)
+    return new Promise((resolve, reject) => {
+      WX_API.execute('getLocation', {
+        type: 'wgs84',
+        success (res) {
+          resolve(res)
+        }
+      })
+    })
   },
   /* 选择小程序首页菜单 */
   switchTab (url) {

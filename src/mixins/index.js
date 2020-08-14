@@ -64,8 +64,9 @@ export default {
         })
       })
     },
-    getLocation (params) {
-      wx.getLocation(params)
+    async getLocation (params) {
+      let res = await wx.getLocation(params)
+      return res
     },
     initReirectParams () {
       let redirectParams = this.redirectParams || {}
