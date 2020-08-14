@@ -190,7 +190,7 @@ export default {
             }
             this.voteDisable = false
             return
-          } else if (errCode === 'AREA_CAN_NOT_VOTE') {
+          } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
