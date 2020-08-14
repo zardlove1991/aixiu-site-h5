@@ -52,10 +52,9 @@ export const oauth = (cbk) => {
   }
   let pathname = window.location.pathname
   let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
-  alert('授权', id)
   if (id) {
     let params = { id }
-    if (pathname.indexOf('votebegin') !== -1) {
+    if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
       // 投票
       smartcity.authorize((code, sdkInfo) => {
         if (code > 0) {
