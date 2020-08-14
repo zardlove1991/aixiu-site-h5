@@ -71,7 +71,6 @@ export default {
       workDetail: {},
       isShowWorkVote: false,
       mark: '',
-      relatedLink: '', // 抽奖链接
       isBackList: false
     }
   },
@@ -94,8 +93,7 @@ export default {
         let res = await this.getDetail()
         detailInfo = res
       }
-      let { mark, rule } = detailInfo
-      this.mark = mark
+      this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
           id: this.id,
