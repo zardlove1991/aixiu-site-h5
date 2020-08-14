@@ -159,12 +159,14 @@ export default {
   .commvote-detail {
     width: 100%;
     height: 100vh;
-    // background-color: #221A6E;
-    // @include bg-color('bgColor');
+    position: relative;
     .detail-page-content-wrap {
-      width: 100%;
       padding: 0 px2rem(30px);
+      width: 100%;
+      height: 100vh;
       padding-bottom: 250px;
+      box-sizing: border-box;
+      overflow-y: auto;
       .detail-header {
         display: flex;
         justify-content: space-between;
