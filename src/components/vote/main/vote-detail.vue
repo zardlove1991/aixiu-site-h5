@@ -72,7 +72,14 @@ export default {
       isShowWorkVote: false,
       mark: '',
       isBackList: false,
-      isBtnAuth: STORAGE.get('isBtnAuth')
+      isBtnAuth: STORAGE.get('isBtnAuth'),
+      statusCode: {
+        noStatus: 0, // 未开始
+        signUpStatus: 1, // 报名中
+        voteStatus: 2, // 投票中
+        endStatus: 3, // 已结束
+        noSignUp: 4 // 未开始报名
+      }
     }
   },
   created () {
@@ -94,6 +101,7 @@ export default {
         let res = await this.getDetail()
         detailInfo = res
       }
+      this.setBtnAuth(detailInfo)
       this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
@@ -123,6 +131,23 @@ export default {
           reject(err)
         })
       })
+    },
+    setBtnAuth (obj) {
+      if (!obj) {
+        return
+      }
+      let nowTime = new Date().getTime()
+      let { noStatus, voteStatus } = this.statusCode
+      let { start_time: startTime, end_time: endTime } = obj
+      let startTimeMS = startTime * 1000
+      let endTimeMS = endTime * 1000
+      let flag = startTimeMS > nowTime
+      if (endTimeMS <= nowTime) {
+        // 已经结束
+        STORAGE.set('isBtnAuth', 0)
+      }
+      let status = flag ? noStatus : voteStatus
+      STORAGE.set('isBtnAuth', status === noStatus ? 0 : 1)
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {
