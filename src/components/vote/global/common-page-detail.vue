@@ -122,6 +122,7 @@ export default {
     background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
     .reamk-wrap {
       width: 100%;
+      overflow: hidden;
       height: px2rem(70px);
       margin-left:0;
       margin-right:px2rem(14px);
