@@ -1,12 +1,14 @@
 <template>
   <div class="common-page-detail-wrap">
-    <div class="reamk-wrap">
+    <div class="reamk-body">
+      <div class="reamk-wrap">
         <div v-for="(item, index) in remarkList" class="remark-item" :key="index">
           <img :src="item.member_avatar" alt="" class="remark-avatar" />
           <p class="remark-desc"><span class="name">{{item.member_name}}</span>投了一票</p>
         </div>
-      <!-- <div class="remark-item" v-for="(item, index) in remarkList" :ref="'reamk-item-' + index"  :key="index">
-      </div> -->
+        <!-- <div class="remark-item" v-for="(item, index) in remarkList" :ref="'reamk-item-' + index"  :key="index">
+        </div> -->
+      </div>
     </div>
     <div class="detail-info-wrap">
       <div class="info-numbers-wrap">
@@ -120,12 +122,16 @@ export default {
     bottom: 0;
     width: 100%;
     background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
-    .reamk-wrap {
+    .reamk-body {
       width: 100%;
       overflow: hidden;
+    }
+    .reamk-wrap {
+      width: 100%;
       height: px2rem(70px);
       margin-left:0;
       margin-right:px2rem(14px);
+      transition: all .3s ease;
       .remark-item {
         display: inline-flex;
         align-items: center;
@@ -134,6 +140,7 @@ export default {
         background-color: rgba(0,0,0,0.5);
         border-radius: px2rem(35px);
         transform: translate3d(100%,0,0);
+        margin: 0 px2rem(10px);
         .remark-avatar {
           width: px2rem(50px);
           height: px2rem(50px);
