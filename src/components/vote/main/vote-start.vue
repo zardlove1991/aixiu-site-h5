@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '']">
+    <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
@@ -240,6 +240,7 @@ export default {
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote']),
+    ...mapGetters('depence', ['isShowModelThumb']),
     noMore () {
       // 当起始页数大于总页数时停止加载
       let { page, totalPages } = this.pager
@@ -677,6 +678,9 @@ export default {
       height: 100vh;
       box-sizing: 100%;
       overflow-y: auto;
+      &.hide {
+        overflow: hidden;
+      }
       // background-color: #221A6E;
       // @include bg-color('bgColor');
       transform: translateX(0);
