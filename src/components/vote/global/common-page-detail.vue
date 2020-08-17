@@ -29,8 +29,8 @@
         <span class="desc">可投票数</span>
       </div>
       <button class="option-vote"
-        :class="{ disabled: !info.remain_votes || !isBtnAuth }"
-        :disabled="!info.remain_votes || !isBtnAuth"
+        :class="{ disabled: !info.remain_votes || isBtnAuth !== 1 }"
+        :disabled="!info.remain_votes || isBtnAuth  !== 1"
         @click.stop="triggerMenu('vote')">给ta投票</button>
     </div>
   </div>
@@ -39,6 +39,8 @@
 <script>
 import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     info: {
@@ -52,11 +54,13 @@ export default {
     return {
       mark: 0,
       marks: 0,
-      isBtnAuth: STORAGE.get('isBtnAuth'),
       remarkList: [],
       remarkParams: { id: '', count: 20, page: 1 },
       interval: null
     }
+  },
+  computed: {
+    ...mapGetters('vote', ['isBtnAuth'])
   },
   watch: {
     info: 'getVoteList'

@@ -2,14 +2,14 @@
   <div class="vote-btn-group-wrap">
     <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">{{ data.is_my === 1 ? '帮自己拉票' : '帮ta拉票' }}</button>
     <button class="options-vote"
-      :class="{ disabled: !remainVotes || !isBtnAuth }"
-      :disabled="!remainVotes || !isBtnAuth"
+      :class="{ disabled: !remainVotes || isBtnAuth !== 1 }"
+      :disabled="!remainVotes || isBtnAuth !== 1"
       @click.stop="btnClick(data, index, 'vote')">{{ data.is_my === 1 ? '给自己投票' : '给ta投票' }}</button>
   </div>
 </template>
 
 <script>
-import STORAGE from '@/utils/storage'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -27,10 +27,8 @@ export default {
       type: Number
     }
   },
-  data () {
-    return {
-      isBtnAuth: STORAGE.get('isBtnAuth')
-    }
+  computed: {
+    ...mapGetters('vote', ['isBtnAuth'])
   },
   methods: {
     btnClick (data, index, slug) {

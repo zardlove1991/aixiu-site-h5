@@ -1,13 +1,15 @@
 const state = {
   isModelShow: false,
   shareData: null,
-  myVote: null
+  myVote: null,
+  isBtnAuth: null
 }
 
 const getters = {
   isModelShow: state => state.isModelShow,
   shareData: state => state.shareData,
-  myVote: state => state.myVote
+  myVote: state => state.myVote,
+  isBtnAuth: state => state.isBtnAuth
 }
 
 const mutations = {
@@ -19,6 +21,9 @@ const mutations = {
   },
   SET_MY_VOTE (state, payload) {
     state.myVote = payload
+  },
+  SET_IS_BTN_AUTH (state, payload) {
+    state.isBtnAuth = payload
   }
 }
 
@@ -31,6 +36,9 @@ const actions = {
   },
   SET_MY_VOTE ({ commit }, data) {
     commit('SET_MY_VOTE', data)
+  },
+  SET_IS_BTN_AUTH ({ commit }, data) {
+    commit('SET_IS_BTN_AUTH', data)
   }
 }
 

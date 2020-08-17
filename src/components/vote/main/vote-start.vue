@@ -240,7 +240,7 @@ export default {
     this.initData()
   },
   computed: {
-    ...mapGetters('vote', ['isModelShow', 'myVote']),
+    ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
     ...mapGetters('depence', ['isShowModelThumb']),
     noMore () {
       // 当起始页数大于总页数时停止加载
@@ -356,7 +356,7 @@ export default {
             this.setIsModelShow(true)
             this.activeTips = appSource
             this.isReportAuth = 0
-            STORAGE.set('isBtnAuth', 0)
+            this.setIsBtnAuth(0)
           }
         }
       }
@@ -397,7 +397,7 @@ export default {
         if (nowTime < reportStartTimeMS) {
           status = noSignUp
           this.status = status
-          STORAGE.set('isBtnAuth', 0)
+          this.setIsBtnAuth(0)
           this.startCountTime(reportStartTimeMS, (timeArr) => {
             // 更改当前投票的时间
             this.voteDate = timeArr
@@ -407,7 +407,7 @@ export default {
         } else if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
           this.status = status
-          STORAGE.set('isBtnAuth', 0)
+          this.setIsBtnAuth(0)
           // 检查是否报名
           this.checkUserReport(id)
           this.startCountTime(reportEndTimeMS, (timeArr) => {
@@ -441,13 +441,13 @@ export default {
           this.isShowEnd = true
         }
         this.setIsModelShow(true)
-        STORAGE.set('isBtnAuth', 0)
+        this.setIsBtnAuth(0)
         return
       }
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
-      STORAGE.set('isBtnAuth', status === noStatus ? 0 : 1)
+      this.setIsBtnAuth(status === noStatus ? 0 : 1)
       if (status === voteStatus) {
         this.getRemainVotes(id)
       }
@@ -464,7 +464,7 @@ export default {
             this.isShowEnd = true
           }
           this.setIsModelShow(true)
-          STORAGE.set('isBtnAuth', 0)
+          this.setIsBtnAuth(0)
         }
       })
     },
@@ -625,7 +625,8 @@ export default {
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
       setShareData: 'SET_SHARE_DATA',
-      setMyVote: 'SET_MY_VOTE'
+      setMyVote: 'SET_MY_VOTE',
+      setIsBtnAuth: 'SET_IS_BTN_AUTH'
     })
   }
 }

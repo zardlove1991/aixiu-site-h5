@@ -4,7 +4,7 @@
       <div class="detail-header">
         <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
         <div class="lottery-button color-button_color color-button_text"
-          v-if="workDetail.lottery && workDetail.lottery.link && isBtnAuth === 1"
+          v-if="workDetail.lottery && workDetail.lottery.remain_lottery_counts && workDetail.lottery.link && isBtnAuth === 1"
           @click.stop="goLottery(workDetail.lottery.link)">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
       <!--媒体组件渲染-->
@@ -55,8 +55,8 @@ import CommonPageDetail from '@/components/vote/global/common-page-detail'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import API from '@/api/module/examination'
-import { mapActions } from 'vuex'
 import STORAGE from '@/utils/storage'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -72,7 +72,6 @@ export default {
       isShowWorkVote: false,
       mark: '',
       isBackList: false,
-      isBtnAuth: STORAGE.get('isBtnAuth'),
       statusCode: {
         noStatus: 0, // 未开始
         signUpStatus: 1, // 报名中
@@ -88,6 +87,9 @@ export default {
   props: {
     id: String,
     flag: String
+  },
+  computed: {
+    ...mapGetters('vote', ['isBtnAuth'])
   },
   methods: {
     async inintDetail () {
@@ -145,10 +147,10 @@ export default {
       let flag = startTimeMS > nowTime
       if (endTimeMS <= nowTime) {
         // 已经结束
-        STORAGE.set('isBtnAuth', 0)
+        this.setIsBtnAuth(0)
       }
       let status = flag ? noStatus : voteStatus
-      STORAGE.set('isBtnAuth', status === noStatus ? 0 : 1)
+      this.setIsBtnAuth(status === noStatus ? 0 : 1)
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {
@@ -175,7 +177,8 @@ export default {
       }
     },
     ...mapActions('vote', {
-      setShareData: 'SET_SHARE_DATA'
+      setShareData: 'SET_SHARE_DATA',
+      setIsBtnAuth: 'SET_IS_BTN_AUTH'
     })
   }
 }
