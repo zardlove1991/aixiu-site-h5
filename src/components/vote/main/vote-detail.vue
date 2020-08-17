@@ -93,6 +93,7 @@ export default {
       if (!detailInfo) {
         let res = await this.getDetail()
         detailInfo = res
+        this.isBackList = true
       }
       this.mark = detailInfo.mark
       API.getVoteWorksDetail({
