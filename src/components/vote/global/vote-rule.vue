@@ -83,9 +83,11 @@ export default {
           font-weight: 500;
         }
         .rule-content {
+          width: 100%;
           @include font-dpr(15px);
           line-height: px2rem(48px);
           color: #666;
+          word-wrap: break-word;
         }
       }
       .close-btn-wrap {
