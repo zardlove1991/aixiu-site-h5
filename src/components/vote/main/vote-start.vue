@@ -61,7 +61,7 @@
             <span class="menu-text color-button_text">我的投票</span>
           </div>
         </div>
-        <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus">
+        <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
           <div class="menu-wrap color-button_color"
             @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
             <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
@@ -232,7 +232,8 @@ export default {
         page: 0,
         count: 10,
         totalPages: 0
-      }
+      },
+      isReportAuth: 1
     }
   },
   created () {
@@ -354,6 +355,7 @@ export default {
             this.downloadLink = downloadLink
             this.setIsModelShow(true)
             this.activeTips = appSource
+            this.isReportAuth = 0
             STORAGE.set('isBtnAuth', 0)
           }
         }
@@ -800,6 +802,7 @@ export default {
       .overview-vote-wrap {
         display: flex;
         justify-content: space-between;
+        margin-bottom: px2rem(50px);
         .vote-cols-wrap {
           position: relative;
           flex: 1;
@@ -876,7 +879,6 @@ export default {
       .overview-menus-wrap {
         display: flex;
         // padding: 0 0 0.67rem;
-        padding-top: px2rem(50px);
         margin-bottom: px2rem(40px);
         .menu-wrap {
           flex: 1;
