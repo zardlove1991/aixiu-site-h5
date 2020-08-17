@@ -213,7 +213,7 @@ export default {
         }
         // 抽奖
         let lottery = res.lottery
-        if (lottery && lottery.lottery_id) {
+        if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
           this.isShowLottery = true
           this.lottery = lottery
           this.$emit('close')

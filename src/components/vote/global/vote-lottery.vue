@@ -10,10 +10,12 @@
         <div class="go-lottery-btn" @click.stop="goLottery()">参与抽奖</div>
         <div class="lottery-count">有{{lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
+      <!--
       <div v-else class="fail-wrap">
         <div class="tips2">很遗憾，抽奖次数已用完</div>
         <div class="tips2">感谢您的鼓励与认可</div>
       </div>
+      -->
     </div>
     <div class="close-btn" @click.stop="close()"></div>
   </div>
