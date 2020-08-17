@@ -260,9 +260,9 @@ export default {
         Toast('请输入详细地址')
         return
       }
-      if (checkVote.address && checkData.address_detail.trim()) {
+      if (checkVote.address && checkData.address_detail) {
         let address = this.checkData.address
-        this.checkData.address = address + ' ' + checkData.address_detai.trim()
+        this.checkData.address = address + ' ' + checkData.address_detail
       }
       API.collectInfo({
         query: {
