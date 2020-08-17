@@ -5,8 +5,7 @@ import 'url-search-params-polyfill'
 import router from '@/router/index'
 import store from '@/store/index'
 import { oauth } from '@/utils/userinfo'
-import { setTheme, setBrowserTitle, setPlatCssInclude, setClick } from '@/utils/utils'
-import STORAGE from '@/utils/storage'
+import { setTheme, setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 // 引入所有第三库
 import '@/lib/index'
 
@@ -34,17 +33,13 @@ router.afterEach((route, from) => {
   // 更改当前网页的title
   setBrowserTitle(routerTitle)
   let name = router.currentRoute.name
-  // 第一次进入投票页
-  if (route.name === 'votebegin' && !from.name) {
-    let detailInfo = STORAGE.get('detailInfo')
-    if (detailInfo && detailInfo.id) {
-      let { id, title, mark } = detailInfo
-      setClick(id, title, mark)
-    }
+  let id = router.currentRoute.params.id
+  let isFirst = false
+  if ((name === 'depencestart' || name === 'votebegin' || name === 'votedetail') && !from.name) {
+    isFirst = true
   }
-  if (name !== 'depencestart' && name !== 'votebegin') {
-    let id = router.currentRoute.params.id
-    setTheme(id, name)
+  if (name !== 'depencestart') {
+    setTheme(id, name, isFirst)
   }
 })
 

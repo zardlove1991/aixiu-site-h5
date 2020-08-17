@@ -14,7 +14,7 @@ import STORAGE from '@/utils/storage'
  * @param  {[string]} format [时间格式，支持的格式自定义，需在该方法中配置]
  * @return {[string]}        [转化后的时间格式]
  */
-export const setTheme = (id, name) => {
+export const setTheme = (id, name, isFirst) => {
   if (!id || !name) {
     return
   }
@@ -45,9 +45,13 @@ export const setTheme = (id, name) => {
               window.document.getElementById('app').style.backgroundSize = '100%'
             }
           }
-          STORAGE.set('detailInfo', info)
         }
       }
+      if (isFirst && info && info.id) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
+      }
+      STORAGE.set('detailInfo', info)
     })
   } else {
     // 测评

@@ -320,30 +320,9 @@ export default {
         this.myWork = myWork
         this.setMyVote(myWork)
       }
-      // 主题颜色
-      if (setup && setup.color_scheme && setup.color_scheme.content) {
-        let content = setup.color_scheme.content
-        let background = setup.background
-        document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-        document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-        document.getElementsByTagName('body')[0].style.setProperty('--component', content.component)
-        document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
-        // 改背景图片
-        if (background.indexpic && background.indexpic.length) {
-          let picObj = background.indexpic[0]
-          let url = picObj.host + picObj.filename
-          window.document.getElementById('app').style.backgroundImage = 'url(' + url + ')'
-          if (background.mode && background.mode === 1) {
-            // 固定
-            window.document.getElementById('app').style.backgroundSize = '100%'
-            window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
-          } else {
-            // 平铺
-            window.document.getElementById('app').style.backgroundSize = '100%'
-          }
-        }
+      if (setup && setup.color_scheme) {
+        this.colorName = setup.color_scheme.name
       }
-      this.colorName = setup.color_scheme.name
       // 当前展示类型
       let showModel = ''
       if (mark.indexOf('video') !== -1) {

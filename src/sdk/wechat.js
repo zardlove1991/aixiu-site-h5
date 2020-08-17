@@ -48,6 +48,7 @@ export const oauth = (cbk) => {
       let params = { id }
       STORAGE.remove('component_appid')
       STORAGE.remove('appid')
+      STORAGE.remove('detailInfo')
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         API.getAuthScope2({ query: params }).then(res => {
