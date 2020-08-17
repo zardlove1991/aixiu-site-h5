@@ -259,7 +259,7 @@ export default {
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
         // 分享
-        this.sharePage()
+        this.sharePage(res)
         this.setLocation()
         // 作品列表
         this.getVoteWorks()
@@ -271,8 +271,7 @@ export default {
         console.log(err)
       })
     },
-    sharePage () {
-      let detailInfo = this.detailInfo
+    sharePage (detailInfo) {
       if (!detailInfo) {
         return false
       }

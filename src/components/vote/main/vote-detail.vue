@@ -100,6 +100,7 @@ export default {
       if (!detailInfo) {
         let res = await this.getDetail()
         detailInfo = res
+        this.isBackList = true
       }
       this.setBtnAuth(detailInfo)
       this.mark = detailInfo.mark
