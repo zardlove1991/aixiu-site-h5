@@ -52,15 +52,20 @@ export const oauth = (cbk) => {
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         API.getAuthScope2({ query: params }).then(res => {
+          let componentAppid = ''
           if (res && res.rule && res.rule.limit && res.rule.limit.source_limit) {
             let limit = res.rule.limit.source_limit
             if (limit.app_id) {
+              componentAppid = globalConfig['COMP_APPID']
               STORAGE.set('component_appid', globalConfig['COMP_APPID'])
               STORAGE.set('appid', limit.app_id)
             }
           }
           STORAGE.set('scope_limit', 'snsapi_userinfo')
-          const url = wechat.getAuthUrl('snsapi_userinfo')
+          let url = wechat.getAuthUrl('snsapi_userinfo')
+          if (componentAppid) {
+            url = url + '&component_appid=' + componentAppid
+          }
           window.location.href = url
         })
       } else {
