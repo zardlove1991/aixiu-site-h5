@@ -6,8 +6,6 @@
           <img :src="item.member_avatar" alt="" class="remark-avatar" />
           <p class="remark-desc"><span class="name">{{item.member_name}}</span>投了一票</p>
         </div>
-        <!-- <div class="remark-item" v-for="(item, index) in remarkList" :ref="'reamk-item-' + index"  :key="index">
-        </div> -->
       </div>
     </div>
     <div class="detail-info-wrap">
@@ -83,10 +81,11 @@ export default {
       }}).then((res) => {
         if (res.data && res.data[0]) {
           that.remarkList = res.data
-          that.remarkList = this.remarkList.concat(res.data)
+          that.remarkList = that.remarkList.concat(res.data)
           if (that.remarkList.length < 3) {
             that.remarkList.push(that.remarkList[0])
           }
+          that.clearSetInterval()
           that.play()
         }
       })
@@ -129,34 +128,36 @@ export default {
     .reamk-body {
       width: 100%;
       overflow: hidden;
-    }
-    .reamk-wrap {
-      width: 100%;
-      height: px2rem(70px);
-      margin-left:0;
-      margin-right:px2rem(14px);
-      transition: all .3s ease;
-      .remark-item {
-        display: inline-flex;
+      .reamk-wrap {
+        width: 100%;
+        height: px2rem(70px);
+        display: flex;
         align-items: center;
-        padding: 0 px2rem(22px) 0 px2rem(10px);
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        border-radius: px2rem(35px);
-        transform: translate3d(100%,0,0);
-        margin: 0 px2rem(10px);
-        .remark-avatar {
-          width: px2rem(50px);
-          height: px2rem(50px);
-          border-radius: 50%;
-          object-fit: cover;
-          margin-right: px2rem(14px);
-        }
-        .remark-desc {
-          font-size: px2rem(24px);
-          color: #fff;
-          .name {
-            color: #FB5936
+        flex-wrap: nowrap;
+        transition: all .3s ease;
+        .remark-item {
+          height: 100%;
+          padding: 0 px2rem(22px) 0 px2rem(10px);
+          margin-right: px2rem(20px);
+          display: flex;
+          align-items: center;
+          background-color: rgba(0,0,0,0.5);
+          border-radius: px2rem(35px);
+          .remark-avatar {
+            width: px2rem(50px);
+            height: px2rem(50px);
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: px2rem(14px);
+          }
+          .remark-desc {
+            display: inline-block;
+            white-space: nowrap;
+            font-size: px2rem(24px);
+            color: #fff;
+            .name {
+              color: #FB5936
+            }
           }
         }
       }
@@ -250,12 +251,6 @@ export default {
           color: rgba(255,255,255,0.67);
         }
       }
-    }
-    .remark-item{
-      display:inline-block;
-    }
-    .reamk-wrap{
-      white-space:nowrap;
     }
   }
 </style>
