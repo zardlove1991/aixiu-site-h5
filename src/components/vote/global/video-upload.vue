@@ -51,7 +51,8 @@ export default {
       settings: {
         video: {
           limit: 1,
-          accept: '.mp4,.MP4'
+          // accept: '.mp4,.MP4'
+          accept: 'video/*'
         }
       },
       signature: {} // 签名

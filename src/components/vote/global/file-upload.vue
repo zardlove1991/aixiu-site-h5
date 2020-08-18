@@ -60,7 +60,8 @@ export default {
       settings: {
         picture: {
           limit: 9,
-          accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
+          // accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
+          accept: 'image/*'
         },
         audio: {
           limit: 1,
