@@ -300,6 +300,8 @@ export default {
       }
       if (!shareLink) {
         shareLink = delUrlParams(['code'])
+      } else {
+        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
       }
       this.initPageShareInfo({
         id: detailInfo.id,

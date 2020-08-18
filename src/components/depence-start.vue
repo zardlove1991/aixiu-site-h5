@@ -132,7 +132,7 @@ import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
@@ -265,7 +265,7 @@ export default {
       if (limit.share_settings) {
         let share = limit.share_settings
         title = share.share_title ? share.share_title : examInfo.title
-        link = share.share_url ? share.share_url : window.location.href
+        link = share.share_url
         desc = share.share_brief ? share.share_brief : examInfo.brief
         let picObj = share.share_indexpic
         let indexObj = examInfo.indexpic
@@ -274,6 +274,11 @@ export default {
         } else if (indexObj && indexObj.host && indexObj.filename) {
           imgUrl = 'http:' + indexObj.host + indexObj.filename
         }
+      }
+      if (!link) {
+        link = delUrlParams(['code'])
+      } else {
+        link = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + link
       }
       this.initPageShareInfo({
         id: examInfo.id,
