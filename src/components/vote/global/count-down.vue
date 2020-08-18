@@ -2,7 +2,7 @@
   <div class="count-down-wrap color-decorated">
     <!--时间结构-->
     <div class="left-time-wrap">
-      <span class="title-tip color-link_text">距离{{statusMsg[status]}}还有</span>
+      <span class="title-tip">距离<span class="title-tip-2">{{statusMsg[status]}}</span>还有</span>
       <div class="time-count-wrap">
         <p class="day-tip color-button_color">
           <span class="time-num color-button_text">{{voteDate[0]}}</span>
@@ -87,6 +87,11 @@ export default {
         color: #fff;
         line-height: 1;
         margin-bottom: px2rem(17px);
+        .title-tip-2 {
+          display: inline-block;
+          margin: 0 px2rem(10px);
+          @include font-color('btnColor');
+        }
       }
       .time-count-wrap {
         display: flex;
