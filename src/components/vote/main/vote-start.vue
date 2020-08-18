@@ -528,7 +528,9 @@ export default {
         // 结束
         if (isDone) {
           timer && clearInterval(timer)
-          doneCb && doneCb() // 处理结束操作
+          setTimeout(() => {
+            doneCb && doneCb() // 处理结束操作
+          }, 2000)
         }
       }
       computedTime()
