@@ -10,7 +10,7 @@
         </div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
-      <div class="audio-play-icon" :class="{ play: isPlay }" @click.stop="setPlay"></div>
+      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay"></div>
     </div>
     <!--音频元素-->
     <audio ref="audio" preload='auto' @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
