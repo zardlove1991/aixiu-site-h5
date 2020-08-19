@@ -349,8 +349,9 @@ export default {
         } = sourceLimit
         if (limitTxt && appSource && appSource.length > 0) {
           let plat = getPlat()
-          let limitArr = limitTxt.split(',')
-          if (!limitArr.includes(plat)) {
+          // let limitArr = limitTxt.split(',')
+          limitTxt = limitTxt.toLowerCase()
+          if (!limitTxt.includes(plat)) {
             if (!this.isModelShow) {
               this.isShowActiveTips = true
             }
