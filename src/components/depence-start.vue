@@ -2,7 +2,7 @@
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo">
     <div class="header-top"
-      v-show="examInfo.person_status !== 0 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
+      v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">测评已提交</span>
@@ -10,10 +10,12 @@
       <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
-    <div class="header-wrap" v-if="examInfo.indexpic">
+    <div class="header-wrap">
       <template>
-        <img :src="examInfo.indexpic.url" class="bg" />
+        <img v-if="examInfo.indexpic" :src="examInfo.indexpic.url" class="bg" />
+        <img v-else :src="require('@/assets/common/main-header@2x.png')" class="bg bg-default" />
         <!--透明遮罩-->
+        <div class="header-img-shadow "></div>
       </template>
       <!--默认的背景图片-->
     </div>
@@ -90,6 +92,19 @@
         <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
+    <my-model
+      :show="isShowBreak"
+      :isLock="true"
+      doneText="直接交卷"
+      cancelText="继续答题"
+      @confirm="downBreakModel"
+      @cancel="cancelBreakModel">
+      <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="tip tip-center">考试意外中断了</div>
+      </div>
+    </my-model>
     <!--底部已考按钮组-->
     <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
       <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
@@ -103,6 +118,12 @@
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
     </div>
+    <draw-check-dialog
+      :show="isShowDrawCheck"
+      :checkDraw="checkDraw"
+      @success="goExamPage()"
+      @close="isShowDrawCheck = false">
+    </draw-check-dialog>
   </div>
 </template>
 
@@ -115,6 +136,7 @@ import { setBrowserTitle } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
+import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 
 export default {
   mixins: [mixins],
@@ -134,10 +156,13 @@ export default {
       password: '',
       visitPasswordLimit: false,
       passwordTips: '',
-      errTips: ''
+      errTips: '',
+      isShowBreak: false,
+      isShowDrawCheck: false,
+      checkDraw: []
     }
   },
-  components: { MyModel },
+  components: { MyModel, DrawCheckDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
     examSubmitCount () {
@@ -166,6 +191,18 @@ export default {
     this.initStartInfo()
   },
   methods: {
+    async downBreakModel () {
+      // 直接交卷
+      let examId = this.id
+      await this.endExam({ id: examId })
+      this.initStartInfo()
+      this.isShowBreak = false
+    },
+    cancelBreakModel () {
+      // 继续答题
+      this.isShowBreak = false
+      this.goExamPage()
+    },
     goDownload () {
       if (this.appDownloadUrl) {
         this.errTips = ''
@@ -190,7 +227,13 @@ export default {
         await this.getExamDetail({id: examId})
         // 设置标题
         setBrowserTitle(this.examInfo.title)
+        // 分享
+        this.sharePage()
         let info = this.examInfo
+        if (info.person_status === 2) {
+          // 考试中
+          this.isShowBreak = true
+        }
         if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
           let content = info.limit.color_scheme.content
           document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
@@ -205,6 +248,37 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    sharePage () {
+      let examInfo = this.examInfo
+      if (!examInfo) {
+        return
+      }
+      let limit = examInfo.limit
+      let title = ''
+      let link = ''
+      let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        title = share.share_title ? share.share_title : examInfo.title
+        link = share.share_url ? share.share_url : window.location.href
+        desc = share.share_brief ? share.share_brief : examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = examInfo.indexpic
+        if (picObj && picObj.host && picObj.filename) {
+          imgUrl = 'http:' + picObj.host + picObj.filename
+        } else if (indexObj && indexObj.host && indexObj.filename) {
+          imgUrl = 'http:' + indexObj.host + indexObj.filename
+        }
+      }
+      this.initPageShareInfo({
+        id: examInfo.id,
+        title,
+        desc,
+        indexpic: imgUrl,
+        link
+      })
     },
     async startReExam () {
       let examId = this.id
@@ -247,7 +321,7 @@ export default {
             this.appDownloadUrl = res.app_download_link
             this.limitSource = res.limit_source
           } else {
-            this.goExamPage()
+            this.isShowCheckDraw()
           }
         }).catch(err => {
           console.log(err)
@@ -267,13 +341,86 @@ export default {
         let examId = this.id
         API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
           this.hiddenPasswordLimit()
-          this.goExamPage()
+          this.isShowCheckDraw()
         }).catch(err => {
           // console.log(err)
           if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
             this.passwordTips = err.error_message
           }
         })
+      }
+    },
+    isShowCheckDraw () {
+      // 判断是否需要信息采集
+      let { limit, collection_status: status } = this.examInfo
+      if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
+        let obj = limit.collection_form.collection_form_settings
+        if (obj && obj.length) {
+          let checkDraw = [...obj]
+          let indexMobile = -1
+          let indexAddress = -1
+          let codeObj = null
+          let imgCodeObj = null
+          let addressObj = null
+          for (let i = 0; i < checkDraw.length; i++) {
+            let item = checkDraw[i]
+            if (item.unique_name === 'name') {
+              item.maxlength = 20
+              item.type = 'text'
+            } else if (item.unique_name === 'address') {
+              item.maxlength = 50
+              item.type = 'text'
+              indexAddress = i
+              addressObj = {
+                name: '详细地址',
+                unique_name: 'detail_address',
+                type: 'textarea',
+                maxlength: 500
+              }
+            } else if (item.unique_name === 'mobile') {
+              item.maxlength = 11
+              item.type = 'text'
+              indexMobile = i
+              imgCodeObj = {
+                name: '图形验证码',
+                unique_name: 'imgCode',
+                type: 'text',
+                maxlength: 10
+              }
+              codeObj = {
+                name: '验证码',
+                unique_name: 'verify_code',
+                type: 'text',
+                maxlength: 4
+              }
+            } else {
+              item.maxlength = 100
+              item.type = 'text'
+            }
+          }
+          if (indexMobile !== -1 && indexAddress !== -1) {
+            if (indexMobile < indexAddress) {
+              checkDraw.splice(indexMobile + 1, 0, codeObj)
+              checkDraw.splice(indexMobile, 0, imgCodeObj)
+              checkDraw.splice(indexAddress + 3, 0, addressObj)
+            } else {
+              checkDraw.splice(indexAddress + 1, 0, addressObj)
+              checkDraw.splice(indexMobile + 2, 0, codeObj)
+              checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
+            }
+          } else if (indexMobile === -1 && indexAddress !== -1) {
+            checkDraw.splice(indexAddress + 1, 0, addressObj)
+          } else if (indexMobile !== -1 && indexAddress === -1) {
+            checkDraw.splice(indexMobile + 1, 0, codeObj)
+            checkDraw.splice(indexMobile, 0, imgCodeObj)
+          }
+          this.isShowDrawCheck = true
+          this.checkDraw = checkDraw
+        } else {
+          this.goExamPage()
+        }
+      } else {
+        this.goExamPage()
       }
     },
     goExamPage () {
@@ -311,7 +458,8 @@ export default {
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
-      getAnswerCardInfo: 'GET_ANSWERCARD_INFO'
+      getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
+      endExam: 'END_EXAM'
     })
   }
 }
@@ -388,14 +536,30 @@ export default {
   .header-wrap{
     position: relative;
     width: 100vw;
-    height: px2rem(420px);
+    height: px2rem(414px);
     // margin-left:px2rem(-34px);
     overflow: hidden;
+    box-sizing: border-box;
+    padding: px2rem(30px) px2rem(30px) 0 px2rem(30px);
+    .header-img-shadow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: px2rem(80px);
+      opacity: 0.2;
+      background-image: linear-gradient(-180deg, rgba(0,0,0,0.00) 0%, #000000 100%);
+    }
     .bg{
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: px2rem(20px) px2rem(20px) 0 0;
+      background-color: #fff;
       // filter: blur(4px);
+      &.bg-default {
+        object-fit: contain;
+      }
     }
     .indexpic-bg{
       width: 100%;
@@ -544,7 +708,8 @@ export default {
     border: none;
     background-color:#CCC;
     @include font-dpr(16px);
-    @include font-color('bgColor');
+    // @include font-color('bgColor');
+    color: #fff;
   }
   .reset-exam-btns{
     display: flex;
@@ -580,6 +745,21 @@ export default {
     position: relative;
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
+    .tip-title {
+      color: #333333;
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+      text-align: center;
+    }
+    .tip-bg {
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     .app-bg{
       width: px2rem(370px);
       height: px2rem(224px);
@@ -592,12 +772,15 @@ export default {
       line-height: 1;
     }
     .tip{
-      font-weight: bold;
+      // font-weight: bold;
       text-align: center;
       margin-bottom:px2rem(80px);
       @include font-dpr(15px);
       color:#666666;
       position: relative;
+      &.tip-center {
+        margin: px2rem(20px) 0;
+      }
       .err-tip {
         position: absolute;
         top: px2rem(40px);
@@ -668,6 +851,7 @@ export default {
         margin-bottom: px2rem(60px);
       }
       .password-limit {
+        -webkit-appearance: none;
         width: px2rem(540px);
         height: px2rem(90px);
         padding: px2rem(27px) px2rem(38px);

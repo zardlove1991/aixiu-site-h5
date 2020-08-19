@@ -160,6 +160,9 @@ export default {
     display: flex;
     justify-content: flex-start;
     padding-top: px2rem(40px);
+    &:first-child {
+      padding-top: px2rem(49px);
+    }
     &:last-child{
       margin-bottom: 0;
     }

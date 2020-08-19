@@ -1,6 +1,6 @@
 import axios from 'axios'
 import apiConfig from './config'
-import { oauth } from '@/utils/userinfo'
+// import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
@@ -35,8 +35,7 @@ function dealError ({code, msg}) {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
     if (!query.plat) {
-      let newHost = host.substring(0, host.indexOf('/api'))
-      let url = `${newHost}/client/authorize/start/${params.id}?to=${nowUrl}`
+      let url = `${host}/client/authorize/start/${params.id}?to=${nowUrl}`
       window.location.replace(url)
     }
   } else if (code === 'invalid-source') {
@@ -53,12 +52,6 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  if ((data.ErrorCode === 'NO_LOGIN' || data.ErrorCode === 'EXPIRE_SIGNATURE' || data.ErrorText === '无法获取用户信息' || data.ErrorText === '用户信息错误') || !STORAGE.get('userinfo')) {
-    STORAGE.clear()
-    oauth((res) => {
-      window.location.reload()
-    })
-  }
   let curErrorCode = data.error || data.error_code
   let curErrorMsg = data.message || data.error_message
   dealError({ code: curErrorCode, msg: curErrorMsg })
@@ -107,7 +100,7 @@ instance.interceptors.response.use((res, xhr) => {
   return Promise.reject(rej)
 })
 
-const getUrl = (url, config = {}, api = 'API') => {
+const getUrl = (url, config = {}, api = 'exam') => {
   if (!url) {
     console.warn('接口地址不能为空')
     return false
@@ -122,8 +115,9 @@ const getUrl = (url, config = {}, api = 'API') => {
 }
 
 export const createAPI = (url, method, config = {}, api) => {
+  api = 'exam'
   return instance({
-    url: getUrl(url, config, api),
+    url: getUrl('api/' + url, config, api),
     method,
     withCredentials: true,
     ...config
@@ -131,7 +125,7 @@ export const createAPI = (url, method, config = {}, api) => {
 }
 
 export const createSumbit = (url, method, config = {}, api) => {
-  api = 'sumbitAPI'
+  api = 'submit'
   return instance({
     url: getUrl(url, config, api),
     method,
@@ -141,7 +135,7 @@ export const createSumbit = (url, method, config = {}, api) => {
 }
 
 export const creataUser = (url, method, config = {}, api) => {
-  api = 'USER'
+  api = 'user'
   return instance({
     url: getUrl(url, config, api),
     method,
@@ -150,8 +144,17 @@ export const creataUser = (url, method, config = {}, api) => {
   })
 }
 
-export const createOpen = (url, method, config = {}, api) => {
-  api = 'OPEN'
+export const createExam = (url, method, config = {}, api) => {
+  api = 'exam'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
+export const createBase = (url, method, config = {}, api) => {
   return instance({
     url: getUrl(url, config, api),
     method,

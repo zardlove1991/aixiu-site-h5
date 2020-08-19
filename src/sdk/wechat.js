@@ -1,21 +1,25 @@
 import { randomNum } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import globalConfig from '@/api/config'
 
 let wechat = {
-  authorize: (cbk, scope) => {
+  getAuthUrl: (scope) => {
+    let appid = globalConfig['APPID']
+    let redirectUri = globalConfig['REDIRECT-URI']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-    let url = host + '?appid=wx63a3a30d3880a56e&redirect_uri=http://h5.ixiuzan.cn/bridge/index.html?backUrl=' + window.location.href + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
-    if (window.$vue.$route.query.code) {
-      cbk(1, window.$vue.$route.query.code)
-    } else {
-      window.location.href = url
+    let backUrl = window.location.href
+    let indexOf = backUrl.indexOf('?')
+    if (indexOf !== -1) {
+      backUrl = backUrl.substring(0, indexOf)
     }
+    let url = host + '?appid=' + appid + '&redirect_uri=' + redirectUri + '?backUrl=' + backUrl + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    return url
   },
   async h5Signature (info, cbk, scope) {
     let params = {
       code: info,
-      appid: 'wx63a3a30d3880a56e',
+      appid: globalConfig['APPID'],
       sign: 'wechat',
       scope,
       mark: 'marketing'
@@ -32,30 +36,28 @@ let wechat = {
 }
 
 export const oauth = (cbk) => {
-  // 获取详情
-  let pathname = window.location.pathname
-  let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
-  if (id) {
-    let params = { id }
-    API.getAuthScope({ params }).then(res => {
-      let limit = res.limit
-      if (limit && limit.source_limit) {
-        let { scope_limit: scopeLimit } = limit.source_limit
-        let scope = ''
-        if (scopeLimit) {
-          scope = scopeLimit
+  const searchParams = new URLSearchParams(window.location.search)
+  const code = searchParams.get('code')
+  const existCode = STORAGE.get('code')
+  STORAGE.set('code', code)
+  if (!code || !existCode || (code === existCode)) {
+    // 获取详情
+    let pathname = window.location.pathname
+    let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+    if (id) {
+      let params = { id }
+      API.getAuthScope({ params }).then(res => {
+        let limit = res.limit
+        if (limit && limit.source_limit) {
+          let _scope = limit.source_limit.scope_limit || 'userinfo'
+          let scopeLimit = _scope === 'base' ? 'snsapi_base' : 'snsapi_userinfo'
+          STORAGE.set('scope_limit', scopeLimit)
+          const url = wechat.getAuthUrl(scopeLimit)
+          window.location.href = url
         }
-        if (scope && scope === 'base') {
-          scope = 'snsapi_base'
-        } else {
-          scope = 'snsapi_userinfo'
-        }
-        wechat.authorize((code, info) => {
-          if (code > 0 && !STORAGE.get('userinfo')) {
-            wechat.h5Signature(info, cbk, scope)
-          }
-        }, scope)
-      }
-    })
+      })
+    }
+  } else {
+    wechat.h5Signature(code, cbk, STORAGE.get('scope_limit'))
   }
 }

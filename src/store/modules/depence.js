@@ -138,9 +138,9 @@ const mutations = {
   SET_EXAM_DETAIL (state, payload) {
     payload.time = payload.start_time
     payload.times = payload.end_time
-    if (new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
+    if (payload.time && new Date(payload.time.replace(/-/g, '/')).getTime() > new Date().getTime()) {
       payload.timeStatus = 1 // 开始时间大于当前时间 考试未开始
-    } else if (new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
+    } else if (payload.times && new Date(payload.times.replace(/-/g, '/')).getTime() < new Date().getTime()) {
       payload.timeStatus = 2 // 结束时间小于于当前时间 考试已结束
     } else {
       payload.timeStatus = 0
@@ -255,6 +255,9 @@ function dealSaveRecord ({
   blankAnswerInfo
 }, optionFlag) {
   let dataIsEmpty = false
+  if (!subject) {
+    subject = {}
+  }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
   if (subject.type === 'essay') {
@@ -290,9 +293,11 @@ function dealSaveRecord ({
     params.options_id = null
     // 筛选当前选中的数据
     let optionsArr = []
-    subject.options.forEach(item => {
-      if (item.active) optionsArr.push(item.id)
-    })
+    if (subject.options) {
+      subject.options.forEach(item => {
+        if (item.active) optionsArr.push(item.id)
+      })
+    }
     // 针对单选和判断做处理
     if (optionsArr.length === 1 && subject.type !== 'checkbox') {
       optionsArr = optionsArr.join('')
@@ -458,6 +463,7 @@ const actions = {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
         commit('SET_BLANK_ANSWER_INFO', {})
+        commit('SET_CURRENT_SUBJECT_INDEX', 0)
         // 结束
         Indicator.close()
         if (res.success === 1) {
@@ -563,6 +569,9 @@ const actions = {
       // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
+      if (!subject) {
+        subject = {}
+      }
       if (isEmpty) subjectAnswerInfo[subject.id] = false
       else subjectAnswerInfo[subject.id] = true
       // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
@@ -695,17 +704,21 @@ const actions = {
   },
   GET_WEIXIN_INFO ({commit, state}, payload) {
     return new Promise((resolve, reject) => {
-      let { url } = payload
+      let { url, sign, appid } = payload
       // 获得微信信息
       API.getWeixinInfo({
-        data: { url }
+        params: {
+          url,
+          sign,
+          appid
+        }
       }).then(data => {
         // 设置数据
-        STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
+        // STORAGE.set('weixin-auth-info', data, Number(data.expire_time))
         // 结束
         resolve(data)
       }).catch(err => {
-        STORAGE.remove('weixin-auth-info')
+        // STORAGE.remove('weixin-auth-info')
         // 提醒
         let tip = err.message || err.error_message || '获取微信认证信息出错'
         Toast(tip)
@@ -749,6 +762,29 @@ const actions = {
       let params = { id: state.examId }
       // 开始请求数据
       API.unlockCourse({ params }).then(res => resolve()).catch(err => reject(err))
+    })
+  },
+  SET_SHARE ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      let { id, title, from = '' } = payload
+      // 开始请求数据
+      Indicator.open({ spinnerType: 'fading-circle' })
+      let data = [{
+        id: id,
+        mark: 'examination',
+        type: 'wechat',
+        title: title,
+        member_id: STORAGE.get('userinfo').id,
+        create_time: parseInt((new Date().getTime()) / 1000),
+        from: from
+      }]
+      API.setShare({ data: { data } }).then(res => {
+        Indicator.close() // 结束
+        resolve(res)
+      }).catch(err => {
+        Indicator.close() // 结束
+        reject(err)
+      })
     })
   }
 }
