@@ -349,9 +349,20 @@ export default {
         } = sourceLimit
         if (limitTxt && appSource && appSource.length > 0) {
           let plat = getPlat()
-          // let limitArr = limitTxt.split(',')
-          limitTxt = limitTxt.toLowerCase()
-          if (!limitTxt.includes(plat)) {
+          let limitArr = limitTxt.split(',')
+          // console.log('limitArr', limitArr, plat)
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
             if (!this.isModelShow) {
               this.isShowActiveTips = true
             }
