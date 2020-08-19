@@ -45,6 +45,12 @@
       @close="isShowWorkVote = false"
     ></share-vote>
     <canvass-vote :flag="flag" ref="canvass-vote-detail" />
+    <active-vote
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false"
+      :downloadLink="downloadLink"
+      :activeTips="activeTips">
+    </active-vote>
 </div>
 </template>
 
@@ -54,8 +60,10 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import CommonPageDetail from '@/components/vote/global/common-page-detail'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
+import ActiveVote from '@/components/vote/global/vote-active'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import { getAppSign } from '@/utils/utils'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -64,7 +72,8 @@ export default {
     VoteAudio,
     CommonPageDetail,
     ShareVote,
-    CanvassVote
+    CanvassVote,
+    ActiveVote
   },
   data () {
     return {
@@ -72,6 +81,9 @@ export default {
       isShowWorkVote: false,
       mark: '',
       isBackList: false,
+      isShowActiveTips: false,
+      activeTips: [],
+      downloadLink: '',
       statusCode: {
         noStatus: 0, // 未开始
         signUpStatus: 1, // 报名中
@@ -94,17 +106,21 @@ export default {
   methods: {
     async inintDetail () {
       let { worksId, sign, invotekey } = this.$route.query
-      if (sign && invotekey) {
-        this.isBackList = true
-        this.setShareData({ sign, invotekey })
-      }
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         let res = await this.getDetail()
         detailInfo = res
         this.isBackList = true
       }
+      // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
+      let isShowModel = false
+      if (sign && invotekey) {
+        this.isBackList = true
+        this.setShareData({ sign, invotekey })
+        isShowModel = true
+      }
+      this.setSourceLimit(detailInfo, isShowModel)
       this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
@@ -151,6 +167,44 @@ export default {
       }
       let status = flag ? noStatus : voteStatus
       this.setIsBtnAuth(status === noStatus ? 0 : 1)
+    },
+    setSourceLimit (detailInfo, isShowModel) {
+      // 来源限制
+      if (!detailInfo || !detailInfo.rule || !detailInfo.rule.limit) {
+        return
+      }
+      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      if (sourceLimit) {
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getAppSign()
+          let limitArr = limitTxt.split(',')
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
+            if (isShowModel) {
+              this.isShowActiveTips = true
+            }
+            this.downloadLink = downloadLink
+            this.activeTips = appSource
+            this.isReportAuth = 0
+            this.setIsBtnAuth(0)
+          }
+        }
+      }
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {

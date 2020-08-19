@@ -126,19 +126,6 @@
         <button class="dialog-ok-btn" @click="isShowSearch = false">好的</button>
       </div>
     </tips-dialog>
-    <!-- 活动提示弹窗 -->
-    <tips-dialog
-      :show="isShowActiveTips"
-      @close="isShowActiveTips = false">
-      <div class="active-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="active-header">请在
-          <span v-for="(active, index) in activeTips" :key="index" class="tips"> {{active.name}}<span v-show="index < activeTips.length - 1" class="split-line"> / </span></span> 内参与活动
-        </div>
-        <div class="active-img"></div>
-        <button class="dialog-ok-btn" v-if="!downloadLink" @click="isShowActiveTips = false">好的</button>
-        <button class="dialog-ok-btn" v-else @click="goDownload()">去下载</button>
-      </div>
-    </tips-dialog>
     <tips-dialog
       :show="isShowEnd"
       @close="isShowEnd = false">
@@ -163,6 +150,12 @@
       @close="isShowRuleDialog = false"
       :introduce="detailInfo.introduce">
     </rule-vote>
+    <active-vote
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false"
+      :downloadLink="downloadLink"
+      :activeTips="activeTips">
+    </active-vote>
   </div>
 </template>
 
@@ -176,6 +169,7 @@ import TipsDialog from '@/components/vote/global/tips-dialog'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
+import ActiveVote from '@/components/vote/global/vote-active'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -196,7 +190,8 @@ export default {
     TipsDialog,
     ShareVote,
     CanvassVote,
-    RuleVote
+    RuleVote,
+    ActiveVote
   },
   data () {
     return {
@@ -630,13 +625,6 @@ export default {
     closeWorkVote () {
       this.isShowWorkVote = false
     },
-    goDownload () {
-      let url = this.downloadLink
-      if (url) {
-        window.location.href = url
-        this.isShowActiveTips = false
-      }
-    },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
       setShareData: 'SET_SHARE_DATA',
@@ -1011,27 +999,6 @@ export default {
         @include font-dpr(16px);
         color: #333333;
         margin-bottom: px2rem(58px);
-      }
-    }
-    .active-dialog-wrap, .workvote-dialog-wrap {
-      padding: px2rem(86px) px2rem(30px) px2rem(91px) px2rem(30px);
-      .active-header, .workvote-header {
-        text-align: center;
-        @include font-dpr(16px);
-        color: #333333;
-      }
-      .active-header {
-        margin-bottom: px2rem(50px);
-      }
-      .tips {
-        color: #151515;
-        font-weight: 500;
-      }
-      .active-img {
-        margin-bottom: px2rem(55px);
-        width: px2rem(334px);
-        height: px2rem(244px);
-        @include img-retina("~@/assets/vote/tips-icon@2x.png","~@/assets/vote/tips-icon@3x.png", 100%, 100%);
       }
     }
     .dialog-ok-btn {
