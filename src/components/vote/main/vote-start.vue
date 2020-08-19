@@ -178,7 +178,7 @@ import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, delUrlParams } from '@/utils/utils'
+import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -348,9 +348,8 @@ export default {
           app_download_link: downloadLink
         } = sourceLimit
         if (limitTxt && appSource && appSource.length > 0) {
-          let plat = getPlat()
+          let plat = getAppSign()
           let limitArr = limitTxt.split(',')
-          // console.log('limitArr', limitArr, plat)
           let flag = false
           for (let item of limitArr) {
             if (item === 'smartcity' && plat.includes('smartcity')) {
