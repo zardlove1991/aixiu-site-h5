@@ -6,7 +6,7 @@
     <div class="thumb-wrap"
       v-show="isShowPoster"
       :style="{ backgroundImage: 'url('+ data.cover +')'}">
-      <div class="play-icon" @click.stop='setPlay'></div>
+      <div :class="['play-icon', isSmall ? 'small' : '']" @click.stop='setPlay'></div>
     </div>
     <i class="file-delete-icon" v-if="isShowDelBtn" @click="deleteFile(data)"></i>
   </div>
@@ -22,6 +22,10 @@ export default {
       }
     },
     isShowDelBtn: {
+      type: Boolean,
+      default: false
+    },
+    isSmall: {
       type: Boolean,
       default: false
     }
@@ -105,6 +109,10 @@ export default {
       .play-icon{
         width: px2rem(70px);
         height: px2rem(80px);
+        &.small {
+          width: px2rem(40px);
+          height: px2rem(50px);
+        }
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;

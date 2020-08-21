@@ -249,7 +249,7 @@ export default {
           background-color: rgba(255, 255, 255, 0.2);
           border-radius: px2rem(8px);
           padding: 0 px2rem(30px);
-          @include font-dpr(14px);
+          @include font-dpr(16px);
           color: #fff;
           border: 0;
         }
