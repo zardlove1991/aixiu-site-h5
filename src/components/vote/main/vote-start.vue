@@ -725,9 +725,6 @@ export default {
             font-weight: 500;
             color: #fff;
             @include font-dpr(22px);
-            white-space:nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
           }
           ::after {
             box-shadow: 0 0 20px 3px rgba(0, 0, 0, 0.3) inset;
