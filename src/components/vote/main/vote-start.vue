@@ -645,7 +645,7 @@ export default {
       position: absolute;
       z-index: 10;
       right: 0;
-      bottom: 30%;
+      bottom: 55%;
       width: px2rem(57px);
       height: px2rem(220px);
       color: #fff;
