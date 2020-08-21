@@ -717,8 +717,7 @@ export default {
             left: 50%;
             transform: translateX(-50%);
             width: calc(100vw - 35px);
-            padding: px2rem(22px) px2rem(45px);
-            padding-bottom: px2rem(10px);
+            padding: px2rem(30px) px2rem(45px);
             text-align: center;
             @include bg-linear-color('compColor');
             border-radius: px2rem(16px) px2rem(16px) 0 0;
@@ -726,7 +725,9 @@ export default {
             font-weight: 500;
             color: #fff;
             @include font-dpr(22px);
-            @include line-overflow(1);
+            white-space:nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           ::after {
             box-shadow: 0 0 20px 3px rgba(0, 0, 0, 0.3) inset;
@@ -768,7 +769,7 @@ export default {
           position: relative;
           display: inline-block;
           font-size: px2rem(30px);
-          color: #fff;
+          color: rgba(255, 255, 255, 0.7);
           padding-right: 8px;
           margin-right: 6px;
           vertical-align: top;
