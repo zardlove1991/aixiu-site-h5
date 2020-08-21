@@ -190,10 +190,10 @@ export default {
     .file-delete-icon {
       display: inline-block;
       position: absolute;
-      right: px2rem(-15px);
-      top: px2rem(-15px);
-      width: px2rem(30px);
-      height: px2rem(30px);
+      right: px2rem(-20px);
+      top: px2rem(-20px);
+      width: px2rem(40px);
+      height: px2rem(40px);
       @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
     }
   }
