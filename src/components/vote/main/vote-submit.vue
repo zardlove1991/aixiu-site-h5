@@ -9,7 +9,7 @@
       </div>
       <div v-if="flag === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips">(图片最多上传9张，支持PNG、JPG、GIF格式)</div>
+        <div class="form-tips-div">(图片最多上传9张，支持PNG、JPG、GIF格式)</div>
         <div class="form-content">
           <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
@@ -233,6 +233,12 @@ export default {
         @include font-dpr(16px);
       }
       .form-tips {
+        display: inline-block;
+        margin-left: px2rem(20px);
+        @include font-dpr(12px);
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .form-tips-div {
         @include font-dpr(12px);
         color: rgba(255, 255, 255, 0.5);
       }
