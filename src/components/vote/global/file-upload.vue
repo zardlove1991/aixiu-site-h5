@@ -13,6 +13,7 @@
       @deleteFile="handleRemove">
     </vote-audio>
     <el-upload
+      ref="vote-file-upload"
       :class="{ hide: fileList.length >= settings[flag].limit }"
       list-type="picture-card"
       :action="uploadUrl"
@@ -113,8 +114,10 @@ export default {
       })
     },
     handleRemove (file) {
+      this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+      let uid = file.uid
       for (let i in this.fileList) {
-        if (this.fileList[i].uid === file.uid) {
+        if (this.fileList[i].uid === uid) {
           this.fileList.splice(i, 1)
         }
       }
@@ -131,11 +134,11 @@ export default {
       }
       let { host, filename } = obj
       let tmp = {
-        name: this.file.name,
-        filename: this.file.name,
+        name: files.name,
+        filename: files.name,
         url: host + filename,
-        uid: this.file.uid,
-        size: this.file.size
+        uid: files.uid,
+        size: files.size
       }
       if (this.flag === 'audio') {
         let tempDura = 0
