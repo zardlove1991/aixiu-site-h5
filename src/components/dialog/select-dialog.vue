@@ -35,7 +35,6 @@ export default {
   },
   watch: {
     show (val) {
-      console.log('val', val)
       this.selectShow = val
     }
   },

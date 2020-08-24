@@ -113,7 +113,7 @@
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
       <div class="password-limit-wrap" @click.stop>
         <div class="password-limit-title">请输入密码参与答题</div>
-        <input class="password-limit" placeholder='请输入密码' v-model="password" type="text" />
+        <input class="password-limit" @blur="blurAction()" placeholder='请输入密码' v-model="password" type="text" />
         <div class="password-tips">{{passwordTips}}</div>
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
@@ -132,7 +132,7 @@ import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
@@ -203,6 +203,9 @@ export default {
       this.isShowBreak = false
       this.goExamPage()
     },
+    blurAction () {
+      document.body.scrollTop = 0
+    },
     goDownload () {
       if (this.appDownloadUrl) {
         this.errTips = ''
@@ -262,7 +265,7 @@ export default {
       if (limit.share_settings) {
         let share = limit.share_settings
         title = share.share_title ? share.share_title : examInfo.title
-        link = share.share_url ? share.share_url : window.location.href
+        link = share.share_url
         desc = share.share_brief ? share.share_brief : examInfo.brief
         let picObj = share.share_indexpic
         let indexObj = examInfo.indexpic
@@ -272,12 +275,18 @@ export default {
           imgUrl = 'http:' + indexObj.host + indexObj.filename
         }
       }
+      if (!link) {
+        link = delUrlParams(['code'])
+      } else {
+        link = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + link
+      }
       this.initPageShareInfo({
         id: examInfo.id,
         title,
         desc,
         indexpic: imgUrl,
-        link
+        link,
+        mark: 'examination'
       })
     },
     async startReExam () {

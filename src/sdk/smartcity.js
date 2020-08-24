@@ -54,39 +54,49 @@ export const oauth = (cbk) => {
   let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
   if (id) {
     let params = { id }
-    API.getAuthScope({ params }).then(res => {
-      let limit = res.limit
-      if (limit && limit.source_limit) {
-        let { avoid_landing: avoidanding } = limit.source_limit
-        if (avoidanding) {
-          // 免登陆
-          const params2 = {
-            userId: 'xiuzan',
-            sign: getAppSign(),
-            userName: '爱秀小秘书',
-            avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
-          }
-          try {
-            API.getSmartCityUser({
-              params: params2
-            }).then((res) => {
-              if (res && res.id) {
-                STORAGE.set('userinfo', res)
-                cbk(res)
+    if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
+      // 投票
+      smartcity.authorize((code, sdkInfo) => {
+        if (code > 0) {
+          smartcity.h5Signature(sdkInfo, cbk)
+        }
+      })
+    } else {
+      // 测评
+      API.getAuthScope({ params }).then(res => {
+        let limit = res.limit
+        if (limit && limit.source_limit) {
+          let { avoid_landing: avoidanding } = limit.source_limit
+          if (avoidanding) {
+            // 免登陆
+            const params2 = {
+              userId: 'xiuzan',
+              sign: getAppSign(),
+              userName: '爱秀小秘书',
+              avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
+            }
+            try {
+              API.getSmartCityUser({
+                params: params2
+              }).then((res) => {
+                if (res && res.id) {
+                  STORAGE.set('userinfo', res)
+                  cbk(res)
+                }
+              })
+            } catch (err) {
+              console.log(err)
+              cbk(-1, '智慧城市：失败', err)
+            }
+          } else {
+            smartcity.authorize((code, sdkInfo) => {
+              if (code > 0) {
+                smartcity.h5Signature(sdkInfo, cbk)
               }
             })
-          } catch (err) {
-            console.log(err)
-            cbk(-1, '智慧城市：失败', err)
           }
-        } else {
-          smartcity.authorize((code, sdkInfo) => {
-            if (code > 0) {
-              smartcity.h5Signature(sdkInfo, cbk)
-            }
-          })
         }
-      }
-    })
+      })
+    }
   }
 }

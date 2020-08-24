@@ -46,7 +46,7 @@ export default {
     align-items: center;
     justify-content: center;
     .share-img {
-      width: px2rem(600px);
+      width: 85%;
       height: auto;
     }
     .close-btn {

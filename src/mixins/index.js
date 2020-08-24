@@ -47,10 +47,11 @@ export default {
       // 执行调用
       let url = window.location.href.split('#')[0]
       // encodeURIComponent(location.href.split('#')[0])
+      let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
       this.getWeixinInfo({
         url,
         sign: 'wechat',
-        appid: globalConfig['APPID']
+        appid
       }).then(res => {
         console.log(res)
         let { appId, timestamp, nonceStr, signature } = res
@@ -59,6 +60,24 @@ export default {
           timestamp,
           nonceStr,
           signature
+        })
+      })
+    },
+    getLocation () {
+      return new Promise((resolve, reject) => {
+        wx.execute('getLocation', {
+          type: 'wgs84',
+          success: (res) => {
+            if (res) {
+              let { latitude, longitude } = res
+              let location = {
+                lat: latitude,
+                lng: longitude
+              }
+              STORAGE.set('location', location)
+            }
+            resolve()
+          }
         })
       })
     },
@@ -81,7 +100,8 @@ export default {
             this.setShare({
               id: data.id,
               title: params.title,
-              from: params.from
+              from: params.from,
+              mark: data.mark
             })
           },
           cancel: function () {

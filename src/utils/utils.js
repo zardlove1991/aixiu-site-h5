@@ -6,27 +6,66 @@ import {
   qcloudSetting
 } from '@/config/upload'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
+
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
  * @param  {[string]} format [时间格式，支持的格式自定义，需在该方法中配置]
  * @return {[string]}        [转化后的时间格式]
  */
-export const setTheme = (id) => {
-  // let id = this.$route.params.id
-  if (!id) {
+export const setTheme = (id, name, isFirst) => {
+  if (!id || !name) {
     return
   }
-  API.getExamDetail({ query: { id } }).then(res => {
-    let info = res
-    if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
-      let content = info.limit.color_scheme.content
-      document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-      document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
-    }
-  })
+  if (name.indexOf('vote') !== -1) {
+    // 投票
+    API.getVodeDetail({ query: { id } }).then((res) => {
+      let info = res
+      if (info.rule && info.rule.page_setup) {
+        let { background, color_scheme: colorScheme } = info.rule.page_setup
+        if (background && colorScheme && colorScheme.content) {
+          let content = colorScheme.content
+          let bodyEle = document.getElementsByTagName('body')[0]
+          bodyEle.style.setProperty('--bgColor', content.bg_color)
+          bodyEle.style.setProperty('--buttonColor', content.button_color)
+          bodyEle.style.setProperty('--component', content.component)
+          bodyEle.style.setProperty('--decorated', content.decorated)
+          // 改背景图片
+          if (background.indexpic && background.indexpic.length) {
+            let picObj = background.indexpic[0]
+            let url = picObj.host + picObj.filename
+            window.document.getElementById('app').style.backgroundImage = 'url(' + url + ')'
+            if (background.mode && background.mode === 1) {
+              // 固定
+              window.document.getElementById('app').style.backgroundSize = '100%'
+              window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
+            } else {
+              // 平铺
+              window.document.getElementById('app').style.backgroundSize = '100%'
+            }
+          }
+        }
+      }
+      if (isFirst && info && info.id) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
+      }
+      STORAGE.set('detailInfo', info)
+    })
+  } else {
+    // 测评
+    API.getExamDetail({ query: { id } }).then(res => {
+      let info = res
+      if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
+        let content = info.limit.color_scheme.content
+        document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+        document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+      }
+    })
+  }
 }
 
 export const formatDate = (utcstr, format = 'YYYY-MM-DD hh:mm:ss', flag = false) => {
@@ -73,6 +112,25 @@ export const formatTimeBySec = (sec, isShowHour = false, joinTip = ':') => {
   return timeArr.join(joinTip)
 }
 
+/* 传入时间戳转换成秒 */
+export const formatSecByTime = (params) => {
+  let sec = Math.floor((params.endtime - params.nowtime) / 1000)
+  let day = Math.floor(sec / (24 * 3600))
+  let _dayLastTime = sec % (24 * 3600)
+  let hour = Math.floor(_dayLastTime / 3600)
+  let minute = Math.floor(_dayLastTime % 3600 / 60)
+  let second = Math.floor(_dayLastTime % 3600 % 60)
+  let timeArr = [ day, hour, minute, second ]
+  for (let i = 0; i < 4; i++) {
+    let val = timeArr[i]
+    // 是否需要填充0
+    if (params.isToFix) {
+      timeArr[i] = val < 10 ? '0' + val : val
+    }
+  }
+  return timeArr
+}
+
 /*
  * 判断嵌入平台
  * */
@@ -91,12 +149,29 @@ export const getPlat = () => {
   }
   return 'browser'
 }
+
+export const setClick = (id, title, mark) => {
+  let datas = {
+    param: {
+      data: [{
+        id,
+        mark,
+        title,
+        member_id: STORAGE.get('userinfo').id,
+        start_time: parseInt((new Date().getTime()) / 1000),
+        from: null,
+        hash: randomNum(13)
+      }]
+    }
+  }
+  API.setClick({ params: datas }).then(() => {})
+}
+
 /*
 * 动态set head title
 * */
 export const setBrowserTitle = (title) => {
   let plat = getPlat()
-  document.title = title
   if (plat === 'dingding' || plat === 'dingdone') {
     let i = document.createElement('iframe')
     i.src = '/static/js/browser.js'
@@ -106,6 +181,7 @@ export const setBrowserTitle = (title) => {
         i.remove()
       }, 2)
     }
+    document.title = title
     document.body.appendChild(i)
   } else {
     document.title = title
@@ -129,6 +205,26 @@ export const setPlatCssInclude = () => {
   let urlParams = getUrlParam()
   let theme = urlParams.theme ? urlParams.theme : 'default'
   window.document.documentElement.setAttribute('data-theme', theme)
+}
+
+export const delUrlParams = (delArr = [], isEncode = false) => {
+  let backUrl = window.location.href
+  let indexOf = backUrl.indexOf('?')
+  if (indexOf !== -1) {
+    backUrl = backUrl.substring(0, indexOf)
+  }
+  let searchParams = new URLSearchParams(window.location.search)
+  for (let item of delArr) {
+    searchParams.delete(item)
+  }
+  let params = searchParams.toString()
+  if (params) {
+    backUrl = backUrl + '?' + params
+  }
+  if (isEncode) {
+    backUrl = encodeURIComponent(backUrl)
+  }
+  return backUrl
 }
 
 export const getFontsize = () => {

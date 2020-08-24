@@ -163,7 +163,8 @@ export default {
           title: examInfo.title,
           desc: examInfo.brief,
           indexpic: examInfo.indexpic,
-          link: this.redirect
+          link: this.redirect,
+          mark: 'examination'
         })
       } catch (err) {
         console.log(err)

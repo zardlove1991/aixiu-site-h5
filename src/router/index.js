@@ -3,11 +3,16 @@ import Router from 'vue-router'
 import STORAGE from '@/utils/storage'
 // 引入动态组件
 const getComponent = name => () => import(`@/components/${name}`)
+const getVoteComponent = name => () => import(`@/components/vote/main/${name}`)
 
 Vue.use(Router)
 
 let router = new Router({
   mode: 'history',
+  // base: '/pre/',
+  scrollBehavior () {
+    return { x: 0, y: 0 }
+  },
   routes: [
     {
       path: '/depencelist/:id',
@@ -22,7 +27,7 @@ let router = new Router({
         listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
       }),
       meta: {
-        title: '答题中...'
+        title: '加载中...'
       }
     },
     {
@@ -38,7 +43,7 @@ let router = new Router({
         listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
       }),
       meta: {
-        title: '答题中...'
+        title: '加载中...'
       }
     },
     {
@@ -90,6 +95,77 @@ let router = new Router({
       }),
       meta: {
         title: '温馨提示'
+      }
+    },
+    {
+      path: '/votebegin/:id',
+      name: 'votebegin',
+      component: getVoteComponent('vote-start'),
+      props: (route) => ({
+        id: route.params.id
+      }),
+      meta: {
+        title: '投票'
+      }
+    },
+    {
+      path: '/votedetail/:flag/:id',
+      name: 'votedetail',
+      component: getVoteComponent('vote-detail'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
+      meta: {
+        title: '投票详情'
+      }
+    },
+    {
+      path: '/voterank/:flag/:id',
+      name: 'voterank',
+      component: getVoteComponent('vote-rank'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
+      meta: {
+        title: '排行榜'
+      }
+    },
+    {
+      path: '/votemy/:flag/:id',
+      name: 'votemy',
+      component: getVoteComponent('vote-my'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
+      meta: {
+        title: '我的投票'
+      }
+    },
+    {
+      path: '/votesubmit/:flag/:id',
+      name: 'votesubmit',
+      component: getVoteComponent('vote-submit'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
+      meta: {
+        title: '上传作品'
+      }
+    },
+    {
+      path: '/voteoneself/:flag/:id',
+      name: 'voteoneself',
+      component: getVoteComponent('vote-oneself'),
+      props: (route) => ({
+        id: route.params.id,
+        flag: route.params.flag
+      }),
+      meta: {
+        title: '我的作品'
       }
     }
   ]
