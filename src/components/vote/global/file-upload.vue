@@ -18,11 +18,11 @@
       :action="uploadUrl"
       :data="extraData"
       :limit="settings[flag].limit"
-      :multiple="false"
+      :multiple="settings[flag].limit > 1"
       :show-file-list="false"
-      :file-list="fileList"
       :before-upload="beforeUpload"
       :on-success="onSuccess"
+      :on-exceed="handleExceed"
       v-loading="loading"
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
@@ -34,6 +34,7 @@
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
+import { Toast } from 'mint-ui'
 
 export default {
   props: {
@@ -118,6 +119,10 @@ export default {
         }
       }
     },
+    // 文件超出个数
+    handleExceed () {
+      Toast(`最多只能选择${this.settings[this.flag].limit}个文件`)
+    },
     // 上传成功
     onSuccess (response, files, fileList) {
       let { obj, duration } = response
@@ -140,8 +145,10 @@ export default {
         tmp.duration = tempDura
       }
       this.fileList.push(tmp)
-      this.$emit('update:loading', false)
-      this.$emit('changeFile')
+      if (this.fileList.length === fileList.length) {
+        this.$emit('update:loading', false)
+        this.$emit('changeFile')
+      }
     }
   }
 }
