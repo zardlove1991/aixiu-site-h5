@@ -85,8 +85,10 @@ export default {
       }
       .work-poster-wrap {
         position: relative;
-        width: px2rem(330px);
-        height: px2rem(330px);
+        width: 100%;
+        height: px2rem(340px);
+        // width: px2rem(330px);
+        // height: px2rem(330px);
         border-radius: 4px;
         background-repeat: no-repeat;
         background-position: center;
