@@ -74,8 +74,13 @@ export default {
           lastvotes: voteTip
         }
         if (res.material) {
+          let isLongCover = false
           if (this.flag === 'picture' && res.material.image && res.material.image.length) {
-            params.cover = res.material.image[0].url + coverExt
+            let img = res.material.image[0]
+            params.cover = img.url + coverExt
+            if (img.width && img.height) {
+              isLongCover = img.height > img.width
+            }
           } else if (this.flag === 'video' && res.material.video && res.material.video.length) {
             params.cover = res.material.video[0].cover + coverExt
           } else if (this.flag === 'audio' && res.material.audio && res.material.audio.length) {
@@ -84,6 +89,8 @@ export default {
           } else if (this.flag === 'text') {
             params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
           }
+          // 判断是否长图 如果是就修改为不截断参数
+          if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
         }
         API.shareMake({
           data: params

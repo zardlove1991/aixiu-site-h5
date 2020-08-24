@@ -18,7 +18,7 @@
       list-type="picture-card"
       :action="uploadUrl"
       :data="extraData"
-      :limit="settings[flag].limit"
+      :limit="currentLimit"
       :multiple="settings[flag].limit > 1"
       :show-file-list="false"
       :before-upload="beforeUpload"
@@ -70,9 +70,21 @@ export default {
           accept: '.mp3,.MP3'
         }
       },
+      currentLimit: 9,
       uploadUrl: '', // 上传地址
       file: {},
       signature: {} // 签名
+    }
+  },
+  watch: {
+    fileList: {
+      handler: function (val) {
+        if (val) {
+          this.currentLimit = this.settings[this.flag].limit - val.length
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   computed: {
@@ -148,10 +160,8 @@ export default {
         tmp.duration = tempDura
       }
       this.fileList.push(tmp)
-      if (this.fileList.length === fileList.length) {
-        this.$emit('update:loading', false)
-        this.$emit('changeFile')
-      }
+      this.$emit('update:loading', false)
+      this.$emit('changeFile')
     }
   }
 }
