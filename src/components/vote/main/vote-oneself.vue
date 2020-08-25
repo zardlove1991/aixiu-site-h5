@@ -26,7 +26,7 @@
         </div>
         <div class="onself-video-wrap"
           v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
-          <vote-video :data="selfData.material.video[0]"></vote-video>
+          <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
         <vote-audio
           v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>

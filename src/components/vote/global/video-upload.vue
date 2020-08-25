@@ -193,22 +193,6 @@ export default {
         @include font-dpr(30px);
       }
     }
-    .upload-picture-item {
-      position: relative;
-      border-radius: px2rem(8px);
-      margin: 0 px2rem(20px) px2rem(20px) 0;
-      width: px2rem(200px);
-      height: px2rem(200px);
-      .file-delete-icon {
-        display: inline-block;
-        position: absolute;
-        right: px2rem(-20px);
-        top: px2rem(-20px);
-        width: px2rem(40px);
-        height: px2rem(40px);
-        @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
-      }
-    }
     .upload-video-wrap {
       width: px2rem(470px);
       height: px2rem(260px);

@@ -90,7 +90,7 @@ export default {
         .title-tip-2 {
           display: inline-block;
           margin: 0 px2rem(10px);
-          @include font-color('btnColor');
+          color: #fff;
         }
       }
       .time-count-wrap {
