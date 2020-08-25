@@ -1,7 +1,18 @@
 <template>
   <div class="commvote-base-video-wrap">
     <!--视频组件-->
-    <video ref="video" class="base-video" :src="data.url" :style="{ opacity: isShowVideo ? 1 : 0 }" controls  x5-video-player-fullscreen="true" x-webkit-airplay="true" webkit-playsinline x5-playsinline playsinline></video>
+    <video ref="video"
+      class="base-video"
+      :src="data.url"
+      :style="{ opacity: isShowVideo ? 1 : 0 }"
+      controls
+      x5-video-player-type="h5"
+      :x5-video-player-fullscreen="true"
+      :x-webkit-airplay="true"
+      webkit-playsinline
+      x5-playsinline
+      playsinline>
+    </video>
     <!--视频遮罩层-->
     <div class="thumb-wrap"
       v-show="isShowPoster"
