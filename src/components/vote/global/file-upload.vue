@@ -3,7 +3,10 @@
     <div class="upload-picture-item"
       v-show="flag === 'picture' && fileList.length"
       v-for="(item, index) in fileList" :key="index">
-      <img :src="item.url" />
+      <img :src="item.url"
+        @click.stop="_setPreviewState"
+        v-preview="item.url"
+        preview-nav-enable="false" />
       <i class="file-delete-icon" @click.stop="handleRemove(item)"></i>
     </div>
     <vote-audio
@@ -36,8 +39,10 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import { Toast } from 'mint-ui'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
+  mixins: [ SubjectMixin ],
   props: {
     fileList: {
       type: Array,
@@ -188,10 +193,12 @@ export default {
     }
     .upload-picture-item {
       position: relative;
-      border-radius: px2rem(8px);
-      margin: 0 px2rem(20px) px2rem(20px) 0;
+      margin: 0 px2rem(30px) px2rem(25px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
+      img {
+        border-radius: px2rem(8px);
+      }
       .file-delete-icon {
         display: inline-block;
         position: absolute;
@@ -201,10 +208,6 @@ export default {
         height: px2rem(40px);
         @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
       }
-    }
-    .upload-video-wrap {
-      width: px2rem(470px);
-      height: px2rem(260px);
     }
   }
 </style>

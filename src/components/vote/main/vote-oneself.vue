@@ -21,12 +21,15 @@
         <div class="onself-picture-wrap"
           v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
           <div class="onself-picture-item" v-for="(item, index) in selfData.material.image" :key="index">
-            <img :src="item.url" />
+            <img :src="item.url"
+              @click.stop="_setPreviewState"
+              v-preview="item.url"
+              preview-nav-enable="false" />
           </div>
         </div>
         <div class="onself-video-wrap"
           v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
-          <vote-video :data="selfData.material.video[0]"></vote-video>
+          <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
         <vote-audio
           v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>
@@ -70,8 +73,10 @@
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
+  mixins: [ SubjectMixin ],
   created () {
     this.initForm()
   },
@@ -153,7 +158,7 @@ export default {
         @include img-retina("~@/assets/vote/examine-no@2x.png","~@/assets/vote/examine-no@3x.png", 100%, 100%);
       }
       .status-tips-wait {
-        @include font-dpr(14px);
+        @include font-dpr(15px);
         color: #FFFFFF;
       }
       .status-tips-success {
@@ -189,11 +194,11 @@ export default {
         height: px2rem(33px);
         line-height: px2rem(33px);
         @include font-dpr(12px);
-        color: rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.4);
         .line {
           flex: 1;
           height: px2rem(16px);
-          border-bottom: 1px dashed rgba(255,255,255,0.5);
+          border-bottom: 1px dashed rgba(255,255,255,0.4);
           &:first-child {
             margin-right: px2rem(20px);
           }
@@ -210,10 +215,12 @@ export default {
           flex-wrap: wrap;
           .onself-picture-item {
             position: relative;
-            border-radius: px2rem(8px);
             margin: 0 px2rem(20px) px2rem(20px) 0;
             width: px2rem(200px);
             height: px2rem(200px);
+            img {
+              border-radius: px2rem(8px);
+            }
           }
         }
         .onself-video-wrap {
