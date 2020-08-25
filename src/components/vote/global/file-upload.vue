@@ -193,7 +193,7 @@ export default {
     }
     .upload-picture-item {
       position: relative;
-      margin: 0 px2rem(25px) px2rem(20px) 0;
+      margin: 0 px2rem(30px) px2rem(25px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
       img {

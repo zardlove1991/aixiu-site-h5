@@ -158,7 +158,7 @@ export default {
         @include img-retina("~@/assets/vote/examine-no@2x.png","~@/assets/vote/examine-no@3x.png", 100%, 100%);
       }
       .status-tips-wait {
-        @include font-dpr(14px);
+        @include font-dpr(15px);
         color: #FFFFFF;
       }
       .status-tips-success {
@@ -194,11 +194,11 @@ export default {
         height: px2rem(33px);
         line-height: px2rem(33px);
         @include font-dpr(12px);
-        color: rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.4);
         .line {
           flex: 1;
           height: px2rem(16px);
-          border-bottom: 1px dashed rgba(255,255,255,0.5);
+          border-bottom: 1px dashed rgba(255,255,255,0.4);
           &:first-child {
             margin-right: px2rem(20px);
           }
