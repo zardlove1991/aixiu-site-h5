@@ -215,10 +215,12 @@ export default {
           flex-wrap: wrap;
           .onself-picture-item {
             position: relative;
-            border-radius: px2rem(8px);
             margin: 0 px2rem(20px) px2rem(20px) 0;
             width: px2rem(200px);
             height: px2rem(200px);
+            img {
+              border-radius: px2rem(8px);
+            }
           }
         }
         .onself-video-wrap {

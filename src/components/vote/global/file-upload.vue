@@ -193,10 +193,12 @@ export default {
     }
     .upload-picture-item {
       position: relative;
-      border-radius: px2rem(8px);
       margin: 0 px2rem(25px) px2rem(20px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
+      img {
+        border-radius: px2rem(8px);
+      }
       .file-delete-icon {
         display: inline-block;
         position: absolute;
