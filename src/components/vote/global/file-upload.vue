@@ -3,7 +3,10 @@
     <div class="upload-picture-item"
       v-show="flag === 'picture' && fileList.length"
       v-for="(item, index) in fileList" :key="index">
-      <img :src="item.url" />
+      <img :src="item.url"
+        @click.stop="_setPreviewState"
+        v-preview="item.url"
+        preview-nav-enable="false" />
       <i class="file-delete-icon" @click.stop="handleRemove(item)"></i>
     </div>
     <vote-audio
@@ -36,8 +39,10 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import { Toast } from 'mint-ui'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
+  mixins: [ SubjectMixin ],
   props: {
     fileList: {
       type: Array,

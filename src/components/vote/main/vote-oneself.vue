@@ -21,7 +21,10 @@
         <div class="onself-picture-wrap"
           v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
           <div class="onself-picture-item" v-for="(item, index) in selfData.material.image" :key="index">
-            <img :src="item.url" />
+            <img :src="item.url"
+              @click.stop="_setPreviewState"
+              v-preview="item.url"
+              preview-nav-enable="false" />
           </div>
         </div>
         <div class="onself-video-wrap"
@@ -70,8 +73,10 @@
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
+  mixins: [ SubjectMixin ],
   created () {
     this.initForm()
   },
