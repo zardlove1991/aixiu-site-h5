@@ -11,7 +11,9 @@
           }">
           <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
             :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
-          <div v-if="detailInfo.title" class="pic-title color-high_text color-decorated">{{detailInfo.title}}</div>
+          <div v-if="detailInfo.title" class="pic-title color-high_text color-decorated">
+            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
+          </div>
         </div>
       </div>
       <div v-else class="overview-indexpic-empty"></div>
@@ -699,7 +701,7 @@ export default {
         height: px2rem(500px);
         overflow: hidden;
         &.nopic-wrap {
-          height: px2rem(160px);
+          height: px2rem(220px);
         }
         .pic-thumb {
           position: relative;
@@ -725,6 +727,12 @@ export default {
             font-weight: 500;
             color: #fff;
             @include font-dpr(22px);
+            .nopic-title {
+              display: inline-block;
+              width: 100%;
+              max-height: px2rem(160px);
+              @include line-overflow(2);
+            }
           }
           ::after {
             box-shadow: 0 0 20px 3px rgba(0, 0, 0, 0.3) inset;

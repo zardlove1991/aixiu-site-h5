@@ -104,6 +104,7 @@ export default {
       height: 100%;
       object-fit: contain;
       background-color: rgba(0,0,0,0.9);
+      border-radius: px2rem(8px);
     }
     .thumb-wrap {
       display: flex;
@@ -117,6 +118,7 @@ export default {
       background-repeat: no-repeat;
       background-position: center top;
       background-size: cover;
+      border-radius: px2rem(8px);
       .play-icon{
         width: px2rem(70px);
         height: px2rem(80px);
