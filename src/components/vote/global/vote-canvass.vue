@@ -151,7 +151,7 @@ export default {
     pointer-events: auto;
     z-index: 99;
     .poster-img {
-      width: px2rem(616px);
+      width: 88%;
       height: auto;
     }
     .poster-tips {
