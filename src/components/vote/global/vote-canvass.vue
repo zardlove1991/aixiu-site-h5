@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -17,6 +18,12 @@ export default {
     return {
       sharePoster: '',
       show: false
+    }
+  },
+  watch: {
+    show (newState) {
+      // 更改当前是否显示遮罩的状态
+      this.setModelThumbState(newState)
     }
   },
   methods: {
@@ -130,7 +137,10 @@ export default {
     },
     close () {
       this.show = false
-    }
+    },
+    ...mapMutations('depence', {
+      setModelThumbState: 'SET_MODEL_THUMB_STATE'
+    })
   }
 }
 </script>
