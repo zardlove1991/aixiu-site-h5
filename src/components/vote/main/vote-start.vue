@@ -709,8 +709,7 @@ export default {
             width: 100vw;
             height: 100%;
             transform: translateX(27.5%);
-            background-position: center;
-            background-size: cover;
+            background-size: 100%;
             background-repeat: no-repeat;
           }
           .pic-title {
