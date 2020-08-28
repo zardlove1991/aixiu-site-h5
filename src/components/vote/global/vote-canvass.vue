@@ -12,7 +12,11 @@ import STORAGE from '@/utils/storage'
 
 export default {
   props: {
-    flag: String
+    flag: String,
+    signUnit: {
+      type: String,
+      default: '票'
+    }
   },
   data () {
     return {
@@ -63,7 +67,7 @@ export default {
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
-        let voteTip = res.index === 1 ? '第2名还差' + Math.abs(res.last_votes) + '票就要赶超' : '距离上一名还差' + Math.abs(res.last_votes) + '票'
+        let voteTip = res.index === 1 ? '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超' : '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
         if (detailInfo.works_count === 1) voteTip = '目前是第一名，坚持就是胜利'
         let qrcode = this.dealUrlConcat({
           sign: 'invotefriend',

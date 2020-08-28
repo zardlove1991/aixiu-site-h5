@@ -5,7 +5,7 @@
     <!--弹窗模块-->
     <div class="lottery-dialog-content">
       <div v-if="lottery.remain_lottery_counts" class="success-wrap">
-        <div class="tips">恭喜您，投票有礼</div>
+        <div class="tips">恭喜您，{{textSetting.sign ? textSetting.sign : '投票'}}有礼</div>
         <div class="tips">感谢您的鼓励与认可</div>
         <div class="go-lottery-btn" @click.stop="goLottery()">参与抽奖</div>
         <div class="lottery-count">有{{lottery.remain_lottery_counts}}次抽奖机会</div>
@@ -31,6 +31,12 @@ export default {
       default: false
     },
     lottery: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    textSetting: {
       type: Object,
       default: () => {
         return {}

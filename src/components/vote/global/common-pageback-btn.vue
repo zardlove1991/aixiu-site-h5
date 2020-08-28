@@ -1,14 +1,21 @@
 <template>
   <div class="commvote-page-backbtn color-button_color">
     <i class="back-btn-arrow color-button_text"></i>
-    <span class="back-btn-text color-button_text" @click="jumpPage()">返回投票主页</span>
+    <span class="back-btn-text color-button_text" @click="jumpPage()">返回{{textSetting.sign ? textSetting.sign : '投票' }}主页</span>
   </div>
 </template>
 
 <script>
+import STORAGE from '@/utils/storage'
+
 export default {
   props: {
     id: String
+  },
+  data () {
+    return {
+      textSetting: STORAGE.get('detailInfo') ? STORAGE.get('detailInfo').text_setting : {}
+    }
   },
   methods: {
     jumpPage () {

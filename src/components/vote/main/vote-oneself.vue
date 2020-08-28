@@ -6,7 +6,7 @@
       <div class="status-tips-wait" v-if="selfData.audit_status === 3">作品正在审核中，请耐心等候哦～</div>
       <div class="status-tips-success" v-if="selfData.audit_status === 1">
         <p class="success-tips1">恭喜，审核已通过</p>
-        <p class="success-tips2">待投票开始就可以给自己的作品投票/拉票哦</p>
+        <p class="success-tips2">待{{textSetting.sign ? textSetting.sign : '投票'}}开始就可以给自己的作品{{textSetting.sign ? textSetting.sign : '投票'}}哦</p>
       </div>
       <div class="status-tips-fail" v-if="selfData.audit_status === 2">
         <p class="fail-tips1">审核不通过，被打回</p>
@@ -74,6 +74,7 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import SubjectMixin from '@/mixins/subject'
+import STORAGE from '@/utils/storage'
 
 export default {
   mixins: [ SubjectMixin ],
@@ -89,11 +90,19 @@ export default {
   },
   data () {
     return {
-      selfData: {}
+      selfData: {},
+      textSetting: {}
     }
   },
   methods: {
+    initDetail () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (detailInfo && detailInfo.text_setting) {
+        this.textSetting = detailInfo.text_setting
+      }
+    },
     initForm () {
+      this.initDetail()
       API.getReportDetail({
         query: {
           id: this.id

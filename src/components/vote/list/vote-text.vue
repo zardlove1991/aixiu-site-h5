@@ -15,7 +15,7 @@
       <div class="work-options-wrap">
         <div class="info-number-wrap">
           <p class="number-tip color-button_color"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
-          <p class="vote-tip">{{item.total_votes}}票</p>
+          <p class="vote-tip">{{item.total_votes}}{{signUnit}}</p>
         </div>
         <div class="info-options-wrap">
           <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
@@ -39,6 +39,10 @@ export default {
     remainVotes: {
       type: Number,
       default: 0
+    },
+    signUnit: {
+      type: String,
+      default: '票'
     }
   },
   components: {

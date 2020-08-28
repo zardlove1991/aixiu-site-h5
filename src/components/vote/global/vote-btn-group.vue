@@ -1,14 +1,16 @@
 <template>
   <div class="vote-btn-group-wrap">
-    <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">{{ data.is_my === 1 ? '帮自己拉票' : '帮ta拉票' }}</button>
+    <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">{{getShareTxt}}</button>
     <button class="options-vote"
       :class="{ disabled: !remainVotes || isBtnAuth !== 1 }"
       :disabled="!remainVotes || isBtnAuth !== 1"
-      @click.stop="btnClick(data, index, 'vote')">{{ data.is_my === 1 ? '给自己投票' : '给ta投票' }}</button>
+      @click.stop="btnClick(data, index, 'vote')">{{getVoteTxt}}
+    </button>
   </div>
 </template>
 
 <script>
+import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -28,7 +30,49 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('vote', ['isBtnAuth'])
+    ...mapGetters('vote', ['isBtnAuth']),
+    getVoteTxt () {
+      let detailInfo = STORAGE.get('detailInfo')
+      let data = this.data
+      let textSetting = null
+      if (detailInfo && detailInfo.text_setting) {
+        textSetting = detailInfo.text_setting
+      }
+      if (textSetting) {
+        if (data.is_my === 1) {
+          return '给自己' + textSetting.sign
+        } else {
+          return textSetting.vote
+        }
+      } else {
+        if (data.is_my === 1) {
+          return '给自己投票'
+        } else {
+          return '给ta投票'
+        }
+      }
+    },
+    getShareTxt () {
+      let detailInfo = STORAGE.get('detailInfo')
+      let data = this.data
+      let textSetting = null
+      if (detailInfo && detailInfo.text_setting) {
+        textSetting = detailInfo.text_setting
+      }
+      if (textSetting) {
+        if (data.is_my === 1) {
+          return '帮自己' + textSetting.sign
+        } else {
+          return textSetting.share
+        }
+      } else {
+        if (data.is_my === 1) {
+          return '帮自己拉票'
+        } else {
+          return '帮ta拉票'
+        }
+      }
+    }
   },
   methods: {
     btnClick (data, index, slug) {

@@ -31,7 +31,7 @@
           </div>
           <div class="vote-cols-wrap color-content">
             <span class="vote-count color-normal_text">{{detailInfo.votes}}</span>
-            <span class="vote-desc color-normal_text">总票数</span>
+            <span class="vote-desc color-normal_text">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
           <div class="vote-cols-wrap color-content">
             <span class="vote-count color-normal_text">{{detailInfo.views_count}}</span>
@@ -60,7 +60,7 @@
           </div>
           <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
-            <span class="menu-text color-button_text">我的投票</span>
+            <span class="menu-text color-button_text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
           </div>
         </div>
         <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
@@ -87,12 +87,14 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-picture-text>
       <vote-video-text v-if="showModel === 'video'"
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-video-text>
       <vote-audio-text
@@ -100,6 +102,7 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-audio-text>
       <vote-text
@@ -107,6 +110,7 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-text>
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
@@ -117,6 +121,7 @@
       v-if="status !== statusCode.endStatus"
       :status="status"
       :remainVotes="remainVotes"
+      :textSetting="detailInfo.text_setting"
       :voteDate="voteDate">
     </count-down>
     <!-- 未找到搜索内容弹窗 -->
@@ -128,14 +133,14 @@
         <button class="dialog-ok-btn" @click="isShowSearch = false">好的</button>
       </div>
     </tips-dialog>
-    <tips-dialog
+    <!-- <tips-dialog
       :show="isShowEnd"
       @close="isShowEnd = false">
       <div class="search-dialog-wrap flex-column-dialog" slot="tips-content">
         <div class="search-header">活动已经结束</div>
         <button class="dialog-ok-btn" @click="isShowEnd = false">好的</button>
       </div>
-    </tips-dialog>
+    </tips-dialog> -->
     <share-vote
       :show="isShowWorkVote"
       :config="{
@@ -143,10 +148,11 @@
         works_id: worksId,
         mark: detailInfo.mark
       }"
+      :textSetting="detailInfo.text_setting"
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
-    <canvass-vote :flag="showModel" ref="canvass-vote" />
+    <canvass-vote :flag="showModel" :signUnit="signUnit" ref="canvass-vote" />
     <rule-vote
       :show="isShowRuleDialog"
       @close="isShowRuleDialog = false"
@@ -158,6 +164,19 @@
       :downloadLink="downloadLink"
       :activeTips="activeTips">
     </active-vote>
+    <active-stop
+      :show="isShowEnd"
+      @close="isShowEnd = false">
+    </active-stop>
+    <active-pause
+      :show="isShowPause"
+      @close="isShowPause = false">
+    </active-pause>
+    <active-start
+      :voteDate="voteDate"
+      :show="isShowStart"
+      @close="isShowStart = false">
+    </active-start>
   </div>
 </template>
 
@@ -172,6 +191,9 @@ import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
 import ActiveVote from '@/components/vote/global/vote-active'
+import ActiveStop from '@/components/vote/global/active-stop'
+import ActivePause from '@/components/vote/global/active-pause'
+import ActiveStart from '@/components/vote/global/active-start'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -193,7 +215,10 @@ export default {
     ShareVote,
     CanvassVote,
     RuleVote,
-    ActiveVote
+    ActiveVote,
+    ActiveStop,
+    ActivePause,
+    ActiveStart
   },
   data () {
     return {
@@ -213,7 +238,6 @@ export default {
       isShowActiveTips: false, // 活动提示
       activeTips: [], // 再xxx内参加活动
       downloadLink: '', // 下载链接
-      isShowEnd: false,
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
@@ -230,7 +254,11 @@ export default {
         count: 10,
         totalPages: 0
       },
-      isReportAuth: 1
+      isReportAuth: 1,
+      signUnit: '票',
+      isShowEnd: false,
+      isShowPause: false,
+      isShowStart: false
     }
   },
   created () {
@@ -314,8 +342,14 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { mark, rule, my_work: myWork } = detailInfo
+      let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
       let { limit, page_setup: setup } = rule
+      if (textSetting && textSetting.sign) {
+        let tmp = textSetting.sign.split('')
+        if (tmp.length >= 2) {
+          this.signUnit = tmp[1]
+        }
+      }
       if (myWork && myWork.id && myWork.audit_status === 1) {
         myWork.is_my = 1
         this.myWork = myWork
@@ -369,6 +403,14 @@ export default {
             this.setIsBtnAuth(0)
           }
         }
+      }
+      // 活动暂停
+      if (status === 3) {
+        if (!this.isModelShow) {
+          this.isShowPause = true
+        }
+        this.setIsModelShow(true)
+        this.setIsBtnAuth(0)
       }
     },
     setLocation () {
@@ -457,9 +499,15 @@ export default {
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
-      this.setIsBtnAuth(status === noStatus ? 0 : 1)
-      if (status === voteStatus) {
+      // 活动未开始
+      if (status === noStatus) {
+        if (!this.isModelShow) {
+          this.isShowStart = true
+        }
+        this.setIsBtnAuth(0)
+      } else {
         this.getRemainVotes(id)
+        this.setIsBtnAuth(1)
       }
       this.startCountTime(time, (timeArr) => {
         // 更改当前投票的时间

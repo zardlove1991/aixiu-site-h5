@@ -32,6 +32,7 @@
     <!--导入详情页模板-->
     <common-page-detail
       :info="workDetail"
+      :textSetting="detailInfo.text_setting"
       @detail-menu="dealDetailMenu">
     </common-page-detail>
     <share-vote
@@ -41,10 +42,11 @@
         works_id: workDetail.id,
         mark: mark
       }"
+      :textSetting="detailInfo.text_setting"
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
-    <canvass-vote :flag="flag" ref="canvass-vote-detail" />
+    <canvass-vote :flag="flag" :signUnit="signUnit" ref="canvass-vote-detail" />
     <active-vote
       :show="isShowActiveTips"
       @close="isShowActiveTips = false"
@@ -90,7 +92,9 @@ export default {
         voteStatus: 2, // 投票中
         endStatus: 3, // 已结束
         noSignUp: 4 // 未开始报名
-      }
+      },
+      detailInfo: {},
+      signUnit: '票'
     }
   },
   created () {
@@ -112,6 +116,13 @@ export default {
         detailInfo = res
         this.isBackList = true
       }
+      this.detailInfo = detailInfo
+      if (detailInfo.text_setting && detailInfo.text_setting.sign) {
+        let tmp = detailInfo.text_setting.sign.split('')
+        if (tmp.length >= 2) {
+          this.signUnit = tmp[1]
+        }
+      }
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
       let isShowModel = false
@@ -120,7 +131,7 @@ export default {
         this.setShareData({ sign, invotekey })
         isShowModel = true
       }
-      this.setSourceLimit(detailInfo, isShowModel)
+      this.setIsModelShow(detailInfo, isShowModel)
       this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
@@ -162,18 +173,18 @@ export default {
       let endTimeMS = endTime * 1000
       let flag = startTimeMS > nowTime
       if (endTimeMS <= nowTime) {
-        // 已经结束
         this.setIsBtnAuth(0)
       }
       let status = flag ? noStatus : voteStatus
       this.setIsBtnAuth(status === noStatus ? 0 : 1)
     },
-    setSourceLimit (detailInfo, isShowModel) {
+    setIsModelShow (detailInfo, isShowModel) {
       // 来源限制
       if (!detailInfo || !detailInfo.rule || !detailInfo.rule.limit) {
         return
       }
-      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      let { rule, status } = detailInfo
+      let { source_limit: sourceLimit } = rule.limit
       if (sourceLimit) {
         let {
           user_app_source: appSource,
@@ -204,6 +215,9 @@ export default {
             this.setIsBtnAuth(0)
           }
         }
+      }
+      if (status === 3) {
+        this.setIsBtnAuth(0)
       }
     },
     dealDetailMenu (slug) {

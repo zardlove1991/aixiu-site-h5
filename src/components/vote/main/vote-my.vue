@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-mine color-bg_color">
-    <common-page-empty v-if="!mineList && JSON.stringify(data) === '{}'" tip="暂无列表投票记录"></common-page-empty>
+    <common-page-empty v-if="!mineList && JSON.stringify(data) === '{}'" tip="暂无列表记录"></common-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
@@ -29,7 +29,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">投了<i class="vote-num">{{item.total}}</i>票</span></p>
+            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{signArr[0]}}了<i class="vote-num">{{item.total}}</i>{{signArr[1]}}</span></p>
           </div>
         </div>
       </div>
@@ -45,6 +45,7 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   data () {
@@ -56,7 +57,8 @@ export default {
         page: 0,
         count: 10,
         totalPages: 0
-      }
+      },
+      signArr: ['投', '票']
     }
   },
   props: {
@@ -77,8 +79,20 @@ export default {
     }
   },
   methods: {
+    initDetail () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (detailInfo && detailInfo.text_setting) {
+        let txtSetting = detailInfo.text_setting
+        if (txtSetting.sign) {
+          let tmp = txtSetting.sign.split('')
+          if (tmp.length >= 1) {
+            this.signArr = [tmp[0], tmp[1]]
+          }
+        }
+      }
+    },
     initMyVoteList () {
-      console.log('initMyVoteList', this.id, this.flag)
+      this.initDetail()
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -90,7 +104,6 @@ export default {
       API.getMineVoteList({
         params
       }).then(res => {
-        console.log('getMineVoteList', res)
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
           this.loading = false
@@ -106,7 +119,6 @@ export default {
         }
         let mineList = this.mineList
         for (let item of data) {
-          console.log('xxxxxxxxx', item)
           let dateKey = item.create_time ? item.create_time.split(' ')[0] : '未知'
           let dateArr = mineList[dateKey] || [] // 声明对象为原数组或者初始化为空
           // 存放数据
@@ -117,7 +129,6 @@ export default {
         }
         // 赋值
         this.mineList = mineList
-        console.log('处理后的我的投票的列表数据', this.mineList)
         this.pager = { total, page, count, totalPages }
         this.loading = false
       })

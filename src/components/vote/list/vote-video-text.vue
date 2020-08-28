@@ -12,7 +12,7 @@
           <div class="thumb-poster" :style="{ backgroundImage: 'url('+ item.material.video[0].cover+')'}"></div>
         </div>
         <div :class="['poster-infos-wrap', item.is_my ? 'my-infos-wrap' : '']">
-          <div class="info-number"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号 · {{item.total_votes}}票</div>
+          <div class="info-number"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号 · {{item.total_votes}}{{signUnit}}</div>
           <div class="info-icon"></div>
           <div class="info-thumb"></div>
           <div class="info-options-wrap">
@@ -40,6 +40,10 @@ export default {
     remainVotes: {
       type: Number,
       default: 0
+    },
+    signUnit: {
+      type: String,
+      default: '票'
     }
   },
   components: {

@@ -2,7 +2,7 @@
   <div :class="['check-dialog-wrap', isScroll]" v-if="show">
     <div class="check-dialog-content">
       <div class="check-dialog-main">
-        <div class="check-header">投票验证</div>
+        <div class="check-header">{{textSetting.sign ? textSetting.sign : '投票'}}验证</div>
         <div class="check-item" v-if="checkVote.name">
           <el-input placeholder="姓名" @blur="blurAction()" maxlength="20" v-model="checkData.name"></el-input>
         </div>
@@ -80,6 +80,12 @@ export default {
       default: false
     },
     checkVote: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    textSetting: {
       type: Object,
       default: () => {
         return {}
