@@ -88,9 +88,9 @@ export default {
         position: absolute;
         top: px2rem(30px);
         right: px2rem(30px);
-        width: px2rem(14px);
-        height: px2rem(14px);
-        @include img-retina('~@/assets/common/close@2x.png', '~@/assets/common/close@3x.png', px2rem(14px), px2rem(14px));
+        width: px2rem(28px);
+        height: px2rem(28px);
+        @include img-retina('~@/assets/common/close@2x.png', '~@/assets/common/close@3x.png', px2rem(28px), px2rem(28px));
       }
     }
   }
