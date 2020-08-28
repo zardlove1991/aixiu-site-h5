@@ -87,12 +87,14 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-picture-text>
       <vote-video-text v-if="showModel === 'video'"
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-video-text>
       <vote-audio-text
@@ -100,6 +102,7 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-audio-text>
       <vote-text
@@ -107,6 +110,7 @@
         :workList="myWork.id ? [myWork, ...workList] : workList"
         :remainVotes="remainVotes"
         @jump-page="jumpPage"
+        :signUnit="signUnit"
         @trigger-work="triggerWork">
       </vote-text>
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
@@ -232,7 +236,8 @@ export default {
         count: 10,
         totalPages: 0
       },
-      isReportAuth: 1
+      isReportAuth: 1,
+      signUnit: '票'
     }
   },
   created () {
@@ -316,8 +321,14 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { mark, rule, my_work: myWork } = detailInfo
+      let { mark, rule, my_work: myWork, text_setting: textSetting } = detailInfo
       let { limit, page_setup: setup } = rule
+      if (textSetting && textSetting.sign) {
+        let tmp = textSetting.sign.split('')
+        if (tmp.length >= 2) {
+          this.signUnit = tmp[1]
+        }
+      }
       if (myWork && myWork.id && myWork.audit_status === 1) {
         myWork.is_my = 1
         this.myWork = myWork

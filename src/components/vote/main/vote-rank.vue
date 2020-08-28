@@ -27,7 +27,7 @@
               <span v-show="flag === 'text' || flag === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
             </div>
           </div>
-          <p class="item-votes color-theme_color">{{myVoteData.total_votes}}票</p>
+          <p class="item-votes color-theme_color">{{myVoteData.total_votes}}{{signUnit}}</p>
         </div>
       </div>
       <div class="rank-list-item"
@@ -52,7 +52,7 @@
               <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
             </div>
           </div>
-          <p class="item-votes color-theme_color">{{item.total_votes}}票</p>
+          <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
         </div>
       </div>
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
@@ -81,7 +81,8 @@ export default {
         page: 0,
         count: 10,
         totalPages: 0
-      }
+      },
+      signUnit: '票'
     }
   },
   props: {
@@ -102,7 +103,17 @@ export default {
     }
   },
   methods: {
+    initDetail () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (detailInfo && detailInfo.text_setting) {
+        let tmp = detailInfo.text_setting.sign.split('')
+        if (tmp.length >= 2) {
+          this.signUnit = tmp[1]
+        }
+      }
+    },
     initRankList () {
+      this.initDetail()
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
