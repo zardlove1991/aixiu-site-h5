@@ -152,7 +152,7 @@
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
-    <canvass-vote :flag="showModel" ref="canvass-vote" />
+    <canvass-vote :flag="showModel" :signUnit="signUnit" ref="canvass-vote" />
     <rule-vote
       :show="isShowRuleDialog"
       @close="isShowRuleDialog = false"

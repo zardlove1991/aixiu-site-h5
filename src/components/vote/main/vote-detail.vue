@@ -46,7 +46,7 @@
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
-    <canvass-vote :flag="flag" ref="canvass-vote-detail" />
+    <canvass-vote :flag="flag" :signUnit="signUnit" ref="canvass-vote-detail" />
     <active-vote
       :show="isShowActiveTips"
       @close="isShowActiveTips = false"
@@ -93,7 +93,8 @@ export default {
         endStatus: 3, // 已结束
         noSignUp: 4 // 未开始报名
       },
-      detailInfo: {}
+      detailInfo: {},
+      signUnit: '票'
     }
   },
   created () {
@@ -116,6 +117,12 @@ export default {
         this.isBackList = true
       }
       this.detailInfo = detailInfo
+      if (detailInfo.text_setting && detailInfo.text_setting.sign) {
+        let tmp = detailInfo.text_setting.sign.split('')
+        if (tmp.length >= 2) {
+          this.signUnit = tmp[1]
+        }
+      }
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
       let isShowModel = false
