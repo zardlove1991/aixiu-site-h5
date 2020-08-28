@@ -133,14 +133,14 @@
         <button class="dialog-ok-btn" @click="isShowSearch = false">好的</button>
       </div>
     </tips-dialog>
-    <tips-dialog
+    <!-- <tips-dialog
       :show="isShowEnd"
       @close="isShowEnd = false">
       <div class="search-dialog-wrap flex-column-dialog" slot="tips-content">
         <div class="search-header">活动已经结束</div>
         <button class="dialog-ok-btn" @click="isShowEnd = false">好的</button>
       </div>
-    </tips-dialog>
+    </tips-dialog> -->
     <share-vote
       :show="isShowWorkVote"
       :config="{
@@ -164,6 +164,19 @@
       :downloadLink="downloadLink"
       :activeTips="activeTips">
     </active-vote>
+    <active-stop
+      :show="isShowEnd"
+      @close="isShowEnd = false">
+    </active-stop>
+    <active-pause
+      :show="isShowPause"
+      @close="isShowPause = false">
+    </active-pause>
+    <active-start
+      :voteDate="voteDate"
+      :show="isShowStart"
+      @close="isShowStart = false">
+    </active-start>
   </div>
 </template>
 
@@ -178,6 +191,9 @@ import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
 import ActiveVote from '@/components/vote/global/vote-active'
+import ActiveStop from '@/components/vote/global/active-stop'
+import ActivePause from '@/components/vote/global/active-pause'
+import ActiveStart from '@/components/vote/global/active-start'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -199,7 +215,10 @@ export default {
     ShareVote,
     CanvassVote,
     RuleVote,
-    ActiveVote
+    ActiveVote,
+    ActiveStop,
+    ActivePause,
+    ActiveStart
   },
   data () {
     return {
@@ -219,7 +238,6 @@ export default {
       isShowActiveTips: false, // 活动提示
       activeTips: [], // 再xxx内参加活动
       downloadLink: '', // 下载链接
-      isShowEnd: false,
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
@@ -237,7 +255,10 @@ export default {
         totalPages: 0
       },
       isReportAuth: 1,
-      signUnit: '票'
+      signUnit: '票',
+      isShowEnd: false,
+      isShowPause: false,
+      isShowStart: false
     }
   },
   created () {
@@ -321,7 +342,7 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { mark, rule, my_work: myWork, text_setting: textSetting } = detailInfo
+      let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
       let { limit, page_setup: setup } = rule
       if (textSetting && textSetting.sign) {
         let tmp = textSetting.sign.split('')
@@ -382,6 +403,14 @@ export default {
             this.setIsBtnAuth(0)
           }
         }
+      }
+      // 活动暂停
+      if (status === 3) {
+        if (!this.isModelShow) {
+          this.isShowPause = true
+        }
+        this.setIsModelShow(true)
+        this.setIsBtnAuth(0)
       }
     },
     setLocation () {
@@ -470,9 +499,15 @@ export default {
       let time = flag ? startTimeMS : endTimeMS
       let status = flag ? noStatus : voteStatus
       this.status = status
-      this.setIsBtnAuth(status === noStatus ? 0 : 1)
-      if (status === voteStatus) {
+      // 活动未开始
+      if (status === noStatus) {
+        if (!this.isModelShow) {
+          this.isShowStart = true
+        }
+        this.setIsBtnAuth(0)
+      } else {
         this.getRemainVotes(id)
+        this.setIsBtnAuth(1)
       }
       this.startCountTime(time, (timeArr) => {
         // 更改当前投票的时间

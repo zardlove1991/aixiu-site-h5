@@ -131,7 +131,7 @@ export default {
         this.setShareData({ sign, invotekey })
         isShowModel = true
       }
-      this.setSourceLimit(detailInfo, isShowModel)
+      this.setIsModelShow(detailInfo, isShowModel)
       this.mark = detailInfo.mark
       API.getVoteWorksDetail({
         query: {
@@ -173,18 +173,18 @@ export default {
       let endTimeMS = endTime * 1000
       let flag = startTimeMS > nowTime
       if (endTimeMS <= nowTime) {
-        // 已经结束
         this.setIsBtnAuth(0)
       }
       let status = flag ? noStatus : voteStatus
       this.setIsBtnAuth(status === noStatus ? 0 : 1)
     },
-    setSourceLimit (detailInfo, isShowModel) {
+    setIsModelShow (detailInfo, isShowModel) {
       // 来源限制
       if (!detailInfo || !detailInfo.rule || !detailInfo.rule.limit) {
         return
       }
-      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      let { rule, status } = detailInfo
+      let { source_limit: sourceLimit } = rule.limit
       if (sourceLimit) {
         let {
           user_app_source: appSource,
@@ -215,6 +215,9 @@ export default {
             this.setIsBtnAuth(0)
           }
         }
+      }
+      if (status === 3) {
+        this.setIsBtnAuth(0)
       }
     },
     dealDetailMenu (slug) {
