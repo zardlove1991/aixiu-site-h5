@@ -31,7 +31,7 @@
           </div>
           <div class="vote-cols-wrap color-content">
             <span class="vote-count color-normal_text">{{detailInfo.votes}}</span>
-            <span class="vote-desc color-normal_text">总票数</span>
+            <span class="vote-desc color-normal_text">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
           <div class="vote-cols-wrap color-content">
             <span class="vote-count color-normal_text">{{detailInfo.views_count}}</span>
@@ -60,7 +60,7 @@
           </div>
           <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
-            <span class="menu-text color-button_text">我的投票</span>
+            <span class="menu-text color-button_text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
           </div>
         </div>
         <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
@@ -117,6 +117,7 @@
       v-if="status !== statusCode.endStatus"
       :status="status"
       :remainVotes="remainVotes"
+      :textSetting="detailInfo.text_setting"
       :voteDate="voteDate">
     </count-down>
     <!-- 未找到搜索内容弹窗 -->
@@ -143,6 +144,7 @@
         works_id: worksId,
         mark: detailInfo.mark
       }"
+      :textSetting="detailInfo.text_setting"
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>

@@ -24,7 +24,7 @@
     </div>
     <!--可投票数字提醒-->
     <div class="right-vote-tip" v-show="status === 2">
-      <span class="vote-title-tip color-link_text">可投票数</span>
+      <span class="vote-title-tip color-link_text">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
       <span class="vote-tip-num color-link_text">{{ remainVotes ? remainVotes : 0 }}</span>
     </div>
   </div>
@@ -45,16 +45,35 @@ export default {
     },
     status: {
       type: Number
+    },
+    textSetting: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
-  data () {
-    return {
-      statusMsg: {
-        0: '投票开始',
-        1: '报名结束',
-        2: '投票结束',
-        4: '报名开始'
+  computed: {
+    statusMsg () {
+      let statusMsg = {}
+      let textSetting = this.textSetting
+      if (textSetting) {
+        let vote = textSetting.sign
+        statusMsg = {
+          0: vote + '开始',
+          1: '报名结束',
+          2: vote + '结束',
+          4: '报名开始'
+        }
+      } else {
+        statusMsg = {
+          0: '投票开始',
+          1: '报名结束',
+          2: '投票结束',
+          4: '报名开始'
+        }
       }
+      return statusMsg
     }
   }
 }

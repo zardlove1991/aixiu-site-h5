@@ -5,7 +5,7 @@
       :show="show"
       @close="close()">
       <div class="workvote-dialog-wrap" slot="tips-content">
-        <div class="workvote-header">确定要给这个作品投票吗？</div>
+        <div class="workvote-header">确定要给这个作品{{textSetting.sign ? textSetting.sign : '投票' }}吗？</div>
         <div class="workvote-all-btn">
           <button class="dialog-sure-btn min workvote-right" v-if="!voteDisable" @click="sureWorkVote()">确定</button>
           <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
@@ -17,6 +17,7 @@
       :voteId="config.voting_id"
       :show="isCheckVote"
       :checkVote="checkVote"
+      :textSetting="textSetting"
       @close="isCheckVote = false"
       @success="isCanvassShare()">
     </check-vote>
@@ -28,6 +29,7 @@
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
+      :textSetting="textSetting"
       @close="isShowLottery = false"></lottery-vote>
     <area-vote
       :show="isShowArea"
@@ -38,7 +40,7 @@
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">这个作品太火爆了</div>
-        <div class="workvote-header">{{voteTime}}秒后在给Ta投票吧！</div>
+        <div class="workvote-header">{{voteTime}}秒后在{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吧！</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
         </div>
@@ -66,6 +68,12 @@ export default {
       default: false
     },
     config: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    textSetting: {
       type: Object,
       default: () => {
         return {}
@@ -223,7 +231,8 @@ export default {
         }
         this.$emit('close')
         this.voteDisable = false
-        Toast('成功投票')
+        let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
+        Toast('成功' + sign)
         this.$emit('success')
       })
     }

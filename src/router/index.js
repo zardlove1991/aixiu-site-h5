@@ -105,7 +105,7 @@ let router = new Router({
         id: route.params.id
       }),
       meta: {
-        title: '投票'
+        title: '首页'
       }
     },
     {
@@ -117,7 +117,7 @@ let router = new Router({
         flag: route.params.flag
       }),
       meta: {
-        title: '投票详情'
+        title: '详情'
       }
     },
     {
@@ -141,7 +141,7 @@ let router = new Router({
         flag: route.params.flag
       }),
       meta: {
-        title: '我的投票'
+        title: '我的'
       }
     },
     {

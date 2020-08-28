@@ -145,7 +145,7 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList) {
-      let { obj, duration } = response
+      let { obj, duration, width, height } = response
       if (!obj) {
         return
       }
@@ -155,7 +155,9 @@ export default {
         filename: files.name,
         url: host + filename,
         uid: files.uid,
-        size: files.size
+        size: files.size,
+        width,
+        height
       }
       if (this.flag === 'audio') {
         let tempDura = 0

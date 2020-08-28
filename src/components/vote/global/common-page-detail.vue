@@ -4,7 +4,7 @@
       <div class="reamk-wrap">
         <div v-for="(item, index) in remarkList" class="remark-item" :key="index">
           <img :src="item.member_avatar" alt="" class="remark-avatar" />
-          <p class="remark-desc"><span class="name">{{item.member_name}}</span>投了一票</p>
+          <p class="remark-desc"><span class="name">{{item.member_name}}</span>{{ textSetting.timeline ? textSetting.timeline : '投了一票'}}</p>
         </div>
       </div>
     </div>
@@ -21,15 +21,18 @@
       <div class="info-source">{{info.source}}</div>
     </div>
     <div class="detail-options-wrap">
-      <button class="option-invote" @click.stop="triggerMenu('invote')">帮ta拉票</button>
+      <button class="option-invote"
+        @click.stop="triggerMenu('invote')">
+        {{textSetting.share ? textSetting.share : '帮ta拉票'}}
+      </button>
       <div class="options-votes">
         <span class="vote">{{info.remain_votes}}</span>
-        <span class="desc">可投票数</span>
+        <span class="desc">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
       </div>
       <button class="option-vote"
         :class="{ disabled: !info.remain_votes || isBtnAuth !== 1 }"
         :disabled="!info.remain_votes || isBtnAuth  !== 1"
-        @click.stop="triggerMenu('vote')">给ta投票</button>
+        @click.stop="triggerMenu('vote')">{{textSetting.vote ? textSetting.vote : '给ta投票'}}</button>
     </div>
   </div>
 </template>
@@ -42,6 +45,12 @@ import { mapGetters } from 'vuex'
 export default {
   props: {
     info: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    textSetting: {
       type: Object,
       default: () => {
         return {}

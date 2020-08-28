@@ -32,6 +32,7 @@
     <!--导入详情页模板-->
     <common-page-detail
       :info="workDetail"
+      :textSetting="detailInfo.text_setting"
       @detail-menu="dealDetailMenu">
     </common-page-detail>
     <share-vote
@@ -41,6 +42,7 @@
         works_id: workDetail.id,
         mark: mark
       }"
+      :textSetting="detailInfo.text_setting"
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
@@ -90,7 +92,8 @@ export default {
         voteStatus: 2, // 投票中
         endStatus: 3, // 已结束
         noSignUp: 4 // 未开始报名
-      }
+      },
+      detailInfo: {}
     }
   },
   created () {
@@ -112,6 +115,7 @@ export default {
         detailInfo = res
         this.isBackList = true
       }
+      this.detailInfo = detailInfo
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
       let isShowModel = false
