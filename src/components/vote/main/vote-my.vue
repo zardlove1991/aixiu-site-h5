@@ -29,7 +29,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">投了<i class="vote-num">{{item.total}}</i>票</span></p>
+            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{signArr[0]}}了<i class="vote-num">{{item.total}}</i>{{signArr[1]}}</span></p>
           </div>
         </div>
       </div>
@@ -45,6 +45,7 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   data () {
@@ -56,7 +57,8 @@ export default {
         page: 0,
         count: 10,
         totalPages: 0
-      }
+      },
+      signArr: ['投', '票']
     }
   },
   props: {
@@ -77,7 +79,20 @@ export default {
     }
   },
   methods: {
+    initDetail () {
+      let detailInfo = STORAGE.get('detailInfo')
+      if (detailInfo && detailInfo.text_setting) {
+        let txtSetting = detailInfo.text_setting
+        if (txtSetting.sign) {
+          let tmp = txtSetting.sign.split('')
+          if (tmp.length >= 1) {
+            this.signArr = [tmp[0], tmp[1]]
+          }
+        }
+      }
+    },
     initMyVoteList () {
+      this.initDetail()
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
