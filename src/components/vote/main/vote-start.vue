@@ -175,7 +175,7 @@
     <active-start
       :voteDate="startDate"
       :show="isShowStart"
-      @close="closeStart()">
+      @close="isShowStart = false">
     </active-start>
   </div>
 </template>
@@ -223,7 +223,6 @@ export default {
   data () {
     return {
       interval: null, // 底部的定时器
-      timer: null, // 弹窗的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
       statusCode: {
@@ -446,7 +445,7 @@ export default {
         return
       }
       let nowTime = new Date().getTime()
-      let { id, rule, start_time: startTime } = detailInfo
+      let { id, rule } = detailInfo
       // 判断是否需要报名
       let { signUpStatus, noSignUp } = this.statusCode
       let { report_status: reportStatus, report_start_time: reportStartTime, report_end_time: reportEndTime } = rule
@@ -458,7 +457,7 @@ export default {
           status = noSignUp
           // 活动未开始
           if (!this.isModelShow) {
-            this.showStartModel(startTime)
+            this.isShowStart = true
           }
           this.setIsModelShow(true)
           this.status = status
@@ -466,15 +465,15 @@ export default {
           this.startCountTime(reportStartTimeMS, (timeArr) => {
             // 更改当前投票的时间
             this.voteDate = timeArr
+            this.startDate = timeArr
           }, () => {
+            if (this.isShowStart) {
+              this.isShowStart = false
+            }
             this.initReportTime()
           })
         } else if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
-          // 活动未开始
-          if (!this.isModelShow) {
-            this.showStartModel(startTime)
-          }
           this.setIsModelShow(true)
           this.status = status
           this.setIsBtnAuth(0)
@@ -534,6 +533,9 @@ export default {
         this.startDate = timeArr
       }, () => {
         if (flag) {
+          if (this.isShowStart) {
+            this.isShowStart = false
+          }
           this.initVoteTime()
         } else {
           // 结束后关闭
@@ -545,18 +547,6 @@ export default {
           this.setIsBtnAuth(0)
         }
       })
-    },
-    showStartModel (startTime) {
-      let time = startTime * 1000
-      this.isShowStart = true
-      this.startCountTime(time, (timeArr) => {
-        this.startDate = timeArr
-      }, () => {}, true)
-    },
-    closeStart () {
-      this.isShowStart = false
-      this.timer && clearInterval(this.timer)
-      this.timer = null
     },
     clearSetInterval () {
       if (this.interval) {
@@ -602,7 +592,7 @@ export default {
         this.remainVotes = remainVotes
       })
     },
-    startCountTime (endTime, dealCb, doneCb, isStoreTimer = false) {
+    startCountTime (endTime, dealCb, doneCb) {
       let timer = null
       let isDone = false
       function computedTime () {
@@ -630,11 +620,7 @@ export default {
       computedTime()
       // 开始倒计时
       timer = setInterval(computedTime, 1000)
-      if (isStoreTimer) {
-        this.timer = timer
-      } else {
-        this.interval = timer
-      }
+      this.interval = timer
     },
     dealSearch (flag = '') {
       let name = this.searchVal.trim()
