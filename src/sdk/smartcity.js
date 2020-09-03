@@ -63,7 +63,7 @@ export const oauth = (cbk) => {
       })
     } else {
       // 测评
-      API.getAuthScope({ params }).then(res => {
+      API.getExamAuthScope({ params }).then(res => {
         let limit = res.limit
         if (limit && limit.source_limit) {
           let { avoid_landing: avoidanding } = limit.source_limit
