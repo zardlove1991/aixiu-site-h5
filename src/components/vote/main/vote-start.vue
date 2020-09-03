@@ -173,7 +173,7 @@
       @close="isShowPause = false">
     </active-pause>
     <active-start
-      :voteDate="voteDate"
+      :voteDate="startDate"
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
@@ -222,6 +222,7 @@ export default {
   },
   data () {
     return {
+      interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
       statusCode: {
@@ -258,11 +259,17 @@ export default {
       signUnit: '票',
       isShowEnd: false,
       isShowPause: false,
-      isShowStart: false
+      isShowStart: false,
+      startDate: []
     }
   },
   created () {
     this.initData()
+  },
+  beforeDestroy () {
+    // 清除定时器
+    console.log('beforeDestroy interval')
+    this.clearSetInterval()
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -448,16 +455,26 @@ export default {
         let reportEndTimeMS = reportEndTime * 1000
         if (nowTime < reportStartTimeMS) {
           status = noSignUp
+          // 活动未开始
+          if (!this.isModelShow) {
+            this.isShowStart = true
+          }
+          this.setIsModelShow(true)
           this.status = status
           this.setIsBtnAuth(0)
           this.startCountTime(reportStartTimeMS, (timeArr) => {
             // 更改当前投票的时间
             this.voteDate = timeArr
+            this.startDate = timeArr
           }, () => {
+            if (this.isShowStart) {
+              this.isShowStart = false
+            }
             this.initReportTime()
           })
         } else if (nowTime < reportEndTimeMS && nowTime >= reportStartTimeMS) {
           status = signUpStatus
+          this.setIsModelShow(true)
           this.status = status
           this.setIsBtnAuth(0)
           // 检查是否报名
@@ -504,6 +521,7 @@ export default {
         if (!this.isModelShow) {
           this.isShowStart = true
         }
+        this.setIsModelShow(true)
         this.setIsBtnAuth(0)
       } else {
         this.getRemainVotes(id)
@@ -512,8 +530,12 @@ export default {
       this.startCountTime(time, (timeArr) => {
         // 更改当前投票的时间
         this.voteDate = timeArr
+        this.startDate = timeArr
       }, () => {
         if (flag) {
+          if (this.isShowStart) {
+            this.isShowStart = false
+          }
           this.initVoteTime()
         } else {
           // 结束后关闭
@@ -525,6 +547,12 @@ export default {
           this.setIsBtnAuth(0)
         }
       })
+    },
+    clearSetInterval () {
+      if (this.interval) {
+        clearInterval(this.interval)
+        this.interval = null
+      }
     },
     checkUserReport (id) {
       if (!id) {
@@ -592,6 +620,7 @@ export default {
       computedTime()
       // 开始倒计时
       timer = setInterval(computedTime, 1000)
+      this.interval = timer
     },
     dealSearch (flag = '') {
       let name = this.searchVal.trim()

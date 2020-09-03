@@ -25,7 +25,7 @@ let baseUrl = {
 
 // 投票相关接口
 let voteUrl = {
-  getAuthScope2: 'client/voting/base/{id}', // 检验密码是否正确
+  getVoteAuthScope: 'client/voting/base/{id}', // 投票授权接口
   getVoteMember: 'client/voting/works/member', // 获取投票人员列表
   getVideoUrl: 'video/detail', // 获取视频地址
   getUploadSign: 'ali/signature', // 获取文件上传签名
@@ -70,7 +70,7 @@ let configUrl = {
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
-  getAuthScope: 'open/examination/detail', // 检验密码是否正确
+  getExamAuthScope: 'open/examination/detail', // 测评授权接口
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -104,7 +104,7 @@ export default {
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
-  getAuthScope: config => createExam(configUrl.getAuthScope, 'get', config, API_FLAG),
+  getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
@@ -124,7 +124,7 @@ export default {
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
   getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
-  getAuthScope2: config => createVote(configUrl.getAuthScope2, 'get', config, API_FLAG),
+  getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'get', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
 }
