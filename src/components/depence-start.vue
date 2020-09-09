@@ -269,10 +269,18 @@ export default {
         desc = share.share_brief ? share.share_brief : examInfo.brief
         let picObj = share.share_indexpic
         let indexObj = examInfo.indexpic
-        if (picObj && picObj.host && picObj.filename) {
-          imgUrl = 'http:' + picObj.host + picObj.filename
-        } else if (indexObj && indexObj.host && indexObj.filename) {
-          imgUrl = 'http:' + indexObj.host + indexObj.filename
+        if (picObj) {
+          if (picObj.constructor === Object && picObj.host && picObj.filename) {
+            imgUrl = 'http:' + picObj.host + picObj.filename
+          } else if (picObj.constructor === String) {
+            imgUrl = picObj
+          }
+        } else if (indexObj) {
+          if (indexObj.host && indexObj.filename) {
+            imgUrl = 'http:' + indexObj.host + indexObj.filename
+          } else if (indexObj.url) {
+            imgUrl = indexObj.url
+          }
         }
       }
       if (!link) {
@@ -405,6 +413,21 @@ export default {
             } else {
               item.maxlength = 100
               item.type = 'text'
+              let value = item.value
+              if (value && value.length > 0) {
+                let valueArr = []
+                value.forEach(item => {
+                  valueArr.push(item.name)
+                })
+                item.default_select = valueArr[0]
+                item.type = 'select'
+                item.select_data = [{
+                  flex: 1,
+                  values: valueArr,
+                  className: item.unique_name + '_' + i,
+                  defaultIndex: 0
+                }]
+              }
             }
           }
           if (indexMobile !== -1 && indexAddress !== -1) {

@@ -3,16 +3,16 @@
     <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
-        :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
+        :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.url) ? 'nopic-wrap' : '']">
         <div class="pic-thumb"
           :class="{
-            nopic: !detailInfo.indexpic || !detailInfo.indexpic.filename,
-            haspic: detailInfo.indexpic && detailInfo.indexpic.filename
+            nopic: !detailInfo.indexpic || !detailInfo.indexpic.url,
+            haspic: detailInfo.indexpic && detailInfo.indexpic.url
           }">
-          <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
-            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
+          <div v-if="detailInfo.indexpic && detailInfo.indexpic.url" class="pic-indexpic"
+            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.url + ')'}"></div>
           <div v-if="detailInfo.title" class="pic-title color-high_text color-decorated">
-            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
+            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.url) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
           </div>
         </div>
       </div>
@@ -290,6 +290,14 @@ export default {
       API.getVodeDetail({
         query: { id: voteId }
       }).then((res) => {
+        let url = res.indexpic
+        if (url) {
+          if (url.constructor === Object) {
+            res.indexpic.url = url.host + url.filename
+          } else if (url.constructor === String) {
+            res.indexpic = { url }
+          }
+        }
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
         // 分享
@@ -324,10 +332,25 @@ export default {
           shareBrief = share.brief
         }
         shareLink = share.link
-        if (sharePic && sharePic.length && sharePic[0].host && sharePic[0].filename) {
-          imgUrl = 'http:' + sharePic[0].host + sharePic[0].filename
-        } else if (indexpic && indexpic.host && indexpic.filename) {
-          imgUrl = 'http:' + indexpic.host + indexpic.filename
+        if (sharePic) {
+          if (sharePic.constructor === Array && sharePic.length > 0) {
+            let obj = sharePic[0]
+            if (obj.constructor === Object) {
+              imgUrl = 'http:' + obj[0].host + obj[0].filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
+            imgUrl = 'http:' + sharePic.host + sharePic.filename
+          } else if (sharePic.constructor === String) {
+            imgUrl = sharePic
+          }
+        } else if (indexpic) {
+          if (indexpic.host && indexpic.filename) {
+            imgUrl = 'http:' + indexpic.host + indexpic.filename
+          } else if (indexpic.url) {
+            imgUrl = indexpic.url
+          }
         }
       }
       if (!shareLink) {
@@ -572,6 +595,14 @@ export default {
       API.getVodeDetail({
         query: { id }
       }).then((res) => {
+        let url = res.indexpic
+        if (url) {
+          if (url.constructor === Object) {
+            res.indexpic.url = url.host + url.filename
+          } else if (url.constructor === String) {
+            res.indexpic = { url }
+          }
+        }
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
       }).catch(err => {

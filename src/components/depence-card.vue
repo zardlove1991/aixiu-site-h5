@@ -159,10 +159,15 @@ export default {
         // 这边判断包含语音问答的时候需要
         this.dealRereshInfo()
         // 设置分享的SDK -> mixin中的方法
+        let indexpic = examInfo.indexpic
+        let url = ''
+        if (indexpic.constructor === Object) {
+          url = indexpic.url
+        }
         this.initPageShareInfo({
           title: examInfo.title,
           desc: examInfo.brief,
-          indexpic: examInfo.indexpic,
+          indexpic: url,
           link: this.redirect,
           mark: 'examination'
         })

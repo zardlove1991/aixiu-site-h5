@@ -8,8 +8,8 @@
             :placeholder="item.name"
             :type="item.type"
             :maxlength="item.maxlength"
-            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address'"
-            @focus="focusAction(item.unique_name)"
+            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'"
+            @focus="focusAction(item)"
             @blur="blurAction()"
             v-model="checkData[item.unique_name]"></el-input>
           <div
@@ -47,6 +47,14 @@
       @close="isShowCitySelect = false"
       @success="selectSuccessAction">
     </city-select-dialog>
+    <component
+      :show="customShow"
+      :defaultSelect="customData.default_select"
+      :selectData="customData.select_data"
+      @close="customShow = false"
+      @success="selectSuccessAction"
+      :is="'select-dialog'">
+    </component>
   </div>
 </template>
 
@@ -114,11 +122,15 @@ export default {
       focusKey: '',
       codeTime: 0,
       codeTimer: null,
-      totalTime: 60
+      totalTime: 60,
+      customShow: false,
+      customData: {} // 当前下拉选的对象
     }
   },
   methods: {
-    focusAction (key) {
+    focusAction (item) {
+      let key = item.unique_name
+      let type = item.type
       this.focusKey = key
       if (key === 'gender') {
         this.isShowSelect = true
@@ -133,6 +145,10 @@ export default {
         this.isShowDateSelect = true
       } else if (key === 'address') {
         this.isShowCitySelect = true
+      }
+      if (type === 'select') {
+        this.customShow = true
+        this.customData = item
       }
     },
     blurAction () {
@@ -149,6 +165,13 @@ export default {
       } else if (key === 'address') {
         this.checkData.address = val
         this.isShowCitySelect = false
+      }
+      if (this.customShow) {
+        this.customShow = false
+        if (this.customData && this.customData.unique_name) {
+          this.checkData[this.customData.unique_name] = val
+          this.customData = {}
+        }
       }
     },
     getImgCode () {

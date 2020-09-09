@@ -146,7 +146,12 @@ const mutations = {
       payload.timeStatus = 0
     }
     if (payload.indexpic) {
-      payload.indexpic.url = payload.indexpic.host + payload.indexpic.filename
+      let url = payload.indexpic
+      if (url.constructor === Object) {
+        payload.indexpic.url = payload.indexpic.host + payload.indexpic.filename
+      } else if (url.constructor === String) {
+        payload.indexpic = { url }
+      }
     }
     if (payload.limit.background && payload.limit.background.indexpic) {
       payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
