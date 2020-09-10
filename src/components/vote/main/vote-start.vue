@@ -828,6 +828,9 @@ export default {
         &.nopic-wrap {
           height: px2rem(220px);
         }
+        &.notitle-wrap {
+          height: 0;
+        }
         .pic-thumb {
           position: relative;
           .pic-indexpic {
