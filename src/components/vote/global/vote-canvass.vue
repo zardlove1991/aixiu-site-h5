@@ -1,7 +1,7 @@
 <template>
   <div class="canvass-dialog-wrap" v-if="show" @click.stop="close()">
     <img class="poster-img" :src="sharePoster" @click.stop />
-    <div class="poster-tips">长按图片保存获转发朋友圈</div>
+    <div class="poster-tips">长按图片保存或转发朋友圈</div>
   </div>
 </template>
 
