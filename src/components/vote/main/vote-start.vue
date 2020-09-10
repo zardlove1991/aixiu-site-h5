@@ -3,7 +3,7 @@
     <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
-        :class="['overview-indexpic-wrap', 'color-bg_color', (!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-wrap' : '']">
+        :class="['overview-indexpic-wrap', getPicTitleClass]">
         <div class="pic-thumb"
           :class="{
             nopic: !detailInfo.indexpic || !detailInfo.indexpic.filename,
@@ -11,7 +11,8 @@
           }">
           <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
             :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
-          <div v-if="detailInfo.title" class="pic-title color-high_text color-decorated">
+          <div v-if="detailInfo.rule.limit.is_display_title === 0"></div>
+          <div v-else class="pic-title">
             <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
           </div>
         </div>
@@ -278,6 +279,22 @@ export default {
       // 当起始页数大于总页数时停止加载
       let { page, totalPages } = this.pager
       return page >= totalPages
+    },
+    getPicTitleClass () {
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return ''
+      }
+      if (!detailInfo.indexpic || !detailInfo.indexpic.filename) {
+        let isDisplayTitle = detailInfo.rule.limit.is_display_title
+        if (isDisplayTitle === 0) {
+          return 'notitle-wrap'
+        } else {
+          return 'nopic-wrap'
+        }
+      } else {
+        return ''
+      }
     }
   },
   methods: {
@@ -779,6 +796,9 @@ export default {
         overflow: hidden;
         &.nopic-wrap {
           height: px2rem(220px);
+        }
+        &.notitle-wrap {
+          height: 0;
         }
         .pic-thumb {
           position: relative;
