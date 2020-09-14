@@ -148,6 +148,16 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
+        let value = this.checkData[item.unique_name]
+        if (value) {
+          let values = item.select_data
+          if (values && values.length) {
+            let arr = values[0]
+            let arr2 = arr.values
+            let index = arr2.indexOf(value)
+            arr.defaultIndex = index
+          }
+        }
         this.customShow = true
         this.customData = item
       }
