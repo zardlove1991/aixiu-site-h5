@@ -4,12 +4,20 @@ import STORAGE from '@/utils/storage'
 // 引入动态组件
 const getComponent = name => () => import(`@/components/${name}`)
 const getVoteComponent = name => () => import(`@/components/vote/main/${name}`)
+const routeBase = () => {
+  let href = window.location.href
+  if (href.indexOf('pre') > 0) {
+    return '/pre/'
+  }
+  return '/'
+}
 
 Vue.use(Router)
 
 let router = new Router({
   mode: 'history',
   // base: '/pre/',
+  base: routeBase(),
   scrollBehavior () {
     return { x: 0, y: 0 }
   },

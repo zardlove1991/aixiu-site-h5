@@ -307,6 +307,14 @@ export default {
       API.getVodeDetail({
         query: { id: voteId }
       }).then((res) => {
+        let url = res.indexpic
+        if (url) {
+          if (url.constructor === Object) {
+            res.indexpic.url = url.host + url.filename
+          } else if (url.constructor === String) {
+            res.indexpic = { url }
+          }
+        }
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
         // 分享
@@ -341,10 +349,25 @@ export default {
           shareBrief = share.brief
         }
         shareLink = share.link
-        if (sharePic && sharePic.length && sharePic[0].host && sharePic[0].filename) {
-          imgUrl = 'http:' + sharePic[0].host + sharePic[0].filename
-        } else if (indexpic && indexpic.host && indexpic.filename) {
-          imgUrl = 'http:' + indexpic.host + indexpic.filename
+        if (sharePic) {
+          if (sharePic.constructor === Array && sharePic.length > 0) {
+            let obj = sharePic[0]
+            if (obj.constructor === Object) {
+              imgUrl = 'http:' + obj[0].host + obj[0].filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
+            imgUrl = 'http:' + sharePic.host + sharePic.filename
+          } else if (sharePic.constructor === String) {
+            imgUrl = sharePic
+          }
+        } else if (indexpic) {
+          if (indexpic.host && indexpic.filename) {
+            imgUrl = 'http:' + indexpic.host + indexpic.filename
+          } else if (indexpic.url) {
+            imgUrl = indexpic.url
+          }
         }
       }
       if (!shareLink) {
@@ -589,6 +612,14 @@ export default {
       API.getVodeDetail({
         query: { id }
       }).then((res) => {
+        let url = res.indexpic
+        if (url) {
+          if (url.constructor === Object) {
+            res.indexpic.url = url.host + url.filename
+          } else if (url.constructor === String) {
+            res.indexpic = { url }
+          }
+        }
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
       }).catch(err => {

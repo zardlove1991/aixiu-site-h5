@@ -8,10 +8,11 @@
             :placeholder="item.name"
             :type="item.type"
             :maxlength="item.maxlength"
-            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address'"
-            @focus="focusAction(item.unique_name)"
+            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'"
+            @focus="focusAction(item)"
             @blur="blurAction()"
             v-model="checkData[item.unique_name]"></el-input>
+          <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
           <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code"
@@ -47,6 +48,14 @@
       @close="isShowCitySelect = false"
       @success="selectSuccessAction">
     </city-select-dialog>
+    <component
+      :show="customShow"
+      :defaultSelect="customData.default_select"
+      :selectData="customData.select_data"
+      @close="customShow = false"
+      @success="selectSuccessAction"
+      :is="'select-dialog'">
+    </component>
   </div>
 </template>
 
@@ -114,11 +123,15 @@ export default {
       focusKey: '',
       codeTime: 0,
       codeTimer: null,
-      totalTime: 60
+      totalTime: 60,
+      customShow: false,
+      customData: {} // 当前下拉选的对象
     }
   },
   methods: {
-    focusAction (key) {
+    focusAction (item) {
+      let key = item.unique_name
+      let type = item.type
       this.focusKey = key
       if (key === 'gender') {
         this.isShowSelect = true
@@ -133,6 +146,20 @@ export default {
         this.isShowDateSelect = true
       } else if (key === 'address') {
         this.isShowCitySelect = true
+      }
+      if (type === 'select') {
+        let value = this.checkData[item.unique_name]
+        if (value) {
+          let values = item.select_data
+          if (values && values.length) {
+            let arr = values[0]
+            let arr2 = arr.values
+            let index = arr2.indexOf(value)
+            arr.defaultIndex = index
+          }
+        }
+        this.customShow = true
+        this.customData = item
       }
     },
     blurAction () {
@@ -149,6 +176,13 @@ export default {
       } else if (key === 'address') {
         this.checkData.address = val
         this.isShowCitySelect = false
+      }
+      if (this.customShow) {
+        this.customShow = false
+        if (this.customData && this.customData.unique_name) {
+          this.checkData[this.customData.unique_name] = val
+          this.customData = {}
+        }
       }
     },
     getImgCode () {
@@ -339,6 +373,15 @@ export default {
             width: px2rem(180px);
             height: px2rem(60px);
             background-size: px2rem(180px) px2rem(60px);
+          }
+          .drop-icon {
+            position: absolute;
+            right: px2rem(28px);
+            top: px2rem(35px);
+            width: px2rem(30px);
+            height: px2rem(16px);
+            background-size: px2rem(30px) px2rem(16px);
+            @include img-retina("~@/assets/common/dropdown-icon@2x.png","~@/assets/common/dropdown-icon@3x.png", 100%, 100%);
           }
           .get-code {
             position: absolute;
