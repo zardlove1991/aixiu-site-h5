@@ -2,7 +2,7 @@
   <div class="classify-list-wrap">
     <div class="input-wrap" @click.stop="showClassifyAction()">
       <el-input v-model="tempSearchVal"
-        @input="inputAction()"
+        :readonly="true"
         @blur="blurAction()"
         placeholder="全部分类">
       </el-input>
@@ -61,16 +61,11 @@ export default {
       }).then(res => {
         let data = res.data
         if (data && data.length) {
-          this.classifyData = data
+          this.classifyData = [{ id: '', name: '全部分类' }, ...data]
           this.currentId = data[0].id
           this.initClassifyData(data)
         }
       })
-    },
-    inputAction () {
-      setTimeout(() => {
-        this.$emit('success', this.tempSearchVal)
-      }, 800)
     },
     blurAction () {
       document.body.scrollTop = 0
@@ -95,7 +90,11 @@ export default {
     showClassifyAction () {
       this.isShowClassify = !this.isShowClassify
       if (!this.isShowClassify && this.tempSearchVal) {
-        this.$emit('success', this.tempSearchVal)
+        if (this.tempSearchVal === '全部分类') {
+          this.$emit('success', '')
+        } else {
+          this.$emit('success', this.tempSearchVal)
+        }
       }
     }
   }
