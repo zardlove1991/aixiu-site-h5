@@ -33,6 +33,7 @@
     <common-page-detail
       :info="workDetail"
       :textSetting="detailInfo.text_setting"
+      :isOpenClassify="isOpenClassify"
       @detail-menu="dealDetailMenu">
     </common-page-detail>
     <share-vote
@@ -94,7 +95,8 @@ export default {
         noSignUp: 4 // 未开始报名
       },
       detailInfo: {},
-      signUnit: '票'
+      signUnit: '票',
+      isOpenClassify: false
     }
   },
   created () {
@@ -122,6 +124,10 @@ export default {
         if (tmp.length >= 2) {
           this.signUnit = tmp[1]
         }
+      }
+      let limit = detailInfo.rule.limit
+      if (limit.is_open_classify && limit.is_open_classify === 1) {
+        this.isOpenClassify = true
       }
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)

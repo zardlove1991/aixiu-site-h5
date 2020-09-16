@@ -1,9 +1,16 @@
 <template>
   <div class="commvote-rank color-bg_color">
-    <common-page-empty v-if="!rankList.length" tip="暂无排行列表信息"></common-page-empty>
+    <!-- <common-page-empty v-show="!rankList.length" tip="暂无排行列表信息"></common-page-empty> -->
     <!--具体列表包裹-->
-    <div v-else class="rank-list-wrap">
+    <div class="rank-list-wrap">
       <div class="rank-list-img"></div>
+      <vote-classify-list
+        class="classfiy-rank-wrap"
+        v-if="isOpenClassify"
+        :searchVal.sync="searchVal"
+        :id="id"
+        @success="searchClassify">
+      </vote-classify-list>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
@@ -66,6 +73,7 @@
 <script>
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
+import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -82,7 +90,10 @@ export default {
         count: 10,
         totalPages: 0
       },
-      signUnit: '票'
+      signUnit: '票',
+      isOpenClassify: false,
+      isShowClassify: false,
+      searchVal: ''
     }
   },
   props: {
@@ -90,7 +101,7 @@ export default {
     flag: String
   },
   components: {
-    CommonPageEmpty, CommonPagebackBtn
+    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList
   },
   created () {
     this.initRankList()
@@ -128,14 +139,21 @@ export default {
           }
         }
       }
-      // console.log('initRankList', this.flag, this.id)
+      let limit = detailInfo.rule.limit
+      if (limit.is_open_classify && limit.is_open_classify === 1) {
+        this.isOpenClassify = true
+      }
+      this.getRankList()
+    },
+    getRankList () {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
       let params = {
         page: page + 1,
         count,
-        rank: 1
+        rank: 1,
+        type_name: this.searchVal
       }
       API.getVoteWorks({
         query: { id: voteId },
@@ -168,6 +186,21 @@ export default {
         },
         query: data
       })
+    },
+    searchClassify (val) {
+      console.log('searchClassify', val)
+      if (!val) {
+        return
+      }
+      this.searchVal = val
+      this.rankList = []
+      this.pager = {
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
+      }
+      this.getRankList()
     }
   }
 }
@@ -182,6 +215,7 @@ export default {
     .rank-list-wrap {
       position: relative;
       padding-left: px2rem(30px);
+      padding-right: px2rem(30px);
       padding-top: px2rem(220px);
       .rank-list-img {
         position: absolute;
@@ -191,6 +225,10 @@ export default {
         height: px2rem(220px);
         background-size: 100%;
         background: url('http://xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
+      }
+      .classfiy-rank-wrap {
+        position: relative;
+        margin: px2rem(20px) 0;
       }
       .rank-list-item {
         display: flex;

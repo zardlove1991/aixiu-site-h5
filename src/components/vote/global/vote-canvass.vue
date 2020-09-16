@@ -103,6 +103,12 @@ export default {
           // 判断是否长图 如果是就修改为不截断参数
           if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
         }
+        let limit = detailInfo.rule.limit
+        if (limit.is_open_classify && limit.is_open_classify === 1) {
+          if (res.type_name) {
+            params.source = res.type_name + ' | ' + params.source
+          }
+        }
         API.shareMake({
           data: params
         }).then(res => {
