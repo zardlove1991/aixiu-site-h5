@@ -85,7 +85,7 @@
       <div class="suspend-model" slot="content">
         <div class="app-bg"></div>
         <div class="tip">
-          请在{{limitSource}}App内参与活动
+          请在{{limitSource}}内参与活动
           <div class="err-tip" v-show="errTips">{{errTips}}</div>
         </div>
         <div class="tip-btn" @click.stop="goDownload()">去下载</div>
