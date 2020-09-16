@@ -689,11 +689,16 @@ export default {
     },
     dealSearch (flag = '') {
       let name = this.searchVal.trim()
-      if (flag === 'input-search' && name) {
-        this.myWork = {}
-      } else if (flag === 'input-search' && !name) {
-        this.myWork = this.myVote ? this.myVote : {}
+      let classifyVal = this.searchClassifyVal.trim()
+      if (flag === 'input-search') {
+        if (name || classifyVal) {
+          this.myWork = {}
+        }
+        if (!name && !classifyVal) {
+          this.myWork = this.myVote ? this.myVote : {}
+        }
       }
+      console.log('flag ', flag)
       this.pager = {
         total: 0,
         page: 0,
@@ -777,8 +782,10 @@ export default {
       setIsBtnAuth: 'SET_IS_BTN_AUTH'
     }),
     searchClassify (val) {
-      this.searchClassifyVal = val
-      this.dealSearch()
+      if (val !== this.searchClassifyVal) {
+        this.searchClassifyVal = val
+        this.dealSearch('input-search')
+      }
     }
   }
 }

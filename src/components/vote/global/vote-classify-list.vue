@@ -1,8 +1,9 @@
 <template>
   <div class="classify-list-wrap">
-    <div class="input-wrap" @click="showClassifyAction()">
-      <el-input :value="searchVal"
-        @input="inputAction($event)"
+    <div class="input-wrap" @click.stop="showClassifyAction()">
+      <el-input v-model="tempSearchVal"
+        @input="inputAction()"
+        @blur="blurAction()"
         placeholder="全部分类">
       </el-input>
       <div class="drop-icon"></div>
@@ -41,12 +42,17 @@ export default {
       tmpObj: {},
       currentId: '',
       currentId2: '',
-      // searchVal: '',
-      isShowClassify: false
+      isShowClassify: false,
+      tempSearchVal: ''
     }
   },
   created () {
     this.initData()
+  },
+  watch: {
+    searchVal (val) {
+      this.tempSearchVal = val
+    }
   },
   methods: {
     initData () {
@@ -61,9 +67,13 @@ export default {
         }
       })
     },
-    inputAction (val) {
-      this.$emit('update:searchVal', val)
-      this.$emit('success', val)
+    inputAction () {
+      setTimeout(() => {
+        this.$emit('success', this.tempSearchVal)
+      }, 800)
+    },
+    blurAction () {
+      document.body.scrollTop = 0
     },
     initClassifyData (classifyData) {
       let tmpObj = {}
@@ -75,24 +85,18 @@ export default {
     },
     toggleCheck (item) {
       this.currentId = item.id
-      // this.searchVal = item.name
       this.currentId2 = ''
-      this.$emit('update:searchVal', item.name)
+      this.tempSearchVal = item.name
     },
     toggleCheck2 (item) {
       this.currentId2 = item.id
-      // this.searchVal = item.name
-      // this.isShowClassify = false
-      this.$emit('update:searchVal', item.name)
+      this.tempSearchVal = item.name
     },
     showClassifyAction () {
       this.isShowClassify = !this.isShowClassify
-      if (!this.isShowClassify && this.searchVal) {
-        this.$emit('success', this.searchVal)
+      if (!this.isShowClassify && this.tempSearchVal) {
+        this.$emit('success', this.tempSearchVal)
       }
-    },
-    blurAction () {
-      console.log('blurAction')
     }
   }
 }
@@ -101,7 +105,6 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .classify-list-wrap {
-    // position: relative;
     .input-wrap {
       position: relative;
       .el-input__inner {

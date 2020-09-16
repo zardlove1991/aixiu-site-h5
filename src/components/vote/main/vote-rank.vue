@@ -188,19 +188,20 @@ export default {
       })
     },
     searchClassify (val) {
-      console.log('searchClassify', val)
       if (!val) {
         return
       }
-      this.searchVal = val
-      this.rankList = []
-      this.pager = {
-        total: 0,
-        page: 0,
-        count: 10,
-        totalPages: 0
+      if (val !== this.searchVal) {
+        this.searchVal = val
+        this.rankList = []
+        this.pager = {
+          total: 0,
+          page: 0,
+          count: 10,
+          totalPages: 0
+        }
+        this.getRankList()
       }
-      this.getRankList()
     }
   }
 }
