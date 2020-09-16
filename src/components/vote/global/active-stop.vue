@@ -59,7 +59,7 @@ export default {
     justify-content: center;
     .active-stop-content {
       position: relative;
-      width: px2rem(586px);
+      width: px2rem(575px);
       border-radius: px2rem(8px);
       box-sizing: border-box;
       pointer-events: auto;
@@ -78,9 +78,9 @@ export default {
         color: #666666;
       }
       .img-bg {
-        width: px2rem(586px);
+        width: px2rem(575px);
         height: px2rem(310px);
-        @include img-retina('~@/assets/vote/active-stop@2x.png', '~@/assets/vote/active-stop@3x.png', px2rem(586px), px2rem(310px));
+        @include img-retina('~@/assets/vote/active-stop@2x.png', '~@/assets/vote/active-stop@3x.png', px2rem(575px), px2rem(310px));
         background-repeat: no-repeat;
         background-position: bottom;
       }
