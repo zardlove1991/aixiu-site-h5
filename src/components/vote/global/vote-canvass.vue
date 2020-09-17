@@ -76,7 +76,7 @@ export default {
         }, detailInfo)
         let params = {
           avatar: avatarUrl,
-          numbering: res.numbering,
+          numbering: '快来帮' + res.numbering + '号投票吧',
           title: res.name,
           source: res.source,
           qrcode,
