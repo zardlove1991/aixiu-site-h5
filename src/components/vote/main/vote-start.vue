@@ -67,7 +67,8 @@
         <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
           <div class="menu-wrap color-button_color"
             @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
-            <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
+            <span class="menu-text color-button_text" v-if="isExamine === 1">查看我的作品</span>
+            <span class="menu-text color-button_text" v-if="isExamine === 0">立即报名</span>
           </div>
         </div>
         <div class="overview-list-title-wrap">
@@ -243,7 +244,7 @@ export default {
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
-      isExamine: 1, // 0 未报名 1 已报名
+      isExamine: null, // 0 未报名 1 已报名
       remainVotes: 0, // 剩余投票数
       voteDate: [], // 投票时间
       detailInfo: {}, // 投票详情信息
