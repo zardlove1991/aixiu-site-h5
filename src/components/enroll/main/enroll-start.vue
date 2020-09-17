@@ -2,8 +2,8 @@
   <div class="enroll-start-wrap">
     <div class="nav-swipe-wrap">
       <mt-swipe :auto="4000">
-        <mt-swipe-item v-for="(item, index) in enrollInfo.picList" :key="index">
-          <img :src="item.url" />
+        <mt-swipe-item v-for="(item, index) in enrollInfo.indexpic" :key="index">
+          <img :src="item" />
         </mt-swipe-item>
       </mt-swipe>
       <div class="enroll-bar-icon"></div>
@@ -13,15 +13,25 @@
       <div class="enroll-rule">{{enrollInfo.introduce}}</div>
       <div class="find-all-rule">查看更多</div>
       <div class="enroll-date-wrap">
-        <div class="date-range"></div>
-        <div class="date-range-text"
-          v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
-        <div class="day-range-list">
-          <div class="day-range-item active" v-for="(item, index) in dateList" :key="index">
-            <div class="day-item1">{{item.date}}</div>
-            <div>{{item.week}}</div>
+        <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
+        <div class="range-wrap">
+          <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
+            v-for="(item, index) in dateList"
+            :key="index">
+            <div class="day-item1">{{item.week}}</div>
+            <div>{{item.show_date}}</div>
           </div>
         </div>
+        <div class="range-wrap" v-if="timeList[currentDate] && timeList[currentDate].length">
+          <div class="date-range-item"
+            v-for="(item, index) in timeList[currentDate]"
+            :key="index">
+            <div class="date-item1">{{item.show_time}}</div>
+            <div>{{item.left_number}} 人</div>
+          </div>
+        </div>
+        <div class="enroll-btn">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
+        <div class="tool-tip">已有 300 人预约成功</div>
       </div>
     </div>
   </div>
@@ -31,6 +41,7 @@
 import mixins from '@/mixins/index'
 import { Swipe, SwipeItem } from 'mint-ui'
 import { formatDate } from '@/utils/utils'
+import API from '@/api/module/examination'
 
 export default {
   mixins: [mixins],
@@ -40,7 +51,9 @@ export default {
   data () {
     return {
       enrollInfo: {}, // 报名信息
-      dateList: [] // 日期
+      dateList: [], // 日期
+      timeList: {}, // 时间点 key:YYYY-MM-DD value: 时间段对象
+      currentDate: '' // 当天日期
     }
   },
   components: {
@@ -51,26 +64,54 @@ export default {
   },
   methods: {
     getEnrollData () {
-      let data = {
-        picList: [{
-          url: 'http://xzimg.hoge.cn/xiuzan/1599632051078/luoye.png'
-        }, {
-          url: 'http://xzimg.hoge.cn/xiuzan/1599632081765/rikui.png'
-        }, {
-          url: 'http://xzimg.hoge.cn/xiuzan/1599470339737/最美的花.png'
-        }],
-        title: '游乐园门票预约报名',
-        introduce: '为避免人群聚集，防止可能的交叉感染风险。即日起每晚19:30起，可以在线预约登记领取免费防护口罩。',
-        duration: {
-          type: 0,
-          start_time: '2020-09-14',
-          end_time: '2020-10-14'
+      API.getEnrollDetail({
+        query: { id: this.id }
+      }).then((res) => {
+        if (res) {
+          this.initEnrollData(res)
         }
-      }
-      this.initEnrollData(data)
+      })
     },
     initEnrollData (data) {
-      let { duration } = data
+      let { duration, section_type: sectionType, section } = data
+      // #1 计算当天的YYYY-MM-DD和时间戳
+      let newDate = new Date()
+      let currentDateStr = newDate.toLocaleDateString()
+      let currentDate = formatDate(currentDateStr, 'YYYY-MM-DD')
+      let currentTime = new Date(currentDate).getTime()
+      this.currentDate = currentDate
+      // #2 渲染每天的活动时间点
+      if (section && section.length) {
+        if (sectionType === 0) {
+          // 整天
+        } else if (sectionType === 1) {
+          // 按时间段
+          let timeList = {}
+          let tmpDate = ''
+          let isLock = false
+          section.sort(this.compareDate('date'))
+          for (let i = 0; i < section.length; i++) {
+            let item = section[i]
+            let key = item.date
+            let time = new Date(key).getTime()
+            let tmpArr = timeList[key] ? timeList[key] : []
+            if (time > currentTime && !isLock) {
+              tmpDate = key
+              isLock = true
+            }
+            tmpArr.push({
+              show_time: item.start_time + '-' + item.end_time,
+              left_number: item.left_number
+            })
+            timeList[key] = tmpArr
+          }
+          if (!timeList[currentDate] && tmpDate) {
+            this.currentDate = tmpDate
+          }
+          this.timeList = timeList
+        }
+      }
+      // #3 日期范围格式化&渲染范围的每一天
       if (duration) {
         let { start_time: startTime, end_time: endTime } = duration
         if (startTime) {
@@ -83,24 +124,54 @@ export default {
       }
       this.enrollInfo = data
     },
+    compareDate (str) {
+      return (obj1, obj2) => {
+        let value1 = obj1[str]
+        let value2 = obj2[str]
+        let date1 = new Date(value1)
+        let date2 = new Date(value2)
+        let time1 = date1.getTime()
+        let time2 = date2.getTime()
+        if (time1 < time2) {
+          return -1
+        } else if (time1 > time2) {
+          return 1
+        } else {
+          return 0
+        }
+      }
+    },
     getDiffDate (start, end) {
       let startTime = new Date(start)
       let endTime = new Date(end)
       let dateArr = []
       let weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      let timeList = this.timeList
       while ((endTime.getTime() - startTime.getTime()) > 0) {
+        let year = startTime.getFullYear()
+        // 月份
         let month = startTime.getMonth() + 1
         if (month < 10) {
           month = '0' + month
         }
+        // 日
         let day = startTime.getDate()
-        let week = weekArr[day]
         if (day < 10) {
           day = '0' + day
         }
+        // 星期
+        let weekday = startTime.getDay()
+        let week = weekArr[weekday]
+        let date = year + '-' + month + '-' + day
+        let isCheck = false
+        if (timeList[date] && timeList[date].length) {
+          isCheck = true
+        }
         dateArr.push({
-          date: month + '.' + day,
-          week
+          date,
+          week,
+          is_check: isCheck,
+          show_date: month + '.' + day
         })
         startTime.setDate(startTime.getDate() + 1)
       }
@@ -115,7 +186,7 @@ export default {
   .enroll-start-wrap {
     width: 100%;
     height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
     background-color: #C2D8F7;
     padding: 0.78rem px2rem(20px);
     display: flex;
@@ -160,6 +231,9 @@ export default {
       background-color: #fff;
       border-radius: 0 0 px2rem(40px) px2rem(40px);
       padding: 0 px2rem(25px);
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
       .enroll-title {
         width: 100%;
         box-sizing: border-box;
@@ -185,54 +259,94 @@ export default {
         color: #324AFE;
       }
       .enroll-date-wrap {
-        position: relative;
-        margin-top: px2rem(65px);
+        margin-top: px2rem(40px);
         .date-range {
           width: 100%;
           height: px2rem(82px);
           line-height: px2rem(82px);
-          background: #C2D8F7;
-          opacity: 0.2;
           border-radius: px2rem(10px);
-        }
-        .date-range-text {
-          position: absolute;
-          left: 50%;
-          top: px2rem(41px);
-          transform: translate(-50%, -50%);
           @include font-dpr(15px);
+          text-align: center;
           color: #666666;
           white-space: nowrap;
+          background-color: rgba($color: #C2D8F7, $alpha: 0.2);
         }
-        .day-range-list {
+        .range-wrap {
           width: 100%;
           overflow-x: auto;
           margin-top: px2rem(40px);
           display: flex;
           align-items: center;
-          justify-content: center;
           flex-wrap: nowrap;
           .day-range-item {
-            margin: 0 px2rem(20px);
+            margin-right: px2rem(25px);
+            padding: 0 px2rem(5px);
             width: px2rem(80px);
             height: px2rem(100px);
             @include font-dpr(14px);
             border-radius: px2rem(10px);
-            // background-color: red;
             color: #ccc;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            &:last-child {
+              margin-right: 0;
+            }
             &.active {
-              background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
-              background-color: #C2D8F7;
-              opacity: 0.2;
+              background-color: rgba($color: #324AFE, $alpha: 0.1);
+              color: #324AFE;
             }
             &.check {
               color: #333;
             }
           }
+          .date-range-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 30%;
+            margin-right: 5%;
+            height: px2rem(120px);
+            background-color: #F3F7FD;;
+            border-radius: px2rem(10px);
+            color: #999;
+            @include font-dpr(13px);
+            &:last-child {
+              margin-right: 0;
+            }
+            .date-item1 {
+              color: #333;
+              margin-bottom: px2rem(10px);
+            }
+            &.active {
+              background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+              color: #fff;
+              .date-item1 {
+                color: #fff;
+              }
+            }
+          }
+        }
+        .enroll-btn {
+          margin-top: px2rem(50px);
+          width: 100%;
+          height: px2rem(90px);
+          @include font-dpr(16px);
+          line-height: px2rem(90px);
+          background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+          border-radius: px2rem(10px);
+          color: #fff;
+          text-align: center;
+        }
+        .tool-tip {
+          margin: px2rem(20px) 0;
+          width: 100%;
+          text-align: center;
+          @include font-dpr(14px);
+          color: #999;
         }
       }
     }

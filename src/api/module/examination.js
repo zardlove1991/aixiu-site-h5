@@ -47,11 +47,17 @@ let voteUrl = {
   getMobileSend: 'mobile/verify/send' // 获取手机code
 }
 
+// 预约报名
+let enrollUrl = {
+  getEnrollDetail: 'client/order/{id}' // 预约活动详情
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
   ...baseUrl,
   ...voteUrl,
+  ...enrollUrl,
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -124,7 +130,9 @@ export default {
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
   getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
-  getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'get', config, API_FLAG),
+  getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'GET', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
-  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
+  // 预约报名
+  getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG)
 }

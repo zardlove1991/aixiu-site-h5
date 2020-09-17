@@ -63,6 +63,9 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else if (name.indexOf('enroll') !== -1) {
     // 预约
+    if (isFirst) {
+      // setClick(id, name, 'order')
+    }
   } else {
     // 测评
     API.getExamDetail({ query: { id } }).then(res => {
