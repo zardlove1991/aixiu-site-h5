@@ -11,13 +11,14 @@
     <div class="enroll-main">
       <div class="enroll-title"><span class="enroll-line">{{enrollInfo.title}}</span></div>
       <div class="enroll-rule">{{enrollInfo.introduce}}</div>
-      <div class="find-all-rule">查看更多</div>
+      <div class="find-all-rule" @click="isShowRuleDialog = true">查看更多</div>
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
         <div class="range-wrap">
           <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
             v-for="(item, index) in dateList"
-            :key="index">
+            :key="index"
+            @click="changeEnrollDay(item)">
             <div class="day-item1">{{item.week}}</div>
             <div>{{item.show_date}}</div>
           </div>
@@ -30,10 +31,19 @@
             <div>{{item.left_number}} 人</div>
           </div>
         </div>
-        <div class="enroll-btn">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
-        <div class="tool-tip">已有 300 人预约成功</div>
+        <div class="enroll-btn" @click="isShowPosterDialog = true">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
+        <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
+    <rule-vote
+      :show="isShowRuleDialog"
+      @close="isShowRuleDialog = false"
+      :introduce="enrollInfo.introduce">
+    </rule-vote>
+    <poster-dialog
+      :show="isShowPosterDialog"
+      @close="isShowPosterDialog = false">
+    </poster-dialog>
   </div>
 </template>
 
@@ -42,6 +52,8 @@ import mixins from '@/mixins/index'
 import { Swipe, SwipeItem } from 'mint-ui'
 import { formatDate } from '@/utils/utils'
 import API from '@/api/module/examination'
+import RuleVote from '@/components/vote/global/vote-rule'
+import PosterDialog from '@/components/enroll/global/enroll-poster-dialog'
 
 export default {
   mixins: [mixins],
@@ -53,11 +65,13 @@ export default {
       enrollInfo: {}, // 报名信息
       dateList: [], // 日期
       timeList: {}, // 时间点 key:YYYY-MM-DD value: 时间段对象
-      currentDate: '' // 当天日期
+      currentDate: '', // 当天日期
+      isShowRuleDialog: false,
+      isShowPosterDialog: false
     }
   },
   components: {
-    Swipe, SwipeItem
+    Swipe, SwipeItem, RuleVote, PosterDialog
   },
   created () {
     this.getEnrollData()
@@ -82,34 +96,37 @@ export default {
       this.currentDate = currentDate
       // #2 渲染每天的活动时间点
       if (section && section.length) {
-        if (sectionType === 0) {
-          // 整天
-        } else if (sectionType === 1) {
-          // 按时间段
-          let timeList = {}
-          let tmpDate = ''
-          let isLock = false
-          section.sort(this.compareDate('date'))
-          for (let i = 0; i < section.length; i++) {
-            let item = section[i]
-            let key = item.date
-            let time = new Date(key).getTime()
-            let tmpArr = timeList[key] ? timeList[key] : []
-            if (time > currentTime && !isLock) {
-              tmpDate = key
-              isLock = true
-            }
-            tmpArr.push({
-              show_time: item.start_time + '-' + item.end_time,
-              left_number: item.left_number
-            })
-            timeList[key] = tmpArr
+        let timeList = {}
+        let tmpDate = ''
+        let isLock = false
+        section.sort(this.compareDate('date'))
+        for (let i = 0; i < section.length; i++) {
+          let item = section[i]
+          let key = item.date
+          let time = new Date(key).getTime()
+          let tmpArr = timeList[key] ? timeList[key] : []
+          if (time > currentTime && !isLock) {
+            tmpDate = key
+            isLock = true
           }
-          if (!timeList[currentDate] && tmpDate) {
-            this.currentDate = tmpDate
+          let showTime = ''
+          if (sectionType === 0) {
+            // 整天
+            showTime = '00:00-24:00'
+          } else if (sectionType === 1) {
+            // 按时间段
+            showTime = item.start_time + '-' + item.end_time
           }
-          this.timeList = timeList
+          tmpArr.push({
+            show_time: showTime,
+            left_number: item.left_number
+          })
+          timeList[key] = tmpArr
         }
+        if (!timeList[currentDate] && tmpDate) {
+          this.currentDate = tmpDate
+        }
+        this.timeList = timeList
       }
       // #3 日期范围格式化&渲染范围的每一天
       if (duration) {
@@ -176,6 +193,12 @@ export default {
         startTime.setDate(startTime.getDate() + 1)
       }
       this.dateList = dateArr
+    },
+    changeEnrollDay (item) {
+      if (!item.is_check) {
+        return
+      }
+      this.currentDate = item.date
     }
   }
 }
