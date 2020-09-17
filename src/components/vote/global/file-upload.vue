@@ -21,7 +21,7 @@
       list-type="picture-card"
       :action="uploadUrl"
       :data="extraData"
-      :limit="currentLimit"
+      :limit="settings[flag].limit"
       :multiple="settings[flag].limit > 1"
       :show-file-list="false"
       :before-upload="beforeUpload"
@@ -144,9 +144,14 @@ export default {
       Toast(`最多只能选择${this.settings[this.flag].limit}个文件`)
     },
     // 上传成功
-    onSuccess (response, files, fileList) {
+    onSuccess (response, files, fileList2) {
       let { obj, duration, width, height } = response
       if (!obj) {
+        return
+      }
+      let limit = this.settings[this.flag].limit
+      let fileSize = this.fileList.length
+      if (fileSize >= limit) {
         return
       }
       let { host, filename } = obj
