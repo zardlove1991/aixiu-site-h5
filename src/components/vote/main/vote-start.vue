@@ -6,14 +6,14 @@
         :class="['overview-indexpic-wrap', getPicTitleClass]">
         <div class="pic-thumb"
           :class="{
-            nopic: !detailInfo.indexpic || !detailInfo.indexpic.filename,
-            haspic: detailInfo.indexpic && detailInfo.indexpic.filename
+            nopic: !detailInfo.indexpic || !detailInfo.indexpic.url,
+            haspic: detailInfo.indexpic && detailInfo.indexpic.url
           }">
-          <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
-            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
+          <div v-if="detailInfo.indexpic && detailInfo.indexpic.url" class="pic-indexpic"
+            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.url + ')'}"></div>
           <div v-if="detailInfo.rule.limit.is_display_title === 0"></div>
           <div v-else class="pic-title">
-            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
+            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.url) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
           </div>
         </div>
       </div>
@@ -285,7 +285,7 @@ export default {
       if (!detailInfo) {
         return ''
       }
-      if (!detailInfo.indexpic || !detailInfo.indexpic.filename) {
+      if (!detailInfo.indexpic || !detailInfo.indexpic.url) {
         let isDisplayTitle = detailInfo.rule.limit.is_display_title
         if (isDisplayTitle === 0) {
           return 'notitle-wrap'

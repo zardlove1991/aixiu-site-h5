@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import STORAGE from '@/utils/storage'
 // 引入动态组件
 const getComponent = name => () => import(`@/components/${name}`)
-const getVoteComponent = name => () => import(`@/components/vote/main/${name}`)
+const getOtherComponent = (name, global) => () => import(`@/components/${global}/main/${name}`)
 const routeBase = () => {
   let href = window.location.href
   if (href.indexOf('pre') > 0) {
@@ -108,7 +108,7 @@ let router = new Router({
     {
       path: '/votebegin/:id',
       name: 'votebegin',
-      component: getVoteComponent('vote-start'),
+      component: getOtherComponent('vote-start', 'vote'),
       props: (route) => ({
         id: route.params.id
       }),
@@ -119,7 +119,7 @@ let router = new Router({
     {
       path: '/votedetail/:flag/:id',
       name: 'votedetail',
-      component: getVoteComponent('vote-detail'),
+      component: getOtherComponent('vote-detail', 'vote'),
       props: (route) => ({
         id: route.params.id,
         flag: route.params.flag
@@ -131,7 +131,7 @@ let router = new Router({
     {
       path: '/voterank/:flag/:id',
       name: 'voterank',
-      component: getVoteComponent('vote-rank'),
+      component: getOtherComponent('vote-rank', 'vote'),
       props: (route) => ({
         id: route.params.id,
         flag: route.params.flag
@@ -143,7 +143,7 @@ let router = new Router({
     {
       path: '/votemy/:flag/:id',
       name: 'votemy',
-      component: getVoteComponent('vote-my'),
+      component: getOtherComponent('vote-my', 'vote'),
       props: (route) => ({
         id: route.params.id,
         flag: route.params.flag
@@ -155,7 +155,7 @@ let router = new Router({
     {
       path: '/votesubmit/:flag/:id',
       name: 'votesubmit',
-      component: getVoteComponent('vote-submit'),
+      component: getOtherComponent('vote-submit', 'vote'),
       props: (route) => ({
         id: route.params.id,
         flag: route.params.flag
@@ -167,13 +167,25 @@ let router = new Router({
     {
       path: '/voteoneself/:flag/:id',
       name: 'voteoneself',
-      component: getVoteComponent('vote-oneself'),
+      component: getOtherComponent('vote-oneself', 'vote'),
       props: (route) => ({
         id: route.params.id,
         flag: route.params.flag
       }),
       meta: {
         title: '我的作品'
+      }
+    },
+
+    {
+      path: '/enrollstart/:id',
+      name: 'enrollstart',
+      component: getOtherComponent('enroll-start', 'enroll'),
+      props: (route) => ({
+        id: route.params.id
+      }),
+      meta: {
+        title: '预约报名'
       }
     }
   ]

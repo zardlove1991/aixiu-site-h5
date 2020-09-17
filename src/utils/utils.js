@@ -61,6 +61,8 @@ export const setTheme = (id, name, isFirst) => {
       }
       STORAGE.set('detailInfo', info)
     })
+  } else if (name.indexOf('enroll') !== -1) {
+    // 预约
   } else {
     // 测评
     API.getExamDetail({ query: { id } }).then(res => {
