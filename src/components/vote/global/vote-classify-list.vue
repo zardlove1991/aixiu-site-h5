@@ -114,6 +114,8 @@ export default {
         border: 0px;
         color: #fff;
         @include font-dpr(14px);
+        @include line-overflow(1);
+        padding-right: px2rem(60px);
         &::placeholder {
           color: #fff;
         }
