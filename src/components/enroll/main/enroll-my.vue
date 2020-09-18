@@ -1,6 +1,10 @@
 <template>
   <div class="myenroll-wrap">
-    <div :class="['myenrll-item', item.status === 3 ? 'disabled' : '']" v-for="(item, index) in enrollList" :key="index">
+    <div
+      :class="['myenrll-item', item.status === 3 ? 'disabled' : 'base']"
+      v-for="(item, index) in enrollList"
+      :key="index"
+      @click="getMyEnrllDetail(item)">
       <div class="left-split"><div class="point"></div><div class="line"></div></div>
       <div class="right-content">
         <div class="myenroll-date">
@@ -12,19 +16,43 @@
           <div class="myenroll-num">预约场次：{{item.num}}</div>
           <div class="myenroll-right-icon"></div>
           <div class="myenroll-bg"></div>
+          <div :class="['myenroll-status', statusClass[item.status]]"></div>
         </div>
       </div>
     </div>
+    <poster-one-dialog
+      :show="isShowOnePoster"
+      :setting="posterSetting"
+      @close="isShowOnePoster = false">
+    </poster-one-dialog>
+    <poster-two-dialog
+      :show="isShowTwoPoster"
+      :setting="posterSetting"
+      @close="isShowTwoPoster = false">
+    </poster-two-dialog>
   </div>
 </template>
 
 <script>
+import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
+import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
+import STORAGE from '@/utils/storage'
+
 export default {
   props: {
     id: String
   },
   data () {
     return {
+      statusClass: {
+        1: 'await',
+        2: 'receive',
+        3: 'expire'
+      },
+      posterType: null,
+      isShowOnePoster: false,
+      isShowTwoPoster: false,
+      posterSetting: {},
       enrollList: [{
         create_time: '2020年9月24日 12:00:00',
         rank: 334,
@@ -43,12 +71,35 @@ export default {
       }]
     }
   },
+  components: {
+    PosterOneDialog, PosterTwoDialog
+  },
   created () {
     this.inintMyEnrllList()
   },
   methods: {
     inintMyEnrllList () {
+      let enrollInfo = STORAGE.get('detailInfo')
+      if (enrollInfo) {
+        let rule = enrollInfo.rule
+        if (rule && rule.poster && rule.poster.id) {
+          this.posterSetting = rule.poster
+          this.posterType = rule.poster.id
+        }
+      }
+      console.log(enrollInfo)
       console.log('inintMyEnrllList', this.id)
+    },
+    getMyEnrllDetail (item) {
+      console.log(item)
+      let posterType = this.posterType
+      if (posterType) {
+        if (posterType === 1) {
+          this.isShowTwoPoster = true
+        } else {
+          this.isShowOnePoster = true
+        }
+      }
     }
   }
 }
@@ -58,6 +109,7 @@ export default {
   @import "@/styles/index.scss";
   .myenroll-wrap {
     min-height: 100vh;
+    background-color: #fff;
     padding: px2rem(40px) px2rem(30px) px2rem(40px) px2rem(22px);
     .myenrll-item {
       width: 100%;
@@ -75,7 +127,8 @@ export default {
           width: px2rem(16px);
           height: px2rem(16px);
           border-radius: 50%;
-          background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+          @include bg-linear-color('compColor');
+          // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
         }
         .line {
           width: 1px;
@@ -109,8 +162,8 @@ export default {
           position: relative;
           width: 100%;
           height: px2rem(151px);
-          background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
-          box-shadow: 0 0 12px 0 rgba(0,0,0,0.11);
+          // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+          box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.11);
           border-radius: px2rem(10px);
           color: #fff;
           display: flex;
@@ -145,14 +198,32 @@ export default {
             bottom: px2rem(40px);
             width: px2rem(16px);
             height: px2rem(28px);
-            @include img-retina('~@/assets/enroll/myenroll-right-icon@2x.png', '~@/assets/enroll/myenroll-right-icon@3x.png', 100%, auto)
+            @include img-retina('~@/assets/enroll/myenroll-right-icon@2x.png', '~@/assets/enroll/myenroll-right-icon@3x.png', 100%, auto);
+          }
+          .myenroll-status {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            width: px2rem(128px);
+            height: px2rem(44px);
+            &.await {
+              @include img-retina('~@/assets/enroll/myenroll-await@2x.png', '~@/assets/enroll/myenroll-await@3x.png', 100%, auto);
+            }
+            &.expire {
+              @include img-retina('~@/assets/enroll/myenroll-expire@2x.png', '~@/assets/enroll/myenroll-expire@3x.png', 100%, auto);
+            }
+            &.receive {
+              @include img-retina('~@/assets/enroll/myenroll-receive@2x.png', '~@/assets/enroll/myenroll-receive@3x.png', 100%, auto);
+            }
           }
         }
       }
-      &.disabled {
-        .myenroll-info {
-          background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
-        }
+      &.base .myenroll-info {
+        @include bg-linear-color('compColor');
+      }
+      &.disabled .myenroll-info {
+        background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
       }
     }
   }

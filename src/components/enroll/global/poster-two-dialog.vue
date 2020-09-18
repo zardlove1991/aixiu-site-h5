@@ -96,7 +96,8 @@ export default {
       border-radius: px2rem(40px);
       box-sizing: border-box;
       pointer-events: auto;
-      background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+      @include bg-linear-color('compColor');
+      // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
       background-repeat: no-repeat;
       background-position: bottom;
       position: relative;
@@ -165,11 +166,14 @@ export default {
             }
             @include font-dpr(14px);
             color: #333;
+            display: flex;
+            align-items: center;
             .item-txt {
               display: inline-block;
               margin-left: px2rem(20px);
               @include font-dpr(19px);
-              color: #324AFE;
+              @include font-color('btnColor');
+              // color: #324AFE;
             }
           }
         }

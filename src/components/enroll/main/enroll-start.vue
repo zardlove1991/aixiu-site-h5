@@ -14,6 +14,7 @@
       <div class="find-all-rule" @click="isShowRule = true">查看更多</div>
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
+        <div class="date-range-bg"></div>
         <div class="range-wrap">
           <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
             v-for="(item, index) in dateList"
@@ -21,6 +22,7 @@
             @click="changeEnrollDay(item)">
             <div class="day-item1">{{item.week}}</div>
             <div>{{item.show_date}}</div>
+            <div class="active-bg"></div>
           </div>
         </div>
         <div class="range-wrap" v-if="timeList[currentDate] && timeList[currentDate].length">
@@ -29,6 +31,7 @@
             :key="index">
             <div class="date-item1">{{item.show_time}}</div>
             <div>{{item.left_number}} 人</div>
+            <div class="date-range-item-bg"></div>
           </div>
         </div>
         <div class="enroll-btn" @click="setEnroll()">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
@@ -122,7 +125,7 @@ export default {
           let showTime = ''
           if (sectionType === 0) {
             // 整天
-            showTime = '00:00-24:00'
+            showTime = '全天'
           } else if (sectionType === 1) {
             // 按时间段
             showTime = item.start_time + '-' + item.end_time
@@ -243,7 +246,8 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #C2D8F7;
+    // background-color: #C2D8F7;
+    @include bg-color('bgColor');
     padding: 0.78rem px2rem(20px);
     display: flex;
     flex-direction: column;
@@ -255,7 +259,7 @@ export default {
       .mint-swipe {
         border-radius: px2rem(40px) px2rem(40px) 0 0;
         .mint-swipe-indicators {
-          max-width: px2rem(96px);
+          max-width: px2rem(180px);
           left: auto;
           right: px2rem(30px);
           bottom: px2rem(30px);
@@ -266,7 +270,8 @@ export default {
             background: #EBEBEB;
             opacity: 1;
             &.is-active {
-              background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+              @include bg-linear-color('compColor');
+              // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
             }
           }
         }
@@ -313,11 +318,13 @@ export default {
       }
       .find-all-rule {
         @include font-dpr(14px);
-        color: #324AFE;
+        // color: #324AFE;
+        @include font-color('btnColor');
       }
       .enroll-date-wrap {
         margin-top: px2rem(40px);
-        .date-range {
+        position: relative;
+        .date-range, .date-range-bg {
           width: 100%;
           height: px2rem(82px);
           line-height: px2rem(82px);
@@ -326,7 +333,13 @@ export default {
           text-align: center;
           color: #666666;
           white-space: nowrap;
-          background-color: rgba($color: #C2D8F7, $alpha: 0.2);
+        }
+        .date-range-bg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          @include bg-alpha-color('bgColor', 0.2);
         }
         .range-wrap {
           width: 100%;
@@ -354,11 +367,23 @@ export default {
               color: #333;
             }
             &.active {
-              background-color: rgba($color: #324AFE, $alpha: 0.1);
-              color: #324AFE;
+              position: relative;
+              @include font-color('btnColor');
+              // background-color: rgba($color: #324AFE, $alpha: 0.1);
+              // color: #324AFE;
+              .active-bg {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: px2rem(80px);
+                height: px2rem(100px);
+                border-radius: px2rem(10px);
+                @include bg-alpha-color('btnColor', 0.1);
+              }
             }
           }
           .date-range-item {
+            position: relative;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -367,7 +392,7 @@ export default {
             min-width: 30%;
             margin-right: 5%;
             height: px2rem(120px);
-            background-color: #F3F7FD;;
+            // background-color: #F3F7FD;
             border-radius: px2rem(10px);
             color: #999;
             @include font-dpr(13px);
@@ -379,11 +404,21 @@ export default {
               margin-bottom: px2rem(10px);
             }
             &.active {
-              background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+              @include bg-linear-color('compColor');
+              // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
               color: #fff;
               .date-item1 {
                 color: #fff;
               }
+            }
+            .date-range-item-bg {
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              border-radius: px2rem(10px);
+              @include bg-alpha-color('bgColor', 0.2);
             }
           }
         }
@@ -393,7 +428,8 @@ export default {
           height: px2rem(90px);
           @include font-dpr(16px);
           line-height: px2rem(90px);
-          background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+          @include bg-linear-color('compColor');
+          // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
           border-radius: px2rem(10px);
           color: #fff;
           text-align: center;

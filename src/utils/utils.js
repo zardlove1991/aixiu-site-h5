@@ -63,9 +63,22 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else if (name.indexOf('enroll') !== -1) {
     // 预约
-    if (isFirst) {
-      // setClick(id, name, 'order')
-    }
+    API.getEnrollDetail({ query: { id } }).then((res) => {
+      let info = res
+      if (info.page_setup && info.page_setup.color_scheme && info.page_setup.color_scheme.content) {
+        let content = info.page_setup.color_scheme.content
+        let bodyEle = document.getElementsByTagName('body')[0]
+        bodyEle.style.setProperty('--bgColor', content.bg_color)
+        bodyEle.style.setProperty('--buttonColor', content.button_color)
+        bodyEle.style.setProperty('--component', content.component)
+        bodyEle.style.setProperty('--decorated', content.decorated)
+      }
+      if (isFirst) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
+      }
+      STORAGE.set('detailInfo', info)
+    })
   } else {
     // 测评
     API.getExamDetail({ query: { id } }).then(res => {
