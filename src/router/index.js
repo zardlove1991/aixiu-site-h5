@@ -176,7 +176,6 @@ let router = new Router({
         title: '我的作品'
       }
     },
-
     {
       path: '/enrollstart/:id',
       name: 'enrollstart',
@@ -186,6 +185,17 @@ let router = new Router({
       }),
       meta: {
         title: '预约报名'
+      }
+    },
+    {
+      path: '/myenroll/:id',
+      name: 'myenroll',
+      component: getOtherComponent('enroll-my', 'enroll'),
+      props: (route) => ({
+        id: route.params.id
+      }),
+      meta: {
+        title: '我的预约记录'
       }
     }
   ]

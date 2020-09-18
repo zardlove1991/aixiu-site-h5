@@ -35,6 +35,7 @@
         <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
+    <div class="myenroll-icon" @click="jumpPage('myenroll')"></div>
     <rule-vote
       :show="isShowRule"
       @close="isShowRule = false"
@@ -220,6 +221,17 @@ export default {
           this.isShowOnePoster = true
         }
       }
+    },
+    jumpPage (page, data) {
+      let params = {
+        flag: this.showModel,
+        id: this.id
+      }
+      this.$router.push({
+        name: page,
+        params,
+        query: data
+      })
     }
   }
 }
@@ -235,6 +247,7 @@ export default {
     padding: 0.78rem px2rem(20px);
     display: flex;
     flex-direction: column;
+    position: relative;
     .nav-swipe-wrap {
       width: 100%;
       height: px2rem(440px);
@@ -393,6 +406,15 @@ export default {
           color: #999;
         }
       }
+    }
+    .myenroll-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: px2rem(259px);
+      height: px2rem(67px);
+      background-repeat: no-repeat;
+      @include img-retina('~@/assets/enroll/myenroll-icon1@2x.png', '~@/assets/enroll/myenroll-icon1@3x.png', 100%, 100%);
     }
   }
 </style>
