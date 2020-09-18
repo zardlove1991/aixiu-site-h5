@@ -211,9 +211,15 @@ export default {
     },
     setEnroll () {
       let res = this.enrollInfo
-      console.log(res)
-      // this.isShowOnePoster = true
-      this.isShowTwoPoster = true
+      let rule = res.rule
+      if (rule && rule.poster && rule.poster.id) {
+        this.posterSetting = rule.poster
+        if (rule.poster.id === 1) {
+          this.isShowTwoPoster = true
+        } else {
+          this.isShowOnePoster = true
+        }
+      }
     }
   }
 }
@@ -331,12 +337,12 @@ export default {
             &:last-child {
               margin-right: 0;
             }
+            &.check {
+              color: #333;
+            }
             &.active {
               background-color: rgba($color: #324AFE, $alpha: 0.1);
               color: #324AFE;
-            }
-            &.check {
-              color: #333;
             }
           }
           .date-range-item {

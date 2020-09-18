@@ -5,7 +5,7 @@
       <div class="poster-top-wrap">
         <div class="poster-top-bg2"></div>
         <div class="header-wrap">
-          <div class="tips-success tips-success2">恭喜您！报名成功</div>
+          <div class="tips-success tips-success2">{{setting.title ? setting.title : '恭喜您！'}}</div>
           <div class="user-header-info">
             <img class="user-img" src="http://pimg.v2.aihoge.com/xiuzan/2020/09/ffa9d91521fdabf9b5efa83b8c271ed3.png" />
             <span class="user-name">米奇QAQ</span>
@@ -28,7 +28,7 @@
         <div class="user-item">
           <span class="user-title">身份证：</span><span class="user-txt">133333333333333333</span>
         </div>
-        <div class="tips">请您及时去游乐园门口领取门票</div>
+        <div class="tips">{{setting.content ? setting.content : '预约成功'}}</div>
       </div>
       <div class="close-btn" @click.stop="close()"></div>
     </div>
