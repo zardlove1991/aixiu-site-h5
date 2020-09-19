@@ -4,7 +4,7 @@
       <div :class="['check-dialog-main', themeColorName]">
         <div class="check-header">填写预约信息</div>
         <div class="date-wrap">
-          <i class="collection-date-icon"></i><span class="check-msg">{{setting.show_date}} {{setting.week}} {{setting.show_time}}</span>
+          <i :class="['collection-date-icon', themeColorName]"></i><span class="check-msg">{{setting.show_date}} {{setting.week}} {{setting.show_time}}</span>
         </div>
         <div class="check-item" v-for="(item, index) in checkDraw" :key="index">
           <el-input
@@ -275,11 +275,39 @@ export default {
         }
         .date-wrap {
           margin-bottom: px2rem(20px);
-          @include font-dpr(14px);
-          @include font-color('btnColor');
+          height: px2rem(28px);
+          display: flex;
+          align-items: center;
           .collection-date-icon {
-            // background-size: px2rem(30px) px2rem(16px);
-            // @include img-retina("~@/assets/common/dropdown-icon@2x.png","~@/assets/common/dropdown-icon@3x.png", 100%, 100%);
+            display: inline-block;
+            width: px2rem(27px);
+            height: px2rem(26px);
+            background-size: px2rem(27px) px2rem(26px);
+            &.orderblue {
+              @include img-retina('~@/assets/enroll/date/blue-icon@2x.png', '~@/assets/enroll/date/blue-icon@3x.png', 100%, auto);
+            }
+            &.ordergreen {
+              @include img-retina('~@/assets/enroll/date/green-icon@2x.png', '~@/assets/enroll/date/green-icon@3x.png', 100%, auto);;
+            }
+            &.orderorangered {
+              @include img-retina('~@/assets/enroll/date/orangered-icon@2x.png', '~@/assets/enroll/date/orangered-icon@3x.png', 100%, auto);
+            }
+            &.ordergolden {
+              @include img-retina('~@/assets/enroll/date/golden-icon@2x.png', '~@/assets/enroll/date/golden-icon@3x.png', 100%, auto);
+            }
+            &.orderred {
+              @include img-retina('~@/assets/enroll/date/red-icon@2x.png', '~@/assets/enroll/date/red-icon@3x.png', 100%, auto);
+            }
+            &.orderorange {
+              @include img-retina('~@/assets/enroll/date/orange-icon@2x.png', '~@/assets/enroll/date/orange-icon@3x.png', 100%, auto);
+            }
+          }
+          .check-msg {
+            display: inline-block;
+            margin-left: px2rem(20px);
+            line-height: px2rem(28px);
+            @include font-dpr(14px);
+            @include font-color('btnColor');
           }
         }
         .check-item {
