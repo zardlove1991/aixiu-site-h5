@@ -26,9 +26,10 @@
           </div>
         </div>
         <div class="range-wrap" v-if="timeList[currentDate] && timeList[currentDate].length">
-          <div class="date-range-item"
+          <div :class="['date-range-item', currentTime === item.show_time ? 'active' : '']"
             v-for="(item, index) in timeList[currentDate]"
-            :key="index">
+            :key="index"
+            @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
             <div>{{item.left_number}} 人</div>
             <div class="date-range-item-bg"></div>
@@ -46,6 +47,13 @@
       :themeColorName="themeColorName"
       :introduce="enrollInfo.introduce">
     </info-dialog>
+    <collection-dialog
+      :show="isShowCollection"
+      :checkDraw="checkDraw"
+      :setting="checkSetting"
+      @close="isShowCollection = false"
+      :themeColorName="themeColorName">
+    </collection-dialog>
     <poster-one-dialog
       :show="isShowOnePoster"
       :setting="posterSetting"
@@ -71,20 +79,29 @@
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
+    <active-limit
+      :downloadLink="downloadLink"
+      :activeTips="activeTips"
+      :themeColorName="themeColorName"
+      :show="isShowLimit"
+      @close="isShowLimit = false">
+    </active-limit>
   </div>
 </template>
 
 <script>
 import mixins from '@/mixins/index'
-import { Swipe, SwipeItem } from 'mint-ui'
+import { Swipe, SwipeItem, Toast } from 'mint-ui'
 import { formatDate } from '@/utils/utils'
 import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
+import CollectionDialog from '@/components/enroll/global/collection-dialog'
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 import ActiveStart from '@/components/enroll/global/active-start'
 import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
+import ActiveLimit from '@/components/enroll/global/active-limit'
 
 export default {
   mixins: [mixins],
@@ -97,6 +114,7 @@ export default {
       dateList: [], // 日期
       timeList: {}, // 时间点 key:YYYY-MM-DD value: 时间段对象
       currentDate: '', // 当天日期
+      currentTime: '', // 当天时间
       isShowInfo: false, // 是否显示活动介绍
       isShowOnePoster: false, // 是否显示海报1
       isShowTwoPoster: false, // 是否显示海报2
@@ -106,11 +124,17 @@ export default {
       isShowEnd: false,
       isShowPause: false,
       isShowStart: false,
-      startDate: [0, 0, 0, 0]
+      startDate: [0, 0, 0, 0],
+      isShowLimit: false,
+      downloadLink: '',
+      activeTips: [],
+      isShowCollection: false,
+      checkDraw: [],
+      checkSetting: {} // 收集信息设置
     }
   },
   components: {
-    Swipe, SwipeItem, InfoDialog, PosterOneDialog, PosterTwoDialog, ActiveStop, ActivePause, ActiveStart
+    Swipe, SwipeItem, InfoDialog, PosterOneDialog, PosterTwoDialog, CollectionDialog, ActiveStop, ActivePause, ActiveStart, ActiveLimit
   },
   created () {
     this.getEnrollData()
@@ -161,6 +185,7 @@ export default {
             showTime = item.start_time + '-' + item.end_time
           }
           tmpArr.push({
+            id: item.id,
             show_time: showTime,
             left_number: item.left_number
           })
@@ -182,7 +207,24 @@ export default {
         }
         this.getDiffDate(startTime, endTime)
       }
+      this.setDefaultDate()
       this.enrollInfo = data
+    },
+    setDefaultDate () {
+      let currentDate = this.currentDate
+      let dateList = this.dateList
+      let setting = this.checkSetting
+      for (let i = 0; i < dateList.length; i++) {
+        let item = dateList[i]
+        if (item.date === currentDate) {
+          this.checkSetting = {
+            ...setting,
+            week: item.week,
+            show_date: item.show_date
+          }
+          break
+        }
+      }
     },
     compareDate (str) {
       return (obj1, obj2) => {
@@ -241,19 +283,89 @@ export default {
       if (!item.is_check) {
         return
       }
+      this.currentTime = ''
       this.currentDate = item.date
+      this.checkSetting = {
+        week: item.week,
+        show_date: item.show_date
+      }
+    },
+    changeEnrollTime (item) {
+      this.checkSetting.show_time = item.show_time
+      this.checkSetting.sections_id = item.id
+      this.currentTime = item.show_time
     },
     setEnroll () {
+      let checkSetting = this.checkSetting
+      if (!checkSetting.sections_id) {
+        Toast('请选择具体的时间范围')
+        return
+      }
       let res = this.enrollInfo
       let rule = res.rule
-      if (rule && rule.poster && rule.poster.id) {
-        this.posterSetting = rule.poster
-        if (rule.poster.id === 1) {
-          this.isShowTwoPoster = true
-        } else {
-          this.isShowOnePoster = true
+      // let posterType = null
+      let { collection_form_settings: collectionFormSettings } = rule
+      // 收集信息
+      if (collectionFormSettings && collectionFormSettings.length) {
+        let checkDraw = [...collectionFormSettings]
+        let indexAddress = -1
+        let addressObj = null
+        for (let i = 0; i < checkDraw.length; i++) {
+          let item = checkDraw[i]
+          if (item.unique_name === 'name') {
+            item.maxlength = 20
+            item.type = 'text'
+          } else if (item.unique_name === 'address') {
+            item.maxlength = 50
+            item.type = 'text'
+            indexAddress = i
+            addressObj = {
+              name: '详细地址',
+              unique_name: 'detail_address',
+              type: 'textarea',
+              maxlength: 500
+            }
+          } else if (item.unique_name === 'mobile') {
+            item.maxlength = 11
+            item.type = 'text'
+          } else {
+            item.maxlength = 100
+            item.type = 'text'
+            let value = item.value
+            if (value && value.length > 0) {
+              let valueArr = []
+              value.forEach(item => {
+                valueArr.push(item.name)
+              })
+              item.default_select = valueArr[0]
+              item.type = 'select'
+              item.select_data = [{
+                flex: 1,
+                values: valueArr,
+                className: item.unique_name + '_' + i,
+                defaultIndex: 0
+              }]
+            }
+          }
         }
+        if (indexAddress !== -1) {
+          checkDraw.splice(indexAddress + 1, 0, addressObj)
+        }
+        this.checkDraw = checkDraw
+        this.isShowCollection = true
+      } else {
+        Toast('数据错误')
       }
+      // 海报
+      // if (rule && rule.poster && rule.poster.id) {
+      //   this.posterSetting = rule.poster
+      //   posterType = rule.poster.id
+      // }
+      // if (posterType === 1) {
+      //   this.isShowTwoPoster = true
+      // } else {
+      //   this.isShowOnePoster = true
+      // }
     },
     jumpPage (page, data) {
       let params = {
@@ -292,7 +404,7 @@ export default {
           max-width: px2rem(180px);
           left: auto;
           right: px2rem(30px);
-          bottom: px2rem(30px);
+          bottom: px2rem(20px);
           z-index: 10;
           .mint-swipe-indicator {
             width: px2rem(10px);
@@ -308,7 +420,7 @@ export default {
       }
       .enroll-bar-icon {
         position: absolute;
-        bottom: -1px;
+        bottom: -10px;
         left: 0;
         right: 0;
         height: px2rem(121px);
@@ -326,6 +438,8 @@ export default {
       display: flex;
       justify-content: center;
       flex-direction: column;
+      position: relative;
+      z-index: 10;
       .enroll-title {
         width: 100%;
         box-sizing: border-box;
