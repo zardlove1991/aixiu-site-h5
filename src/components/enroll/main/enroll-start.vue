@@ -58,6 +58,19 @@
       :posterData="posterData"
       @close="isShowTwoPoster = false">
     </poster-two-dialog>
+    <active-stop
+      :show="isShowEnd"
+      @close="isShowEnd = false">
+    </active-stop>
+    <active-pause
+      :show="isShowPause"
+      @close="isShowPause = false">
+    </active-pause>
+    <active-start
+      :voteDate="startDate"
+      :show="isShowStart"
+      @close="isShowStart = false">
+    </active-start>
   </div>
 </template>
 
@@ -69,6 +82,9 @@ import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
+import ActiveStart from '@/components/enroll/global/active-start'
+import ActiveStop from '@/components/enroll/global/active-stop'
+import ActivePause from '@/components/enroll/global/active-pause'
 
 export default {
   mixins: [mixins],
@@ -86,11 +102,15 @@ export default {
       isShowTwoPoster: false, // 是否显示海报2
       posterSetting: {}, // 海报设置信息
       posterData: {}, // 海报展示数据
-      themeColorName: '' // 主题颜色名称
+      themeColorName: '', // 主题颜色名称
+      isShowEnd: false,
+      isShowPause: false,
+      isShowStart: false,
+      startDate: [0, 0, 0, 0]
     }
   },
   components: {
-    Swipe, SwipeItem, InfoDialog, PosterOneDialog, PosterTwoDialog
+    Swipe, SwipeItem, InfoDialog, PosterOneDialog, PosterTwoDialog, ActiveStop, ActivePause, ActiveStart
   },
   created () {
     this.getEnrollData()
