@@ -1,21 +1,21 @@
 <template>
-  <div class="enroll-poster-wrap" v-if="show" :class="{'lock': isLock}">
+  <div class="enroll-poster-wrap" v-if="show">
     <!--弹窗模块-->
     <div class="poster-dialog-content">
       <div class="poster-top-bg">
         <div class="poster-enroll-main">
           <div class="user-header-info">
-            <img class="user-img" src="http://pimg.v2.aihoge.com/xiuzan/2020/09/ffa9d91521fdabf9b5efa83b8c271ed3.png" />
-            <span class="user-name">米奇QAQ</span>
+            <img class="user-img" :src="posterData.member_avatar" />
+            <span class="user-name">{{posterData.member_name}}</span>
           </div>
           <div class="tips-success">{{setting.title ? setting.title : '恭喜您！'}}</div>
           <div class="enroll-info-item item1">
             <div class="enroll-info-title">预约排名</div>
-            <div class="enroll-info-content">1972</div>
+            <div class="enroll-info-content">{{posterData.rank}}</div>
           </div>
           <div class="enroll-info-item">
             <div class="enroll-info-title">预约场次</div>
-            <div class="enroll-info-content">10月23日 08:23-09:23</div>
+            <div class="enroll-info-content">{{posterData.num}}</div>
           </div>
         </div>
         <div class="bottom-main-bg"></div>
@@ -53,9 +53,11 @@ export default {
         return {}
       }
     },
-    isLock: {
-      type: Boolean,
-      default: false
+    posterData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data () {

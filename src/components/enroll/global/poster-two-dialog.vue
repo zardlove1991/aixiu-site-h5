@@ -1,5 +1,5 @@
 <template>
-  <div class="enroll-poster-wrap" v-if="show" :class="{'lock': isLock}">
+  <div class="enroll-poster-wrap" v-if="show">
     <!--弹窗模块-->
     <div class="poster-dialog-content">
       <div class="poster-top-wrap">
@@ -7,15 +7,15 @@
         <div class="header-wrap">
           <div class="tips-success tips-success2">{{setting.title ? setting.title : '恭喜您！'}}</div>
           <div class="user-header-info">
-            <img class="user-img" src="http://pimg.v2.aihoge.com/xiuzan/2020/09/ffa9d91521fdabf9b5efa83b8c271ed3.png" />
-            <span class="user-name">米奇QAQ</span>
+            <img class="user-img" :src="posterData.member_avatar" />
+            <span class="user-name">{{posterData.member_name}}</span>
           </div>
         </div>
         <div class="poster-middle-bg2"></div>
         <div class="poster-bg2"></div>
         <div class="enroll-info-wrap">
-          <div class="item">预约排名<span class="item-txt">1972</span></div>
-          <div class="item">预约场次<span class="item-txt">10月23日08:30-09:30</span></div>
+          <div class="item">预约排名<span class="item-txt">{{posterData.rank}}</span></div>
+          <div class="item">预约场次<span class="item-txt">{{posterData.num}}</span></div>
         </div>
       </div>
       <div class="user-info">
@@ -50,9 +50,11 @@ export default {
         return {}
       }
     },
-    isLock: {
-      type: Boolean,
-      default: false
+    posterData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data () {

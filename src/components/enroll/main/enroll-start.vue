@@ -11,7 +11,7 @@
     <div class="enroll-main">
       <div class="enroll-title"><span class="enroll-line">{{enrollInfo.title}}</span></div>
       <div class="enroll-rule">{{enrollInfo.introduce}}</div>
-      <div class="find-all-rule" @click="isShowRule = true">查看更多</div>
+      <div class="find-all-rule" @click="isShowInfo = true">查看更多</div>
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
         <div class="date-range-bg"></div>
@@ -39,19 +39,23 @@
       </div>
     </div>
     <div :class="['myenroll-icon', themeColorName]" @click="jumpPage('myenroll')"></div>
-    <rule-vote
-      :show="isShowRule"
-      @close="isShowRule = false"
+    <info-dialog
+      :show="isShowInfo"
+      @close="isShowInfo = false"
+      title="活动介绍"
+      :themeColorName="themeColorName"
       :introduce="enrollInfo.introduce">
-    </rule-vote>
+    </info-dialog>
     <poster-one-dialog
       :show="isShowOnePoster"
       :setting="posterSetting"
+      :posterData="posterData"
       @close="isShowOnePoster = false">
     </poster-one-dialog>
     <poster-two-dialog
       :show="isShowTwoPoster"
       :setting="posterSetting"
+      :posterData="posterData"
       @close="isShowTwoPoster = false">
     </poster-two-dialog>
   </div>
@@ -62,7 +66,7 @@ import mixins from '@/mixins/index'
 import { Swipe, SwipeItem } from 'mint-ui'
 import { formatDate } from '@/utils/utils'
 import API from '@/api/module/examination'
-import RuleVote from '@/components/vote/global/vote-rule'
+import InfoDialog from '@/components/enroll/global/info-dialog'
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 
@@ -77,15 +81,16 @@ export default {
       dateList: [], // 日期
       timeList: {}, // 时间点 key:YYYY-MM-DD value: 时间段对象
       currentDate: '', // 当天日期
-      isShowRule: false,
-      isShowOnePoster: false,
-      isShowTwoPoster: false,
-      posterSetting: {},
-      themeColorName: ''
+      isShowInfo: false, // 是否显示活动介绍
+      isShowOnePoster: false, // 是否显示海报1
+      isShowTwoPoster: false, // 是否显示海报2
+      posterSetting: {}, // 海报设置信息
+      posterData: {}, // 海报展示数据
+      themeColorName: '' // 主题颜色名称
     }
   },
   components: {
-    Swipe, SwipeItem, RuleVote, PosterOneDialog, PosterTwoDialog
+    Swipe, SwipeItem, InfoDialog, PosterOneDialog, PosterTwoDialog
   },
   created () {
     this.getEnrollData()

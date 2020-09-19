@@ -1,5 +1,8 @@
 <template>
-  <div class="myenroll-wrap">
+  <div class="myenroll-wrap"
+    v-infinite-scroll="getMineEnrollList"
+    :infinite-scroll-disabled="!noMore"
+    :infinite-scroll-distance="pager.count">
     <div
       :class="['myenrll-item', item.status === 3 ? 'disabled' : 'base']"
       v-for="(item, index) in enrollList"
@@ -20,14 +23,20 @@
         </div>
       </div>
     </div>
+    <div class="loading-box" v-if="true">
+      <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+      <span class="loading-more-txt">加载中...</span>
+    </div>
     <poster-one-dialog
       :show="isShowOnePoster"
       :setting="posterSetting"
+      :posterData="currentData"
       @close="isShowOnePoster = false">
     </poster-one-dialog>
     <poster-two-dialog
       :show="isShowTwoPoster"
       :setting="posterSetting"
+      :posterData="currentData"
       @close="isShowTwoPoster = false">
     </poster-two-dialog>
   </div>
@@ -37,6 +46,8 @@
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 import STORAGE from '@/utils/storage'
+import { InfiniteScroll, Spinner } from 'mint-ui'
+// import API from '@/api/module/examination'
 
 export default {
   props: {
@@ -49,34 +60,33 @@ export default {
       isShowTwoPoster: false,
       posterSetting: {},
       themeColorName: '',
-      enrollList: [{
-        create_time: '2020年9月24日 12:00:00',
-        rank: 334,
-        num: '9月20日 10:00-11:00',
-        status: 1
-      }, {
-        create_time: '2020年9月24日 12:00:00',
-        rank: 334,
-        num: '9月20日 10:00-11:00',
-        status: 2
-      }, {
-        create_time: '2020年9月24日 12:00:00',
-        rank: 334,
-        num: '9月20日 10:00-11:00',
-        status: 3
-      }]
+      currentData: {},
+      loading: false,
+      pager: {
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
+      },
+      enrollList: []
     }
   },
   components: {
-    PosterOneDialog, PosterTwoDialog
+    PosterOneDialog, PosterTwoDialog, InfiniteScroll, Spinner
   },
   created () {
-    this.inintMyEnrllList()
+    this.initData()
+  },
+  computed: {
+    noMore () {
+      // 当起始页数大于总页数时停止加载
+      let { page, totalPages } = this.pager
+      return page >= totalPages
+    }
   },
   methods: {
-    inintMyEnrllList () {
+    initData () {
       let enrollInfo = STORAGE.get('detailInfo')
-      let enrollList = this.enrollList
       if (enrollInfo) {
         let rule = enrollInfo.rule
         let pageSetup = enrollInfo.page_setup
@@ -88,22 +98,66 @@ export default {
           this.posterType = rule.poster.id
         }
       }
-      for (let item of enrollList) {
-        let colorName = this.getThemeColor(item.status)
-        item.color_name = colorName
+      // this.getMineEnrollList()
+    },
+    getMineEnrollList () {
+      this.loading = true
+      let { page, count } = this.pager
+      let params = {
+        page: page + 1,
+        count,
+        order_id: this.id
       }
-      console.log('inintMyEnrllList', this.id)
+      // API.getMineEnrollList({ params: params }).then(res => {
+      //   let { data, page: pageInfo } = res
+      //   if (!data || !data.length) {
+      //     this.loading = false
+      //     return
+      //   }
+      //   let { total, current_page: page } = pageInfo
+      //   total = parseInt(total)
+      //   page = parseInt(page)
+      //   // 总页数
+      //   let totalPages = total / count
+      //   if (total % count !== 0) {
+      //     totalPages = parseInt(total / count) + 1
+      //   }
+      //   this.enrollList = this.enrollList.concat(data)
+      //   this.pager = { total, page, count, totalPages }
+      //   this.loading = false
+      // })
+      console.log(params)
+      setTimeout(() => {
+        for (let i = 1; i <= 10; i++) {
+          let item = {
+            create_time: '2020年9月24日 10:00:00',
+            date: '9月21日',
+            rank: 20 + i,
+            start_time: '10:00',
+            end_time: '11:00',
+            member_id: '1',
+            member_avatar: 'http://pimg.v2.aihoge.com/xiuzan/2020/09/ffa9d91521fdabf9b5efa83b8c271ed3.png',
+            member_name: 'zhangsan',
+            status: (i % 3) + 1,
+            num: '9月21日 10:00-11:00'
+          }
+          let colorName = this.getThemeColor(item.status)
+          item.color_name = colorName
+          this.enrollList.push(item)
+        }
+        this.loading = false
+      }, 2500)
     },
     getThemeColor (status) {
       let themeColorName = this.themeColorName
-      console.log(status, themeColorName)
       let str = ''
       if (status === 1) {
         // 待领取
-        // if (themeColorName === 'orderorange') {
-        // str = 'await2'
-        // }
-        str = 'await1'
+        if (themeColorName === 'orderorange') {
+          str = 'await2'
+        } else {
+          str = 'await1'
+        }
       } else if (status === 2) {
         // 已领取
         if (['orderorangered', 'orderred', 'ordergreen'].includes(themeColorName)) {
@@ -118,7 +172,7 @@ export default {
       return str
     },
     getMyEnrllDetail (item) {
-      console.log(item)
+      this.currentData = item
       let posterType = this.posterType
       if (posterType) {
         if (posterType === 1) {
@@ -135,9 +189,10 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .myenroll-wrap {
-    min-height: 100vh;
+    height: 100vh;
     background-color: #fff;
     padding: px2rem(40px) px2rem(30px) px2rem(40px) px2rem(22px);
+    overflow-y: auto;
     .myenrll-item {
       width: 100%;
       height: px2rem(275px);
@@ -237,6 +292,9 @@ export default {
             &.await1 {
               @include img-retina('~@/assets/enroll/myenroll/await-icon1@2x.png', '~@/assets/enroll/myenroll/await-icon1@3x.png', 100%, auto);
             }
+            &.await2 {
+              @include img-retina('~@/assets/enroll/myenroll/await-icon2@2x.png', '~@/assets/enroll/myenroll/await-icon2@3x.png', 100%, auto);
+            }
             &.receive1 {
               @include img-retina('~@/assets/enroll/myenroll/receive-icon1@2x.png', '~@/assets/enroll/myenroll/receive-icon1@3x.png', 100%, auto);
             }
@@ -254,6 +312,17 @@ export default {
       }
       &.disabled .myenroll-info {
         background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
+      }
+    }
+    .loading-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .loading-more-txt {
+        display: inline-block;
+        margin-left: px2rem(20px);
+        @include font-dpr(14px);
+        color:#ccc;
       }
     }
   }

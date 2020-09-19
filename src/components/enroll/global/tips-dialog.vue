@@ -1,14 +1,13 @@
 <template>
   <div class="tips-dialog-wrap"
     ref="tipsDialogWrap"
-    v-if="show"
-    :class="{'lock': isLock}">
+    v-if="show">
     <!--弹窗模块-->
-    <div class="tips-dialog-content">
+    <div :class="['tips-dialog-content', themeColorName]">
+      <div class="close-btn" @click.stop="close()"></div>
       <!--主体内容-->
       <slot name="tips-content"></slot>
     </div>
-    <div class="close-btn" @click.stop="close()"></div>
   </div>
 </template>
 
@@ -21,9 +20,9 @@ export default {
       type: Boolean,
       default: false
     },
-    isLock: {
-      type: Boolean,
-      default: false
+    themeColorName: {
+      type: String,
+      default: 'orderblue'
     }
   },
   watch: {
@@ -58,20 +57,42 @@ export default {
     align-items: center;
     justify-content: center;
     .tips-dialog-content {
+      position: relative;
       width: px2rem(600px);
       border-radius: px2rem(40px);
       box-sizing: border-box;
       pointer-events: auto;
       background-color:#fff;
-      @include img-retina('~@/assets/vote/tips-dialog-bg@2x.png', '~@/assets/vote/tips-dialog-bg@3x.png', px2rem(600px), px2rem(89px));
       background-repeat: no-repeat;
       background-position: bottom;
-    }
-    .close-btn {
-      display: inline-block;
-      width: px2rem(30px);
-      height: px2rem(30px);
-      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      padding-top: px2rem(60px);
+      &.orderblue {
+        @include img-retina('~@/assets/enroll/dialog/orderblue-bg@2x.png', '~@/assets/enroll/dialog/orderblue-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      &.ordergreen {
+        @include img-retina('~@/assets/enroll/dialog/ordergreen-bg@2x.png', '~@/assets/enroll/dialog/ordergreen-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      &.orderorangered {
+        @include img-retina('~@/assets/enroll/dialog/orderorangered-bg@2x.png', '~@/assets/enroll/dialog/orderorangered-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      &.ordergolden {
+        @include img-retina('~@/assets/enroll/dialog/ordergolden-bg@2x.png', '~@/assets/enroll/dialog/ordergolden-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      &.orderred {
+        @include img-retina('~@/assets/enroll/dialog/orderred-bg@2x.png', '~@/assets/enroll/dialog/orderred-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      &.orderorange {
+        @include img-retina('~@/assets/enroll/dialog/orderorange-bg@2x.png', '~@/assets/enroll/dialog/orderorange-bg@3x.png', px2rem(600px), px2rem(89px));
+      }
+      .close-btn {
+        position: absolute;
+        z-index: 100;
+        right: px2rem(30px);
+        top: px2rem(30px);
+        width: px2rem(28px);
+        height: px2rem(28px);
+        @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      }
     }
   }
 </style>
