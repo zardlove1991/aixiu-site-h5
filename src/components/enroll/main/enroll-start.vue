@@ -38,7 +38,7 @@
         <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
-    <div class="myenroll-icon" @click="jumpPage('myenroll')"></div>
+    <div :class="['myenroll-icon', themeColorName]" @click="jumpPage('myenroll')"></div>
     <rule-vote
       :show="isShowRule"
       @close="isShowRule = false"
@@ -80,7 +80,8 @@ export default {
       isShowRule: false,
       isShowOnePoster: false,
       isShowTwoPoster: false,
-      posterSetting: {}
+      posterSetting: {},
+      themeColorName: ''
     }
   },
   components: {
@@ -95,6 +96,10 @@ export default {
         query: { id: this.id }
       }).then((res) => {
         if (res) {
+          let pageSetup = res.page_setup
+          if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
+            this.themeColorName = pageSetup.color_scheme.name
+          }
           this.initEnrollData(res)
         }
       })
@@ -450,7 +455,24 @@ export default {
       width: px2rem(259px);
       height: px2rem(67px);
       background-repeat: no-repeat;
-      @include img-retina('~@/assets/enroll/myenroll-icon1@2x.png', '~@/assets/enroll/myenroll-icon1@3x.png', 100%, 100%);
+      &.orderblue {
+        @include img-retina('~@/assets/enroll/myenroll/orderblue-icon@2x.png', '~@/assets/enroll/myenroll/orderblue-icon@3x.png', 100%, 100%);
+      }
+      &.ordergreen {
+        @include img-retina('~@/assets/enroll/myenroll/ordergreen-icon@2x.png', '~@/assets/enroll/myenroll/ordergreen-icon@3x.png', 100%, 100%);
+      }
+      &.orderorangered {
+        @include img-retina('~@/assets/enroll/myenroll/orderorangered-icon@2x.png', '~@/assets/enroll/myenroll/orderorangered-icon@3x.png', 100%, 100%);
+      }
+      &.ordergolden {
+        @include img-retina('~@/assets/enroll/myenroll/ordergolden-icon@2x.png', '~@/assets/enroll/myenroll/ordergolden-icon@3x.png', 100%, 100%);
+      }
+      &.orderred {
+        @include img-retina('~@/assets/enroll/myenroll/orderred-icon@2x.png', '~@/assets/enroll/myenroll/orderred-icon@3x.png', 100%, 100%);
+      }
+      .orderorange {
+        @include img-retina('~@/assets/enroll/myenroll/orderorange-icon@2x.png', '~@/assets/enroll/myenroll/orderorange-icon@3x.png', 100%, 100%);
+      }
     }
   }
 </style>

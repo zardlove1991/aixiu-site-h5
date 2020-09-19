@@ -16,7 +16,7 @@
           <div class="myenroll-num">预约场次：{{item.num}}</div>
           <div class="myenroll-right-icon"></div>
           <div class="myenroll-bg"></div>
-          <div :class="['myenroll-status', statusClass[item.status]]"></div>
+          <div :class="['myenroll-status', item.color_name ? item.color_name : '']"></div>
         </div>
       </div>
     </div>
@@ -44,15 +44,11 @@ export default {
   },
   data () {
     return {
-      statusClass: {
-        1: 'await',
-        2: 'receive',
-        3: 'expire'
-      },
       posterType: null,
       isShowOnePoster: false,
       isShowTwoPoster: false,
       posterSetting: {},
+      themeColorName: '',
       enrollList: [{
         create_time: '2020年9月24日 12:00:00',
         rank: 334,
@@ -80,15 +76,46 @@ export default {
   methods: {
     inintMyEnrllList () {
       let enrollInfo = STORAGE.get('detailInfo')
+      let enrollList = this.enrollList
       if (enrollInfo) {
         let rule = enrollInfo.rule
+        let pageSetup = enrollInfo.page_setup
+        if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
+          this.themeColorName = pageSetup.color_scheme.name
+        }
         if (rule && rule.poster && rule.poster.id) {
           this.posterSetting = rule.poster
           this.posterType = rule.poster.id
         }
       }
-      console.log(enrollInfo)
+      for (let item of enrollList) {
+        let colorName = this.getThemeColor(item.status)
+        item.color_name = colorName
+      }
       console.log('inintMyEnrllList', this.id)
+    },
+    getThemeColor (status) {
+      let themeColorName = this.themeColorName
+      console.log(status, themeColorName)
+      let str = ''
+      if (status === 1) {
+        // 待领取
+        // if (themeColorName === 'orderorange') {
+        // str = 'await2'
+        // }
+        str = 'await1'
+      } else if (status === 2) {
+        // 已领取
+        if (['orderorangered', 'orderred', 'ordergreen'].includes(themeColorName)) {
+          str = 'receive2'
+        } else {
+          str = 'receive1'
+        }
+      } else if (status === 3) {
+        // 已过期
+        str = 'expire'
+      }
+      return str
     },
     getMyEnrllDetail (item) {
       console.log(item)
@@ -207,14 +234,17 @@ export default {
             right: 0;
             width: px2rem(128px);
             height: px2rem(44px);
-            &.await {
-              @include img-retina('~@/assets/enroll/myenroll-await@2x.png', '~@/assets/enroll/myenroll-await@3x.png', 100%, auto);
+            &.await1 {
+              @include img-retina('~@/assets/enroll/myenroll/await-icon1@2x.png', '~@/assets/enroll/myenroll/await-icon1@3x.png', 100%, auto);
+            }
+            &.receive1 {
+              @include img-retina('~@/assets/enroll/myenroll/receive-icon1@2x.png', '~@/assets/enroll/myenroll/receive-icon1@3x.png', 100%, auto);
+            }
+            &.receive2 {
+              @include img-retina('~@/assets/enroll/myenroll/receive-icon2@2x.png', '~@/assets/enroll/myenroll/receive-icon2@3x.png', 100%, auto);
             }
             &.expire {
-              @include img-retina('~@/assets/enroll/myenroll-expire@2x.png', '~@/assets/enroll/myenroll-expire@3x.png', 100%, auto);
-            }
-            &.receive {
-              @include img-retina('~@/assets/enroll/myenroll-receive@2x.png', '~@/assets/enroll/myenroll-receive@3x.png', 100%, auto);
+              @include img-retina('~@/assets/enroll/myenroll/expire-icon@2x.png', '~@/assets/enroll/myenroll/expire-icon@3x.png', 100%, auto);
             }
           }
         }
