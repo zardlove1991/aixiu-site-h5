@@ -44,7 +44,9 @@ let voteUrl = {
   shareMake: 'share/make', // 生成海报
   getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
   getCaptchaCode: 'captcha/code', // 图片二维码
-  getMobileSend: 'mobile/verify/send' // 获取手机code
+  getMobileSend: 'mobile/verify/send', // 获取手机code
+  getVoteType: 'client/voting/{id}/type', // 获取分类列表
+  getVoteTypeFid: '/client/voting/{id}/type/{worksId}' // 根据分类的id获取fid
 }
 
 // 不带GUID
@@ -126,5 +128,7 @@ export default {
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
   getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'get', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
-  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve')
+  getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
+  getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
+  getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG)
 }

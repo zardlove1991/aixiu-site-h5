@@ -38,6 +38,18 @@
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
+      <div class="form-item" v-if="isOpenClassify">
+        <div class="form-title">分类</div>
+        <div class="form-content classify-wrap">
+          <el-input v-model="examineData.type_name"
+            :readonly="true"
+            placeholder="请选择"
+            @focus="showClassifyAction()"
+            @blur="blurAction()">
+          </el-input>
+          <div class="drop-icon"></div>
+        </div>
+      </div>
       <div class="form-item" v-if="flag !== 'text'">
         <div class="form-title">描述</div>
         <div class="form-content">
@@ -60,13 +72,21 @@
         <span class="menu-text color-button_text">提交</span>
       </div>
     </form>
+    <classify-dialog
+      :show="isShowClassify"
+      :classifyData="classifyData"
+      :defaultSelect="defaultSelect"
+      @success="getTypeSuccess">
+    </classify-dialog>
   </div>
 </template>
 
 <script>
 import FileUpload from '@/components/vote/global/file-upload'
 import VideoUpload from '@/components/vote/global/video-upload'
+import ClassifyDialog from '@/components/vote/global/vote-classify-dialog'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 import { Toast } from 'mint-ui'
 
 export default {
@@ -74,7 +94,7 @@ export default {
     this.initForm()
   },
   components: {
-    FileUpload, VideoUpload
+    FileUpload, VideoUpload, ClassifyDialog
   },
   props: {
     id: String,
@@ -88,7 +108,9 @@ export default {
         source: '',
         introduce: '',
         contact_name: '',
-        contact_phone: ''
+        contact_phone: '',
+        type_id: '',
+        type_name: ''
       },
       material: {
         image: [],
@@ -97,11 +119,23 @@ export default {
       },
       fileList: [],
       worksId: '',
-      loading: false
+      loading: false,
+      isOpenClassify: false,
+      isShowClassify: false,
+      classifyData: [],
+      defaultSelect: {}
     }
   },
   methods: {
-    initForm () {
+    async initForm () {
+      let detailInfo = STORAGE.get('detailInfo')
+      // 控制显隐分类
+      if (detailInfo) {
+        let limit = detailInfo.rule.limit
+        if (limit.is_open_classify && limit.is_open_classify === 1) {
+          this.isOpenClassify = true
+        }
+      }
       let { worksId } = this.$route.query
       if (worksId) {
         // 获取详情
@@ -132,10 +166,55 @@ export default {
             source: res.source,
             introduce: res.introduce,
             contact_name: res.contact_name,
-            contact_phone: res.contact_phone
+            contact_phone: res.contact_phone,
+            type_id: res.type_id,
+            type_name: res.type_name
           }
+          this.getVoteTypeFid(res.type_id, res.type_name)
         })
       }
+      this.initVoteType()
+    },
+    initVoteType () {
+      API.getVoteType({
+        query: { id: this.id }
+      }).then(res => {
+        let data = res.data
+        if (data && data.length) {
+          this.classifyData = data
+        }
+      })
+    },
+    getVoteTypeFid (typeId, typeName) {
+      API.getVoteTypeFid({
+        query: {
+          id: this.id,
+          worksId: typeId
+        }
+      }).then(res => {
+        let defaultSelect = {
+          id: typeId,
+          name: typeName
+        }
+        if (res && res.length) {
+          defaultSelect.fid = res[0].fid
+        }
+        this.defaultSelect = defaultSelect
+      })
+    },
+    showClassifyAction () {
+      this.isShowClassify = true
+      if (!this.defaultSelect || !this.defaultSelect.name) {
+        if (this.classifyData && this.classifyData.length) {
+          this.defaultSelect = this.classifyData[0]
+        }
+      }
+    },
+    getTypeSuccess (val) {
+      this.examineData.type_id = val.id
+      this.examineData.type_name = val.name
+      this.defaultSelect = val
+      this.isShowClassify = false
     },
     blurAction () {
       document.body.scrollTop = 0
@@ -173,6 +252,12 @@ export default {
       if (!examineData.contact_phone || !examineData.contact_phone.trim()) {
         Toast('请输入联系人电话')
         return
+      }
+      if (this.isOpenClassify) {
+        if (!examineData.type_name) {
+          Toast('请选择分类')
+          return
+        }
       }
       let data = {
         voting_id: id,
@@ -244,6 +329,18 @@ export default {
       }
       .form-content {
         margin-top: px2rem(20px);
+        &.classify-wrap {
+          position: relative;
+          .drop-icon {
+            position: absolute;
+            right: px2rem(28px);
+            top: px2rem(32px);
+            width: px2rem(30px);
+            height: px2rem(16px);
+            background-size: px2rem(30px) px2rem(16px);
+            @include img-retina("~@/assets/common/dropdown-icon@2x.png","~@/assets/common/dropdown-icon@3x.png", 100%, 100%);
+          }
+        }
         .el-input__inner, .el-textarea__inner {
           -webkit-appearance: none;
           background-color: rgba(255, 255, 255, 0.2);
@@ -262,11 +359,14 @@ export default {
             resize: none;
             height: px2rem(300px);
             padding: px2rem(10px) px2rem(30px);
+            padding-bottom: px2rem(50px);
           }
           .el-input__count {
             @include font-dpr(14px);
             color: rgba(255,255,255,0.5);
             background-color: transparent;
+            left: px2rem(30px);
+            right: 0;
           }
         }
       }

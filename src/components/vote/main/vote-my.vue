@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-mine color-bg_color">
-    <common-page-empty v-if="!mineList || JSON.stringify(mineList) === '{}'" tip="暂无列表记录"></common-page-empty>
+    <common-page-empty v-if="!mineList" tip="暂无列表记录"></common-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"

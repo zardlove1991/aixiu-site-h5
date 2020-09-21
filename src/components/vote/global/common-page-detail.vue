@@ -18,7 +18,8 @@
         </div>
       </div>
       <div class="info-title">{{info.name}}</div>
-      <div class="info-source">{{info.source}}</div>
+      <div class="info-source">
+        <span v-if="isOpenClassify && info.type_name">{{info.type_name}}<span class="span-line">|</span></span>{{info.source}}</div>
     </div>
     <div class="detail-options-wrap">
       <button class="option-invote"
@@ -55,6 +56,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    isOpenClassify: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -205,6 +210,10 @@ export default {
         @include line-overflow(1);
         font-size: px2rem(28px);
         color: rgba(255,255,255,0.7);
+        .span-line {
+          display: inline-block;
+          margin: 0 px2rem(20px);
+        }
       }
       .info-title {
         font-size: px2rem(36px);

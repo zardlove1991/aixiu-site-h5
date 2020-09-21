@@ -6,14 +6,14 @@
         :class="['overview-indexpic-wrap', getPicTitleClass]">
         <div class="pic-thumb"
           :class="{
-            nopic: !detailInfo.indexpic || !detailInfo.indexpic.filename,
-            haspic: detailInfo.indexpic && detailInfo.indexpic.filename
+            nopic: !detailInfo.indexpic || !detailInfo.indexpic.url,
+            haspic: detailInfo.indexpic && detailInfo.indexpic.url
           }">
-          <div v-if="detailInfo.indexpic && detailInfo.indexpic.filename" class="pic-indexpic"
-            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.host + detailInfo.indexpic.filename + ')'}"></div>
+          <div v-if="detailInfo.indexpic && detailInfo.indexpic.url" class="pic-indexpic"
+            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.url + ')'}"></div>
           <div v-if="detailInfo.rule.limit.is_display_title === 0"></div>
           <div v-else class="pic-title">
-            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.filename) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
+            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.url) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
           </div>
         </div>
       </div>
@@ -67,7 +67,8 @@
         <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
           <div class="menu-wrap color-button_color"
             @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
-            <span class="menu-text color-button_text">{{ isExamine ? '查看我的作品' : '立即报名'}}</span>
+            <span class="menu-text color-button_text" v-if="isExamine === 1">查看我的作品</span>
+            <span class="menu-text color-button_text" v-if="isExamine === 0">立即报名</span>
           </div>
         </div>
         <div class="overview-list-title-wrap">
@@ -76,10 +77,19 @@
           <div class="line"></div>
         </div>
         <!--搜索条-->
-        <div class="overview-search-bar-wrap color-component">
-          <input class="search-input" type="text" placeholder="请输入作品名称/来源/编号" v-model="searchVal"
-              @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
-          <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
+        <div class="overview-search-bar-wrap">
+          <vote-classify-list
+            class="classfiy-main-wrap"
+            v-if="isOpenClassify"
+            :searchVal.sync="searchClassifyVal"
+            :id="id"
+            @success="searchClassify">
+          </vote-classify-list>
+          <div class="name-bar-wrap">
+            <input class="search-input" type="text" placeholder="作品名称/来源/编号" v-model="searchVal"
+                @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
+            <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
+            </div>
           </div>
         </div>
       </div>
@@ -195,6 +205,7 @@ import ActiveVote from '@/components/vote/global/vote-active'
 import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
+import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -219,7 +230,8 @@ export default {
     ActiveVote,
     ActiveStop,
     ActivePause,
-    ActiveStart
+    ActiveStart,
+    VoteClassifyList
   },
   data () {
     return {
@@ -243,7 +255,7 @@ export default {
       isShowWorkVote: false, // 给他投票弹窗
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
-      isExamine: 1, // 0 未报名 1 已报名
+      isExamine: null, // 0 未报名 1 已报名
       remainVotes: 0, // 剩余投票数
       voteDate: [], // 投票时间
       detailInfo: {}, // 投票详情信息
@@ -261,7 +273,10 @@ export default {
       isShowEnd: false,
       isShowPause: false,
       isShowStart: false,
-      startDate: []
+      startDate: [],
+      isOpenClassify: false,
+      isShowClassify: false,
+      searchClassifyVal: ''
     }
   },
   created () {
@@ -285,7 +300,7 @@ export default {
       if (!detailInfo) {
         return ''
       }
-      if (!detailInfo.indexpic || !detailInfo.indexpic.filename) {
+      if (!detailInfo.indexpic || !detailInfo.indexpic.url) {
         let isDisplayTitle = detailInfo.rule.limit.is_display_title
         if (isDisplayTitle === 0) {
           return 'notitle-wrap'
@@ -417,6 +432,9 @@ export default {
         showModel = 'text'
       }
       this.showModel = showModel
+      if (limit.is_open_classify && limit.is_open_classify === 1) {
+        this.isOpenClassify = true
+      }
       // 来源限制
       let { source_limit: sourceLimit } = limit
       if (sourceLimit) {
@@ -693,7 +711,8 @@ export default {
       let params = {
         page: page + 1,
         count,
-        k: name
+        k: name,
+        type_name: this.searchClassifyVal
       }
       API.getVoteWorks({
         query: { id: voteId },
@@ -757,7 +776,11 @@ export default {
       setShareData: 'SET_SHARE_DATA',
       setMyVote: 'SET_MY_VOTE',
       setIsBtnAuth: 'SET_IS_BTN_AUTH'
-    })
+    }),
+    searchClassify (val) {
+      this.searchClassifyVal = val
+      this.dealSearch()
+    }
   }
 }
 </script>
@@ -1067,57 +1090,50 @@ export default {
       }
       .overview-search-bar-wrap {
         display: flex;
-        width: 100%;
-        height: px2rem(80px);
-        border-radius: px2rem(8px);
-        box-sizing: border-box;
-        background-color: rgba(0, 0, 0, 0.25);
-        .search-input {
-          flex: 1;
-          padding: px2rem(20px);
-          font-size: px2rem(28px);
-          color: #fff;
-          border: none;
-          outline: none;
-          background: none !important;
-          &::placeholder {
-            color: rgba(255, 255, 255, 0.25);
-          }
-        }
-        .search-icon {
+        position: relative;
+        .classfiy-main-wrap {
+          // flex: 1;
+          width: px2rem(270px);
+          flex: 0 0 px2rem(270px);
           margin-right: px2rem(20px);
-          width: px2rem(34px);
-          height: 100%;
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: px2rem(34px);
-          background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
-          background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
-          &.focus {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
-            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
+        }
+        .name-bar-wrap {
+          flex: 1;
+          // width: 100%;
+          height: px2rem(80px);
+          border-radius: px2rem(8px);
+          box-sizing: border-box;
+          background-color: rgba(255, 255, 255, 0.1);
+          display: flex;
+          .search-input {
+            flex: 1;
+            padding: px2rem(20px);
+            font-size: px2rem(28px);
+            color: #fff;
+            border: none;
+            outline: none;
+            background: none !important;
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.25);
+            }
+          }
+          .search-icon {
+            margin-right: px2rem(20px);
+            width: px2rem(34px);
+            height: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: px2rem(34px);
+            background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
+            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
+            &.focus {
+              background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
+              background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
+            }
           }
         }
       }
     }
-    // .rule-dialog-wrap {
-    //   padding: px2rem(60px) px2rem(40px) px2rem(100px) px2rem(40px);
-    //   .rule-header {
-    //     margin-bottom: px2rem(45px);
-    //     text-align: center;
-    //     font-weight: 500;
-    //     @include font-dpr(17px);
-    //     color: #333333;
-    //   }
-    //   .rule-content {
-    //     max-height: px2rem(650px);
-    //     overflow-y: auto;
-    //     width: 100%;
-    //     @include font-dpr(15px);
-    //     line-height: px2rem(48px);
-    //     color: #666;
-    //   }
-    // }
     .flex-column-dialog {
       display: flex;
       justify-content: center;

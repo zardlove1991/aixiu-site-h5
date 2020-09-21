@@ -42,6 +42,10 @@
           <span>来源：</span>
           <span class="header-txt">{{selfData.source}}</span>
         </div>
+        <div class="header" v-if="isOpenClassify">
+          <span>分类：</span>
+          <span class="header-txt">{{selfData.type_name}}</span>
+        </div>
         <div class="header" v-show="flag !== 'text'">
           <span>描述：</span>
           <span class="header-txt">{{selfData.introduce}}</span>
@@ -91,14 +95,21 @@ export default {
   data () {
     return {
       selfData: {},
-      textSetting: {}
+      textSetting: {},
+      isOpenClassify: false
     }
   },
   methods: {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
-      if (detailInfo && detailInfo.text_setting) {
-        this.textSetting = detailInfo.text_setting
+      if (detailInfo) {
+        if (detailInfo.text_setting) {
+          this.textSetting = detailInfo.text_setting
+        }
+        let limit = detailInfo.rule.limit
+        if (limit.is_open_classify && limit.is_open_classify === 1) {
+          this.isOpenClassify = true
+        }
       }
     },
     initForm () {
