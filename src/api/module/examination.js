@@ -50,7 +50,8 @@ let voteUrl = {
 // 预约报名
 let enrollUrl = {
   getEnrollDetail: 'client/order/{id}', // 预约活动详情
-  getMineEnrollList: 'client/order/mine' // 获取我的预约
+  getMineEnrollList: 'client/order/mine', // 获取我的预约
+  saveEnrollInfo: '/client/order' // 预约报名
 }
 
 // 不带GUID
@@ -136,5 +137,6 @@ export default {
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
-  getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG)
+  getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
+  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG)
 }

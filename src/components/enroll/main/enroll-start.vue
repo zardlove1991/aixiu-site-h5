@@ -31,7 +31,7 @@
             :key="index"
             @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
-            <div>{{item.left_number}} 人</div>
+            <div>{{item.left_number ? item.left_number : 0}} 人</div>
             <div class="date-range-item-bg"></div>
           </div>
         </div>
@@ -51,7 +51,9 @@
       :show="isShowCollection"
       :checkDraw="checkDraw"
       :setting="checkSetting"
+      :id="id"
       @close="isShowCollection = false"
+      @success="saveEnrollInfo"
       :themeColorName="themeColorName">
     </collection-dialog>
     <poster-one-dialog
@@ -118,6 +120,7 @@ export default {
       isShowInfo: false, // 是否显示活动介绍
       isShowOnePoster: false, // 是否显示海报1
       isShowTwoPoster: false, // 是否显示海报2
+      posterType: null,
       posterSetting: {}, // 海报设置信息
       posterData: {}, // 海报展示数据
       themeColorName: '', // 主题颜色名称
@@ -154,7 +157,7 @@ export default {
       })
     },
     initEnrollData (data) {
-      let { duration, section_type: sectionType, section } = data
+      let { duration, section_type: sectionType, section, rule } = data
       // #1 计算当天的YYYY-MM-DD和时间戳
       let newDate = new Date()
       let currentDateStr = newDate.toLocaleDateString()
@@ -207,7 +210,13 @@ export default {
         }
         this.getDiffDate(startTime, endTime)
       }
+      // #4 设置默认选中的数据
       this.setDefaultDate()
+      // #5 海报初始化信息设置
+      if (rule && rule.poster && rule.poster.id) {
+        this.posterSetting = rule.poster
+        this.posterType = rule.poster.id
+      }
       this.enrollInfo = data
     },
     setDefaultDate () {
@@ -301,9 +310,14 @@ export default {
         Toast('请选择具体的时间范围')
         return
       }
+      if (checkSetting.show_date) {
+        let dateArr = checkSetting.show_date.split('.')
+        if (dateArr.length === 2) {
+          checkSetting.show_date = dateArr[0] + '月' + dateArr[1] + '日'
+        }
+      }
       let res = this.enrollInfo
       let rule = res.rule
-      // let posterType = null
       let { collection_form_settings: collectionFormSettings } = rule
       // 收集信息
       if (collectionFormSettings && collectionFormSettings.length) {
@@ -356,16 +370,15 @@ export default {
       } else {
         Toast('数据错误')
       }
-      // 海报
-      // if (rule && rule.poster && rule.poster.id) {
-      //   this.posterSetting = rule.poster
-      //   posterType = rule.poster.id
-      // }
-      // if (posterType === 1) {
-      //   this.isShowTwoPoster = true
-      // } else {
-      //   this.isShowOnePoster = true
-      // }
+    },
+    saveEnrollInfo (data) {
+      let posterType = this.posterType
+      this.posterData = data
+      if (posterType === 1) {
+        this.isShowTwoPoster = true
+      } else {
+        this.isShowOnePoster = true
+      }
     },
     jumpPage (page, data) {
       let params = {

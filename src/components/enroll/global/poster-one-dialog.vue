@@ -22,14 +22,8 @@
         <div class="bottom-info-bg"></div>
       </div>
       <div class="user-info">
-        <div class="user-item">
-          <span class="user-title">姓名：</span><span class="user-txt">张三</span>
-        </div>
-        <div class="user-item">
-          <span class="user-title">手机号：</span><span class="user-txt">1533333333</span>
-        </div>
-        <div class="user-item">
-          <span class="user-title">身份证：</span><span class="user-txt">133333333333333333</span>
+        <div class="user-item" v-for="(info, index) in posterData.collect_member_info" :key="index">
+          <span class="user-title">{{info.name}}：</span><span class="user-txt">{{info.value}}</span>
         </div>
         <div class="tips">{{setting.content ? setting.content : '预约成功'}}</div>
       </div>
@@ -188,7 +182,7 @@ export default {
           align-items: center;
           margin-bottom: px2rem(10px);
           .user-title {
-            width: px2rem(120px);
+            width: px2rem(150px);
             display: inline-block;
             @include font-dpr(14px);
             color: #999999;

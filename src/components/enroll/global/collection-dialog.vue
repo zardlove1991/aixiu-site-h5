@@ -17,7 +17,8 @@
             v-model="checkData[item.unique_name]"></el-input>
           <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
         </div>
-        <div class="submit-btn-wrap color-button_color" @click.stop="sureCheckDraw()">确认</div>
+        <div class="submit-btn-wrap disabled" v-if="loading">确认</div>
+        <div class="submit-btn-wrap active" v-else @click.stop="sureCheckDraw()">确认</div>
         <div class="close-btn" @click.stop="closeCheckDraw()"></div>
       </div>
     </div>
@@ -59,6 +60,7 @@ import CitySelectDialog from '@/components/dialog/city-select-dialog'
 
 export default {
   props: {
+    id: String,
     show: {
       type: Boolean,
       default: false
@@ -102,6 +104,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       checkData: {}, // 输入的表单内容
       isShowSelect: false, // 性别
       isShowDateSelect: false, // 日期选择器
@@ -189,22 +192,50 @@ export default {
       if (!flag) {
         return
       }
-      let data = {}
-      let address = ''
-      if (checkData.address && checkData.detail_address) {
-        address = checkData.address + ' ' + checkData.detail_address
-        data.address = address
-      }
-      API.saveDrawRecord({
+      this.loading = true
+      let data = this.getSubmitData()
+      API.saveEnrollInfo({
         data
       }).then(res => {
-        if (res.ErrorCode) {
-          Toast(res.ErrorText)
+        if (res.error_code) {
+          this.loading = false
+          Toast(res.error_message)
           return
         }
+        let data = {
+          ...res,
+          num: this.setting.show_date + ' ' + this.setting.show_time
+        }
+        this.loading = false
         this.$emit('close')
-        this.$emit('success')
+        this.$emit('success', data)
       })
+    },
+    getSubmitData () {
+      let checkData = { ...this.checkData }
+      let checkDraw = this.checkDraw
+      let collectNumberInfo = []
+      if (checkData.address && checkData.detail_address) {
+        checkData.address = checkData.address + ' ' + checkData.detail_address
+      }
+      for (let item of checkDraw) {
+        let key = item.unique_name
+        let val = checkData[key]
+        if (key === 'detail_address') {
+          continue
+        }
+        collectNumberInfo.push({
+          unique_name: key,
+          name: item.name,
+          value: val
+        })
+      }
+      let result = {
+        order_id: this.id,
+        sections_id: this.setting.sections_id,
+        collect_member_info: collectNumberInfo
+      }
+      return result
     },
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'
@@ -355,9 +386,15 @@ export default {
           text-align: center;
           border-radius: px2rem(10px);
           // background-color: #FC7465;
-          @include bg-linear-color('compColor');
           @include font-dpr(14px);
           color: #fff;
+          &.disabled {
+            background-color: #f4f4f5;
+            color: #bcbec2;
+          }
+          &.active {
+            @include bg-linear-color('compColor');
+          }
         }
         .close-btn {
           position: absolute;
