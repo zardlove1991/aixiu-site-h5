@@ -19,7 +19,7 @@
           <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
             v-for="(item, index) in dateList"
             :key="index"
-            @click="changeEnrollDay(item)">
+            @click="isBtnAuth && changeEnrollDay(item)">
             <div class="day-item1">{{item.week}}</div>
             <div>{{item.show_date}}</div>
             <div class="active-bg"></div>
@@ -29,13 +29,14 @@
           <div :class="['date-range-item', currentTime === item.show_time ? 'active' : '']"
             v-for="(item, index) in timeList[currentDate]"
             :key="index"
-            @click="changeEnrollTime(item)">
+            @click="isBtnAuth && changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
             <div>{{item.left_number ? item.left_number : 0}} 人</div>
             <div class="date-range-item-bg"></div>
           </div>
         </div>
-        <div class="enroll-btn" @click="setEnroll()">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
+        <div class="enroll-btn disabled" v-if="!isBtnAuth">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
+        <div class="enroll-btn active" v-else @click="setEnroll()">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
         <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
@@ -135,7 +136,8 @@ export default {
       isShowCollection: false,
       checkDraw: [],
       checkSetting: {}, // 收集信息设置
-      interval: null // 定时器
+      interval: null, // 定时器
+      isBtnAuth: true // 报名按钮 true:有权限
     }
   },
   components: {
@@ -246,15 +248,19 @@ export default {
           this.isShowEnd = true
         }
         this.setIsModelShow(true)
+        this.isBtnAuth = false
         return
       }
       let time = flag ? startTimeMS : endTimeMS
-      // 活动未开始
       if (time === startTimeMS) {
+        // 活动未开始
         if (!this.isModelShow) {
           this.isShowStart = true
         }
         this.setIsModelShow(true)
+        this.isBtnAuth = false
+      } else {
+        this.isBtnAuth = true
       }
       this.startCountTime(time, (timeArr) => {
         // 更改当前的时间
@@ -270,6 +276,7 @@ export default {
           if (!this.isModelShow) {
             this.isShowEnd = true
           }
+          this.isBtnAuth = false
           this.setIsModelShow(true)
         }
       })
@@ -684,11 +691,17 @@ export default {
           height: px2rem(90px);
           @include font-dpr(16px);
           line-height: px2rem(90px);
-          @include bg-linear-color('compColor');
           // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
           border-radius: px2rem(10px);
           color: #fff;
           text-align: center;
+          &.disabled {
+            background-color: #f4f4f5;
+            color: #bcbec2;
+          }
+          &.active {
+            @include bg-linear-color('compColor');
+          }
         }
         .tool-tip {
           margin: px2rem(20px) 0;
