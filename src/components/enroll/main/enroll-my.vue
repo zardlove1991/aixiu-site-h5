@@ -1,10 +1,7 @@
 <template>
-  <div class="myenroll-wrap"
-    v-infinite-scroll="getMineEnrollList"
-    :infinite-scroll-disabled="!noMore"
-    :infinite-scroll-distance="pager.count">
+  <div class="myenroll-wrap">
     <div
-      :class="['myenrll-item', item.status === 3 ? 'disabled' : 'base']"
+      :class="['myenrll-item', item.status === 2 ? 'disabled' : 'base']"
       v-for="(item, index) in enrollList"
       :key="index"
       @click="getMyEnrllDetail(item)">
@@ -23,7 +20,8 @@
         </div>
       </div>
     </div>
-    <div class="loading-box" v-if="true">
+    <div v-if="!noMore" class="scroll-tips" @click="getMineEnrollList()">点击我，加载更多</div>
+    <div class="loading-box" v-if="loading">
       <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
       <span class="loading-more-txt">加载中...</span>
     </div>
@@ -47,7 +45,7 @@ import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 import STORAGE from '@/utils/storage'
 import { InfiniteScroll, Spinner } from 'mint-ui'
-// import API from '@/api/module/examination'
+import API from '@/api/module/examination'
 
 export default {
   props: {
@@ -65,7 +63,7 @@ export default {
       pager: {
         total: 0,
         page: 0,
-        count: 10,
+        count: 2,
         totalPages: 0
       },
       enrollList: []
@@ -98,7 +96,7 @@ export default {
           this.posterType = rule.poster.id
         }
       }
-      // this.getMineEnrollList()
+      this.getMineEnrollList()
     },
     getMineEnrollList () {
       this.loading = true
@@ -108,64 +106,58 @@ export default {
         count,
         order_id: this.id
       }
-      // API.getMineEnrollList({ params: params }).then(res => {
-      //   let { data, page: pageInfo } = res
-      //   if (!data || !data.length) {
-      //     this.loading = false
-      //     return
-      //   }
-      //   let { total, current_page: page } = pageInfo
-      //   total = parseInt(total)
-      //   page = parseInt(page)
-      //   // 总页数
-      //   let totalPages = total / count
-      //   if (total % count !== 0) {
-      //     totalPages = parseInt(total / count) + 1
-      //   }
-      //   this.enrollList = this.enrollList.concat(data)
-      //   this.pager = { total, page, count, totalPages }
-      //   this.loading = false
-      // })
-      console.log(params)
-      setTimeout(() => {
-        for (let i = 1; i <= 10; i++) {
-          let item = {
-            create_time: '2020年9月24日 10:00:00',
-            date: '9月21日',
-            rank: 20 + i,
-            start_time: '10:00',
-            end_time: '11:00',
-            member_id: '1',
-            member_avatar: 'http://pimg.v2.aihoge.com/xiuzan/2020/09/ffa9d91521fdabf9b5efa83b8c271ed3.png',
-            member_name: 'zhangsan',
-            status: (i % 3) + 1,
-            num: '9月21日 10:00-11:00'
-          }
-          let colorName = this.getThemeColor(item.status)
-          item.color_name = colorName
-          this.enrollList.push(item)
+      API.getMineEnrollList({ params: params }).then(res => {
+        let { data, page: pageInfo } = res
+        if (!data || !data.length) {
+          this.loading = false
+          return
         }
+        let { total, current_page: page } = pageInfo
+        total = parseInt(total)
+        page = parseInt(page)
+        // 总页数
+        let totalPages = total / count
+        if (total % count !== 0) {
+          totalPages = parseInt(totalPages) + 1
+        }
+        for (let item of data) {
+          let { status, sections } = item
+          let num = ''
+          if (sections) {
+            let showTime = ''
+            if (sections.type === 0) {
+              showTime = '全天'
+            } else {
+              showTime = sections.start_time + '-' + sections.end_time
+            }
+            num = sections.date + ' ' + showTime
+          }
+          item.color_name = this.getThemeColor(status)
+          item.num = num
+        }
+        this.enrollList = this.enrollList.concat(data)
+        this.pager = { total, page, count, totalPages }
         this.loading = false
-      }, 2500)
+      })
     },
     getThemeColor (status) {
       let themeColorName = this.themeColorName
       let str = ''
-      if (status === 1) {
+      if (status === 0) {
         // 待领取
         if (themeColorName === 'orderorange') {
           str = 'await2'
         } else {
           str = 'await1'
         }
-      } else if (status === 2) {
+      } else if (status === 1) {
         // 已领取
         if (['orderorangered', 'orderred', 'ordergreen'].includes(themeColorName)) {
           str = 'receive2'
         } else {
           str = 'receive1'
         }
-      } else if (status === 3) {
+      } else if (status === 2) {
         // 已过期
         str = 'expire'
       }
@@ -313,6 +305,12 @@ export default {
       &.disabled .myenroll-info {
         background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
       }
+    }
+    .scroll-tips {
+      width: 100%;
+      @include font-dpr(14px);
+      color:#666;
+      text-align: center;
     }
     .loading-box {
       display: flex;

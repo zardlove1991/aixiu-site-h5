@@ -77,7 +77,7 @@
       @close="isShowPause = false">
     </active-pause>
     <active-start
-      :voteDate="startDate"
+      :activeDate="startDate"
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
@@ -94,7 +94,7 @@
 <script>
 import mixins from '@/mixins/index'
 import { Swipe, SwipeItem, Toast } from 'mint-ui'
-import { formatDate } from '@/utils/utils'
+import { formatDate, formatSecByTime } from '@/utils/utils'
 import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
 import CollectionDialog from '@/components/enroll/global/collection-dialog'
@@ -104,6 +104,7 @@ import ActiveStart from '@/components/enroll/global/active-start'
 import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
 import ActiveLimit from '@/components/enroll/global/active-limit'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   mixins: [mixins],
@@ -133,7 +134,8 @@ export default {
       activeTips: [],
       isShowCollection: false,
       checkDraw: [],
-      checkSetting: {} // 收集信息设置
+      checkSetting: {}, // 收集信息设置
+      interval: null // 定时器
     }
   },
   components: {
@@ -141,6 +143,14 @@ export default {
   },
   created () {
     this.getEnrollData()
+  },
+  beforeDestroy () {
+    // 清除定时器
+    console.log('beforeDestroy interval')
+    this.clearSetInterval()
+  },
+  computed: {
+    ...mapGetters('vote', ['isModelShow'])
   },
   methods: {
     getEnrollData () {
@@ -153,6 +163,7 @@ export default {
             this.themeColorName = pageSetup.color_scheme.name
           }
           this.initEnrollData(res)
+          this.initActiveDate()
         }
       })
     },
@@ -218,6 +229,50 @@ export default {
         this.posterType = rule.poster.id
       }
       this.enrollInfo = data
+    },
+    initActiveDate () {
+      let enrollInfo = this.enrollInfo
+      if (!enrollInfo) {
+        return
+      }
+      let nowTime = new Date().getTime()
+      let { start_time: startTime, end_time: endTime } = enrollInfo
+      let startTimeMS = new Date(startTime).getTime()
+      let endTimeMS = new Date(endTime).getTime()
+      let flag = startTimeMS > nowTime
+      if (endTimeMS <= nowTime) {
+        // 已经结束
+        if (!this.isModelShow) {
+          this.isShowEnd = true
+        }
+        this.setIsModelShow(true)
+        return
+      }
+      let time = flag ? startTimeMS : endTimeMS
+      // 活动未开始
+      if (time === startTimeMS) {
+        if (!this.isModelShow) {
+          this.isShowStart = true
+        }
+        this.setIsModelShow(true)
+      }
+      this.startCountTime(time, (timeArr) => {
+        // 更改当前的时间
+        this.startDate = timeArr
+      }, () => {
+        if (flag) {
+          if (this.isShowStart) {
+            this.isShowStart = false
+          }
+          this.initActiveDate()
+        } else {
+          // 结束后关闭
+          if (!this.isModelShow) {
+            this.isShowEnd = true
+          }
+          this.setIsModelShow(true)
+        }
+      })
     },
     setDefaultDate () {
       let currentDate = this.currentDate
@@ -374,10 +429,51 @@ export default {
     saveEnrollInfo (data) {
       let posterType = this.posterType
       this.posterData = data
-      if (posterType === 1) {
-        this.isShowTwoPoster = true
-      } else {
-        this.isShowOnePoster = true
+      API.getEnrollDetail({
+        query: { id: this.id }
+      }).then((res) => {
+        this.enrollInfo = res
+        if (posterType === 1) {
+          this.isShowTwoPoster = true
+        } else {
+          this.isShowOnePoster = true
+        }
+      })
+    },
+    startCountTime (endTime, dealCb, doneCb) {
+      let timer = null
+      let isDone = false
+      function computedTime () {
+        let nowTime = new Date().getTime()
+        let timeArr = formatSecByTime({ endtime: endTime, nowtime: nowTime })
+        // 判断是否全部为0
+        isDone = true
+        for (let i = 0; i < timeArr.length; i++) {
+          if (timeArr[i] !== 0) {
+            isDone = false
+            break
+          }
+        }
+        // console.log('计算的时间数组', timeArr, '是否开始', isDone)
+        // 每次调用处理的函数
+        dealCb && dealCb(timeArr)
+        // 结束
+        if (isDone) {
+          timer && clearInterval(timer)
+          setTimeout(() => {
+            doneCb && doneCb() // 处理结束操作
+          }, 2000)
+        }
+      }
+      computedTime()
+      // 开始倒计时
+      timer = setInterval(computedTime, 1000)
+      this.interval = timer
+    },
+    clearSetInterval () {
+      if (this.interval) {
+        clearInterval(this.interval)
+        this.interval = null
       }
     },
     jumpPage (page, data) {
@@ -390,7 +486,10 @@ export default {
         params,
         query: data
       })
-    }
+    },
+    ...mapActions('vote', {
+      setIsModelShow: 'SET_IS_MODEL_SHOW'
+    })
   }
 }
 </script>
