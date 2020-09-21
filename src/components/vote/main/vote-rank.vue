@@ -79,7 +79,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 1,
+        count: 10,
         totalPages: 0
       },
       signUnit: '票'
