@@ -353,7 +353,7 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj[0].host + obj[0].filename
+              imgUrl = 'http:' + obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
