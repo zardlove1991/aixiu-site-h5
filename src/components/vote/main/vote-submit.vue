@@ -129,10 +129,12 @@ export default {
   methods: {
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
+      let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
         let limit = detailInfo.rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
+          isOpenClassify = true
           this.isOpenClassify = true
         }
       }
@@ -173,7 +175,9 @@ export default {
           this.getVoteTypeFid(res.type_id, res.type_name)
         })
       }
-      this.initVoteType()
+      if (isOpenClassify) {
+        this.initVoteType()
+      }
     },
     initVoteType () {
       API.getVoteType({
