@@ -63,7 +63,7 @@ export default {
       pager: {
         total: 0,
         page: 0,
-        count: 2,
+        count: 10,
         totalPages: 0
       },
       enrollList: []
@@ -130,7 +130,15 @@ export default {
             } else {
               showTime = sections.start_time + '-' + sections.end_time
             }
-            num = sections.date + ' ' + showTime
+            let date = sections.date
+            let dateArr = date.split('-')
+            if (dateArr.length === 1) {
+              num = dateArr[0] + ' ' + showTime
+            } else if (dateArr.length === 2) {
+              num = dateArr[0] + '月' + dateArr[1] + '日 ' + showTime
+            } else if (dateArr.length === 3) {
+              num = dateArr[1] + '月' + dateArr[2] + '日 ' + showTime
+            }
           }
           item.color_name = this.getThemeColor(status)
           item.num = num

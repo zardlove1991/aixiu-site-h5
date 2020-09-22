@@ -389,8 +389,8 @@ export default {
           @include font-dpr(14px);
           color: #fff;
           &.disabled {
-            background-color: #f4f4f5;
-            color: #bcbec2;
+            background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
+            box-shadow: 0 5px 13px 0 rgba(216,216,216,0.48);
           }
           &.active {
             @include bg-linear-color('compColor');

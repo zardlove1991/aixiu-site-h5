@@ -69,18 +69,17 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .active-limit-wrap  {
-    padding: 0 px2rem(30px) px2rem(91px) px2rem(30px);
+    padding: 0 px2rem(50px) px2rem(91px) px2rem(50px);
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     .active-header {
+      margin-top: px2rem(30px);
+      margin-bottom: px2rem(50px);
       text-align: center;
       @include font-dpr(16px);
       color: #333333;
-    }
-    .active-header {
-      margin-bottom: px2rem(50px);
     }
     .tips {
       color: #151515;
