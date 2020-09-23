@@ -67,11 +67,26 @@ export const setTheme = (id, name, isFirst) => {
       let info = res
       if (info.page_setup && info.page_setup.color_scheme && info.page_setup.color_scheme.content) {
         let content = info.page_setup.color_scheme.content
+        let background = info.page_setup.background
         let bodyEle = document.getElementsByTagName('body')[0]
         bodyEle.style.setProperty('--bgColor', content.bg_color)
         bodyEle.style.setProperty('--buttonColor', content.button_color)
         bodyEle.style.setProperty('--component', content.component)
         bodyEle.style.setProperty('--decorated', content.decorated)
+        // 改背景图片
+        if (background.indexpic && background.indexpic.length) {
+          let picObj = background.indexpic[0]
+          let url = picObj.host + picObj.filename
+          window.document.getElementById('app').style.backgroundImage = 'url(' + url + ')'
+          if (background.mode && background.mode === 1) {
+            // 固定
+            window.document.getElementById('app').style.backgroundSize = '100%'
+            window.document.getElementById('app').style.backgroundRepeat = 'no-repeat'
+          } else {
+            // 平铺
+            window.document.getElementById('app').style.backgroundSize = '100%'
+          }
+        }
       }
       if (isFirst) {
         let { id, title, mark } = info
