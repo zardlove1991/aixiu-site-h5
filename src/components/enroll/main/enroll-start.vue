@@ -971,14 +971,6 @@ export default {
               color: #333;
               margin-bottom: px2rem(10px);
             }
-            &.active {
-              @include bg-linear-color('compColor');
-              // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
-              color: #fff;
-              .date-item1 {
-                color: #fff;
-              }
-            }
             .date-range-item-bg {
               position: absolute;
               top: 0;
@@ -988,6 +980,17 @@ export default {
               z-index: 2;
               border-radius: px2rem(10px);
               @include bg-alpha-color('bgColor', 0.2);
+            }
+            &.active {
+              @include bg-linear-color('compColor');
+              // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
+              color: #fff;
+              .date-item1 {
+                color: #fff;
+              }
+              .date-range-item-bg {
+                @include bg-alpha-color('bgColor', 0);
+              }
             }
             .active-mark {
               position: absolute;
@@ -1060,7 +1063,7 @@ export default {
       &.orderred {
         @include img-retina('~@/assets/enroll/myenroll/orderred-icon@2x.png', '~@/assets/enroll/myenroll/orderred-icon@3x.png', 100%, 100%);
       }
-      .orderorange {
+      &.orderorange {
         @include img-retina('~@/assets/enroll/myenroll/orderorange-icon@2x.png', '~@/assets/enroll/myenroll/orderorange-icon@3x.png', 100%, 100%);
       }
     }
