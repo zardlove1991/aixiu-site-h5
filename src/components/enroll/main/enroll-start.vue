@@ -806,7 +806,7 @@ export default {
     min-height: 100vh;
     overflow-y: auto;
     // background-color: #C2D8F7;
-    @include bg-color('bgColor');
+    // @include bg-color('bgColor');
     padding: px2rem(25px) px2rem(20px);
     display: flex;
     flex-direction: column;

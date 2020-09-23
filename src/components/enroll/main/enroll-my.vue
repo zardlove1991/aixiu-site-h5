@@ -1,5 +1,6 @@
 <template>
-  <div class="myenroll-wrap">
+  <div :class="['myenroll-wrap', isBgImg ? '' : 'myenroll-bg']">
+    <enroll-page-empty v-show="!enrollList || !enrollList.length" tip="暂无预约记录"></enroll-page-empty>
     <div
       :class="['myenrll-item', item.status === 2 ? 'disabled' : 'base']"
       v-for="(item, index) in enrollList"
@@ -41,6 +42,7 @@
 </template>
 
 <script>
+import EnrollPageEmpty from '@/components/enroll/global/enroll-empty'
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 import STORAGE from '@/utils/storage'
@@ -66,11 +68,12 @@ export default {
         count: 10,
         totalPages: 0
       },
-      enrollList: []
+      enrollList: [],
+      isBgImg: false
     }
   },
   components: {
-    PosterOneDialog, PosterTwoDialog, InfiniteScroll, Spinner
+    EnrollPageEmpty, PosterOneDialog, PosterTwoDialog, InfiniteScroll, Spinner
   },
   created () {
     this.initData()
@@ -90,6 +93,10 @@ export default {
         let pageSetup = enrollInfo.page_setup
         if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
           this.themeColorName = pageSetup.color_scheme.name
+          let bg = pageSetup.background
+          if (bg && bg.indexpic && bg.indexpic.length) {
+            this.isBgImg = true
+          }
         }
         if (rule && rule.poster && rule.poster.id) {
           this.posterSetting = rule.poster
@@ -190,9 +197,11 @@ export default {
   @import "@/styles/index.scss";
   .myenroll-wrap {
     height: 100vh;
-    background-color: #fff;
     padding: px2rem(40px) px2rem(30px) px2rem(40px) px2rem(22px);
     overflow-y: auto;
+    &.myenroll-bg {
+      background-color: #fff;
+    }
     .myenrll-item {
       width: 100%;
       height: px2rem(275px);
