@@ -51,8 +51,8 @@ let voteUrl = {
 let enrollUrl = {
   getEnrollDetail: 'client/order/{id}', // 预约活动详情
   getMineEnrollList: 'client/order/mine', // 获取我的预约
-  saveEnrollInfo: '/client/order', // 预约报名
-  remainEnroll: '/client/order/{id}/remain'
+  saveEnrollInfo: 'client/order', // 预约报名
+  remainEnroll: 'client/order/{id}/remain'
 }
 
 // 不带GUID
