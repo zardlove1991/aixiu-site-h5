@@ -17,9 +17,10 @@
         <div class="date-range-bg"></div>
         <div class="range-wrap">
           <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
+            :id="currentDate === item.date ? 'day-range-item-active' : 'day-range-item' + index"
             v-for="(item, index) in dateList"
             :key="index"
-            @click="isBtnAuth && changeEnrollDay(item)">
+            @click="changeEnrollDay(item)">
             <div class="day-item1">{{item.week}}</div>
             <div>{{item.show_date}}</div>
             <div class="active-bg"></div>
@@ -29,13 +30,15 @@
           <div :class="['date-range-item', currentTime === item.show_time ? 'active' : '']"
             v-for="(item, index) in timeList[currentDate]"
             :key="index"
-            @click="isBtnAuth && changeEnrollTime(item)">
+            @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
             <div>{{item.left_number ? item.left_number : 0}} 人</div>
             <div class="date-range-item-bg"></div>
+            <div class="active-mark" v-if="item.is_active !== 2"></div>
+            <div class="active-mark-txt" v-if="item.is_active !== 2">- {{timeTips[item.is_active]}} -</div>
           </div>
         </div>
-        <div class="enroll-btn disabled" v-if="!isBtnAuth">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
+        <div class="enroll-btn disabled" v-if="!getBtnAuth">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
         <div class="enroll-btn active" v-else @click="setEnroll()">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
         <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
@@ -95,7 +98,7 @@
 <script>
 import mixins from '@/mixins/index'
 import { Swipe, SwipeItem, Toast } from 'mint-ui'
-import { formatDate, formatSecByTime } from '@/utils/utils'
+import { formatDate, formatSecByTime, getAppSign, delUrlParams } from '@/utils/utils'
 import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
 import CollectionDialog from '@/components/enroll/global/collection-dialog'
@@ -106,6 +109,7 @@ import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
 import ActiveLimit from '@/components/enroll/global/active-limit'
 import { mapActions, mapGetters } from 'vuex'
+// import STORAGE from '@/utils/storage'
 
 export default {
   mixins: [mixins],
@@ -114,6 +118,17 @@ export default {
   },
   data () {
     return {
+      timeTips: {
+        1: '已结束',
+        2: '进行中',
+        3: '暂未开始'
+      },
+      statusCode: {
+        noStatus: 1, // 未开始
+        doingStatus: 2, // 进行中
+        endStatus: 3 // 已结束
+      },
+      enrollStatus: null,
       enrollInfo: {}, // 报名信息
       dateList: [], // 日期
       timeList: {}, // 时间点 key:YYYY-MM-DD value: 时间段对象
@@ -137,7 +152,7 @@ export default {
       checkDraw: [],
       checkSetting: {}, // 收集信息设置
       interval: null, // 定时器
-      isBtnAuth: true // 报名按钮 true:有权限
+      isBtnAuth: false // 报名按钮 true:有权限
     }
   },
   components: {
@@ -152,6 +167,15 @@ export default {
     this.clearSetInterval()
   },
   computed: {
+    getBtnAuth () {
+      let status = this.enrollStatus
+      let isBtnAuth = this.isBtnAuth
+      if (status === this.statusCode.doingStatus) {
+        return isBtnAuth
+      } else {
+        return false
+      }
+    },
     ...mapGetters('vote', ['isModelShow'])
   },
   methods: {
@@ -160,23 +184,34 @@ export default {
         query: { id: this.id }
       }).then((res) => {
         if (res) {
+          this.enrollInfo = res
           let pageSetup = res.page_setup
           if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
             this.themeColorName = pageSetup.color_scheme.name
           }
-          this.initEnrollData(res)
           this.initActiveDate()
+          this.initEnrollData(res)
+          this.initLimitSource(res)
+          this.sharePage(res)
         }
       })
     },
     initEnrollData (data) {
       let { duration, section_type: sectionType, section, rule } = data
+      let orderSetting = rule.order_setting
       // #1 计算当天的YYYY-MM-DD和时间戳
       let newDate = new Date()
-      let currentDateStr = newDate.toLocaleDateString()
-      let currentDate = formatDate(currentDateStr, 'YYYY-MM-DD')
-      let currentTime = new Date(currentDate).getTime()
+      let currentDate = formatDate(newDate.toLocaleDateString(), 'YYYY-MM-DD')
+      let currentFullDate = currentDate + ' 23:59:59'
+      let currentTime = new Date(currentFullDate.replace(/-/g, '/')).getTime()
       this.currentDate = currentDate
+      // 计算当天之后的几天
+      let afterTime = null
+      if (orderSetting && orderSetting.is_open_order === 1) {
+        let day = orderSetting.day
+        let fullDate = new Date(currentFullDate.replace(/-/g, '/'))
+        afterTime = fullDate.setDate(fullDate.getDate() + day)
+      }
       // #2 渲染每天的活动时间点
       if (section && section.length) {
         let timeList = {}
@@ -186,11 +221,47 @@ export default {
         for (let i = 0; i < section.length; i++) {
           let item = section[i]
           let key = item.date
-          let time = new Date(key).getTime()
+          let fullKey = key + ' 00:00:00'
+          let time = new Date(fullKey.replace(/-/g, '/')).getTime()
           let tmpArr = timeList[key] ? timeList[key] : []
-          if (time > currentTime && !isLock) {
-            tmpDate = key
-            isLock = true
+          let isActive = null // 1: 已结束 2: 预约中 3: 暂未开始
+          let orderTime = new Date().getTime() // 当天具体时间点的时间戳
+          if (time > currentTime) {
+            isActive = 3
+            if (afterTime && time <= afterTime) {
+              // 可以预约活动
+              isActive = 2
+            }
+            if (!isLock) {
+              tmpDate = key
+              isLock = true
+            }
+          } else {
+            isActive = 1
+          }
+          let startTime = ''
+          let endTime = ''
+          if (key === currentDate && this.enrollStatus === this.statusCode.doingStatus) {
+            if (sectionType === 0) {
+              // 全天预约
+              this.isBtnAuth = true
+              isActive = 2
+            } else {
+              // 按时间段预约
+              startTime = key + ' ' + item.start_time + ':00'
+              endTime = key + ' ' + item.end_time + ':00'
+              startTime = new Date(startTime.replace(/-/g, '/')).getTime()
+              endTime = new Date(endTime.replace(/-/g, '/')).getTime()
+              if (orderTime < startTime) {
+                this.isBtnAuth = false
+                isActive = 3 // 活动未开始
+              } else if (orderTime >= endTime) {
+                this.isBtnAuth = false
+                isActive = 1 // 活动已结束
+              } else if (orderTime >= startTime && orderTime < endTime) {
+                isActive = 2 // 在时间范围内
+              }
+            }
           }
           let showTime = ''
           if (sectionType === 0) {
@@ -202,8 +273,11 @@ export default {
           }
           tmpArr.push({
             id: item.id,
+            start_time: startTime,
+            end_time: endTime,
             show_time: showTime,
-            left_number: item.left_number
+            left_number: item.left_number,
+            is_active: isActive
           })
           timeList[key] = tmpArr
         }
@@ -230,7 +304,6 @@ export default {
         this.posterSetting = rule.poster
         this.posterType = rule.poster.id
       }
-      this.enrollInfo = data
     },
     initActiveDate () {
       let enrollInfo = this.enrollInfo
@@ -238,11 +311,13 @@ export default {
         return
       }
       let nowTime = new Date().getTime()
+      let { noStatus, doingStatus, endStatus } = this.statusCode
       let { start_time: startTime, end_time: endTime } = enrollInfo
-      let startTimeMS = new Date(startTime).getTime()
-      let endTimeMS = new Date(endTime).getTime()
+      let startTimeMS = new Date(startTime.replace(/-/g, '/')).getTime()
+      let endTimeMS = new Date(endTime.replace(/-/g, '/')).getTime()
       let flag = startTimeMS > nowTime
       if (endTimeMS <= nowTime) {
+        this.enrollStatus = endStatus
         // 已经结束
         if (!this.isModelShow) {
           this.isShowEnd = true
@@ -252,19 +327,22 @@ export default {
         return
       }
       let time = flag ? startTimeMS : endTimeMS
-      if (time === startTimeMS) {
+      let status = flag ? noStatus : doingStatus
+      this.enrollStatus = status
+      if (status === noStatus) {
         // 活动未开始
         if (!this.isModelShow) {
           this.isShowStart = true
         }
         this.setIsModelShow(true)
         this.isBtnAuth = false
-      } else {
-        this.isBtnAuth = true
       }
-      this.startCountTime(time, (timeArr) => {
+      this.startInterval(time, (timeArr) => {
         // 更改当前的时间
         this.startDate = timeArr
+        if (status === doingStatus) {
+          this.initHighlightTime()
+        }
       }, () => {
         if (flag) {
           if (this.isShowStart) {
@@ -273,6 +351,7 @@ export default {
           this.initActiveDate()
         } else {
           // 结束后关闭
+          this.enrollStatus = endStatus
           if (!this.isModelShow) {
             this.isShowEnd = true
           }
@@ -281,10 +360,114 @@ export default {
         }
       })
     },
+    initLimitSource (enrollInfo) {
+      // 来源限制
+      let { source_limit: sourceLimit } = enrollInfo.rule
+      if (sourceLimit) {
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getAppSign()
+          let limitArr = limitTxt.split(',')
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
+            if (!this.isModelShow) {
+              this.isShowLimit = true
+            }
+            this.downloadLink = downloadLink
+            this.setIsModelShow(true)
+            this.activeTips = appSource
+            this.isBtnAuth = false
+            this.enrollStatus = this.statusCode.endStatus
+          }
+        }
+      }
+      // 暂停状态
+      let status = enrollInfo.status
+      if (status && status === 3) {
+        if (!this.isModelShow) {
+          this.isShowPause = true
+        }
+        this.isBtnAuth = false
+        this.enrollStatus = this.statusCode.endStatus
+        this.setIsModelShow(true)
+      }
+    },
+    sharePage (enrollInfo) {
+      let { title, introduce, indexpic, rule } = enrollInfo
+      let imgUrl = ''
+      let shareLink = ''
+      let shareTitle = title
+      let shareBrief = introduce
+      if (rule.share_settings) {
+        let share = rule.share_settings
+        let sharePic = share.indexpic
+        if (share.title) {
+          shareTitle = share.title
+        }
+        if (share.brief) {
+          shareBrief = share.brief
+        }
+        shareLink = share.link
+        if (sharePic) {
+          if (sharePic.constructor === Array && sharePic.length > 0) {
+            let obj = sharePic[0]
+            if (obj.constructor === Object) {
+              imgUrl = 'http:' + obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
+            imgUrl = 'http:' + sharePic.host + sharePic.filename
+          } else if (sharePic.constructor === String) {
+            imgUrl = sharePic
+          }
+        } else if (indexpic) {
+          if (indexpic.host && indexpic.filename) {
+            imgUrl = 'http:' + indexpic.host + indexpic.filename
+          } else if (indexpic.url) {
+            imgUrl = indexpic.url
+          }
+        }
+      }
+      if (!shareLink) {
+        shareLink = delUrlParams(['code'])
+      } else {
+        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+      }
+      this.initPageShareInfo({
+        id: enrollInfo.id,
+        title: shareTitle,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: enrollInfo.mark
+      })
+    },
     setDefaultDate () {
       let currentDate = this.currentDate
       let dateList = this.dateList
       let setting = this.checkSetting
+      // 滚动条滚动
+      this.$nextTick(() => {
+        document.getElementById('day-range-item-active').scrollIntoView({
+          inline: 'center',
+          behavior: 'smooth'
+        })
+      })
       for (let i = 0; i < dateList.length; i++) {
         let item = dateList[i]
         if (item.date === currentDate) {
@@ -301,8 +484,8 @@ export default {
       return (obj1, obj2) => {
         let value1 = obj1[str]
         let value2 = obj2[str]
-        let date1 = new Date(value1)
-        let date2 = new Date(value2)
+        let date1 = new Date(value1.replace(/-/g, '/'))
+        let date2 = new Date(value2.replace(/-/g, '/'))
         let time1 = date1.getTime()
         let time2 = date2.getTime()
         if (time1 < time2) {
@@ -315,8 +498,8 @@ export default {
       }
     },
     getDiffDate (start, end) {
-      let startTime = new Date(start)
-      let endTime = new Date(end)
+      let startTime = new Date(start.replace(/-/g, '/'))
+      let endTime = new Date(end.replace(/-/g, '/'))
       let dateArr = []
       let weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
       let timeList = this.timeList
@@ -354,17 +537,47 @@ export default {
       if (!item.is_check) {
         return
       }
+      let currentDate = item.date
+      let tmp = currentDate + ' 23:59:59'
+      let date = new Date(tmp.replace(/-/g, '/')).getTime()
+      let newDate = new Date().getTime()
+      this.currentDate = currentDate
       this.currentTime = ''
-      this.currentDate = item.date
-      this.checkSetting = {
-        week: item.week,
-        show_date: item.show_date
+      this.isBtnAuth = false
+      if (date <= newDate) {
+        // 今天之前的日期不支持预约
+        this.checkSetting = {}
+      } else {
+        this.checkSetting = {
+          week: item.week,
+          show_date: item.show_date
+        }
       }
     },
     changeEnrollTime (item) {
-      this.checkSetting.show_time = item.show_time
-      this.checkSetting.sections_id = item.id
-      this.currentTime = item.show_time
+      let status = this.enrollStatus
+      if (status !== this.statusCode.doingStatus) {
+        this.isBtnAuth = false
+        return
+      }
+      if (item.is_active === 2) {
+        API.remainEnroll({
+          query: { id: this.id },
+          params: {
+            sections_id: item.id
+          }
+        }).then((res) => {
+          let count = res.remain_count
+          if (count === 0) {
+            this.isBtnAuth = false
+          } else {
+            this.isBtnAuth = true
+            this.checkSetting.show_time = item.show_time
+            this.checkSetting.sections_id = item.id
+            this.currentTime = item.show_time
+          }
+        })
+      }
     },
     setEnroll () {
       let checkSetting = this.checkSetting
@@ -440,6 +653,8 @@ export default {
         query: { id: this.id }
       }).then((res) => {
         this.enrollInfo = res
+        this.currentTime = ''
+        this.isBtnAuth = false
         if (posterType === 1) {
           this.isShowTwoPoster = true
         } else {
@@ -447,7 +662,32 @@ export default {
         }
       })
     },
-    startCountTime (endTime, dealCb, doneCb) {
+    initHighlightTime () {
+      let date = new Date()
+      let currentDate = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
+      let timeList = this.timeList[currentDate]
+      if (timeList && timeList.length) {
+        let nowTime = date.getTime()
+        for (let item of timeList) {
+          if (item.start_time && item.end_time) {
+            let startTime = item.start_time
+            let endTime = item.end_time
+            if (nowTime < startTime) {
+              item.is_active = 3 // 活动未开始
+            } else if (nowTime >= endTime) {
+              if (item.is_active === 2) {
+                this.isBtnAuth = false
+                this.currentTime = ''
+              }
+              item.is_active = 1 // 活动已结束
+            } else if (nowTime >= startTime && nowTime < endTime) {
+              item.is_active = 2 // 在时间范围内
+            }
+          }
+        }
+      }
+    },
+    startInterval (endTime, dealCb, doneCb) {
       let timer = null
       let isDone = false
       function computedTime () {
@@ -680,8 +920,29 @@ export default {
               bottom: 0;
               left: 0;
               right: 0;
+              z-index: 2;
               border-radius: px2rem(10px);
               @include bg-alpha-color('bgColor', 0.2);
+            }
+            .active-mark {
+              position: absolute;
+              top: 0;
+              left: 0;
+              bottom: 0;
+              right: 0;
+              z-index: 3;
+              border-radius: px2rem(10px);
+              @include bg-alpha-color('bgColor', 0.8);
+            }
+            .active-mark-txt {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              z-index: 4 ;
+              transform: translate(-50%, -50%);
+              @include font-dpr(14px);
+              white-space: nowrap;
+              color: #666;
             }
           }
         }
@@ -696,8 +957,8 @@ export default {
           color: #fff;
           text-align: center;
           &.disabled {
-            background-color: #f4f4f5;
-            color: #bcbec2;
+            background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
+            box-shadow: 0 5px 13px 0 rgba(216,216,216,0.48);
           }
           &.active {
             @include bg-linear-color('compColor');

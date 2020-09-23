@@ -51,7 +51,8 @@ let voteUrl = {
 let enrollUrl = {
   getEnrollDetail: 'client/order/{id}', // 预约活动详情
   getMineEnrollList: 'client/order/mine', // 获取我的预约
-  saveEnrollInfo: '/client/order' // 预约报名
+  saveEnrollInfo: '/client/order', // 预约报名
+  remainEnroll: '/client/order/{id}/remain'
 }
 
 // 不带GUID
@@ -138,5 +139,6 @@ export default {
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
-  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG)
+  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
+  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG)
 }
