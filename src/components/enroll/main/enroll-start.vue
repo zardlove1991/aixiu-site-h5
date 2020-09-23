@@ -674,9 +674,15 @@ export default {
     initIntervalTime () {
       let date = new Date()
       let currentDate = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
+      let nowTime = date.getTime()
       let timeList = this.timeList[currentDate]
+      let fullDate = currentDate + ' 23:59:59'
+      let fullTime = new Date(fullDate.replace(/-/g, '/')).getTime()
+      if (nowTime >= fullTime) {
+        // 一天结束了
+        this.getNextFullDay()
+      }
       if (timeList && timeList.length) {
-        let nowTime = date.getTime()
         for (let item of timeList) {
           if (item.start_time && item.end_time) {
             let startTime = item.start_time
