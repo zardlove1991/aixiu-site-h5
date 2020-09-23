@@ -903,15 +903,15 @@ export default {
           @include bg-alpha-color('bgColor', 0.2);
         }
         .range-wrap {
-          margin-top: px2rem(30px);
+          margin-top: px2rem(20px);
           width: 100%;
           overflow-x: auto;
           display: flex;
-          align-items: center;
+          // align-items: center;
           flex-wrap: nowrap;
           &.range-wrap-date {
             margin-top: px2rem(40px);
-            height: px2rem(110px);
+            height: px2rem(120px);
           }
           &::-webkit-scrollbar {
             display: none;
