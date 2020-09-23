@@ -15,7 +15,7 @@
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
         <div class="date-range-bg"></div>
-        <div class="range-wrap">
+        <div class="range-wrap range-wrap-date">
           <div :class="['day-range-item', item.is_check ? 'check' : '', currentDate === item.date ? 'active' : '']"
             :id="currentDate === item.date ? 'day-range-item-active' : 'day-range-item' + index"
             v-for="(item, index) in dateList"
@@ -803,11 +803,11 @@ export default {
   @import "@/styles/index.scss";
   .enroll-start-wrap {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     overflow-y: auto;
     // background-color: #C2D8F7;
     @include bg-color('bgColor');
-    padding: 0.78rem px2rem(20px);
+    padding: px2rem(25px) px2rem(20px);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -848,7 +848,7 @@ export default {
     }
     .enroll-main {
       width: 100%;
-      flex: 1;
+      // flex: 1;
       background-color: #fff;
       border-radius: 0 0 px2rem(40px) px2rem(40px);
       padding: 0 px2rem(25px);
@@ -883,7 +883,7 @@ export default {
         @include font-color('btnColor');
       }
       .enroll-date-wrap {
-        margin-top: px2rem(40px);
+        margin-top: px2rem(65px);
         position: relative;
         .date-range, .date-range-bg {
           width: 100%;
@@ -903,12 +903,19 @@ export default {
           @include bg-alpha-color('bgColor', 0.2);
         }
         .range-wrap {
+          margin-top: px2rem(30px);
           width: 100%;
           overflow-x: auto;
-          margin-top: px2rem(40px);
           display: flex;
           align-items: center;
           flex-wrap: nowrap;
+          &.range-wrap-date {
+            margin-top: px2rem(40px);
+            height: px2rem(110px);
+          }
+          &::-webkit-scrollbar {
+            display: none;
+          }
           .day-range-item {
             margin-right: px2rem(25px);
             padding: 0 px2rem(5px);
@@ -1005,7 +1012,7 @@ export default {
           }
         }
         .enroll-btn {
-          margin-top: px2rem(50px);
+          margin-top: px2rem(78px);
           width: 100%;
           height: px2rem(90px);
           @include font-dpr(16px);
@@ -1023,7 +1030,7 @@ export default {
           }
         }
         .tool-tip {
-          margin: px2rem(20px) 0;
+          margin: px2rem(20px) 0 px2rem(40px) 0;
           width: 100%;
           text-align: center;
           @include font-dpr(14px);
