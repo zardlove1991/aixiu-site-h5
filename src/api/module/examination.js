@@ -49,11 +49,20 @@ let voteUrl = {
   getVoteTypeFid: '/client/voting/{id}/type/{worksId}' // 根据分类的id获取fid
 }
 
+// 预约报名
+let enrollUrl = {
+  getEnrollDetail: 'client/order/{id}', // 预约活动详情
+  getMineEnrollList: 'client/order/mine', // 获取我的预约
+  saveEnrollInfo: 'client/order', // 预约报名
+  remainEnroll: 'client/order/{id}/remain'
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
   ...baseUrl,
   ...voteUrl,
+  ...enrollUrl,
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
   getExamDetailsList: 'client/examination/questions',
@@ -126,9 +135,14 @@ export default {
   shareMake: config => createVote(configUrl.shareMake, 'POST', config, API_FLAG),
   getSharer: config => createVote(configUrl.getSharer, 'GET', config, API_FLAG),
   collectInfo: config => createVote(configUrl.collectInfo, 'POST', config, API_FLAG),
-  getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'get', config, API_FLAG),
+  getVoteAuthScope: config => createVote(configUrl.getVoteAuthScope, 'GET', config, API_FLAG),
   getCaptchaCode: config => createBase(configUrl.getCaptchaCode, 'GET', config, 'reserve'),
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
-  getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG)
+  getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
+  // 预约报名
+  getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
+  getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
+  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
+  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG)
 }

@@ -62,7 +62,7 @@
           <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
         </div>
       </div>
-      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="!noMore" class="scroll-tips" @click="initRankList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
@@ -104,7 +104,7 @@ export default {
     CommonPageEmpty, CommonPagebackBtn, VoteClassifyList
   },
   created () {
-    this.initRankList()
+    this.initDetail()
   },
   computed: {
     noMore () {
@@ -122,9 +122,10 @@ export default {
           this.signUnit = tmp[1]
         }
       }
+      this.initRankList()
     },
     initRankList () {
-      this.initDetail()
+      // this.initDetail()
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
@@ -235,12 +236,6 @@ export default {
         display: flex;
         align-items: center;
         height: px2rem(158px);
-        &:last-child {
-          padding-bottom: px2rem(30px);
-          .list-item-content {
-            border-bottom: 0;
-          }
-        }
         &.rank-my-item {
           padding-left: px2rem(30px);
           margin: px2rem(30px) px2rem(30px) px2rem(30px) 0;
@@ -259,6 +254,12 @@ export default {
                 @include bg-color('btnColor');
               }
             }
+          }
+        }
+        &:last-child {
+          padding-bottom: px2rem(30px);
+          .list-item-content {
+            border-bottom: 0;
           }
         }
         .item-rank {
@@ -374,6 +375,7 @@ export default {
         @include font-dpr(14px);
         color:#ccc;
         text-align: center;
+        margin-top: px2rem(30px);
       }
     }
   }

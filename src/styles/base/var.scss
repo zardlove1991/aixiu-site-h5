@@ -101,6 +101,20 @@ $colorMaps: (
   }
 }
 
+// 更改透明背景颜色
+@mixin bg-alpha-color($colorName, $alphaVal) {
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $colorName == $varName {
+        [data-theme= #{$key}] & {
+          background-color: $val;
+          opacity: $alphaVal;
+        }
+      }
+    }
+  }
+}
+
 // 更改渐变颜色
 @mixin bg-linear-color($colorName) {
   @each $key,$list in $colorMaps {

@@ -47,6 +47,12 @@ let wechat = {
       window.location.href = url
     })
   },
+  async getEnrollScope () {
+    let scopeLimit = 'snsapi_userinfo'
+    STORAGE.set('scope_limit', scopeLimit)
+    const url = wechat.getAuthUrl(scopeLimit)
+    window.location.href = url
+  },
   async h5Signature (info, cbk) {
     let scope = STORAGE.get('scope_limit')
     let compAppid = STORAGE.get('component_appid')
@@ -85,7 +91,9 @@ let wechat = {
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         this.getVoteAuthScope(id)
-      } else {
+      } else if (pathname.indexOf('enrollstart') !== -1) {
+        this.getEnrollScope()
+      } else if (pathname.indexOf('depencestart') !== -1) {
         // 测评
         this.getExamAuthScope(id)
       }
