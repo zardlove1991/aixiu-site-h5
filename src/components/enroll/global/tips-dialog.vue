@@ -1,9 +1,9 @@
 <template>
-  <div class="tips-dialog-wrap"
+  <div class="enrolltips-dialog-wrap"
     ref="tipsDialogWrap"
     v-if="show">
     <!--弹窗模块-->
-    <div :class="['tips-dialog-content', themeColorName]">
+    <div :class="['enrolltips-dialog-content', themeColorName]">
       <div class="close-btn" @click.stop="close()"></div>
       <!--主体内容-->
       <slot name="tips-content"></slot>
@@ -44,7 +44,7 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .tips-dialog-wrap {
+  .enrolltips-dialog-wrap {
     position: fixed;
     left: 0;
     top: 0;
@@ -56,10 +56,14 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .tips-dialog-content {
+    .enrolltips-dialog-content {
       position: relative;
       width: px2rem(600px);
       border-radius: px2rem(40px);
+      -webkit-border-radius: px2rem(40px);
+      -moz-border-radius: px2rem(40px);
+      -ms-border-radius: px2rem(40px);
+      -o-border-radius: px2rem(40px);
       box-sizing: border-box;
       pointer-events: auto;
       background-color:#fff;
