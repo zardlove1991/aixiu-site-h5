@@ -536,7 +536,6 @@ export default {
         if (timeList[date] && timeList[date].length) {
           isCheck = true
         }
-        console.log('date', date)
         dateArr.push({
           date,
           week,
