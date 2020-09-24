@@ -244,7 +244,7 @@ export default {
           if (key === currentDate && this.enrollStatus === this.statusCode.doingStatus) {
             if (sectionType === 0) {
               // 全天预约
-              this.isBtnAuth = true
+              this.isBtnAuth = false
               isActive = 2
             } else {
               // 按时间段预约
@@ -275,6 +275,7 @@ export default {
             id: item.id,
             start_time: startTime,
             end_time: endTime,
+            date: key,
             show_time: showTime,
             left_number: item.left_number,
             is_active: isActive
@@ -312,7 +313,13 @@ export default {
       }
       let nowTime = new Date().getTime()
       let { noStatus, doingStatus, endStatus } = this.statusCode
-      let { start_time: startTime, end_time: endTime } = enrollInfo
+      let {
+        start_time: startTime,
+        end_time: endTime,
+        section_type: sectionType,
+        rule
+      } = enrollInfo
+      let orderSetting = rule.order_setting
       let startTimeMS = new Date(startTime.replace(/-/g, '/')).getTime()
       let endTimeMS = new Date(endTime.replace(/-/g, '/')).getTime()
       let flag = startTimeMS > nowTime
@@ -341,7 +348,11 @@ export default {
         // 更改当前的时间
         this.startDate = timeArr
         if (status === doingStatus) {
-          this.initHighlightTime()
+          if (sectionType === 0) {
+            this.initFullDateTime(orderSetting)
+          } else if (sectionType === 1) {
+            this.initIntervalTime()
+          }
         }
       }, () => {
         if (flag) {
@@ -662,7 +673,7 @@ export default {
         }
       })
     },
-    initHighlightTime () {
+    initIntervalTime () {
       let date = new Date()
       let currentDate = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
       let timeList = this.timeList[currentDate]
@@ -683,6 +694,31 @@ export default {
             } else if (nowTime >= startTime && nowTime < endTime) {
               item.is_active = 2 // 在时间范围内
             }
+          }
+        }
+      }
+    },
+    initFullDateTime (orderSetting) {
+      let date = new Date()
+      let currentDate = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
+      let timeList = this.timeList[currentDate]
+      if (timeList && timeList.length) {
+        let nowTime = date.getTime()
+        for (let item of timeList) {
+          let key = item.date + ' 23:59:59'
+          let itemTime = new Date(key.replace(/-/g, '/')).getTime()
+          if (nowTime <= itemTime) {
+            if (currentDate === item.date) {
+              item.is_active = 2 // 活动进行中
+            } else {
+              item.is_active = 3 // 活动未开始
+            }
+          } else if (nowTime > itemTime) {
+            if (item.is_active === 2) {
+              this.isBtnAuth = false
+              this.currentTime = ''
+            }
+            item.is_active = 1 // 活动已结束
           }
         }
       }
