@@ -211,7 +211,7 @@ export default {
       bottom: 0;
       width: px2rem(1px);
       background-color: #EBEBEB;
-      z-index: 10;
+      z-index: 1;
     }
     .myenroll-item {
       width: 100%;
@@ -226,6 +226,8 @@ export default {
         flex-direction: column;
         align-items: center;
         .point {
+          position: relative;
+          z-index: 10;
           width: px2rem(16px);
           height: px2rem(16px);
           border-radius: 50%;
