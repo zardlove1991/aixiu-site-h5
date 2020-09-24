@@ -578,6 +578,7 @@ export default {
         }).then((res) => {
           let count = res.remain_count
           if (count === 0) {
+            Toast('该场次已无预约次数')
             this.isBtnAuth = false
           } else {
             this.isBtnAuth = true
@@ -625,6 +626,9 @@ export default {
             }
           } else if (item.unique_name === 'mobile') {
             item.maxlength = 11
+            item.type = 'text'
+          } else if (item.unique_name === 'id_card') {
+            item.maxlength = 18
             item.type = 'text'
           } else {
             item.maxlength = 100
