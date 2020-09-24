@@ -32,7 +32,7 @@
             :key="index"
             @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
-            <div>{{item.left_number ? item.left_number : 0}} 人</div>
+            <div class="date-item2" v-if="item.number !== -1 && item.left_number !== -1">{{item.left_number ? item.left_number :  0 }} 人</div>
             <div class="date-range-item-bg"></div>
             <div class="active-mark" v-if="item.is_active !== 2"></div>
             <div class="active-mark-txt" v-if="item.is_active !== 2">- {{timeTips[item.is_active]}} -</div>
@@ -279,6 +279,7 @@ export default {
             end_time: endTime,
             date: key,
             show_time: showTime,
+            number: item.number,
             left_number: item.left_number,
             is_active: isActive
           })
@@ -827,11 +828,14 @@ export default {
       position: relative;
       .mint-swipe {
         border-radius: px2rem(40px) px2rem(40px) 0 0;
+        position: relative;
         .mint-swipe-indicators {
           max-width: px2rem(180px);
           left: auto;
           right: px2rem(30px);
           bottom: px2rem(20px);
+          transform: translateX(0);
+          -webkit-transform: translateX(0);
           z-index: 10;
           .mint-swipe-indicator {
             width: px2rem(10px);
@@ -847,7 +851,7 @@ export default {
       }
       .enroll-bar-icon {
         position: absolute;
-        bottom: -10px;
+        bottom: -11px;
         left: 0;
         right: 0;
         height: px2rem(121px);
@@ -972,14 +976,16 @@ export default {
             height: px2rem(120px);
             // background-color: #F3F7FD;
             border-radius: px2rem(10px);
-            color: #999;
-            @include font-dpr(13px);
             &:last-child {
               margin-right: 0;
             }
             .date-item1 {
               color: #333;
-              margin-bottom: px2rem(10px);
+            }
+            .date-item2 {
+              margin-top: px2rem(10px);
+              @include font-dpr(13px);
+              color: #999;
             }
             .date-range-item-bg {
               position: absolute;
