@@ -976,6 +976,8 @@ export default {
             height: px2rem(120px);
             // background-color: #F3F7FD;
             border-radius: px2rem(10px);
+            @include font-dpr(13px);
+            color: #999;
             &:last-child {
               margin-right: 0;
             }
@@ -984,8 +986,6 @@ export default {
             }
             .date-item2 {
               margin-top: px2rem(10px);
-              @include font-dpr(13px);
-              color: #999;
             }
             .date-range-item-bg {
               position: absolute;

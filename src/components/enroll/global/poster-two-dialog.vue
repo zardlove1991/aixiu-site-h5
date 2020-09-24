@@ -17,6 +17,7 @@
           <div class="item">预约排名<span class="item-txt">{{posterData.rank}}</span></div>
           <div class="item">预约场次<span class="item-txt">{{posterData.num}}</span></div>
         </div>
+        <div class="enroll-info-shadow-wrap"></div>
       </div>
       <div class="user-info">
         <div class="user-item" v-for="(info, index) in posterData.collect_member_info" :key="index">
@@ -152,9 +153,10 @@ export default {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          box-shadow: 0 5px 21px 0 rgba(87,107,255,0.19);
+          // box-shadow: 0 5px 12px 0 rgb(255, 170, 11, 0.15);
           border-radius: px2rem(20px);
-          background-color: #F3F7FD;
+          // background-color: #F3F7FD;
+          @include bg-color('descColor');
           padding: 0 px2rem(25px);
           .item {
             &.item1 {
@@ -172,6 +174,15 @@ export default {
               // color: #324AFE;
             }
           }
+        }
+        .enroll-info-shadow-wrap {
+          position: absolute;
+          z-index: 2;
+          top: px2rem(265px);
+          left: px2rem(30px);
+          right: px2rem(30px);
+          height: px2rem(169px);
+          @include box-shadow-color(0, 5px, 12px, 0, 0.15, 'btnColor');
         }
       }
       .user-header-info {
