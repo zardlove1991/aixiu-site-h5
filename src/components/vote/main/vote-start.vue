@@ -689,6 +689,7 @@ export default {
       this.interval = timer
     },
     dealSearch (flag = '') {
+      console.log('xxxxxxx', flag)
       let name = this.searchVal.trim()
       if (flag === 'input-search' && name) {
         this.myWork = {}
@@ -708,11 +709,12 @@ export default {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
+      let classifyVal = this.searchClassifyVal
       let params = {
         page: page + 1,
         count,
         k: name,
-        type_name: this.searchClassifyVal
+        type_name: classifyVal
       }
       API.getVoteWorks({
         query: { id: voteId },
@@ -720,7 +722,8 @@ export default {
       }).then(res => {
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
-          if (name) {
+          console.log('xxxxxxx', name, classifyVal)
+          if (name && !classifyVal) {
             this.isShowSearch = true
           }
           this.loading = false
