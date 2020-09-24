@@ -1,6 +1,5 @@
 <template>
   <div class="commvote-rank color-bg_color">
-    <!-- <common-page-empty v-show="!rankList.length" tip="暂无排行列表信息"></common-page-empty> -->
     <!--具体列表包裹-->
     <div class="rank-list-wrap">
       <div class="rank-list-img"></div>
@@ -14,7 +13,7 @@
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
-        v-show="myVoteData && myVoteData.name">
+        v-show="isShowMy && myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
           <div class="indexpic-wrap"
@@ -62,6 +61,7 @@
           <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
         </div>
       </div>
+      <common-page-empty v-show="rankList && !rankList.length" tip="暂无排行列表信息"></common-page-empty>
       <div v-if="!noMore" class="scroll-tips" @click="initRankList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
@@ -93,7 +93,8 @@ export default {
       signUnit: '票',
       isOpenClassify: false,
       isShowClassify: false,
-      searchVal: ''
+      searchVal: '',
+      isShowMy: true
     }
   },
   props: {
@@ -189,10 +190,12 @@ export default {
       })
     },
     searchClassify (val) {
-      if (!val) {
-        return
-      }
       if (val !== this.searchVal) {
+        if (val === '') {
+          this.isShowMy = true
+        } else {
+          this.isShowMy = false
+        }
         this.searchVal = val
         this.rankList = []
         this.pager = {

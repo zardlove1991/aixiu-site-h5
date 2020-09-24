@@ -20,7 +20,8 @@ export default {
   @import "@/styles/index.scss";
   .common-page-empty-wrap {
     width: 100%;
-    height: 100vh;
+    // height: 100vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
