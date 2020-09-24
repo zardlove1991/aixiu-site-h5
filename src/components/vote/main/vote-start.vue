@@ -688,13 +688,16 @@ export default {
       timer = setInterval(computedTime, 1000)
       this.interval = timer
     },
-    dealSearch (flag = '') {
-      console.log('xxxxxxx', flag)
+    dealSearch (flag = '', isClassifySearch = false) {
       let name = this.searchVal.trim()
-      if (flag === 'input-search' && name) {
-        this.myWork = {}
-      } else if (flag === 'input-search' && !name) {
-        this.myWork = this.myVote ? this.myVote : {}
+      let classifyVal = this.searchClassifyVal
+      if (flag === 'input-search') {
+        if (name || classifyVal) {
+          this.myWork = {}
+        }
+        if (!name && !classifyVal) {
+          this.myWork = this.myVote ? this.myVote : {}
+        }
       }
       this.pager = {
         total: 0,
@@ -703,18 +706,17 @@ export default {
         totalPages: 0
       }
       this.workList = []
-      this.getVoteWorks(name)
+      this.getVoteWorks(name, isClassifySearch)
     },
-    getVoteWorks (name = '', isShowMy = true) {
+    getVoteWorks (name = '', isClassifySearch = false) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
-      let classifyVal = this.searchClassifyVal
       let params = {
         page: page + 1,
         count,
         k: name,
-        type_name: classifyVal
+        type_name: this.searchClassifyVal
       }
       API.getVoteWorks({
         query: { id: voteId },
@@ -722,8 +724,7 @@ export default {
       }).then(res => {
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
-          console.log('xxxxxxx', name, classifyVal)
-          if (name && !classifyVal) {
+          if (name && !isClassifySearch) {
             this.isShowSearch = true
           }
           this.loading = false
@@ -782,7 +783,7 @@ export default {
     }),
     searchClassify (val) {
       this.searchClassifyVal = val
-      this.dealSearch()
+      this.dealSearch('input-search', true)
     }
   }
 }
