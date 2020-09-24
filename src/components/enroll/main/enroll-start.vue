@@ -516,7 +516,7 @@ export default {
       let dateArr = []
       let weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
       let timeList = this.timeList
-      while ((endTime.getTime() - startTime.getTime()) > 0) {
+      while ((endTime.getTime() - startTime.getTime()) >= 0) {
         let year = startTime.getFullYear()
         // 月份
         let month = startTime.getMonth() + 1
@@ -536,6 +536,7 @@ export default {
         if (timeList[date] && timeList[date].length) {
           isCheck = true
         }
+        console.log('date', date)
         dateArr.push({
           date,
           week,
