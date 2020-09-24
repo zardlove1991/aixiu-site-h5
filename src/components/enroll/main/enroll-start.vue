@@ -10,8 +10,8 @@
     </div>
     <div class="enroll-main">
       <div class="enroll-title"><span class="enroll-line">{{enrollInfo.title}}</span></div>
-      <div class="enroll-rule">{{enrollInfo.introduce}}</div>
-      <div class="find-all-rule" @click="isShowInfo = true">查看更多</div>
+      <div class="enroll-rule" id="enroll-rule-info">{{enrollInfo.introduce}}</div>
+      <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = true">查看更多</div>
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
         <div class="date-range-bg"></div>
@@ -129,6 +129,7 @@ export default {
         doingStatus: 2, // 进行中
         endStatus: 3 // 已结束
       },
+      isShowFindAll: false, // 查看更多是否展示
       enrollStatus: null,
       enrollInfo: {}, // 报名信息
       dateList: [], // 日期
@@ -190,10 +191,20 @@ export default {
           if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
             this.themeColorName = pageSetup.color_scheme.name
           }
+          this.initFindAll()
           this.initActiveDate()
           this.initEnrollData(res, true)
           this.initLimitSource(res)
           this.sharePage(res)
+        }
+      })
+    },
+    initFindAll () {
+      this.$nextTick(() => {
+        var oDiv = document.getElementById('enroll-rule-info')
+        console.log(oDiv.scrollHeight, oDiv.clientHeight)
+        if (oDiv.scrollHeight > oDiv.clientHeight) {
+          this.isShowFindAll = true
         }
       })
     },
@@ -885,7 +896,6 @@ export default {
         }
       }
       .enroll-rule {
-        margin-bottom: px2rem(20px);
         width: 100%;
         @include font-dpr(14px);
         @include line-overflow(2);
@@ -893,12 +903,13 @@ export default {
         line-height: px2rem(40px);
       }
       .find-all-rule {
+        margin-top: px2rem(20px);
         @include font-dpr(14px);
         // color: #324AFE;
         @include font-color('btnColor');
       }
       .enroll-date-wrap {
-        margin-top: px2rem(65px);
+        margin-top: px2rem(60px);
         position: relative;
         .date-range, .date-range-bg {
           width: 100%;
