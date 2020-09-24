@@ -2,7 +2,7 @@
   <div :class="['myenroll-wrap', isBgImg ? '' : 'myenroll-bg']">
     <enroll-page-empty v-show="!enrollList || !enrollList.length" tip="暂无预约记录"></enroll-page-empty>
     <div
-      :class="['myenrll-item', item.status === 2 ? 'disabled' : 'base']"
+      :class="['myenroll-item', item.status === 2 ? 'disabled' : 'base']"
       v-for="(item, index) in enrollList"
       :key="index"
       @click="getMyEnrllDetail(item)">
@@ -21,6 +21,7 @@
         </div>
       </div>
     </div>
+    <div class="myenroll-allline" v-show="enrollList && enrollList.length"></div>
     <div v-if="!noMore" class="scroll-tips" @click="getMineEnrollList()">点击我，加载更多</div>
     <div class="loading-box" v-if="loading">
       <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
@@ -199,10 +200,20 @@ export default {
     height: 100vh;
     padding: px2rem(40px) px2rem(30px) px2rem(40px) px2rem(22px);
     overflow-y: auto;
+    position: relative;
     &.myenroll-bg {
       background-color: #fff;
     }
-    .myenrll-item {
+    .myenroll-allline {
+      position: absolute;
+      left: px2rem(30px);
+      top: px2rem(56px);
+      bottom: 0;
+      width: px2rem(1px);
+      background-color: #EBEBEB;
+      z-index: 10;
+    }
+    .myenroll-item {
       width: 100%;
       height: px2rem(275px);
       box-sizing: border-box;

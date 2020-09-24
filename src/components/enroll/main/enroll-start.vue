@@ -190,13 +190,13 @@ export default {
             this.themeColorName = pageSetup.color_scheme.name
           }
           this.initActiveDate()
-          this.initEnrollData(res)
+          this.initEnrollData(res, true)
           this.initLimitSource(res)
           this.sharePage(res)
         }
       })
     },
-    initEnrollData (data) {
+    initEnrollData (data, isModify) {
       let { duration, section_type: sectionType, section, rule } = data
       let orderSetting = rule.order_setting
       // #1 计算当天的YYYY-MM-DD和时间戳
@@ -204,7 +204,9 @@ export default {
       let currentDate = formatDate(newDate.toLocaleDateString(), 'YYYY-MM-DD')
       let currentFullDate = currentDate + ' 23:59:59'
       let currentTime = new Date(currentFullDate.replace(/-/g, '/')).getTime()
-      this.currentDate = currentDate
+      if (isModify) {
+        this.currentDate = currentDate
+      }
       // 计算当天之后的几天
       let afterTime = null
       if (orderSetting && orderSetting.is_open_order === 1) {
@@ -283,7 +285,9 @@ export default {
           timeList[key] = tmpArr
         }
         if (!timeList[currentDate] && tmpDate) {
-          this.currentDate = tmpDate
+          if (isModify) {
+            this.currentDate = tmpDate
+          }
         }
         this.timeList = timeList
       }
@@ -577,8 +581,9 @@ export default {
           }
         }).then((res) => {
           let count = res.remain_count
-          if (count === 0) {
+          if (count === 0 || item.left_number === 0) {
             Toast('该场次已无预约次数')
+            this.currentTime = ''
             this.isBtnAuth = false
           } else {
             this.isBtnAuth = true
@@ -668,6 +673,7 @@ export default {
         this.enrollInfo = res
         this.currentTime = ''
         this.isBtnAuth = false
+        this.initEnrollData(res, false)
         if (posterType === 1) {
           this.isShowTwoPoster = true
         } else {
