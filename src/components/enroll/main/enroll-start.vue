@@ -202,7 +202,6 @@ export default {
     initFindAll () {
       this.$nextTick(() => {
         var oDiv = document.getElementById('enroll-rule-info')
-        console.log(oDiv.scrollHeight, oDiv.clientHeight)
         if (oDiv.scrollHeight > oDiv.clientHeight) {
           this.isShowFindAll = true
         }
