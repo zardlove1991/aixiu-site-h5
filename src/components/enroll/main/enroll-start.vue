@@ -316,10 +316,8 @@ export default {
       let {
         start_time: startTime,
         end_time: endTime,
-        section_type: sectionType,
-        rule
+        section_type: sectionType
       } = enrollInfo
-      let orderSetting = rule.order_setting
       let startTimeMS = new Date(startTime.replace(/-/g, '/')).getTime()
       let endTimeMS = new Date(endTime.replace(/-/g, '/')).getTime()
       let flag = startTimeMS > nowTime
@@ -349,7 +347,7 @@ export default {
         this.startDate = timeArr
         if (status === doingStatus) {
           if (sectionType === 0) {
-            this.initFullDateTime(orderSetting)
+            this.initFullDateTime()
           } else if (sectionType === 1) {
             this.initIntervalTime()
           }
@@ -698,7 +696,7 @@ export default {
         }
       }
     },
-    initFullDateTime (orderSetting) {
+    initFullDateTime () {
       let date = new Date()
       let currentDate = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
       let timeList = this.timeList[currentDate]
@@ -717,8 +715,26 @@ export default {
             if (item.is_active === 2) {
               this.isBtnAuth = false
               this.currentTime = ''
+              this.getNextFullDay()
             }
             item.is_active = 1 // 活动已结束
+          }
+        }
+      }
+    },
+    getNextFullDay () {
+      let enrollInfo = this.enrollInfo
+      if (enrollInfo) {
+        let orderSetting = enrollInfo.rule.order_setting
+        if (orderSetting && orderSetting.is_open_order === 1) {
+          let date = new Date()
+          date.setDate(date.getDate() + orderSetting.day + 1)
+          let key = formatDate(date.toLocaleDateString(), 'YYYY-MM-DD')
+          let timeList = this.timeList[key]
+          if (timeList && timeList.length) {
+            for (let item of timeList) {
+              item.is_active = 2
+            }
           }
         }
       }
