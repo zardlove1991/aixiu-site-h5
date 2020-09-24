@@ -32,7 +32,8 @@
             :key="index"
             @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
-            <div class="date-item2" v-if="item.number !== -1 && item.left_number !== -1">{{item.left_number ? item.left_number :  0 }} 人</div>
+            <div class="date-item2" v-if="item.number === -1 && item.left_number === -1">未限制</div>
+            <div class="date-item2" v-else>{{item.left_number ? item.left_number :  0 }} 人</div>
             <div class="date-range-item-bg"></div>
             <div class="active-mark" v-if="item.is_active !== 2"></div>
             <div class="active-mark-txt" v-if="item.is_active !== 2">- {{timeTips[item.is_active]}} -</div>
