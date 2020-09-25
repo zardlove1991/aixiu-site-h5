@@ -100,7 +100,7 @@ export default {
       position: relative;
       .poster-top-wrap {
         width: 100%;
-        height: px2rem(500px);
+        height: px2rem(470px);
         position: relative;
         .poster-top-bg2 {
           position: absolute;
@@ -212,7 +212,9 @@ export default {
         border-radius: 0 0 px2rem(40px) px2rem(40px);
         width: 100%;
         background-color: #fff;
-        padding: 0 px2rem(60px) px2rem(40px) px2rem(60px);
+        padding: px2rem(10px) px2rem(60px) px2rem(40px) px2rem(60px);
+        position: relative;
+        z-index: 2;
         .user-item {
           font-size: 0;
           display: flex;
