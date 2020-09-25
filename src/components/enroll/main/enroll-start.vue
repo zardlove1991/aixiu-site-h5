@@ -322,10 +322,10 @@ export default {
       if (duration) {
         let { start_time: startTime, end_time: endTime } = duration
         if (startTime) {
-          data.duration.start_time = formatDate(startTime, 'YYYY月MM日DD')
+          data.duration.start_time = formatDate(startTime, 'YYYY年MM月DD日')
         }
         if (endTime) {
-          data.duration.end_time = formatDate(endTime, 'YYYY月MM日DD')
+          data.duration.end_time = formatDate(endTime, 'YYYY年MM月DD日')
         }
         this.getDiffDate(startTime, endTime)
       }
