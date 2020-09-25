@@ -840,6 +840,9 @@ export default {
       .mint-swipe {
         border-radius: px2rem(40px) px2rem(40px) 0 0;
         position: relative;
+        .mint-swipe-item img {
+          border-radius: px2rem(40px) px2rem(40px) 0 0;
+        }
         .mint-swipe-indicators {
           max-width: px2rem(180px);
           left: auto;
