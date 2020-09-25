@@ -131,7 +131,10 @@
           </vote-text>
         </div>
         <div slot="bottom" class="mint-loadmore-top">
-          <div v-if="!noMore && loading" class="scroll-tips">加载中...</div>
+          <div class="loading-box" v-if="!noMore && loading">
+            <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+            <span class="loading-more-txt">正在加载中</span>
+          </div>
           <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
@@ -219,7 +222,7 @@ import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
-import { Loadmore } from 'mint-ui'
+import { Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -246,6 +249,7 @@ export default {
     ActivePause,
     ActiveStart,
     VoteClassifyList,
+    Spinner,
     Loadmore
   },
   data () {
@@ -981,6 +985,17 @@ export default {
       }
       .mint-loadmore-top {
         margin-top: 0;
+      }
+      .loading-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .loading-more-txt {
+          display: inline-block;
+          margin-left: px2rem(20px);
+          @include font-dpr(14px);
+          color:#ccc;
+        }
       }
       .scroll-tips {
         width: 100%;

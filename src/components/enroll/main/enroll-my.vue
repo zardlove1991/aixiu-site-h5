@@ -1,32 +1,41 @@
 <template>
   <div :class="['myenroll-wrap', isBgImg ? '' : 'myenroll-bg']">
-    <enroll-page-empty v-show="!enrollList || !enrollList.length" tip="暂无预约记录"></enroll-page-empty>
-    <div
-      :class="['myenroll-item', item.status === 2 ? 'disabled' : 'base']"
-      v-for="(item, index) in enrollList"
-      :key="index"
-      @click="getMyEnrllDetail(item)">
-      <div class="left-split"><div class="point"></div><div class="line"></div></div>
-      <div class="right-content">
-        <div class="myenroll-date">
-          <i class="myenroll-day-icon"></i>
-          <span class="myenroll-date-txt">{{item.create_time}}</span>
+    <mt-loadmore ref="enroll-my-loadmore"
+      :bottom-method="getMineEnrollList"
+      :bottom-all-loaded="noMore"
+      :auto-fill="false">
+      <div class="wrap">
+        <enroll-page-empty v-show="!enrollList || !enrollList.length" tip="暂无预约记录"></enroll-page-empty>
+        <div
+          :class="['myenroll-item', item.status === 2 ? 'disabled' : 'base']"
+          v-for="(item, index) in enrollList"
+          :key="index"
+          @click="getMyEnrllDetail(item)">
+          <div class="left-split"><div class="point"></div><div class="line"></div></div>
+          <div class="right-content">
+            <div class="myenroll-date">
+              <i class="myenroll-day-icon"></i>
+              <span class="myenroll-date-txt">{{item.create_time}}</span>
+            </div>
+            <div class="myenroll-info">
+              <div class="myenroll-rank">预约排名：{{item.rank}}</div>
+              <div class="myenroll-num">预约场次：{{item.num}}</div>
+              <div class="myenroll-right-icon"></div>
+              <div class="myenroll-bg"></div>
+              <div :class="['myenroll-status', item.color_name ? item.color_name : '']"></div>
+            </div>
+          </div>
         </div>
-        <div class="myenroll-info">
-          <div class="myenroll-rank">预约排名：{{item.rank}}</div>
-          <div class="myenroll-num">预约场次：{{item.num}}</div>
-          <div class="myenroll-right-icon"></div>
-          <div class="myenroll-bg"></div>
-          <div :class="['myenroll-status', item.color_name ? item.color_name : '']"></div>
-        </div>
+        <div class="myenroll-allline" v-show="enrollList && enrollList.length"></div>
       </div>
-    </div>
-    <div class="myenroll-allline" v-show="enrollList && enrollList.length"></div>
-    <div v-if="!noMore" class="scroll-tips" @click="getMineEnrollList()">点击我，加载更多</div>
-    <div class="loading-box" v-if="loading">
-      <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
-      <span class="loading-more-txt">加载中...</span>
-    </div>
+      <div slot="bottom" class="mint-loadmore-top">
+        <div class="loading-box" v-if="!noMore && loading">
+          <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+          <span class="loading-more-txt">正在加载中</span>
+        </div>
+        <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+      </div>
+    </mt-loadmore>
     <poster-one-dialog
       :show="isShowOnePoster"
       :setting="posterSetting"
@@ -47,7 +56,7 @@ import EnrollPageEmpty from '@/components/enroll/global/enroll-empty'
 import PosterOneDialog from '@/components/enroll/global/poster-one-dialog'
 import PosterTwoDialog from '@/components/enroll/global/poster-two-dialog'
 import STORAGE from '@/utils/storage'
-import { InfiniteScroll, Spinner } from 'mint-ui'
+import { Spinner, Loadmore } from 'mint-ui'
 import API from '@/api/module/examination'
 
 export default {
@@ -74,7 +83,7 @@ export default {
     }
   },
   components: {
-    EnrollPageEmpty, PosterOneDialog, PosterTwoDialog, InfiniteScroll, Spinner
+    EnrollPageEmpty, PosterOneDialog, PosterTwoDialog, Loadmore, Spinner
   },
   created () {
     this.initData()
@@ -114,6 +123,9 @@ export default {
         count,
         order_id: this.id
       }
+      this.$nextTick(() => {
+        this.$refs['enroll-my-loadmore'].onBottomLoaded()
+      })
       API.getMineEnrollList({ params: params }).then(res => {
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
@@ -335,6 +347,13 @@ export default {
       &.disabled .myenroll-info {
         background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);
       }
+    }
+    .mint-loadmore-top, .mint-loadmore-bottom {
+      height: px2rem(50px);
+      line-height: px2rem(50px);
+    }
+    .mint-loadmore-top {
+      margin-top: 0;
     }
     .scroll-tips {
       width: 100%;
