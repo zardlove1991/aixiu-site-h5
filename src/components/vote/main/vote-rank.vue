@@ -1,6 +1,5 @@
 <template>
   <div class="commvote-rank color-bg_color">
-    <!-- <common-page-empty v-show="!rankList.length" tip="暂无排行列表信息"></common-page-empty> -->
     <!--具体列表包裹-->
     <div class="rank-list-wrap">
       <div class="rank-list-img"></div>
@@ -14,7 +13,7 @@
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
-        v-show="myVoteData && myVoteData.name">
+        v-show="isShowMy && myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
           <div class="indexpic-wrap"
@@ -37,33 +36,50 @@
           <p class="item-votes color-theme_color">{{myVoteData.total_votes}}{{signUnit}}</p>
         </div>
       </div>
-      <div class="rank-list-item"
-        v-for="(item, index) in rankList" :key="index"
-        @click.stop="jumpPage('votedetail', { worksId: item.id })">
-        <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
-        <div class="list-item-content">
-          <div class="indexpic-wrap"
-            v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
-            :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
-            <div class="rank-num">{{item.numbering}}号</div>
-          </div>
-          <div class="indexpic-wrap"
-            v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
-            :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
-            <div class="rank-num">{{item.numbering}}号</div>
-            <div class="play-icon"></div>
-          </div>
-          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
-            <div class="title color-theme_color">{{item.name}}</div>
-            <div class="source color-theme_color">
-              <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+      <mt-loadmore ref="vote-rank-loadmore"
+        :bottom-method="getRankList"
+        :bottom-all-loaded="noMore"
+        :auto-fill="false">
+        <div class="wrap">
+          <div class="rank-list-item"
+            v-for="(item, index) in rankList" :key="index"
+            @click.stop="jumpPage('votedetail', { worksId: item.id })">
+            <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
+            <div class="list-item-content">
+              <div class="indexpic-wrap"
+                v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
+                :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
+                <div class="rank-num">{{item.numbering}}号</div>
+              </div>
+              <div class="indexpic-wrap"
+                v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
+                :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
+                <div class="rank-num">{{item.numbering}}号</div>
+                <div class="play-icon"></div>
+              </div>
+              <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
+                <div class="title color-theme_color">{{item.name}}</div>
+                <div class="source color-theme_color">
+                  <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+                </div>
+              </div>
+              <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
             </div>
           </div>
-          <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
         </div>
-      </div>
-      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+        <div slot="bottom" class="mint-loadmore-top">
+          <div class="loading-box" v-if="!noMore && loading">
+            <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+            <span class="loading-more-txt">正在加载中</span>
+          </div>
+          <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+        </div>
+      </mt-loadmore>
+      <common-page-empty v-show="rankList && !rankList.length" tip="暂无排行列表信息"></common-page-empty>
+      <!--
+      <div v-if="!noMore" class="scroll-tips" @click="initRankList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
+      -->
     </div>
     <!--当前返回组件-->
     <common-pageback-btn :id="id"></common-pageback-btn>
@@ -74,6 +90,7 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import { Spinner, Loadmore } from 'mint-ui'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -93,7 +110,8 @@ export default {
       signUnit: '票',
       isOpenClassify: false,
       isShowClassify: false,
-      searchVal: ''
+      searchVal: '',
+      isShowMy: true
     }
   },
   props: {
@@ -101,10 +119,10 @@ export default {
     flag: String
   },
   components: {
-    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList
+    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList, Spinner, Loadmore
   },
   created () {
-    this.initRankList()
+    this.initDetail()
   },
   computed: {
     noMore () {
@@ -122,9 +140,10 @@ export default {
           this.signUnit = tmp[1]
         }
       }
+      this.initRankList()
     },
     initRankList () {
-      this.initDetail()
+      // this.initDetail()
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
@@ -155,6 +174,9 @@ export default {
         rank: 1,
         type_name: this.searchVal
       }
+      this.$nextTick(() => {
+        this.$refs['vote-rank-loadmore'].onBottomLoaded()
+      })
       API.getVoteWorks({
         query: { id: voteId },
         params: params
@@ -188,10 +210,12 @@ export default {
       })
     },
     searchClassify (val) {
-      if (!val) {
-        return
-      }
       if (val !== this.searchVal) {
+        if (val === '') {
+          this.isShowMy = true
+        } else {
+          this.isShowMy = false
+        }
         this.searchVal = val
         this.rankList = []
         this.pager = {
@@ -212,12 +236,15 @@ export default {
   .commvote-rank {
     // background-color: #221A6E;
     // @include bg-color('bgColor');
-    min-height: 100vh;
+    height: 100vh;
     .rank-list-wrap {
       position: relative;
       padding-left: px2rem(30px);
       padding-right: px2rem(30px);
       padding-top: px2rem(220px);
+      height: 100vh;
+      box-sizing: 100%;
+      overflow-y: auto;
       .rank-list-img {
         position: absolute;
         top: 0;
@@ -231,16 +258,31 @@ export default {
         position: relative;
         margin: px2rem(20px) 0;
       }
+      .mint-loadmore-top {
+        margin-top: 0;
+      }
+      .loading-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .loading-more-txt {
+          display: inline-block;
+          margin-left: px2rem(20px);
+          @include font-dpr(14px);
+          color:#ccc;
+        }
+      }
+      .scroll-tips {
+        width: 100%;
+        @include font-dpr(14px);
+        color:#ccc;
+        text-align: center;
+        margin-top: px2rem(30px);
+      }
       .rank-list-item {
         display: flex;
         align-items: center;
         height: px2rem(158px);
-        &:last-child {
-          padding-bottom: px2rem(30px);
-          .list-item-content {
-            border-bottom: 0;
-          }
-        }
         &.rank-my-item {
           padding-left: px2rem(30px);
           margin: px2rem(30px) px2rem(30px) px2rem(30px) 0;
@@ -259,6 +301,12 @@ export default {
                 @include bg-color('btnColor');
               }
             }
+          }
+        }
+        &:last-child {
+          padding-bottom: px2rem(30px);
+          .list-item-content {
+            border-bottom: 0;
           }
         }
         .item-rank {
@@ -368,12 +416,6 @@ export default {
           min-width: px2rem(70px);
           text-align: right;
         }
-      }
-      .scroll-tips {
-        width: 100%;
-        @include font-dpr(14px);
-        color:#ccc;
-        text-align: center;
       }
     }
   }

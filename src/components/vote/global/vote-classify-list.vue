@@ -6,10 +6,10 @@
         @blur="blurAction()"
         placeholder="全部分类">
       </el-input>
-      <div class="drop-icon"></div>
+      <div :class="['vote-type-base', !isShowClassify ? 'vote-type-down': 'vote-type-up']"></div>
     </div>
     <div class="dropdown-wrap" v-show="isShowClassify">
-      <div class="dropdown-item">
+      <div class="dropdown-item item0">
         <div class="classify-item"
           :class="currentId === item.id ? 'active' : ''"
           @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
@@ -120,14 +120,19 @@ export default {
           color: #fff;
         }
       }
-      .drop-icon {
+      .vote-type-base {
         position: absolute;
         right: px2rem(28px);
         top: px2rem(32px);
-        width: px2rem(30px);
-        height: px2rem(16px);
-        background-size: px2rem(30px) px2rem(16px);
-        @include img-retina("~@/assets/common/dropdown-icon@2x.png","~@/assets/common/dropdown-icon@3x.png", 100%, 100%);
+        width: px2rem(24px);
+        height: px2rem(14px);
+        background-size: px2rem(24px) px2rem(14px);
+        &.vote-type-down {
+          @include img-retina("~@/assets/vote/vote-type-down@2x.png","~@/assets/vote/vote-type-down@3x.png", 100%, 100%);
+        }
+        &.vote-type-up {
+          @include img-retina("~@/assets/vote/vote-type-up@2x.png","~@/assets/vote/vote-type-up@3x.png", 100%, 100%);
+        }
       }
     }
     .dropdown-wrap {
@@ -139,22 +144,25 @@ export default {
       display: flex;
       justify-content: center;
       border-radius: px2rem(8px);
-      @include bg-linear-color('compColor');
       .dropdown-item {
         flex: 1;
-        color: #fff;
         @include font-dpr(14px);
+        &.item0 {
+          @include bg-color('descColor');
+          color: #fff;
+        }
         &.item1 {
-          // @include bg-color('btnColor');
+          @include bg-linear-color('compColor');
           color: rgba(255, 255, 255, 0.5);
         }
         .classify-item {
-          text-align: center;
+          padding: 0 15px;
+          text-align: left;
           height: px2rem(80px);
           line-height: px2rem(80px);
-          // &.active {
-          //   @include bg-color('btnColor');
-          // }
+          &.active {
+            @include bg-linear-color('compColor');
+          }
           &.active2 {
             color: #fff;
           }

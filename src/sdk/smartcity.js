@@ -54,7 +54,7 @@ export const oauth = (cbk) => {
   let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
   if (id) {
     let params = { id }
-    if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
+    if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1 || pathname.indexOf('enrollstart') !== -1) {
       // 投票
       smartcity.authorize((code, sdkInfo) => {
         if (code > 0) {

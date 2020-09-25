@@ -93,39 +93,55 @@
           </div>
         </div>
       </div>
-      <vote-picture-text
-        v-if="showModel === 'picture'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-picture-text>
-      <vote-video-text v-if="showModel === 'video'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-video-text>
-      <vote-audio-text
-        v-if="showModel === 'audio'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-audio-text>
-      <vote-text
-        v-if="showModel === 'text'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-text>
+      <mt-loadmore ref="loadmore"
+        :bottom-method="getVoteWorks"
+        :bottom-all-loaded="noMore"
+        :auto-fill="false">
+        <div class="wrap">
+          <vote-picture-text
+            v-if="showModel === 'picture'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-picture-text>
+          <vote-video-text v-if="showModel === 'video'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-video-text>
+          <vote-audio-text
+            v-if="showModel === 'audio'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-audio-text>
+          <vote-text
+            v-if="showModel === 'text'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-text>
+        </div>
+        <div slot="bottom" class="mint-loadmore-top">
+          <div class="loading-box" v-if="!noMore && loading">
+            <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+            <span class="loading-more-txt">正在加载中</span>
+          </div>
+          <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+        </div>
+      </mt-loadmore>
+      <!--
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
+      -->
     </div>
     <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
     <count-down
@@ -206,6 +222,7 @@ import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import { Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -231,7 +248,9 @@ export default {
     ActiveStop,
     ActivePause,
     ActiveStart,
-    VoteClassifyList
+    VoteClassifyList,
+    Spinner,
+    Loadmore
   },
   data () {
     return {
@@ -688,12 +707,16 @@ export default {
       timer = setInterval(computedTime, 1000)
       this.interval = timer
     },
-    dealSearch (flag = '') {
+    dealSearch (flag = '', isClassifySearch = false) {
       let name = this.searchVal.trim()
-      if (flag === 'input-search' && name) {
-        this.myWork = {}
-      } else if (flag === 'input-search' && !name) {
-        this.myWork = this.myVote ? this.myVote : {}
+      let classifyVal = this.searchClassifyVal
+      if (flag === 'input-search') {
+        if (name || classifyVal) {
+          this.myWork = {}
+        }
+        if (!name && !classifyVal) {
+          this.myWork = this.myVote ? this.myVote : {}
+        }
       }
       this.pager = {
         total: 0,
@@ -702,9 +725,9 @@ export default {
         totalPages: 0
       }
       this.workList = []
-      this.getVoteWorks(name)
+      this.getVoteWorks(name, isClassifySearch)
     },
-    getVoteWorks (name = '', isShowMy = true) {
+    getVoteWorks (name = '', isClassifySearch = false) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -714,13 +737,16 @@ export default {
         k: name,
         type_name: this.searchClassifyVal
       }
+      this.$nextTick(() => {
+        this.$refs.loadmore.onBottomLoaded()
+      })
       API.getVoteWorks({
         query: { id: voteId },
         params: params
       }).then(res => {
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
-          if (name) {
+          if (name && !isClassifySearch) {
             this.isShowSearch = true
           }
           this.loading = false
@@ -779,7 +805,7 @@ export default {
     }),
     searchClassify (val) {
       this.searchClassifyVal = val
-      this.dealSearch()
+      this.dealSearch('input-search', true)
     }
   }
 }
@@ -952,6 +978,24 @@ export default {
         width: 100%;
         padding: 0 px2rem(30px) px2rem(30px) px2rem(30px);
         box-sizing: border-box;
+      }
+      .mint-loadmore-top, .mint-loadmore-bottom {
+        height: px2rem(50px);
+        line-height: px2rem(50px);
+      }
+      .mint-loadmore-top {
+        margin-top: 0;
+      }
+      .loading-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .loading-more-txt {
+          display: inline-block;
+          margin-left: px2rem(20px);
+          @include font-dpr(14px);
+          color:#ccc;
+        }
       }
       .scroll-tips {
         width: 100%;

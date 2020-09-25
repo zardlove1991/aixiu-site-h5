@@ -88,6 +88,19 @@ $colorMaps: (
   overflow: hidden;
 }
 
+@mixin box-shadow-color($left, $right, $leftBottom, $rightBottom, $alphaVal, $colorName) {
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $colorName == $varName {
+        [data-theme= #{$key}] & {
+          box-shadow: $left $right $leftBottom $rightBottom $val;
+          opacity: $alphaVal;
+        }
+      }
+    }
+  }
+}
+
 // 更改背景颜色
 @mixin bg-color($colorName) {
   @each $key,$list in $colorMaps {
@@ -95,6 +108,20 @@ $colorMaps: (
       @if $colorName == $varName {
         [data-theme= #{$key}] & {
           background-color: $val;
+        }
+      }
+    }
+  }
+}
+
+// 更改透明背景颜色
+@mixin bg-alpha-color($colorName, $alphaVal) {
+  @each $key,$list in $colorMaps {
+    @each $varName,$val in $list {
+      @if $colorName == $varName {
+        [data-theme= #{$key}] & {
+          background-color: $val;
+          opacity: $alphaVal;
         }
       }
     }
