@@ -44,7 +44,7 @@
         <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
-    <div :class="['myenroll-icon', themeColorName]" @click="jumpPage('myenroll')"></div>
+    <div v-if="isShowMy" :class="['myenroll-icon', themeColorName]" @click="jumpPage('myenroll')"></div>
     <info-dialog
       :show="isShowInfo"
       @close="isShowInfo = false"
@@ -143,6 +143,7 @@ export default {
       posterSetting: {}, // 海报设置信息
       posterData: {}, // 海报展示数据
       themeColorName: '', // 主题颜色名称
+      isShowMy: false, // 是否显示我的预约记录
       isShowEnd: false,
       isShowPause: false,
       isShowStart: false,
@@ -196,6 +197,20 @@ export default {
           this.initEnrollData(res, true)
           this.initLimitSource(res)
           this.sharePage(res)
+          this.getMyEnrollCount()
+        }
+      })
+    },
+    getMyEnrollCount () {
+      API.getMyEnrollCount({
+        query: {
+          id: this.id
+        }
+      }).then(res => {
+        if (res && res.count > 0) {
+          this.isShowMy = true
+        } else {
+          this.isShowMy = false
         }
       })
     },
@@ -686,6 +701,7 @@ export default {
         this.currentTime = ''
         this.isBtnAuth = false
         this.initEnrollData(res, false)
+        this.getMyEnrollCount()
         if (posterType === 1) {
           this.isShowTwoPoster = true
         } else {
@@ -840,8 +856,11 @@ export default {
       .mint-swipe {
         border-radius: px2rem(40px) px2rem(40px) 0 0;
         position: relative;
-        .mint-swipe-item img {
+        .mint-swipe-items-wrap, .mint-swipe-item {
           border-radius: px2rem(40px) px2rem(40px) 0 0;
+          img {
+            border-radius: px2rem(40px) px2rem(40px) 0 0;
+          }
         }
         .mint-swipe-indicators {
           max-width: px2rem(180px);

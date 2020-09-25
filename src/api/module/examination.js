@@ -54,7 +54,8 @@ let enrollUrl = {
   getEnrollDetail: 'client/order/{id}', // 预约活动详情
   getMineEnrollList: 'client/order/mine', // 获取我的预约
   saveEnrollInfo: 'client/order', // 预约报名
-  remainEnroll: 'client/order/{id}/remain'
+  remainEnroll: 'client/order/{id}/remain', // 剩余预约次数
+  getMyEnrollCount: 'client/order/{id}/count' // 我的预约次数
 }
 
 // 不带GUID
@@ -144,5 +145,6 @@ export default {
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
   saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
-  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG)
+  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG),
+  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG)
 }
