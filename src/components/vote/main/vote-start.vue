@@ -93,39 +93,52 @@
           </div>
         </div>
       </div>
-      <vote-picture-text
-        v-if="showModel === 'picture'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-picture-text>
-      <vote-video-text v-if="showModel === 'video'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-video-text>
-      <vote-audio-text
-        v-if="showModel === 'audio'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-audio-text>
-      <vote-text
-        v-if="showModel === 'text'"
-        :workList="myWork.id ? [myWork, ...workList] : workList"
-        :remainVotes="remainVotes"
-        @jump-page="jumpPage"
-        :signUnit="signUnit"
-        @trigger-work="triggerWork">
-      </vote-text>
+      <mt-loadmore ref="loadmore"
+        :bottom-method="getVoteWorks"
+        :bottom-all-loaded="noMore"
+        :auto-fill="false">
+        <div class="wrap">
+          <vote-picture-text
+            v-if="showModel === 'picture'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-picture-text>
+          <vote-video-text v-if="showModel === 'video'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-video-text>
+          <vote-audio-text
+            v-if="showModel === 'audio'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-audio-text>
+          <vote-text
+            v-if="showModel === 'text'"
+            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            @trigger-work="triggerWork">
+          </vote-text>
+        </div>
+        <div slot="bottom" class="mint-loadmore-top">
+          <div v-if="!noMore && loading" class="scroll-tips">加载中...</div>
+          <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+        </div>
+      </mt-loadmore>
+      <!--
       <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
+      -->
     </div>
     <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
     <count-down
@@ -206,6 +219,7 @@ import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import { Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -231,7 +245,8 @@ export default {
     ActiveStop,
     ActivePause,
     ActiveStart,
-    VoteClassifyList
+    VoteClassifyList,
+    Loadmore
   },
   data () {
     return {
@@ -718,6 +733,9 @@ export default {
         k: name,
         type_name: this.searchClassifyVal
       }
+      this.$nextTick(() => {
+        this.$refs.loadmore.onBottomLoaded()
+      })
       API.getVoteWorks({
         query: { id: voteId },
         params: params
@@ -956,6 +974,13 @@ export default {
         width: 100%;
         padding: 0 px2rem(30px) px2rem(30px) px2rem(30px);
         box-sizing: border-box;
+      }
+      .mint-loadmore-top, .mint-loadmore-bottom {
+        height: px2rem(50px);
+        line-height: px2rem(50px);
+      }
+      .mint-loadmore-top {
+        margin-top: 0;
       }
       .scroll-tips {
         width: 100%;

@@ -36,34 +36,47 @@
           <p class="item-votes color-theme_color">{{myVoteData.total_votes}}{{signUnit}}</p>
         </div>
       </div>
-      <div class="rank-list-item"
-        v-for="(item, index) in rankList" :key="index"
-        @click.stop="jumpPage('votedetail', { worksId: item.id })">
-        <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
-        <div class="list-item-content">
-          <div class="indexpic-wrap"
-            v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
-            :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
-            <div class="rank-num">{{item.numbering}}号</div>
-          </div>
-          <div class="indexpic-wrap"
-            v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
-            :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
-            <div class="rank-num">{{item.numbering}}号</div>
-            <div class="play-icon"></div>
-          </div>
-          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
-            <div class="title color-theme_color">{{item.name}}</div>
-            <div class="source color-theme_color">
-              <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+      <mt-loadmore ref="vore-rank-loadmore"
+        :bottom-method="getRankList"
+        :bottom-all-loaded="noMore"
+        :auto-fill="false">
+        <div class="wrap">
+          <div class="rank-list-item"
+            v-for="(item, index) in rankList" :key="index"
+            @click.stop="jumpPage('votedetail', { worksId: item.id })">
+            <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
+            <div class="list-item-content">
+              <div class="indexpic-wrap"
+                v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
+                :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
+                <div class="rank-num">{{item.numbering}}号</div>
+              </div>
+              <div class="indexpic-wrap"
+                v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
+                :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
+                <div class="rank-num">{{item.numbering}}号</div>
+                <div class="play-icon"></div>
+              </div>
+              <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
+                <div class="title color-theme_color">{{item.name}}</div>
+                <div class="source color-theme_color">
+                  <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+                </div>
+              </div>
+              <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
             </div>
           </div>
-          <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
         </div>
-      </div>
+        <div slot="bottom" class="mint-loadmore-top">
+          <div v-if="!noMore && loading" class="scroll-tips">加载中...</div>
+          <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+        </div>
+      </mt-loadmore>
       <common-page-empty v-show="rankList && !rankList.length" tip="暂无排行列表信息"></common-page-empty>
+      <!--
       <div v-if="!noMore" class="scroll-tips" @click="initRankList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
+      -->
     </div>
     <!--当前返回组件-->
     <common-pageback-btn :id="id"></common-pageback-btn>
@@ -74,6 +87,7 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import { Loadmore } from 'mint-ui'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -102,7 +116,7 @@ export default {
     flag: String
   },
   components: {
-    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList
+    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList, Loadmore
   },
   created () {
     this.initDetail()
@@ -157,6 +171,9 @@ export default {
         rank: 1,
         type_name: this.searchVal
       }
+      this.$nextTick(() => {
+        this.$refs['vore-rank-loadmore'].onBottomLoaded()
+      })
       API.getVoteWorks({
         query: { id: voteId },
         params: params
@@ -216,12 +233,15 @@ export default {
   .commvote-rank {
     // background-color: #221A6E;
     // @include bg-color('bgColor');
-    min-height: 100vh;
+    height: 100vh;
     .rank-list-wrap {
       position: relative;
       padding-left: px2rem(30px);
       padding-right: px2rem(30px);
       padding-top: px2rem(220px);
+      height: 100vh;
+      box-sizing: 100%;
+      overflow-y: auto;
       .rank-list-img {
         position: absolute;
         top: 0;
@@ -234,6 +254,16 @@ export default {
       .classfiy-rank-wrap {
         position: relative;
         margin: px2rem(20px) 0;
+      }
+      .mint-loadmore-top {
+        margin-top: 0;
+      }
+      .scroll-tips {
+        width: 100%;
+        @include font-dpr(14px);
+        color:#ccc;
+        text-align: center;
+        margin-top: px2rem(30px);
       }
       .rank-list-item {
         display: flex;
@@ -372,13 +402,6 @@ export default {
           min-width: px2rem(70px);
           text-align: right;
         }
-      }
-      .scroll-tips {
-        width: 100%;
-        @include font-dpr(14px);
-        color:#ccc;
-        text-align: center;
-        margin-top: px2rem(30px);
       }
     }
   }
