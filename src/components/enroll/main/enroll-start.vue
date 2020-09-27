@@ -32,8 +32,10 @@
             :key="index"
             @click="changeEnrollTime(item)">
             <div class="date-item1">{{item.show_time}}</div>
-            <div class="date-item2" v-if="item.number === -1 && item.left_number === -1">未限制</div>
-            <div class="date-item2" v-else>{{item.left_number ? item.left_number :  0 }} 人</div>
+            <div v-if="isShowCount">
+              <div class="date-item2" v-if="item.number === -1 && item.left_number === -1">未限制</div>
+              <div class="date-item2" v-else>{{item.left_number ? item.left_number :  0 }} 人</div>
+            </div>
             <div class="date-range-item-bg"></div>
             <div class="active-mark" v-if="item.is_active !== 2"></div>
             <div class="active-mark-txt" v-if="item.is_active !== 2">- {{timeTips[item.is_active]}} -</div>
@@ -41,7 +43,7 @@
         </div>
         <div class="enroll-btn disabled" v-if="!getBtnAuth">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
         <div class="enroll-btn active" v-else @click="setEnroll()">{{(enrollInfo.rule && enrollInfo.rule.button_text) ? enrollInfo.rule.button_text : '立即预约'}}</div>
-        <div class="tool-tip">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
+        <div class="tool-tip" v-if="isShowCount">已有 {{enrollInfo.total_used_number}} 人预约成功</div>
       </div>
     </div>
     <div v-if="isShowMy" :class="['myenroll-icon', themeColorName]" @click="jumpPage('myenroll')"></div>
@@ -155,7 +157,8 @@ export default {
       checkDraw: [],
       checkSetting: {}, // 收集信息设置
       interval: null, // 定时器
-      isBtnAuth: false // 报名按钮 true:有权限
+      isBtnAuth: false, // 报名按钮 true:有权限
+      isShowCount: false // 个数隐藏 true: 显示
     }
   },
   components: {
@@ -1064,7 +1067,8 @@ export default {
           }
         }
         .enroll-btn {
-          margin-top: px2rem(78px);
+          margin-top: px2rem(68px);
+          margin-bottom: px2rem(40px);
           width: 100%;
           height: px2rem(90px);
           @include font-dpr(16px);
@@ -1082,7 +1086,7 @@ export default {
           }
         }
         .tool-tip {
-          margin: px2rem(20px) 0 px2rem(40px) 0;
+          margin-bottom: px2rem(40px);
           width: 100%;
           text-align: center;
           @include font-dpr(14px);
