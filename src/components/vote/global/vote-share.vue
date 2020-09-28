@@ -5,7 +5,7 @@
       :show="show"
       @close="close()">
       <div class="workvote-dialog-wrap" slot="tips-content">
-        <div class="workvote-header">确定要给这个作品{{textSetting.sign ? textSetting.sign : '投票' }}吗？</div>
+        <div class="workvote-header">确定要{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吗？</div>
         <div class="workvote-all-btn">
           <button class="dialog-sure-btn min workvote-right" v-if="!voteDisable" @click="sureWorkVote()">确定</button>
           <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
@@ -39,7 +39,7 @@
       :show="isShowMax"
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
-        <div class="workvote-header">这个作品太火爆了</div>
+        <div class="workvote-header">{{textSetting.sign === '致敬' ? '暂时无法致敬' : '这个作品太火爆了'}}</div>
         <div class="workvote-header">{{voteTime}}秒后在{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吧！</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
@@ -187,15 +187,13 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
+          console.log('xxxxxx', errCode)
           if (errCode === 'WORKS_LOCKED') {
             let msg = res.error_message
-            let num = msg.replace(/[^0-9]/ig, '')
-            if (num) {
-              this.isShowMax = true
-              this.voteTime = num
-              // this.voteTime = formatTimeBySec(num)
-              this.$emit('close')
-            }
+            this.isShowMax = true
+            this.voteTime = msg
+            // this.voteTime = formatTimeBySec(num)
+            this.$emit('close')
             this.voteDisable = false
             return
           } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {

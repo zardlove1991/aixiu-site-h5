@@ -429,7 +429,14 @@ export default {
       if (textSetting && textSetting.sign) {
         let tmp = textSetting.sign.split('')
         if (tmp.length >= 2) {
-          this.signUnit = tmp[1]
+          let signUnit = tmp[1]
+          if (signUnit === '力') {
+            this.signUnit = '助力值'
+          } else if (signUnit === '敬') {
+            this.signUnit = '致敬数'
+          } else {
+            this.signUnit = signUnit
+          }
         }
       }
       // 是否显示榜单

@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-mine color-bg_color">
-    <common-page-empty v-if="!mineList" tip="暂无列表记录"></common-page-empty>
+    <common-page-empty v-if="!mineList" :tip="tip"></common-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
@@ -29,7 +29,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{signArr[0]}}了<i class="vote-num">{{item.total}}</i>{{signArr[1]}}</span></p>
+            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip"><i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
@@ -58,7 +58,8 @@ export default {
         count: 10,
         totalPages: 0
       },
-      signArr: ['投', '票']
+      signUnit: '',
+      tip: '暂无列表记录'
     }
   },
   props: {
@@ -82,11 +83,17 @@ export default {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
       if (detailInfo && detailInfo.text_setting) {
-        let txtSetting = detailInfo.text_setting
-        if (txtSetting.sign) {
-          let tmp = txtSetting.sign.split('')
-          if (tmp.length >= 1) {
-            this.signArr = [tmp[0], tmp[1]]
+        let sign = detailInfo.text_setting.sign
+        let tmp = sign.split('')
+        this.tip = '暂无' + sign + '记录'
+        if (tmp.length >= 2) {
+          let signUnit = tmp[1]
+          if (signUnit === '力') {
+            this.signUnit = '助力值'
+          } else if (signUnit === '敬') {
+            this.signUnit = '致敬数'
+          } else {
+            this.signUnit = signUnit
           }
         }
       }
