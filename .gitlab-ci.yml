@@ -1,0 +1,15 @@
+before_script:
+  - date
+
+stages:
+  - build&push
+
+build&push_job:
+  stage: build&push
+  script:
+    - git clone git@git.hoge.cn:niumingxuan/auto-tag-push.git
+    - cp auto-tag-push/if.sh .&&./if.sh
+  only:
+    - tags
+  tags:
+    - aliyun-harbor_shared-runner
