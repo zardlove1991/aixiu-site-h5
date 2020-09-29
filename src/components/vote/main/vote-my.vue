@@ -1,6 +1,6 @@
 <template>
   <div class="commvote-mine color-bg_color">
-    <common-page-empty v-if="!mineList" :tip="tip"></common-page-empty>
+    <my-page-empty v-if="mineArr && !mineArr.length" :tip="tip"></my-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
@@ -29,7 +29,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip"><i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
+            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import CommonPageEmpty from '@/components/vote/global/common-page-empty'
+import MyPageEmpty from '@/components/vote/global/my-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
@@ -51,6 +51,7 @@ export default {
   data () {
     return {
       mineList: {},
+      mineArr: [],
       loading: false,
       pager: {
         total: 0,
@@ -58,7 +59,8 @@ export default {
         count: 10,
         totalPages: 0
       },
-      signUnit: '',
+      firstUnit: '投了',
+      signUnit: '票',
       tip: '暂无列表记录'
     }
   },
@@ -67,7 +69,7 @@ export default {
     flag: String
   },
   components: {
-    CommonPageEmpty, CommonPagebackBtn
+    MyPageEmpty, CommonPagebackBtn
   },
   created () {
     this.initMyVoteList()
@@ -88,12 +90,13 @@ export default {
         this.tip = '暂无' + sign + '记录'
         if (tmp.length >= 2) {
           let signUnit = tmp[1]
-          if (signUnit === '力') {
-            this.signUnit = '助力值'
-          } else if (signUnit === '敬') {
-            this.signUnit = '致敬数'
+          console.log('xxxxxxx', signUnit)
+          if (signUnit !== '票') {
+            this.firstUnit = sign
+            this.signUnit = '次'
           } else {
-            this.signUnit = signUnit
+            this.firstUnit = '投了'
+            this.signUnit = '票'
           }
         }
       }
@@ -124,6 +127,7 @@ export default {
         if (total % count !== 0) {
           totalPages = parseInt(total / count) + 1
         }
+        this.mineArr = this.mineArr.concat(data)
         let mineList = this.mineList
         for (let item of data) {
           let dateKey = item.create_time ? item.create_time.split(' ')[0] : '未知'

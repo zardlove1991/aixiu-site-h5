@@ -122,7 +122,14 @@ export default {
       if (detailInfo.text_setting && detailInfo.text_setting.sign) {
         let tmp = detailInfo.text_setting.sign.split('')
         if (tmp.length >= 2) {
-          this.signUnit = tmp[1]
+          let signUnit = tmp[1]
+          if (signUnit === '力') {
+            this.signUnit = '助力值'
+          } else if (signUnit === '敬') {
+            this.signUnit = '致敬数'
+          } else {
+            this.signUnit = signUnit
+          }
         }
       }
       let limit = detailInfo.rule.limit
