@@ -40,7 +40,7 @@
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">{{textSetting.sign === '致敬' ? '暂时无法致敬' : '这个作品太火爆了'}}</div>
-        <div class="workvote-header">{{voteTime}}秒后在{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吧！</div>
+        <div class="workvote-header">{{voteTime}}秒后再{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吧！</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
         </div>
