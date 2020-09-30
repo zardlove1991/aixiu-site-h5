@@ -75,7 +75,7 @@ export default {
           tips1 = '第2名还差' + Math.abs(res.last_votes) + '次助力就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + '次助力'
           numbering = '快来为' + res.numbering + '号助力吧'
-        } else if (signUnit === '致敬值') {
+        } else if (signUnit === '致敬数') {
           tips1 = ''
           tips2 = ''
           numbering = '向' + res.numbering + '号英雄致敬'
