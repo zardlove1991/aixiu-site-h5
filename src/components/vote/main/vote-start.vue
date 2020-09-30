@@ -55,11 +55,11 @@
         </div>
         <!--菜单-->
         <div class="overview-menus-wrap" v-if="status !== statusCode.signUpStatus">
-          <div class="menu-wrap menu-right color-button_color" @click.stop="jumpPage('voterank')">
+          <div class="menu-wrap menu-right" v-if="isShowRank" @click.stop="jumpPage('voterank')">
             <i class="examfont iconjiangbei rank color-button_text"></i>
             <span class="menu-text color-button_text">榜单</span>
           </div>
-          <div class="menu-wrap color-button_color" @click.stop="jumpPage('votemy')">
+          <div class="menu-wrap" @click.stop="jumpPage('votemy')">
             <i class="examfont iconwodetoupiao mine color-button_text"></i>
             <span class="menu-text color-button_text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
           </div>
@@ -295,7 +295,8 @@ export default {
       startDate: [],
       isOpenClassify: false,
       isShowClassify: false,
-      searchClassifyVal: ''
+      searchClassifyVal: '',
+      isShowRank: true // 是否显示榜单
     }
   },
   created () {
@@ -428,8 +429,19 @@ export default {
       if (textSetting && textSetting.sign) {
         let tmp = textSetting.sign.split('')
         if (tmp.length >= 2) {
-          this.signUnit = tmp[1]
+          let signUnit = tmp[1]
+          if (signUnit === '力') {
+            this.signUnit = '助力值'
+          } else if (signUnit === '敬') {
+            this.signUnit = '致敬数'
+          } else {
+            this.signUnit = signUnit
+          }
         }
+      }
+      // 是否显示榜单
+      if (limit.is_open_list === 0) {
+        this.isShowRank = false
       }
       if (myWork && myWork.id && myWork.audit_status === 1) {
         myWork.is_my = 1

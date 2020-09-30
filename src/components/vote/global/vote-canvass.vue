@@ -67,7 +67,24 @@ export default {
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
-        let voteTip = res.index === 1 ? '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超' : '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
+        let signUnit = this.signUnit
+        let tips1 = ''
+        let tips2 = ''
+        let numbering = ''
+        if (signUnit === '助力值') {
+          tips1 = '第2名还差' + Math.abs(res.last_votes) + '次助力就要赶超'
+          tips2 = '距离上一名还差' + Math.abs(res.last_votes) + '次助力'
+          numbering = '快来为' + res.numbering + '号助力吧'
+        } else if (signUnit === '致敬值') {
+          tips1 = ''
+          tips2 = ''
+          numbering = '向' + res.numbering + '号英雄致敬'
+        } else {
+          tips1 = '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
+          tips2 = '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
+          numbering = '快来帮' + res.numbering + '号投票吧'
+        }
+        let voteTip = res.index === 1 ? tips1 : tips2
         if (detailInfo.works_count === 1) voteTip = '目前是第一名，坚持就是胜利'
         let qrcode = this.dealUrlConcat({
           sign: 'invotefriend',
@@ -76,7 +93,7 @@ export default {
         }, detailInfo)
         let params = {
           avatar: avatarUrl,
-          numbering: '快来帮' + res.numbering + '号投票吧',
+          numbering,
           title: res.name,
           source: res.source,
           qrcode,

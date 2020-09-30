@@ -1,5 +1,5 @@
 <template>
-  <div class="common-page-empty-wrap">
+  <div class="my-page-empty-wrap">
     <div class="empty-img"></div>
     <p class="empty-tip">{{tip}}</p>
   </div>
@@ -18,9 +18,9 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .common-page-empty-wrap {
+  .my-page-empty-wrap {
     width: 100%;
-    height: px2rem(300px);
+    height: 80vh;
     display: flex;
     align-items: center;
     justify-content: center;
