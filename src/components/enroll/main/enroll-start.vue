@@ -283,14 +283,18 @@ export default {
               endTime = key + ' ' + item.end_time + ':00'
               startTime = new Date(startTime.replace(/-/g, '/')).getTime()
               endTime = new Date(endTime.replace(/-/g, '/')).getTime()
-              if (orderTime < startTime) {
-                this.isBtnAuth = false
-                isActive = 3 // 活动未开始
-              } else if (orderTime >= endTime) {
-                this.isBtnAuth = false
-                isActive = 1 // 活动已结束
-              } else if (orderTime >= startTime && orderTime < endTime) {
-                isActive = 2 // 在时间范围内
+              if (orderSetting.is_open === 1) {
+                isActive = 2
+              } else {
+                if (orderTime < startTime) {
+                  this.isBtnAuth = false
+                  isActive = 3 // 活动未开始
+                } else if (orderTime >= endTime) {
+                  this.isBtnAuth = false
+                  isActive = 1 // 活动已结束
+                } else if (orderTime >= startTime && orderTime < endTime) {
+                  isActive = 2 // 在时间范围内
+                }
               }
             }
           }
