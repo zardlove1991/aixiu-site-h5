@@ -283,7 +283,7 @@ export default {
               endTime = key + ' ' + item.end_time + ':00'
               startTime = new Date(startTime.replace(/-/g, '/')).getTime()
               endTime = new Date(endTime.replace(/-/g, '/')).getTime()
-              if (orderSetting.is_open === 1) {
+              if (orderSetting.is_open_order === 1) {
                 isActive = 2
               } else {
                 if (orderTime < startTime) {
@@ -346,6 +346,7 @@ export default {
     },
     initActiveDate () {
       let enrollInfo = this.enrollInfo
+      let orderSetting = enrollInfo.rule.order_setting
       if (!enrollInfo) {
         return
       }
@@ -383,11 +384,15 @@ export default {
       this.startInterval(time, (timeArr) => {
         // 更改当前的时间
         this.startDate = timeArr
-        if (status === doingStatus) {
-          if (sectionType === 0) {
-            this.initFullDateTime()
-          } else if (sectionType === 1) {
-            this.initIntervalTime()
+        if (orderSetting.is_open_order === 1) {
+          this.initFullDateTime()
+        } else {
+          if (status === doingStatus) {
+            if (sectionType === 0) {
+              this.initFullDateTime()
+            } else if (sectionType === 1) {
+              this.initIntervalTime()
+            }
           }
         }
       }, () => {
