@@ -284,7 +284,12 @@ export default {
               startTime = new Date(startTime.replace(/-/g, '/')).getTime()
               endTime = new Date(endTime.replace(/-/g, '/')).getTime()
               if (orderSetting.is_open_order === 1) {
-                isActive = 2
+                if (orderTime >= endTime) {
+                  this.isBtnAuth = false
+                  isActive = 1 // 活动已结束
+                } else {
+                  isActive = 2
+                }
               } else {
                 if (orderTime < startTime) {
                   this.isBtnAuth = false
@@ -346,7 +351,6 @@ export default {
     },
     initActiveDate () {
       let enrollInfo = this.enrollInfo
-      let orderSetting = enrollInfo.rule.order_setting
       if (!enrollInfo) {
         return
       }
@@ -384,15 +388,11 @@ export default {
       this.startInterval(time, (timeArr) => {
         // 更改当前的时间
         this.startDate = timeArr
-        if (orderSetting.is_open_order === 1) {
-          this.initFullDateTime()
-        } else {
-          if (status === doingStatus) {
-            if (sectionType === 0) {
-              this.initFullDateTime()
-            } else if (sectionType === 1) {
-              this.initIntervalTime()
-            }
+        if (status === doingStatus) {
+          if (sectionType === 0) {
+            this.initFullDateTime()
+          } else if (sectionType === 1) {
+            this.initIntervalTime()
           }
         }
       }, () => {
@@ -728,6 +728,8 @@ export default {
       let timeList = this.timeList[currentDate]
       let fullDate = currentDate + ' 23:59:59'
       let fullTime = new Date(fullDate.replace(/-/g, '/')).getTime()
+      let enrollInfo = this.enrollInfo
+      let orderSetting = enrollInfo.rule.order_setting
       if (nowTime >= fullTime) {
         // 一天结束了
         this.getNextFullDay()
@@ -737,16 +739,29 @@ export default {
           if (item.start_time && item.end_time) {
             let startTime = item.start_time
             let endTime = item.end_time
-            if (nowTime < startTime) {
-              item.is_active = 3 // 活动未开始
-            } else if (nowTime >= endTime) {
-              if (item.is_active === 2) {
-                this.isBtnAuth = false
-                this.currentTime = ''
+            // 提前预约整体都可以预约
+            if (orderSetting.is_open_order === 1) {
+              if (nowTime >= endTime) {
+                if (item.is_active === 2) {
+                  this.isBtnAuth = false
+                  this.currentTime = ''
+                }
+                item.is_active = 1 // 活动已结束
+              } else {
+                item.is_active = 2
               }
-              item.is_active = 1 // 活动已结束
-            } else if (nowTime >= startTime && nowTime < endTime) {
-              item.is_active = 2 // 在时间范围内
+            } else {
+              if (nowTime < startTime) {
+                item.is_active = 3 // 活动未开始
+              } else if (nowTime >= endTime) {
+                if (item.is_active === 2) {
+                  this.isBtnAuth = false
+                  this.currentTime = ''
+                }
+                item.is_active = 1 // 活动已结束
+              } else if (nowTime >= startTime && nowTime < endTime) {
+                item.is_active = 2 // 在时间范围内
+              }
             }
           }
         }
