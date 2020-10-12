@@ -1,4 +1,4 @@
-export const oauth = (data) => {
+export const oauth = (cbk) => {
   console.log('browser_auth')
-  window.router && window.router.replace('/login')
+  // window.router && window.router.replace('/login')
 }

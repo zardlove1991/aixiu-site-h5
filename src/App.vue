@@ -4,16 +4,34 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
+    <div class="no-suppot-wrap" v-if="isBrowser">不支持再浏览器中打开</div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import { getPlat } from '@/utils/utils'
 
 export default {
   name: 'App',
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
+  },
+  data () {
+    return {
+      isBrowser: false
+    }
+  },
+  created () {
+    this.getBrowser()
+  },
+  methods: {
+    getBrowser () {
+      let plat = getPlat()
+      if (plat === 'browser') {
+        this.isBrowser = true
+      }
+    }
   }
 }
 </script>
@@ -31,5 +49,13 @@ export default {
 }
 *{
   box-sizing: border-box;
+}
+.no-suppot-wrap {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  background-color: brown;
+  color: #fff;
+  text-align: center;
 }
 </style>
