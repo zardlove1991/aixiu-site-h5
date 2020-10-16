@@ -374,7 +374,7 @@ export default {
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
-      if (rule.share_settings) {
+      if (rule && rule.share_settings) {
         let share = rule.share_settings
         let sharePic = share.indexpic
         if (share.title) {
