@@ -71,11 +71,11 @@
             <span class="menu-text color-button_text" v-if="isExamine === 0">立即报名</span>
           </div>
         </div>
-        <div class="overview-list-title-wrap">
+        <!-- <div class="overview-list-title-wrap">
           <div class="line"></div>
           <div>作品列表</div>
           <div class="line"></div>
-        </div>
+        </div> -->
         <!--搜索条-->
         <div class="overview-search-bar-wrap">
           <vote-classify-list
@@ -86,7 +86,7 @@
             @success="searchClassify">
           </vote-classify-list>
           <div class="name-bar-wrap">
-            <input class="search-input" type="text" placeholder="作品名称/来源/编号" v-model="searchVal"
+            <input class="search-input" type="text" placeholder="名称/来源/编号" v-model="searchVal"
                 @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
             <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
             </div>
