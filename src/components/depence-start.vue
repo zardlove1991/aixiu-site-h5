@@ -74,10 +74,10 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
     </div>
     <div class="btn-area" v-else>
-      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
     </div>
-    <div class="start-exam-tips">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
+    <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
     <my-model
       :show="App"
       :isLock="true"
@@ -159,7 +159,8 @@ export default {
       errTips: '',
       isShowBreak: false,
       isShowDrawCheck: false,
-      checkDraw: []
+      checkDraw: [],
+      isNoLimit: false
     }
   },
   components: { MyModel, DrawCheckDialog },
@@ -244,8 +245,19 @@ export default {
           document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
           document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
         }
-        if (info.limit && info.limit.submit_rules && info.limit.submit_rules.result) {
-          STORAGE.set('statInfo', info.limit.submit_rules.result)
+        if (info.limit) {
+          let {
+            day_userid_limit_num: dayUserIdLimit,
+            ip_limit_num: ipLimit,
+            userid_limit_num: userIdLimit,
+            submit_rules: submitRules
+          } = info.limit
+          if (submitRules && submitRules.result) {
+            STORAGE.set('statInfo', submitRules.result)
+          }
+          if (dayUserIdLimit === 0 && ipLimit === 0 && userIdLimit === 0) {
+            this.isNoLimit = true
+          }
         }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
