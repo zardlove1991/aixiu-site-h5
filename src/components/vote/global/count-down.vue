@@ -57,7 +57,7 @@ export default {
     statusMsg () {
       let statusMsg = {}
       let textSetting = this.textSetting
-      if (textSetting) {
+      if (textSetting && textSetting.sign) {
         let vote = textSetting.sign
         statusMsg = {
           0: vote + '开始',
