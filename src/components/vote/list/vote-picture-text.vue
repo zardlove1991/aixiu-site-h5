@@ -4,7 +4,7 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage(item.is_my ? 'voteoneself' : 'votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
+      <div class="work-poster-wrap" :class="imageRatio?'vertical':0" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
         <div class="poster-thumb">
           <div class="thumb-bg"></div>
           <div class="thumb-poster" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}"></div>
@@ -43,6 +43,12 @@ export default {
     signUnit: {
       type: String,
       default: '票'
+    },
+    detailInfo: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   components: {
@@ -50,6 +56,7 @@ export default {
   },
   data () {
     return {
+      imageRatio: 0
     }
   },
   methods: {
@@ -58,6 +65,24 @@ export default {
     },
     btnClick (data) {
       this.$emit('trigger-work', data)
+    }
+  },
+  watch: {
+    detailInfo: {
+      handler (v) {
+        if (v) {
+          let { rule: { page_setup: { image_ratio: imageRatio } } } = v
+          if (imageRatio) {
+            this.imageRatio = imageRatio
+            console.log('有值！！！！！')
+          } else {
+            this.imageRatio = 0
+          }
+        }
+        console.log('detailInfo:', v)
+      },
+      deep: true,
+      immediate: true
     }
   }
 }
@@ -97,6 +122,9 @@ export default {
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
+        &.vertical{
+          height: calc((50vw - 1.40625rem)*5.6/4);
+        }
         .poster-thumb {
           position: absolute;
           top: 0;

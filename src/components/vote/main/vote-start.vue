@@ -100,6 +100,7 @@
         <div class="wrap">
           <vote-picture-text
             v-if="showModel === 'picture'"
+            :detailInfo="detailInfo"
             :workList="myWork.id ? [myWork, ...workList] : workList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
