@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', getPicTitleClass]">
@@ -170,6 +170,7 @@
       </div>
     </tips-dialog> -->
     <share-vote
+      ref="shareVote"
       :show="isShowWorkVote"
       :config="{
         voting_id: detailInfo.id,
@@ -273,6 +274,7 @@ export default {
       activeTips: [], // 再xxx内参加活动
       downloadLink: '', // 下载链接
       isShowWorkVote: false, // 给他投票弹窗
+      isCloseDialog: false, // 投票弹框显隐
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
       isExamine: null, // 0 未报名 1 已报名
@@ -375,6 +377,11 @@ export default {
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
+      if (rule && rule.is_close_dialog) {
+        this.isCloseDialog = true
+      } else {
+        this.isCloseDialog = false
+      }
       if (rule && rule.share_settings) {
         let share = rule.share_settings
         let sharePic = share.indexpic
@@ -737,10 +744,10 @@ export default {
         count: 10,
         totalPages: 0
       }
-      this.workList = []
-      this.getVoteWorks(name, isClassifySearch)
+      // this.workList = []
+      this.getVoteWorks(name, isClassifySearch, 'clear')
     },
-    getVoteWorks (name = '', isClassifySearch = false) {
+    getVoteWorks (name = '', isClassifySearch = false, type) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -774,6 +781,10 @@ export default {
         if (total % count !== 0) {
           totalPages = parseInt(total / count) + 1
         }
+        // 重新加载，防止回到顶部
+        if (type && type === 'clear') {
+          this.workList = []
+        }
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
         this.getRemainVotes(voteId)
@@ -796,16 +807,22 @@ export default {
       let { data, slug } = obj
       let worksId = data.id
       this.worksId = worksId
-      // 给他投票
-      if (slug === 'vote') {
-        this.isShowWorkVote = true
-      } else if (slug === 'invote') {
-        // 拉票
-        let obj = this.$refs['canvass-vote']
-        if (obj) {
-          obj.saveSharer(worksId)
+      this.$nextTick(() => {
+        // 给他投票
+        if (slug === 'vote') {
+          if (this.isCloseDialog) {
+            this.$refs.shareVote.sureWorkVote()
+          } else {
+            this.isShowWorkVote = true
+          }
+        } else if (slug === 'invote') {
+          // 拉票
+          let obj = this.$refs['canvass-vote']
+          if (obj) {
+            obj.saveSharer(worksId)
+          }
         }
-      }
+      })
     },
     closeWorkVote () {
       this.isShowWorkVote = false
