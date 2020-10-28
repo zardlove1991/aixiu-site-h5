@@ -235,7 +235,7 @@ export default {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = !this.isShowSuspendModels
+      this.isShowSuspendModels = true
       this.endExam()
     },
     toggleSuspendModel () {
@@ -451,7 +451,7 @@ export default {
       @include border('all', px2rem(1px), solid, 'highColor');
       @include font-color('highColor');
       height:px2rem(90px);
-      line-height:px2rem(90px);
+      // line-height:px2rem(90px);
       text-align: center;
       font-size:px2rem(32px);
       border-radius: 5px;
@@ -460,7 +460,7 @@ export default {
     .next-wrap {
       width: px2rem(305px);
       height:px2rem(90px);
-      line-height:px2rem(90px);
+      // line-height:px2rem(90px);
       text-align: center;
       color:#fff;
       // @include bg-color('btnColor');
@@ -470,32 +470,10 @@ export default {
     }
     .prev-wrap, .next-wrap {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
       pointer-events: auto;
       min-width: px2rem(72px);
-      .prev-text,.next-text{
-        line-height: px2rem(26px);
-        @include font-dpr(12px);
-        @include font-color('descColor');
-      }
-      .prev-arrow{
-        position: relative;
-        left: px2rem(-2px);
-        top: px2rem(2px);
-        transform: rotate(180deg);
-      }
-      .next-arrow{
-        position: relative;
-        left: px2rem(4px);
-        top: px2rem(2px);
-      }
-      .next-submit{
-        position: relative;
-        left: px2rem(2px);
-        top: px2rem(2px);
-        @include font-dpr(16px);
-      }
       &.arrow-wrap-disabeld{
         pointer-events: none;
       }
