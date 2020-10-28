@@ -341,10 +341,10 @@ export default {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
           let checkDraw = [...obj]
-          let indexMobile = -1
+          // let indexMobile = -1
+          // let codeObj = null
+          // let imgCodeObj = null
           let indexAddress = -1
-          let codeObj = null
-          let imgCodeObj = null
           let addressObj = null
           for (let i = 0; i < checkDraw.length; i++) {
             let item = checkDraw[i]
@@ -364,19 +364,19 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              indexMobile = i
-              imgCodeObj = {
-                name: '图形验证码',
-                unique_name: 'imgCode',
-                type: 'text',
-                maxlength: 10
-              }
-              codeObj = {
-                name: '验证码',
-                unique_name: 'verify_code',
-                type: 'text',
-                maxlength: 4
-              }
+              // indexMobile = i
+              // imgCodeObj = {
+              //   name: '图形验证码',
+              //   unique_name: 'imgCode',
+              //   type: 'text',
+              //   maxlength: 10
+              // }
+              // codeObj = {
+              //   name: '验证码',
+              //   unique_name: 'verify_code',
+              //   type: 'text',
+              //   maxlength: 4
+              // }
             } else {
               item.maxlength = 100
               item.type = 'text'
@@ -397,22 +397,25 @@ export default {
               }
             }
           }
-          if (indexMobile !== -1 && indexAddress !== -1) {
-            if (indexMobile < indexAddress) {
-              checkDraw.splice(indexMobile + 1, 0, codeObj)
-              checkDraw.splice(indexMobile, 0, imgCodeObj)
-              checkDraw.splice(indexAddress + 3, 0, addressObj)
-            } else {
-              checkDraw.splice(indexAddress + 1, 0, addressObj)
-              checkDraw.splice(indexMobile + 2, 0, codeObj)
-              checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
-            }
-          } else if (indexMobile === -1 && indexAddress !== -1) {
+          if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
-          } else if (indexMobile !== -1 && indexAddress === -1) {
-            checkDraw.splice(indexMobile + 1, 0, codeObj)
-            checkDraw.splice(indexMobile, 0, imgCodeObj)
           }
+          // if (indexMobile !== -1 && indexAddress !== -1) {
+          //   if (indexMobile < indexAddress) {
+          //     checkDraw.splice(indexMobile + 1, 0, codeObj)
+          //     checkDraw.splice(indexMobile, 0, imgCodeObj)
+          //     checkDraw.splice(indexAddress + 3, 0, addressObj)
+          //   } else {
+          //     checkDraw.splice(indexAddress + 1, 0, addressObj)
+          //     checkDraw.splice(indexMobile + 2, 0, codeObj)
+          //     checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
+          //   }
+          // } else if (indexMobile === -1 && indexAddress !== -1) {
+          //   checkDraw.splice(indexAddress + 1, 0, addressObj)
+          // } else if (indexMobile !== -1 && indexAddress === -1) {
+          //   checkDraw.splice(indexMobile + 1, 0, codeObj)
+          //   checkDraw.splice(indexMobile, 0, imgCodeObj)
+          // }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {

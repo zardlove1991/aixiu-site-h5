@@ -13,7 +13,7 @@
             @blur="blurAction()"
             v-model="checkData[item.unique_name]"></el-input>
           <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
-          <div
+          <!-- <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code" :class="isShowVideo ? 'get-code-video' : ''"
             @click="getCode()">获取验证码</div>
@@ -23,7 +23,7 @@
           <div class="get-img-code"
             v-if="item.unique_name === 'imgCode'"
             @click.stop="getImgCode()"
-            :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div>
+            :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div> -->
         </div>
         <div class="submit-btn-wrap color-button_color" :class="isShowVideo ? 'submit-btn-wrap-video' : ''" @click.stop="sureCheckDraw()">确认</div>
       </div>
@@ -109,7 +109,7 @@ export default {
     },
     checkDraw: {
       handler (val) {
-        this.getImgCode()
+        // this.getImgCode()
       },
       deep: true
     }
@@ -255,6 +255,14 @@ export default {
         clearInterval(this.codeTimer)
       }
     },
+    checkMobile (val) {
+      let reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
+      if (!reg.test(val)) {
+        return false
+      } else {
+        return true
+      }
+    },
     sureCheckDraw () {
       let checkData = this.checkData
       let examInfo = this.examInfo
@@ -271,6 +279,14 @@ export default {
           Toast('请输入' + item.name)
           flag = false
           break
+        }
+        if (key === 'mobile') {
+          let res = this.checkMobile(val)
+          if (!res) {
+            Toast(item.name + '格式错误')
+            flag = false
+            break
+          }
         }
       }
       if (!flag) {
@@ -294,7 +310,7 @@ export default {
         data
       }).then(res => {
         if (res.ErrorCode) {
-          this.getImgCode()
+          // this.getImgCode()
           Toast(res.ErrorText)
           return
         }
