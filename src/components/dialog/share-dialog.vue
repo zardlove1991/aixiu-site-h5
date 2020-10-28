@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   props: {
     show: {
@@ -22,10 +24,19 @@ export default {
       default: ''
     }
   },
+  watch: {
+    show (newState) {
+      // 更改当前是否显示遮罩的状态
+      this.setModelThumbState(newState)
+    }
+  },
   methods: {
     close () {
       this.$emit('close')
-    }
+    },
+    ...mapMutations('depence', {
+      setModelThumbState: 'SET_MODEL_THUMB_STATE'
+    })
   }
 }
 </script>
@@ -40,7 +51,7 @@ export default {
     height: 100vh;
     padding: 20px 0;
     background: rgba(0,0,0,0.5);
-    z-index: 99;
+    z-index: 102;
     display: flex;
     flex-direction: column;
     align-items: center;

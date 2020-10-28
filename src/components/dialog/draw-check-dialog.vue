@@ -1,6 +1,6 @@
 <template>
   <div :class="['check-dialog-wrap', isScroll]" v-if="show">
-    <div class="check-dialog-content">
+    <div class="check-dialog-content" :class="isShowVideo ? 'show-video' : ''">
       <div class="check-dialog-main">
         <div class="check-header">答题验证</div>
         <div class="check-item" v-for="(item, index) in checkDraw" :key="index">
@@ -15,17 +15,17 @@
           <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
           <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
-            class="get-code"
+            class="get-code" :class="isShowVideo ? 'get-code-video' : ''"
             @click="getCode()">获取验证码</div>
           <div
             v-if="item.unique_name === 'mobile' && codeTime !== 0"
-            class="get-code">{{codeTime}}秒</div>
+            class="get-code" :class="isShowVideo ? 'get-code-video' : ''">{{codeTime}}秒</div>
           <div class="get-img-code"
             v-if="item.unique_name === 'imgCode'"
             @click.stop="getImgCode()"
             :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div>
         </div>
-        <div class="submit-btn-wrap color-button_color" @click.stop="sureCheckDraw()">确认</div>
+        <div class="submit-btn-wrap color-button_color" :class="isShowVideo ? 'submit-btn-wrap-video' : ''" @click.stop="sureCheckDraw()">确认</div>
       </div>
       <div class="close-btn-wrap">
         <div class="close-btn" @click.stop="closeCheckDraw()"></div>
@@ -78,6 +78,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -274,13 +278,17 @@ export default {
       }
       let data = {
         activity_id: examInfo.id,
-        activity_mark: 'examination',
+        activity_mark: examInfo.mark,
         ...checkData
       }
       let address = ''
       if (checkData.address && checkData.detail_address) {
         address = checkData.address + ' ' + checkData.detail_address
         data.address = address
+      }
+      let collectionForm = examInfo.limit.collection_form
+      if (this.isShowVideo && collectionForm && collectionForm.is_open_collect === 1) {
+        data.is_open_check = collectionForm.is_open_collect
       }
       API.saveDrawRecord({
         data
@@ -322,6 +330,9 @@ export default {
       transform: translateY(-50%);
       width: 100%;
       padding-top: px2rem(30px);
+      &.show-video {
+        margin-top: px2rem(414px);
+      }
       .check-dialog-main {
         margin: 0 auto;
         background-color: #fff;
@@ -390,6 +401,9 @@ export default {
             @include font-dpr(14px);
             // color: #FF6A45;
             @include font-color('btnColor');
+            &.get-code-video {
+              @include font-color('highColor');
+            }
           }
         }
         .submit-btn-wrap {
@@ -403,6 +417,9 @@ export default {
           @include bg-color('btnColor');
           @include font-dpr(14px);
           color: #fff;
+          &.submit-btn-wrap-video {
+            @include bg-linear-color('themeColor')
+          }
         }
       }
       .close-btn-wrap {

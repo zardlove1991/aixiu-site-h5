@@ -4,7 +4,7 @@
     <div class="row-wrap" v-for="(row,rowIndex) in rows" :key='rowIndex' ref="subjectRow">
       <div v-for="(item,index) in row" :key="item.key"
            class="item normal"
-           :class="[{ disabled: haveDone(item) }, addClass(item), setActiveClass(item)]"
+           :class="[{ disabled: haveDone(item) }, addClass(item), setActiveClass(item), setVideoClass()]"
            @click.stop= "selectSubject(item)">
         {{showSubjectIndex(rowIndex,index)}}
       </div>
@@ -30,6 +30,10 @@ export default {
     curIndex: {
       type: Number,
       default: 0
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -105,6 +109,12 @@ export default {
       let curAcitve = this.curIndex === subjectIndex
       if (!curAcitve) return ''
       return `${renderType}Active`
+    },
+    setVideoClass () {
+      if (this.isShowVideo) {
+        return 'showVideo'
+      }
+      return ''
     },
     haveDone (subject) {
       let isDid = true
@@ -188,6 +198,10 @@ export default {
           @include border('all',1px,solid,'btnColor');
           @include font-color('btnColor');
           background-color:#fff;
+          &.showVideo {
+            @include border('all',1px,solid,'highColor');
+            @include font-color('highColor');
+          }
         }
       }
       &.disabled{

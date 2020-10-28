@@ -3,8 +3,9 @@
   <div class="subject-content-wrap" v-if="data">
     <!--普通提醒 单选、多选、判断-->
     <normal-subject
-       v-if="['judge', 'radio', 'checkbox'].includes(data.type)"
+       v-if="['judge', 'radio', 'checkbox', 'pictureMulti', 'pictureRadio'].includes(data.type)"
        :data="data"
+       :isShowVideo="isShowVideo"
        :mode="mode">
     </normal-subject>
     <!--问答题的内容区域-->
@@ -62,6 +63,10 @@ export default {
       type: String,
       required: true,
       default: ''
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

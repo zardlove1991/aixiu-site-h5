@@ -94,6 +94,83 @@ let router = new Router({
       }
     },
     {
+      path: '/livestart/:id',
+      redirect: '/livestart/:id/start',
+      component: getOtherComponent('index', 'live-exam'),
+      props: (route) => ({
+        id: route.params.id
+      }),
+      children: [{
+        path: 'start',
+        name: 'livestart',
+        component: getOtherComponent('live-start', 'live-exam'),
+        props: (route) => ({
+          id: route.params.id, // 传入需要请求当前试卷的ID
+          redirect: route.query.redirect, // 小程序传入的重定向地址
+          delta: route.query.delta // 小程序需要回退的页面层级
+        }),
+        meta: {
+          title: '直播测评'
+        }
+      }, {
+        path: 'list',
+        name: 'livelist',
+        component: getOtherComponent('live-list', 'live-exam'),
+        props: (route) => ({
+          id: route.params.id, // 传入需要请求当前试卷的ID
+          rtp: route.query.rtp, // 试卷渲染的类型 考试:exam 解析:analysis
+          restart: route.query.restart, // 是否需要重新开始考试 需要:need 不需要:none
+          redirect: route.query.redirect, // 小程序传入的重定向地址
+          delta: route.query.delta, // 小程序需要回退的页面层级
+          listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
+        }),
+        meta: {
+          title: '加载中...'
+        }
+      }, {
+        path: 'statistic',
+        name: 'livestatistic',
+        component: getOtherComponent('live-statistic', 'live-exam'),
+        props: (route) => ({
+          id: route.params.id, // 传入需要请求当前试卷的ID
+          redirect: route.query.redirect, // 小程序传入的重定向地址
+          delta: route.query.delta // 小程序需要回退的页面层级
+        }),
+        meta: {
+          title: '直播测评结果'
+        }
+      }]
+    },
+    // {
+    //   path: '/livelist/:id',
+    //   name: 'livelist',
+    //   component: getOtherComponent('live-list', 'live-exam'),
+    //   props: (route) => ({
+    //     id: route.params.id, // 传入需要请求当前试卷的ID
+    //     rtp: route.query.rtp, // 试卷渲染的类型 考试:exam 解析:analysis
+    //     restart: route.query.restart, // 是否需要重新开始考试 需要:need 不需要:none
+    //     redirect: route.query.redirect, // 小程序传入的重定向地址
+    //     delta: route.query.delta, // 小程序需要回退的页面层级
+    //     listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
+    //   }),
+    //   meta: {
+    //     title: '加载中...'
+    //   }
+    // },
+    // {
+    //   path: '/livestatistic/:id',
+    //   name: 'livestatistic',
+    //   component: getOtherComponent('live-statistic', 'live-exam'),
+    //   props: (route) => ({
+    //     id: route.params.id, // 传入需要请求当前试卷的ID
+    //     redirect: route.query.redirect, // 小程序传入的重定向地址
+    //     delta: route.query.delta // 小程序需要回退的页面层级
+    //   }),
+    //   meta: {
+    //     title: '直播测评结果'
+    //   }
+    // },
+    {
       path: '/permission',
       name: 'permission',
       component: getComponent('permission'),

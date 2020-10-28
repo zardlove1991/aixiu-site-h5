@@ -1,10 +1,10 @@
 <template>
   <div class="submit-success-mask" v-if="show">
-    <div class="pop-submit-success">
+    <div class="pop-submit-success" :class="isShowVideo ? 'show-video' : ''">
       <div class="pop-icon"></div>
       <div class="pop-title">{{ pop.title ? pop.title : '提交成功' }}</div>
       <div class="pop-content">{{ pop.content ? pop.content : '试题提交成功，感谢您的答题' }}</div>
-      <button class="pop-btn" @click.stop="doneAction()">{{doneText}}</button>
+      <button class="pop-btn" :class="isShowVideo ? 'video-pop-btn' : ''" @click.stop="doneAction()">{{doneText}}</button>
     </div>
   </div>
 </template>
@@ -28,6 +28,10 @@ export default {
     doneText: {
       type: String,
       default: '知道了'
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -62,6 +66,9 @@ export default {
       height: px2rem(650px);
       border-radius: px2rem(8px);
       background-color: #FFFFFF;
+      &.show-video {
+        margin-top: px2rem(414px);
+      }
       .pop-icon {
         display: inline-block;
         width: px2rem(221px);
@@ -92,6 +99,9 @@ export default {
         font-size: px2rem(34px);
         color: #fff;
         border: 0;
+        &.video-pop-btn {
+          @include bg-linear-color('themeColor')
+        }
       }
     }
   }

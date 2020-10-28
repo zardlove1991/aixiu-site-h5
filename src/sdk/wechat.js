@@ -93,7 +93,7 @@ let wechat = {
         this.getVoteAuthScope(id)
       } else if (pathname.indexOf('enrollstart') !== -1) {
         this.getEnrollScope()
-      } else if (pathname.indexOf('depencestart') !== -1) {
+      } else if (pathname.indexOf('depencestart') !== -1 || pathname.indexOf('livestart') !== -1) {
         // 测评
         this.getExamAuthScope(id)
       }
