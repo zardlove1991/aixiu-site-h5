@@ -119,7 +119,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .live-video-header-wrap {
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     width: 100vw;

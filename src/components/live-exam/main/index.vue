@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="livemain-index-wrap">
     <live-video :videoObj="videoObj" />
     <router-view />
   </div>
@@ -63,4 +63,7 @@ export default {
 </script>
 
 <style lang="scss">
+  .livemain-index-wrap {
+    position: relative;
+  }
 </style>
