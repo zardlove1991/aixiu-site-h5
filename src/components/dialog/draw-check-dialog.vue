@@ -303,8 +303,8 @@ export default {
         data.address = address
       }
       let collectionForm = examInfo.limit.collection_form
-      if (this.isShowVideo && collectionForm && collectionForm.is_open_collect === 1) {
-        data.is_open_check = collectionForm.is_open_collect
+      if (this.isShowVideo && collectionForm && collectionForm.is_open_check === 1) {
+        data.is_open_check = collectionForm.is_open_check
       }
       API.saveDrawRecord({
         data
