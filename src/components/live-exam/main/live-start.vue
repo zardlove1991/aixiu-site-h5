@@ -20,7 +20,7 @@
         </div>
         <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info">{{introduce}}</div>
         <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
-        <div class="body-wrap">
+        <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
           <div class="row">
             <div class="bg"></div>
@@ -629,13 +629,13 @@ export default {
     display: flex;
     width:100%;
     margin-top: px2rem(100px);
-    padding-bottom: px2rem(30px);
+    padding-bottom: px2rem(50px);
     // position: absolute;
     // left: 0;
     // bottom:px2rem(100px);
   }
   .start-exam-tips {
-    padding-bottom: px2rem(30px);
+    padding-bottom: px2rem(50px);
     text-align: center;
     color:#999;
     @include font-dpr(14px);
