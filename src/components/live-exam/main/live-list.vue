@@ -158,17 +158,21 @@ export default {
   methods: {
     toStatistic () {
       this.isShowSuspendModels = false
-      let examId = this.id
-      this.$router.replace({
-        path: `/livestart/${examId}/statistic`
-      })
+      setTimeout(() => {
+        let examId = this.id
+        this.$router.replace({
+          path: `/livestart/${examId}/statistic`
+        })
+      }, 1000)
     },
     toStart () {
       this.isShowSuspendModels = false
-      let examId = this.examId
-      this.$router.replace({
-        path: `/livestart/${examId}/start`
-      })
+      setTimeout(() => {
+        let examId = this.examId
+        this.$router.replace({
+          path: `/livestart/${examId}/start`
+        })
+      }, 1000)
     },
     async initList () {
       let examId = this.id
