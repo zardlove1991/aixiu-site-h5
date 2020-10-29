@@ -443,21 +443,22 @@ export default {
     }
   }
   .btn-wrap {
-    padding: px2rem(60px) 0;
+    margin-top: px2rem(60px);
+    padding-bottom: px2rem(60px);
     display: flex;
     justify-content: center;
-    pointer-events: auto;
-    background-color:#fff;
+    // pointer-events: auto;
     .prev-wrap {
       width: px2rem(305px);
       // border:1px solid #FFA46A;
       // color: #FFA46A;
       @include border('all', px2rem(1px), solid, 'highColor');
       @include font-color('highColor');
-      height:px2rem(90px);
+      transform: rotateZ(360deg);
+      height: px2rem(90px);
       // line-height:px2rem(90px);
-      text-align: center;
-      font-size:px2rem(32px);
+      // text-align: center;
+      font-size: px2rem(32px);
       border-radius: 5px;
       margin-right: px2rem(20px);
     }
@@ -465,20 +466,20 @@ export default {
       width: px2rem(305px);
       height:px2rem(90px);
       // line-height:px2rem(90px);
-      text-align: center;
+      // text-align: center;
       color:#fff;
       // @include bg-color('btnColor');
       @include bg-linear-color('themeColor');
-      font-size:px2rem(32px);
+      font-size: px2rem(32px);
       border-radius: 5px;
     }
     .prev-wrap, .next-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
-      min-width: px2rem(72px);
-      &.arrow-wrap-disabeld{
+      // pointer-events: auto;
+      // min-width: px2rem(72px);
+      &.arrow-wrap-disabeld {
         pointer-events: none;
       }
     }
