@@ -4,7 +4,7 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage(item.is_my ? 'voteoneself' : 'votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :class="imageRatio?'vertical':0" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
+      <div class="work-poster-wrap" :class="imageRatio?'vertical':''" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
         <div class="poster-thumb">
           <div class="thumb-bg"></div>
           <div class="thumb-poster" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}"></div>

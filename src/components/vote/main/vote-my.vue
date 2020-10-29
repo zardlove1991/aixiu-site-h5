@@ -10,6 +10,7 @@
           <span class="tip color-theme_color">{{key}}</span>
         </div>
         <div class="list-item"
+          :class="item.image_ratio?'vertical':''"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id })">
           <div class="item-indexpic"
@@ -186,6 +187,11 @@ export default {
           display: flex;
           align-items: center;
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          &.vertical{
+            .item-indexpic {
+              height: px2rem(252px);
+            }
+          }
           .item-indexpic {
             position: relative;
             flex: 0 0 px2rem(180px);

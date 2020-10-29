@@ -225,14 +225,14 @@ export default {
           this.lottery = lottery
           this.$emit('close')
           this.voteDisable = false
-          this.$emit('success')
+          // this.$emit('success')
           return
         }
         this.$emit('close')
         this.voteDisable = false
         let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
         Toast('成功' + sign)
-        this.$emit('success')
+        // this.$emit('success')
       })
     }
   }
