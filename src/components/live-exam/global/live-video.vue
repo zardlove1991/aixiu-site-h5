@@ -1,5 +1,5 @@
 <template>
-  <div class="live-video-header-wrap">
+  <div class="live-video-header-wrap" v-if="videoObj && videoObj.videoUrl">
     <video-player class="video-player vjs-custom-skin"
       ref="videoPlayer"
       :playsinline="true"
