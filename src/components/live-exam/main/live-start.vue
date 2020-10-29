@@ -14,11 +14,11 @@
         <div class="header-desc">
           <div class="title">{{examInfo.title}}</div>
         </div>
-        <div class="exam-time" v-if="examInfo.limit.is_time_show == 1">
+        <div class="exam-time" v-if="examInfo.limit.is_time_show === 1">
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
-        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info">{{introduce}}</div>
+        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info">{{examInfo.brief}}</div>
         <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
         <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
@@ -139,8 +139,7 @@ export default {
       checkDraw: [],
       isNoLimit: false,
       isShowFindAll: false,
-      isShowInfo: false,
-      introduce: '教师资格考试是国家对专门从事教育教学工作人员的基本要求，是公民获得教师职位、从事教师工作的前提条件。教师资格制度是国家实行的教师职业许可制度。'
+      isShowInfo: false
     }
   },
   components: { MyModel, DrawCheckDialog, LiveVideo },
