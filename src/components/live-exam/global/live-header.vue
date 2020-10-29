@@ -282,7 +282,7 @@ export default {
     height:px2rem(64px);
     line-height:px2rem(64px);
     font-size:px2rem(28px);
-    z-index:100;
+    z-index: 99;
     &.time-up-wrap {
       background-color: #FF6A45;
     }

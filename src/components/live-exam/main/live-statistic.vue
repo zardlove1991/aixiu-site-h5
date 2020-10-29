@@ -129,7 +129,6 @@
         </div>
       </div>
       <share-dialog
-        :isShowVideo="true"
         :show="isShowShare"
         :shareUrl="shareUrl"
         @close="isShowShare = false">
@@ -146,7 +145,7 @@ import API from '@/api/module/examination'
 import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
-import ShareDialog from '@/components/dialog/share-dialog'
+import ShareDialog from '@/components/live-exam/global/live-share'
 import { formatDate } from '@/utils/utils'
 import LiveVideo from '@/components/live-exam/global/live-video'
 
