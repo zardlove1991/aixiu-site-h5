@@ -101,14 +101,14 @@
           <vote-picture-text
             v-if="showModel === 'picture'"
             :detailInfo="detailInfo"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-picture-text>
           <vote-video-text v-if="showModel === 'video'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -116,7 +116,7 @@
           </vote-video-text>
           <vote-audio-text
             v-if="showModel === 'audio'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -124,7 +124,7 @@
           </vote-audio-text>
           <vote-text
             v-if="showModel === 'text'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -178,6 +178,7 @@
         mark: detailInfo.mark
       }"
       :textSetting="detailInfo.text_setting"
+      @updateCard="updateCard"
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
@@ -299,7 +300,8 @@ export default {
       isOpenClassify: false,
       isShowClassify: false,
       searchClassifyVal: '',
-      isShowRank: true // 是否显示榜单
+      isShowRank: true, // 是否显示榜单
+      activeIndex: null // 当前正在操作的内容序号
     }
   },
   created () {
@@ -332,6 +334,13 @@ export default {
         }
       } else {
         return ''
+      }
+    },
+    allWorkList () {
+      if (this.myWork.id) {
+        return [this.myWork, ...this.workList]
+      } else {
+        return this.workList
       }
     }
   },
@@ -747,6 +756,12 @@ export default {
       // this.workList = []
       this.getVoteWorks(name, isClassifySearch, 'clear')
     },
+    updateCard () {
+      if (this.activeIndex !== null && this.activeIndex !== undefined) {
+        this.allWorkList[this.activeIndex].total_votes++
+        this.remainVotes--
+      }
+    },
     getVoteWorks (name = '', isClassifySearch = false, type) {
       let voteId = this.id
       this.loading = true
@@ -803,7 +818,12 @@ export default {
         query: data
       })
     },
-    triggerWork (obj) {
+    triggerWork (obj, index) {
+      if (index !== null && index !== undefined) {
+        this.activeIndex = index
+      } else {
+        this.activeIndex = null
+      }
       let { data, slug } = obj
       let worksId = data.id
       this.worksId = worksId

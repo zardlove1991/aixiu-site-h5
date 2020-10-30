@@ -226,6 +226,7 @@ export default {
           this.$emit('close')
           this.voteDisable = false
           // this.$emit('success')
+          this.$emit('updateCard')
           return
         }
         this.$emit('close')
@@ -233,6 +234,7 @@ export default {
         let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
         Toast('成功' + sign)
         // this.$emit('success')
+        this.$emit('updateCard')
       })
     }
   }
