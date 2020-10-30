@@ -308,7 +308,7 @@ export default {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
                 pieData.push({
-                  name: options.name,
+                  name: opt.name,
                   percent
                 })
               })
