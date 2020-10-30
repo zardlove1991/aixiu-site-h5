@@ -42,6 +42,18 @@ let smartcity = {
     } catch (err) {
       cbk(-1, '智慧城市：授权登录失败', err)
     }
+  },
+  getActiveId (pathname) {
+    let id = ''
+    if (pathname.indexOf('livestart') !== -1) {
+      let startStr = 'livestart/'
+      let end = pathname.lastIndexOf('/')
+      let start = pathname.indexOf(startStr) + startStr.length
+      id = pathname.substring(start, end)
+    } else {
+      id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+    }
+    return id
   }
 }
 
@@ -51,7 +63,7 @@ export const oauth = (cbk) => {
     return false
   }
   let pathname = window.location.pathname
-  let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+  let id = smartcity.getActiveId(pathname)
   if (id) {
     let params = { id }
     if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1 || pathname.indexOf('enrollstart') !== -1) {

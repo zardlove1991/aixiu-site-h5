@@ -80,14 +80,27 @@ let wechat = {
       }
     })
   },
+  getActiveId (pathname) {
+    let id = ''
+    if (pathname.indexOf('livestart') !== -1) {
+      let startStr = 'livestart/'
+      let end = pathname.lastIndexOf('/')
+      let start = pathname.indexOf(startStr) + startStr.length
+      id = pathname.substring(start, end)
+    } else {
+      id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+    }
+    return id
+  },
   async goRedirect () {
     let pathname = window.location.pathname
-    let id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
+    let id = this.getActiveId(pathname)
     if (id) {
       STORAGE.remove('userinfo')
       STORAGE.remove('component_appid')
       STORAGE.remove('appid')
       STORAGE.remove('detailInfo')
+      STORAGE.remove('scope_limit')
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         this.getVoteAuthScope(id)

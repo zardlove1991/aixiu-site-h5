@@ -95,6 +95,7 @@ let router = new Router({
     },
     {
       path: '/livestart/:id',
+      name: 'liveall',
       redirect: '/livestart/:id/start',
       component: getOtherComponent('index', 'live-exam'),
       props: (route) => ({
