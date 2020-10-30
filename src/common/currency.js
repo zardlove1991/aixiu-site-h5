@@ -22,22 +22,24 @@ export const METHODS = {
     else if (type === 'singleblank') typeTip = '填空题'
     else if (type === 'mulitblank') typeTip = '多元填空'
     else if (type === 'optionblank') typeTip = '选词填空'
+    else if (type === 'pictureRadio') typeTip = '单选图片'
+    else if (type === 'pictureMulti') typeTip = '多选图片'
     return typeTip
   }
 }
 
 export const DEPENCE = {
   dealErrorType (params, err) {
-    let examId = params.examId
-    let redirectParams = params.redirectParams
-    let _this = window.$vue
+    // let examId = params.examId
+    // let redirectParams = params.redirectParams
+    // let _this = window.$vue
     // 如果开始考试出错就直接去答题卡页面
-    if (err.status && err.status === 422) {
-      _this.$router.replace({
-        path: `/depencecard/${examId}`,
-        query: redirectParams
-      })
-    }
+    // if (err.status && err.status === 422) {
+    // _this.$router.replace({
+    //   path: `/depencecard/${examId}`,
+    //   query: redirectParams
+    // })
+    // }
   },
   dealLimitTimeTip (time) {
     let tip = time > 0 ? `${time}分钟` : '不限时'

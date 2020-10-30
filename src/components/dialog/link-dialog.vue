@@ -1,6 +1,6 @@
 <template>
   <div class="submit-success-mask" v-if="show">
-    <div class="submit-success flex-column-center">
+    <div class="submit-success flex-column-center" :class="isShowVideo ? 'show-video' : ''">
       <div class="submit-success-icon"></div>
       <div class="submit-success-tips">{{linkTips}}</div>
     </div>
@@ -17,6 +17,10 @@ export default {
     linkTips: {
       type: String,
       default: '页面正在跳转...'
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -48,6 +52,9 @@ export default {
       box-shadow: 0px 0px 11px 0px rgba(0,0,0,0.21);
       padding: px2rem(40px, 75px);
       background-color: #FFFFFF;
+      &.show-video {
+        margin-top: px2rem(414px);
+      }
       .submit-success-icon {
         display: inline-block;
         width: px2rem(42px);

@@ -2,7 +2,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { METHODS, DEPENCE } from '@/common/currency'
-import { getEnglishChar, dealAnnexObject, randomNum } from '@/utils/utils'
+import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -383,23 +383,6 @@ const actions = {
         Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
-        var datas = {
-          param: {
-            data: [{
-              id: id,
-              mark: 'examination',
-              title: info.title,
-              member_id: STORAGE.get('userinfo').id,
-              // create_time: new Date().getTime(),
-              start_time: parseInt((new Date().getTime()) / 1000),
-              from: null,
-              hash: randomNum(13)
-            }]
-          }
-        }
-        API.setClick({params: datas}).then(res => {
-          console.log(res)
-        })
         resolve()
       }).catch(err => {
         Indicator.close() // 结束
@@ -629,13 +612,13 @@ const actions = {
     // 如果是解析的话直接不可以添加选项状态
     if (renderType === 'analysis') return
     // 处理当前选中的类型
-    if (['judge', 'radio'].includes(subjectInfo.type)) {
+    if (['judge', 'radio', 'pictureRadio'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = true
         else item.active = false
         return item
       })
-    } else if (['checkbox'].includes(subjectInfo.type)) {
+    } else if (['checkbox', 'pictureMulti'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = !item.active
         return item

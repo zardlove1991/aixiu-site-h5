@@ -28,8 +28,8 @@
     <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
       <!--每个选择项描述-->
       <div class="select-tip-wrap" @click.stop="selectTouchEnd(optIndex, data.index)">
-        <div class="select-tip" v-if="data.type === 'radio'" :class="{active: optItem.active , error: optItem.error}"></div>
-        <div class="select-tip-checkbox" v-if="data.type === 'checkbox'" :class="{active: optItem.active , error: optItem.error}"></div>
+        <div class="select-tip" v-if="data.type === 'radio' || data.type === 'pictureRadio'" :class="{active: optItem.active , error: optItem.error, videoActive: isShowVideo}"></div>
+        <div class="select-tip-checkbox" v-if="data.type === 'checkbox' || data.type === 'pictureMulti'" :class="{active: optItem.active , error: optItem.error, videoActive: isShowVideo}"></div>
         <div class="select-desc">{{optItem.selectTip}}. {{optItem.name}}</div>
       </div>
       <div class="media-wrap" v-for="(media,mediaKey) in optItem.annex" :key="mediaKey">
@@ -77,7 +77,13 @@ import SubItemMixin from '@/mixins/subject-item'
 
 export default {
   name: 'normal-subject',
-  mixins: [ SubItemMixin, SubjectMixin ]
+  mixins: [ SubItemMixin, SubjectMixin ],
+  props: {
+    isShowVideo: {
+      type: Boolean,
+      default: false
+    }
+  }
 }
 </script>
 

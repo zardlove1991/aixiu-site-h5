@@ -100,10 +100,25 @@ export const setTheme = (id, name, isFirst) => {
       let info = res
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
-        document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-        document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-        document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-        document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+        if (content.bg_color) {
+          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
+        }
+        if (content.button_color) {
+          document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
+        }
+        if (content.theme_color) {
+          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
+        }
+        if (content.decorated) {
+          document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
+        }
+        if (content.high_text) {
+          document.getElementsByTagName('body')[0].style.setProperty('--highColor', content.high_text)
+        }
+      }
+      if (isFirst && info && info.id) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
       }
     })
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="submit-success-mask" v-if="show">
-    <div class="luck-submit-success">
+    <div class="luck-submit-success" :class="isShowVideo ? 'show-video' : ''">
       <div class="luck-title">
         <span v-for="(item, index) in luckDrawTips" :key="index">{{item}}<br /></span>
       </div>
@@ -32,6 +32,10 @@ export default {
     doneText: {
       type: String,
       default: '知道了'
+    },
+    isShowVideo: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -53,7 +57,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,6 +69,9 @@ export default {
       justify-content: center;
       text-align: center;
       box-sizing: border-box;
+      &.show-video {
+        margin-top: px2rem(414px);
+      }
       .luck-title {
         color: #FFF0C3;
         font-size: px2rem(40px);

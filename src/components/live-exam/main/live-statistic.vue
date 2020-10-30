@@ -1,6 +1,5 @@
 <template>
-  <div class="form-statistic-wrap">
-    <!--头部提示-->
+  <div class="live-statistic-wrap">
     <div class="header-tip flex-v-center flex-between">
       <span class="icon-wrap flex-v-center">
         <i class="tips-icon"></i>
@@ -140,19 +139,20 @@
 
 <script>
 import STORAGE from '@/utils/storage'
-import Pie from './StatisticPie'
+import Pie from '@/components/StatisticPie'
 import API from '@/api/module/examination'
 // import { windowTitle, getUrlParam } from '../utils/utils'
 import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
-import ShareDialog from '@/components/dialog/share-dialog'
+import ShareDialog from '@/components/live-exam/global/live-share'
 import { formatDate } from '@/utils/utils'
+import LiveVideo from '@/components/live-exam/global/live-video'
 
 export default {
-  name: 'form-statistic',
+  name: 'live-statistic',
   components: {
-    Pie, ShareDialog
+    Pie, ShareDialog, LiveVideo
   },
   mixins: [ SubjectMixin ],
   props: ['params'],
@@ -402,7 +402,7 @@ export default {
     backUrl () {
       let examId = this.$route.params.id
       this.$router.push({
-        path: `/depencestart/${examId}`
+        path: `/livestart/${examId}/start`
       })
     },
     shareScore () {
@@ -498,20 +498,21 @@ $font-weight: 400;
     justify-content: space-between;
 }
 
-.form-statistic-wrap{
+.live-statistic-wrap {
     font-family: $font-family;
     background-color:#fff;
     min-height: 100vh;
+    overflow-y: auto;
     i {
         display: inline-block;
     }
-    .score-area .my-score{
-        font-size:px2rem(72px);
-        line-height:px2rem(72px);
-        color:#FF6A45;
-        margin-bottom:px2rem(20px);
+    .score-area .my-score {
+      font-size:px2rem(72px);
+      line-height:px2rem(72px);
+      color:#FF6A45;
+      margin-bottom:px2rem(20px);
     }
-    .score-area .my-text{
+    .score-area .my-text {
         color:#666;
         font-size:px2rem(30px);
         line-height:px2rem(30px);
@@ -519,39 +520,39 @@ $font-weight: 400;
           color: #333;
         }
     }
-    .header-tip{
-        width: 100%;
-        height:px2rem(80px);
-        background:#fff1ed;
-        color: $primary-color;
-        padding-left:px2rem(43px);
-        padding-right:px2rem(20px);
-        box-sizing: border-box;
-        z-index: 2;
-        .icon-wrap {
+    .header-tip {
+      margin-top: px2rem(414px);
+      width: 100%;
+      height:px2rem(80px);
+      background:#fff1ed;
+      color: $primary-color;
+      padding-left:px2rem(43px);
+      padding-right:px2rem(20px);
+      // box-sizing: border-box;
+      .icon-wrap {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .tips-icon{
+        width: px2rem(36px);
+        height: px2rem(36px);
+        background-size: px2rem(36px);
+        @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
+      }
+      .tips-title{
           display: inline-block;
-          vertical-align: middle;
-        }
-        .tips-icon{
-          width: px2rem(36px);
-          height: px2rem(36px);
-          background-size: px2rem(36px);
-          @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
-        }
-        .tips-title{
-            display: inline-block;
-            @include font-dpr(14px);
-            font-weight: $font-weight;
-            color: $primary-color;
-            margin-left: 7px;
-        }
-        .back-btn{
-            color: $primary-color;
-            padding: 3.5px 7px;
-            border: 1.2px solid $primary-color;
-            border-radius: 15px;
-            font-size: 14px;
-        }
+          @include font-dpr(14px);
+          font-weight: $font-weight;
+          color: $primary-color;
+          margin-left: 7px;
+      }
+      .back-btn{
+          color: $primary-color;
+          padding: 3.5px 7px;
+          border: 1.2px solid $primary-color;
+          border-radius: 15px;
+          font-size: 14px;
+      }
     }
     .header-bg{
         width: 100%;
@@ -597,7 +598,7 @@ $font-weight: 400;
           }
         }
         .score-tips {
-          margin-top:px2rem(48px);
+          margin-top: px2rem(48px);
           background:#fff1ed;
           padding: px2rem(20px);
           display: flex;
@@ -673,45 +674,45 @@ $font-weight: 400;
             left: 22px;
         }
     }
-    .content{
-        padding: 15px;
-        margin-top:px2rem(80px);
-        .operate-wrap{
-            .btn{
-                display: inline-block;
-                width: 75px;
-                height: 29px;
-                text-align: center;
-                border: 1px solid #dbdbdb;
-                font-size: 12px;
-                font-family: $font-family;
-                font-weight: $font-weight;
-                color: #666;
-                line-height: 29px;
-                &.btn-left{
-                    border-radius: 2px 0px 0px 2px;
-                }
-                &.btn-right{
-                    border-radius: 0px 2px 2px 0px;
-                    border-left: none;
-                }
+    .content {
+      padding: 15px;
+      margin-top:px2rem(80px);
+      .operate-wrap{
+          .btn{
+            display: inline-block;
+            width: 75px;
+            height: 29px;
+            text-align: center;
+            border: 1px solid #dbdbdb;
+            font-size: 12px;
+            font-family: $font-family;
+            font-weight: $font-weight;
+            color: #666;
+            line-height: 29px;
+            &.btn-left{
+                border-radius: 2px 0px 0px 2px;
             }
-            .iconbingzhuangtu:before, .iconshuju:before{
-                font-size: 16px;
-                margin: 0 px2rem(15px) 0 px2rem(12px);
-                color: #ccc;
+            &.btn-right{
+                border-radius: 0px 2px 2px 0px;
+                border-left: none;
             }
-            .is-active{
-                background: $primary-color;
-                color: #fff;
-                border-color: $primary-color;
-                &.btn-right{
-                    margin-left: -1px;
-                }
-                &.iconbingzhuangtu:before, &.iconshuju:before{
-                    color: #fff;
-                }
-            }
+          }
+          .iconbingzhuangtu:before, .iconshuju:before{
+              font-size: 16px;
+              margin: 0 px2rem(15px) 0 px2rem(12px);
+              color: #ccc;
+          }
+          .is-active{
+              background: $primary-color;
+              color: #fff;
+              border-color: $primary-color;
+              &.btn-right{
+                  margin-left: -1px;
+              }
+              &.iconbingzhuangtu:before, &.iconshuju:before{
+                  color: #fff;
+              }
+          }
         }
         .option-wrap{
             ul{
