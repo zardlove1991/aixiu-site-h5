@@ -5,10 +5,12 @@
       :playsinline="true"
       style="object-fit:fill"
       :options="playerOptions"
-      :x5-video-player-fullscreen="true"
+      :webkit-playsinline="true"
+      x5-playsinline
+      x-webkit-airplay="allow"
+      :x5-video-player-fullscreen="false"
       @pause="onPlayerPause($event)"
       @play="onPlayerPlay($event)"
-      @fullscreenchange="onFullscreenChange($event)"
       @click="fullScreen">
     </video-player>
   </div>
@@ -132,6 +134,9 @@ export default {
       height: 72px;
       border-radius: 100%;
       z-index: 100;
+    }
+    .video-js .vjs-fullscreen-control {
+      display: none;
     }
     .bg {
       width: 100%;
