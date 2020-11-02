@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="!noMore" class="scroll-tips" @click="initMyVoteList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
