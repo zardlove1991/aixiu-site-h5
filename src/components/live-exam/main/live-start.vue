@@ -181,7 +181,9 @@ export default {
     cancelBreakModel () {
       // 继续答题
       this.isShowBreak = false
-      this.goExamPage()
+      setTimeout(() => {
+        this.goExamPage()
+      }, 1000)
     },
     blurAction () {
       document.body.scrollTop = 0
