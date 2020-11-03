@@ -23,6 +23,29 @@ let baseUrl = {
   setShare: 'setShare' // 分享活动时请求分享接口
 }
 
+let examUrl = {
+  getExamlist: 'client/examination', // 考试列表
+  getRecord: 'client/examination/{id}/card', // 考试列表
+  getExamDetailsList: 'client/examination/questions',
+  getExamDetailsStatistics: 'client/examination/statistics',
+  getErrorList: 'client/examination/mistakes', // 获得错题列表
+  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
+  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
+  submitExam: 'client/examination/{id}/end',
+  startExam: 'client/examination/{id}/start',
+  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
+  saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
+  getExamDetail: 'client/examination/{id}',
+  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
+  saveDrawRecord: 'collection/form/record', // 投票信息采集
+  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
+  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
+  unlockCourse: 'client/examination/submitted', // 解锁课程
+  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
+  getExamAuthScope: 'open/examination/detail', // 测评授权接口
+  getInfoDept: 'client/examination/import/verify' // 获取信息收集用户的部门
+}
+
 // 投票相关接口
 let voteUrl = {
   getVoteAuthScope: 'client/voting/base/{id}', // 投票授权接口
@@ -62,27 +85,9 @@ let enrollUrl = {
 let configUrl = {
   ...QCloundUrl,
   ...baseUrl,
+  ...examUrl,
   ...voteUrl,
   ...enrollUrl,
-  getExamlist: 'client/examination', // 考试列表
-  getRecord: 'client/examination/{id}/card', // 考试列表
-  getExamDetailsList: 'client/examination/questions',
-  getExamDetailsStatistics: 'client/examination/statistics',
-  getErrorList: 'client/examination/mistakes', // 获得错题列表
-  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
-  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/examination/{id}/end',
-  startExam: 'client/examination/{id}/start',
-  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
-  saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
-  getExamDetail: 'client/examination/{id}',
-  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
-  saveDrawRecord: 'collection/form/record', // 投票信息采集
-  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
-  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
-  unlockCourse: 'client/examination/submitted', // 解锁课程
-  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
-  getExamAuthScope: 'open/examination/detail', // 测评授权接口
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -118,6 +123,7 @@ export default {
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
