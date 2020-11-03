@@ -23,6 +23,7 @@
       </div>
       <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
         <img class="base-image"
+          :class="imageRatio?'vertical':''"
           v-for="(image, index) in workDetail.material.image" :key="index"
           :src="image.url + '?x-oss-process=image/resize,w_400'" />
       </div>
@@ -37,6 +38,7 @@
       @detail-menu="dealDetailMenu">
     </common-page-detail>
     <share-vote
+      ref="shareVote"
       :show="isShowWorkVote"
       :config="{
         voting_id: id,
@@ -96,7 +98,9 @@ export default {
       },
       detailInfo: {},
       signUnit: '票',
-      isOpenClassify: false
+      isOpenClassify: false,
+      imageRatio: 0, // 图片模式
+      isCloseDialog: false // 是否开启投票弹框
     }
   },
   created () {
@@ -131,6 +135,19 @@ export default {
             this.signUnit = signUnit
           }
         }
+      }
+      // 判断图片模式
+      let pageSetup = detailInfo.rule.page_setup
+      if (pageSetup.image_ratio) {
+        this.imageRatio = 1
+      } else {
+        this.imageRatio = 0
+      }
+      // 判断投票弹窗
+      if (detailInfo.rule && detailInfo.rule.is_close_dialog) {
+        this.isCloseDialog = true
+      } else {
+        this.isCloseDialog = false
       }
       let limit = detailInfo.rule.limit
       if (limit.is_open_classify && limit.is_open_classify === 1) {
@@ -244,7 +261,12 @@ export default {
           window.history.back()
         }
       } else if (slug === 'vote') {
-        this.isShowWorkVote = true
+        // 是否开启弹窗
+        if (this.isCloseDialog) {
+          this.$refs.shareVote.sureWorkVote()
+        } else {
+          this.isShowWorkVote = true
+        }
       } else if (slug === 'invote') {
         let obj = this.$refs['canvass-vote-detail']
         if (obj) {
@@ -323,6 +345,9 @@ export default {
       .base-video, .base-audio, .base-image {
         width: 100%;
         margin-bottom: px2rem(40px);
+      }
+      .base-image.vertical {
+        height: calc((100vw - 1.875rem)*5.6/4);
       }
       .detail-cotent {
         font-size: px2rem(30px);
