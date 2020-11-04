@@ -2,6 +2,11 @@
   <div class="canvass-dialog-wrap" v-if="show" @click.stop="close()">
     <img class="poster-img" :src="sharePoster" @click.stop />
     <div class="poster-tips">长按图片保存或转发朋友圈</div>
+     <lottery-vote
+      :show="isShowLottery"
+      :lottery="lottery"
+      :textSetting="{sign:'拉票'}"
+      @close="isShowLottery = false"></lottery-vote>
   </div>
 </template>
 
@@ -9,6 +14,7 @@
 import { mapMutations } from 'vuex'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import LotteryVote from '@/components/vote/global/vote-lottery'
 
 export default {
   props: {
@@ -18,10 +24,13 @@ export default {
       default: '票'
     }
   },
+  components: { LotteryVote },
   data () {
     return {
       sharePoster: '',
-      show: false
+      show: false,
+      isShowLottery: false,
+      lottery: {}
     }
   },
   watch: {
@@ -64,6 +73,7 @@ export default {
         if (!res) {
           return
         }
+        console.log('拉票数据：', res)
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
@@ -135,6 +145,16 @@ export default {
           this.sharePoster = res.image
           this.show = true
         })
+        // 拉票抽奖
+        let lottery = res.lottery
+        if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
+          this.isShowLottery = true
+          this.lottery = lottery
+          // this.$emit('close')
+          // this.voteDisable = false
+          // this.$emit('success')
+          // this.$emit('updateCard')
+        }
       })
     },
     dealUrlConcat (params, detailInfo) {

@@ -30,7 +30,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
+            <p class="content-desc color-theme_color">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
