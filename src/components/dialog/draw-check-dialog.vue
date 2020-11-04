@@ -10,7 +10,7 @@
             :maxlength="item.maxlength"
             :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
             item.unique_name === 'address' || item.type === 'select'"
-            :class="isGetDept && item.unique_name === 'department' ? 'check-disable' : ''"
+            :disabled="isGetDept && item.unique_name === 'department'"
             @focus="focusAction(item)"
             @blur="blurAction(item)"
             v-model="checkData[item.unique_name]"></el-input>
@@ -163,21 +163,23 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
-        if (key === 'department' && this.isGetDept) {
-          return
-        }
-        let value = this.checkData[item.unique_name]
-        if (value) {
-          let values = item.select_data
-          if (values && values.length) {
-            let arr = values[0]
-            let arr2 = arr.values
-            let index = arr2.indexOf(value)
-            arr.defaultIndex = index
+        if (this.isGetDept && key === 'department') {
+          // console.log('no-show', key)
+        } else {
+          // console.log('show', key)
+          let value = this.checkData[item.unique_name]
+          if (value) {
+            let values = item.select_data
+            if (values && values.length) {
+              let arr = values[0]
+              let arr2 = arr.values
+              let index = arr2.indexOf(value)
+              arr.defaultIndex = index
+            }
           }
+          this.customShow = true
+          this.customData = item
         }
-        this.customShow = true
-        this.customData = item
       }
     },
     blurAction (item) {
@@ -196,7 +198,11 @@ export default {
               }
             }).then(res => {
               if (res) {
-                this.$set(this.checkData, 'department', res)
+                if (res.constructor === Object) {
+                  this.$set(this.checkData, 'department', res.response)
+                } else if (res.constructor === String) {
+                  this.$set(this.checkData, 'department', res)
+                }
               }
             })
           }
@@ -421,7 +427,7 @@ export default {
             height: px2rem(90px);
             line-height: px2rem(90px);
           }
-          .check-disable .el-input__inner {
+          .el-input.is-disabled .el-input__inner {
             color: #ccc;
             border: 1px solid #DBDBDB;
             background-color: #FBFBFB;
