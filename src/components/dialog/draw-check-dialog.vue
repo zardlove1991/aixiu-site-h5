@@ -163,21 +163,23 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
-        if (key === 'department' && this.isGetDept) {
-          return
-        }
-        let value = this.checkData[item.unique_name]
-        if (value) {
-          let values = item.select_data
-          if (values && values.length) {
-            let arr = values[0]
-            let arr2 = arr.values
-            let index = arr2.indexOf(value)
-            arr.defaultIndex = index
+        if (this.isGetDept && key === 'department') {
+          // console.log('no-show', key)
+        } else {
+          // console.log('show', key)
+          let value = this.checkData[item.unique_name]
+          if (value) {
+            let values = item.select_data
+            if (values && values.length) {
+              let arr = values[0]
+              let arr2 = arr.values
+              let index = arr2.indexOf(value)
+              arr.defaultIndex = index
+            }
           }
+          this.customShow = true
+          this.customData = item
         }
-        this.customShow = true
-        this.customData = item
       }
     },
     blurAction (item) {
@@ -196,7 +198,11 @@ export default {
               }
             }).then(res => {
               if (res) {
-                this.$set(this.checkData, 'department', res)
+                if (res.constructor === Object) {
+                  this.$set(this.checkData, 'department', res.response)
+                } else if (res.constructor === String) {
+                  this.$set(this.checkData, 'department', res)
+                }
               }
             })
           }
