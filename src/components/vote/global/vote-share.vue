@@ -187,7 +187,7 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          console.log('xxxxxx', errCode)
+          // console.log('xxxxxx', errCode)
           if (errCode === 'WORKS_LOCKED') {
             let msg = res.error_message
             this.isShowMax = true

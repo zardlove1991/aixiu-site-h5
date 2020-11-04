@@ -91,7 +91,7 @@ export default {
         this.tip = '暂无' + sign + '记录'
         if (tmp.length >= 2) {
           let signUnit = tmp[1]
-          console.log('xxxxxxx', signUnit)
+          // console.log('xxxxxxx', signUnit)
           if (signUnit !== '票') {
             this.firstUnit = sign
             this.signUnit = '次'
