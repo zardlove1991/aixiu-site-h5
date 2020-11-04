@@ -46,9 +46,7 @@ router.afterEach((route, from) => {
   if (allArr.includes(name) && !from.name) {
     isFirst = true
   }
-  if (name !== 'depencestart') {
-    setTheme(id, name, isFirst)
-  }
+  setTheme(id, name, isFirst)
 })
 
 /* eslint-disable no-new */
