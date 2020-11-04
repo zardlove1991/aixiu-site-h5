@@ -11,6 +11,7 @@
             :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
             item.unique_name === 'address' || item.type === 'select'"
             :class="isGetDept && item.unique_name === 'department' ? 'check-disable' : ''"
+            :disabled="isGetDept && item.unique_name === 'department'"
             @focus="focusAction(item)"
             @blur="blurAction(item)"
             v-model="checkData[item.unique_name]"></el-input>
