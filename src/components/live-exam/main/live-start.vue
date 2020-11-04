@@ -414,7 +414,7 @@ export default {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
           }
           if (limit.collection_form.is_open_check === 1) {
-            console.log('xxxxxxx', isArr)
+            // console.log('xxxxxxx', isArr)
             if (isArr[0] && isArr[1] && isArr[2]) {
               this.isGetDept = true
             }
