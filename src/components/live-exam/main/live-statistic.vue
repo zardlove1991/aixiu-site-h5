@@ -424,10 +424,16 @@ export default {
       userTime = formatDate(userTime, 'mm分ss秒')
       submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
       let name = ''
+      let workNumber = ''
       if (collectionForm && collectionForm.length) {
         for (let item of collectionForm) {
           if (item.unique_name === 'name') {
             name = item.value
+          }
+          if (item.unique_name === 'work_number') {
+            workNumber = item.value
+          }
+          if (name && workNumber) {
             break
           }
         }
@@ -441,6 +447,9 @@ export default {
         use_time: userTime,
         submit_time: submitTime,
         name
+      }
+      if (workNumber) {
+        data['work_number'] = workNumber
       }
       API.shareExamination({
         data

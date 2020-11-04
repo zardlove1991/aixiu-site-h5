@@ -8,11 +8,14 @@
             :placeholder="item.name"
             :type="item.type"
             :maxlength="item.maxlength"
-            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'"
+            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+            item.unique_name === 'address' || item.type === 'select'"
+            :class="isGetDept && item.unique_name === 'department' ? 'check-disable' : ''"
             @focus="focusAction(item)"
-            @blur="blurAction()"
+            @blur="blurAction(item)"
             v-model="checkData[item.unique_name]"></el-input>
-          <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
+          <div v-show="(item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+            item.unique_name === 'address' || item.type === 'select') && !isGetDept" class="drop-icon"></div>
           <!-- <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code" :class="isShowVideo ? 'get-code-video' : ''"
@@ -82,6 +85,14 @@ export default {
     isShowVideo: {
       type: Boolean,
       default: false
+    },
+    isGetDept: {
+      type: Boolean,
+      default: false
+    },
+    examId: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -152,6 +163,9 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
+        if (key === 'department' && this.isGetDept) {
+          return
+        }
         let value = this.checkData[item.unique_name]
         if (value) {
           let values = item.select_data
@@ -166,8 +180,28 @@ export default {
         this.customData = item
       }
     },
-    blurAction () {
+    blurAction (item) {
       document.body.scrollTop = 0
+      if (this.isGetDept) {
+        if (item.unique_name === 'name' || item.unique_name === 'work_number') {
+          let checkData = this.checkData
+          let nameVal = checkData['name']
+          let workNumVal = checkData['work_number']
+          if (nameVal && workNumVal) {
+            API.getInfoDept({
+              params: {
+                examination_id: this.examId,
+                name: nameVal,
+                work_number: workNumVal
+              }
+            }).then(res => {
+              if (res) {
+                this.$set(this.checkData, 'department', res)
+              }
+            })
+          }
+        }
+      }
     },
     selectSuccessAction (val) {
       let key = this.focusKey
@@ -386,6 +420,11 @@ export default {
           .el-input .el-input__inner {
             height: px2rem(90px);
             line-height: px2rem(90px);
+          }
+          .check-disable .el-input__inner {
+            color: #ccc;
+            border: 1px solid #DBDBDB;
+            background-color: #FBFBFB;
           }
           .el-textarea {
             .el-textarea__inner {
