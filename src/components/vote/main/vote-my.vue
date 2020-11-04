@@ -30,7 +30,7 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">截止{{item.showdate}}<span class="vote-tip">{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
+            <p class="content-desc color-theme_color">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default {
         count: 10,
         totalPages: 0
       },
-      firstUnit: '累计投了',
+      firstUnit: '投了',
       signUnit: '票',
       tip: '暂无列表记录'
     }
@@ -96,7 +96,7 @@ export default {
             this.firstUnit = sign
             this.signUnit = '次'
           } else {
-            this.firstUnit = '累计投了'
+            this.firstUnit = '投了'
             this.signUnit = '票'
           }
         }
