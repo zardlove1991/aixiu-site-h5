@@ -10,7 +10,6 @@
             :maxlength="item.maxlength"
             :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
             item.unique_name === 'address' || item.type === 'select'"
-            :class="isGetDept && item.unique_name === 'department' ? 'check-disable' : ''"
             :disabled="isGetDept && item.unique_name === 'department'"
             @focus="focusAction(item)"
             @blur="blurAction(item)"
@@ -428,7 +427,7 @@ export default {
             height: px2rem(90px);
             line-height: px2rem(90px);
           }
-          .check-disable .el-input__inner {
+          .el-input.is-disabled .el-input__inner {
             color: #ccc;
             border: 1px solid #DBDBDB;
             background-color: #FBFBFB;
