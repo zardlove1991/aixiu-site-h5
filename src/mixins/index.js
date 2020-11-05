@@ -88,7 +88,7 @@ export default {
       let params = Object.assign({ redirect, delta }, redirectParams)
       this.setRedirectParams(params)
     },
-    initPageShareInfo (data) {
+    initPageShareInfo (data, callback) {
       let auth = () => {
         let params = {
           title: data.title, // 分享标题
@@ -103,6 +103,10 @@ export default {
               from: params.from,
               mark: data.mark
             })
+            // 回调函数
+            if (callback && typeof callback === 'function') {
+              callback()
+            }
           },
           cancel: function () {
             // 用户取消分享后执行的回调函数

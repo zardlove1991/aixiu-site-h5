@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -21,6 +21,29 @@ let baseUrl = {
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
   setShare: 'setShare' // 分享活动时请求分享接口
+}
+
+let examUrl = {
+  getExamlist: 'client/examination', // 考试列表
+  getRecord: 'client/examination/{id}/card', // 考试列表
+  getExamDetailsList: 'client/examination/questions',
+  getExamDetailsStatistics: 'client/examination/statistics',
+  getErrorList: 'client/examination/mistakes', // 获得错题列表
+  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
+  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
+  submitExam: 'client/examination/{id}/end',
+  startExam: 'client/examination/{id}/start',
+  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
+  saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
+  getExamDetail: 'client/examination/{id}',
+  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
+  saveDrawRecord: 'collection/form/record', // 投票信息采集
+  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
+  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
+  unlockCourse: 'client/examination/submitted', // 解锁课程
+  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
+  getExamAuthScope: 'open/examination/detail', // 测评授权接口
+  getInfoDept: 'client/examination/import/verify' // 获取信息收集用户的部门
 }
 
 // 投票相关接口
@@ -46,7 +69,9 @@ let voteUrl = {
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: 'mobile/verify/send', // 获取手机code
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
-  getVoteTypeFid: '/client/voting/{id}/type/{worksId}' // 根据分类的id获取fid
+  getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
+  shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
+  getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
 
 // 预约报名
@@ -62,27 +87,9 @@ let enrollUrl = {
 let configUrl = {
   ...QCloundUrl,
   ...baseUrl,
+  ...examUrl,
   ...voteUrl,
   ...enrollUrl,
-  getExamlist: 'client/examination', // 考试列表
-  getRecord: 'client/examination/{id}/card', // 考试列表
-  getExamDetailsList: 'client/examination/questions',
-  getExamDetailsStatistics: 'client/examination/statistics',
-  getErrorList: 'client/examination/mistakes', // 获得错题列表
-  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
-  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/examination/{id}/end',
-  startExam: 'client/examination/{id}/start',
-  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
-  saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
-  getExamDetail: 'client/examination/{id}',
-  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
-  saveDrawRecord: 'collection/form/record', // 投票信息采集
-  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
-  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
-  unlockCourse: 'client/examination/submitted', // 解锁课程
-  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
-  getExamAuthScope: 'open/examination/detail', // 测评授权接口
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -118,6 +125,7 @@ export default {
   checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
   getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
+  getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
@@ -141,6 +149,8 @@ export default {
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
   getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
+  shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
+  getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
