@@ -213,7 +213,7 @@
       :textSetting="{sign:'分享'}"
       @close="isShowLottery = false"></lottery-vote>
     <!-- 抽奖历史入口图标 -->
-    <div class="lottery_entrance" v-if="isShowLottery">
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
       <div @click="goLotteryPage()">
         <img src="@/assets/vote/gift@3x.png" alt="">
         <div class="info">{{lotteryMsg}}</div>
@@ -405,7 +405,7 @@ export default {
     },
     // 如果有中奖记录和抽奖次数 默认显示
     async checkLotteryOpen (lottery, rule, todayVotes) {
-      console.log('lottery:', lottery)
+      console.log('lottery:', lottery, 'todayVotes:', todayVotes)
       let openLottery = false
       // 用户中奖记录
       let res = await API.getUserLotteryList({
@@ -422,16 +422,23 @@ export default {
         this.isOpenShare = true
       }
       // 抽奖入口
-      if (rule.lottery_config && rule.lottery_config.pull) {
+      if (rule.lottery_config && rule.lottery_config.condition) {
         // 只校验投票
-        let {limit} = rule.lottery_config.pull
-        console.log('limit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', limit)
-        if (limit && limit.operate < todayVotes && lottery.remain_lottery_counts > 0) {
+        let {value} = rule.lottery_config.condition
+        console.log('limit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', value)
+        if (value) {
+          if (value <= todayVotes && lottery.remain_lottery_counts > 0) {
+            openLottery = true
+            this.lotteryEnterType = 'lottery'
+            this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
+          }
+        } else {
           openLottery = true
           this.lotteryEnterType = 'lottery'
           this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
         }
       }
+      console.log('openLottery!!!!!!!!!!!!!:', openLottery)
       this.showLotteryEntrance = openLottery
     },
     sharePage (detailInfo) {
@@ -500,15 +507,14 @@ export default {
             id: this.lottery.lottery_id
           }
         }).then(res => {
-          if (res.error_code === '0') {
-            if (!res.result.data.has_share) {
-              this.lotteryEnterType = 'lottery'
-              this.lottery.remain_lottery_counts++
-              this.isShowLottery = true
-              this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
-            } else {
-              Toast('感谢分享，你已经使用过分享送抽奖机会了！')
-            }
+          let {data} = res
+          if (!data.has_share) {
+            this.lotteryEnterType = 'lottery'
+            this.lottery.remain_lottery_counts++
+            this.isShowLottery = true
+            this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
+          } else {
+            Toast('感谢分享，你已经使用过分享送抽奖机会了！')
           }
         })
       }
