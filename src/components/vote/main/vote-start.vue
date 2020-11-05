@@ -207,6 +207,18 @@
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
+    <lottery-vote
+      :show="isShowLottery"
+      :lottery="lottery"
+      :textSetting="{sign:'分享'}"
+      @close="isShowLottery = false"></lottery-vote>
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="lottery.link">
+      <div @click="goLotteryPage()">
+        <img src="@/assets/vote/gift@3x.png" alt="">
+        <div class="info">{{lottery.remain_lottery_counts?`可抽奖${lottery.remain_lottery_counts}次`:'查看中奖情况'}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -225,6 +237,7 @@ import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
@@ -253,7 +266,8 @@ export default {
     ActiveStart,
     VoteClassifyList,
     Spinner,
-    Loadmore
+    Loadmore,
+    LotteryVote
   },
   data () {
     return {
@@ -301,7 +315,10 @@ export default {
       isShowClassify: false,
       searchClassifyVal: '',
       isShowRank: true, // 是否显示榜单
-      activeIndex: null // 当前正在操作的内容序号
+      activeIndex: null, // 当前正在操作的内容序号
+      showLotteryEntrance: false,
+      lottery: {},
+      isShowLottery: false
     }
   },
   created () {
@@ -363,6 +380,10 @@ export default {
           }
         }
         this.detailInfo = res
+        let {lottery} = res
+        if (lottery) {
+          this.lottery = lottery
+        }
         STORAGE.set('detailInfo', res)
         // 分享
         this.sharePage(res)
@@ -434,7 +455,25 @@ export default {
         indexpic: imgUrl,
         link: shareLink,
         mark: detailInfo.mark
+      }, this.setLotteryCount)
+    },
+    setLotteryCount () {
+      API.setLotteryCount({
+        query: {
+          id: this.id
+        }
+      }).then(lottery => {
+        if (lottery.lottery_id && lottery.remain_lottery_counts) {
+          this.isShowLottery = true
+          this.lottery = lottery
+        }
       })
+    },
+    goLotteryPage () {
+      let { link } = this.lottery
+      if (link) {
+        window.location.href = link
+      }
     },
     handleVoteData () {
       let detailInfo = this.detailInfo
@@ -1271,6 +1310,22 @@ export default {
       border-radius: px2rem(35px);
       @include font-dpr(14px);
       color: #F36E4E;
+    }
+    .lottery_entrance{
+      position: absolute;
+      bottom: 7.5rem;
+      right: px2rem(30px);
+      text-align: center;
+      img {
+        width: 16vw;
+      }
+      .info{
+        background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 15px;
+        margin-top: -4px;
+      }
     }
   }
 </style>
