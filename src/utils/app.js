@@ -40,6 +40,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['public']
       break
     }
+    case 'c4': {
+      host = globalConfig['c4']
+      break
+    }
     default: {
       host = globalConfig['exam']
     }

@@ -173,3 +173,16 @@ export const createBase = (url, method, config = {}, api) => {
     ...config
   })
 }
+
+export const createC4 = (url, method, config = {}, api) => {
+  api = 'c4'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    headers: {
+      'x-member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
+    },
+    ...config
+  })
+}

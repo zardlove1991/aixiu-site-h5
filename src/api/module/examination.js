@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -70,7 +70,8 @@ let voteUrl = {
   getMobileSend: 'mobile/verify/send', // 获取手机code
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
   getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
-  setLotteryCount: '/client/voting/{id}/share' // 投票增加抽奖机会
+  shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
+  getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
 
 // 预约报名
@@ -148,7 +149,8 @@ export default {
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
   getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
-  setLotteryCount: config => createVote(configUrl.setLotteryCount, 'POST', config, API_FLAG),
+  shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
+  getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
