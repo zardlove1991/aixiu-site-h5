@@ -405,17 +405,15 @@ export default {
     },
     // 如果有中奖记录和抽奖次数 默认显示
     async checkLotteryOpen (lottery, rule, todayVotes) {
-      console.log('lottery:', lottery, 'todayVotes:', todayVotes)
       let openLottery = false
       // 用户中奖记录
       let res = await API.getUserLotteryList({
         query: { id: lottery.lottery_id }
       })
-      console.log('用户中奖记录！！！！！！！！！：', res)
       if (res.data.length > 0) {
         this.lotteryEnterType = 'history'
         openLottery = true
-        this.lotteryMsg = '查看记录'
+        this.lotteryMsg = '查看中奖情况'
       }
       // 开启投票分享加抽奖次数
       if (rule.lottery_config && rule.lottery_config.share) {
@@ -425,7 +423,6 @@ export default {
       if (rule.lottery_config && rule.lottery_config.condition) {
         // 只校验投票
         let {value} = rule.lottery_config.condition
-        console.log('limit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:', value)
         if (value) {
           if (value <= todayVotes && lottery.remain_lottery_counts > 0) {
             openLottery = true
@@ -438,7 +435,6 @@ export default {
           this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
         }
       }
-      console.log('openLottery!!!!!!!!!!!!!:', openLottery)
       this.showLotteryEntrance = openLottery
     },
     sharePage (detailInfo) {
@@ -510,7 +506,11 @@ export default {
           let {data} = res
           if (!data.has_share) {
             this.lotteryEnterType = 'lottery'
-            this.lottery.remain_lottery_counts++
+            if (this.lottery.remain_lottery_counts) {
+              this.lottery.remain_lottery_counts++
+            } else {
+              this.lottery = {...this.lottery, remain_lottery_counts: 1}
+            }
             this.isShowLottery = true
             this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
           } else {
