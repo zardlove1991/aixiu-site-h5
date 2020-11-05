@@ -69,7 +69,8 @@ let voteUrl = {
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: 'mobile/verify/send', // 获取手机code
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
-  getVoteTypeFid: '/client/voting/{id}/type/{worksId}' // 根据分类的id获取fid
+  getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
+  setLotteryCount: '/client/voting/{id}/share' // 投票增加抽奖机会
 }
 
 // 预约报名
@@ -147,6 +148,7 @@ export default {
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
   getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
+  setLotteryCount: config => createVote(configUrl.setLotteryCount, 'POST', config, API_FLAG),
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
