@@ -163,8 +163,8 @@ export default {
             //   document.body.scrollTop = document.body.scrollHeight
             // }, 300)
           } else {
-            document.body.scrollTop = 0
-            window.scrollTo(0, 0)
+            // document.body.scrollTop = 0
+            // window.scrollTo(0, 0)
           }
         }
         // 保存对象
