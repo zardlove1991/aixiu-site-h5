@@ -163,8 +163,10 @@ export default {
             //   document.body.scrollTop = document.body.scrollHeight
             // }, 300)
           } else {
-            // document.body.scrollTop = 0
-            // window.scrollTo(0, 0)
+            let node = document.getElementById('subject-single-black-' + this.data.id)
+            if (node && node.offsetTop) {
+              document.body.scrollTop = node.offsetTop
+            }
           }
         }
         // 保存对象
