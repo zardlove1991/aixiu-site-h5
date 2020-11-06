@@ -12,7 +12,9 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
+            <div v-cloak>
+              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+            </div>
             <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
@@ -483,6 +485,10 @@ $primary-color: #ff6a45;
 $font-color: #333;
 $font-family: PingFangSC-Regular,PingFang SC;
 $font-weight: 400;
+
+[v-cloak] {
+  display: none;
+}
 
 .d-flex{
     display: flex !important;
