@@ -4,7 +4,7 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
-    <div class="no-suppot-wrap" v-if="isBrowser">不支持再浏览器中打开</div>
+    <div class="no-suppot-wrap" v-if="isBrowser">不支持在浏览器中打开</div>
   </div>
 </template>
 

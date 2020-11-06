@@ -13,9 +13,9 @@ instance.interceptors.request.use((config) => {
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
-  if (config.url.indexOf('setSubmit') > -1) {
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-  }
+  // if (config.url.indexOf('setSubmit') > -1) {
+  //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+  // }
   if (config.url.indexOf('setClick') < 0) {
     if (STORAGE.get('userinfo')) {
       config.params.member = STORAGE.get('userinfo')

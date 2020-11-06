@@ -94,25 +94,20 @@ const getters = {
 const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
-    let show = true
+    let show = false
     // console.log(list, payload, 'bedore_SET_ANSWER_LIST')
-    if (list && list[0]) {
-      for (let i = 0; i < list.length; i++) {
-        if (list[i].options_id && list[i].question_id === payload.question_id) {
-          list[i].options_id = payload.options_id
-          show = false
-        }
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i]
+      if (item.question_id === payload.question_id) {
+        item.options_id = payload.options_id
+        show = true
+        break
       }
-      // if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
-      //   list.push(payload)
-      // }
-      if (show && payload.question_id) {
-        list.push(payload)
-      }
-    } else {
-      list.push(payload)
     }
-    console.log(state.answerList, 'SET_ANSWER_LIST')
+    if (!show) {
+       list.push(payload)
+     }
+    // console.log(state.answerList, 'SET_ANSWER_LIST')
   },
   SET_LUCK_DRAW_LINK (state, payload) {
     state.luckDrawLink = payload
