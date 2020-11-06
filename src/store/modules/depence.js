@@ -452,7 +452,7 @@ const actions = {
           id,
           mark,
           title,
-          create_time: new Date().getTime()
+          create_time: parseInt((new Date().getTime()) / 1000)
         }],
         member: STORAGE.get('userinfo')
       }
