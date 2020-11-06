@@ -163,6 +163,9 @@ export default {
             //   document.body.scrollTop = document.body.scrollHeight
             // }, 300)
           } else {
+            setTimeout(() => {
+              document.body.scrollTop = document.body.scrollHeight
+            }, 300)
             // document.body.scrollTop = 0
             // window.scrollTo(0, 0)
           }
