@@ -181,13 +181,13 @@ const mutations = {
   SET_ESSAY_ANSWER_INFO (state, payload) {
     let list = state.answerList
     for (let key in payload) {
-      console.log(key)
+      // console.log(key)
       if (list && list[0]) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].question_id === key) {
             list[i].value = payload[key]
           }
-          console.log(list[i])
+          // console.log(list[i])
         }
       } else {
         let params = {
@@ -196,7 +196,7 @@ const mutations = {
         }
         list.push(params)
       }
-      console.log(list, 'SET_ESSAY_ANSWER_INFO')
+      // console.log(list, 'SET_ESSAY_ANSWER_INFO')
       state.subjectAnswerInfo[key] = true
     }
     state.essayAnswerInfo = Object.assign({}, payload)
@@ -452,15 +452,17 @@ const actions = {
         mark = state.examInfo.mark
         title = state.examInfo.title
       }
-      API.sumbitUV({ params: {
-        data: {
+      let params = {
+        data: [{
           id,
           mark,
           title,
           create_time: new Date().getTime()
-        },
+        }],
         member: STORAGE.get('userinfo')
-      }}).then(res => {
+      }
+      // console.log('sumbitUV', params)
+      API.sumbitUV({ data: params }).then(res => {
         console.log(res)
       })
       Indicator.open({ spinnerType: 'fading-circle' })
