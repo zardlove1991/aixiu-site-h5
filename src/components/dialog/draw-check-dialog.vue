@@ -8,11 +8,14 @@
             :placeholder="item.name"
             :type="item.type"
             :maxlength="item.maxlength"
-            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'"
+            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+            item.unique_name === 'address' || item.type === 'select'"
+            :disabled="isGetDept && item.unique_name === 'department'"
             @focus="focusAction(item)"
-            @blur="blurAction()"
+            @blur="blurAction(item)"
             v-model="checkData[item.unique_name]"></el-input>
-          <div v-show="item.unique_name === 'gender' || item.unique_name === 'birthday' || item.unique_name === 'address' || item.type === 'select'" class="drop-icon"></div>
+          <div v-show="(item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+            item.unique_name === 'address' || item.type === 'select') && !isGetDept" class="drop-icon"></div>
           <!-- <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code" :class="isShowVideo ? 'get-code-video' : ''"
@@ -82,6 +85,14 @@ export default {
     isShowVideo: {
       type: Boolean,
       default: false
+    },
+    isGetDept: {
+      type: Boolean,
+      default: false
+    },
+    examId: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -152,22 +163,57 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
-        let value = this.checkData[item.unique_name]
-        if (value) {
-          let values = item.select_data
-          if (values && values.length) {
-            let arr = values[0]
-            let arr2 = arr.values
-            let index = arr2.indexOf(value)
-            arr.defaultIndex = index
+        if (this.isGetDept && key === 'department') {
+          // console.log('no-show', key)
+        } else {
+          // console.log('show', key)
+          let value = this.checkData[item.unique_name]
+          if (value) {
+            let values = item.select_data
+            if (values && values.length) {
+              let arr = values[0]
+              let arr2 = arr.values
+              let index = arr2.indexOf(value)
+              arr.defaultIndex = index
+            }
           }
+          this.customShow = true
+          this.customData = item
         }
-        this.customShow = true
-        this.customData = item
       }
     },
-    blurAction () {
+    blurAction (item) {
       document.body.scrollTop = 0
+      if (this.isGetDept) {
+        if (item.unique_name === 'name' || item.unique_name === 'work_number') {
+          let checkData = this.checkData
+          let nameVal = checkData['name']
+          let workNumVal = checkData['work_number']
+          if (nameVal && workNumVal) {
+            API.getInfoDept({
+              params: {
+                examination_id: this.examId,
+                name: nameVal,
+                work_number: workNumVal
+              }
+            }).then(res => {
+              if (res) {
+                let department = ''
+                if (res.constructor === Object) {
+                  department = res.response
+                } else if (res.constructor === String) {
+                  department = res
+                }
+                if (!department) {
+                  Toast('抱歉，没有查到您的用户信息！')
+                  return
+                }
+                this.$set(this.checkData, 'department', department)
+              }
+            })
+          }
+        }
+      }
     },
     selectSuccessAction (val) {
       let key = this.focusKey
@@ -276,7 +322,11 @@ export default {
         let key = item.unique_name
         let val = checkData[key]
         if (!val) {
-          Toast('请输入' + item.name)
+          if (key === 'department' && this.isGetDept) {
+            Toast('抱歉，没有查到您的用户信息！')
+          } else {
+            Toast('请输入' + item.name)
+          }
           flag = false
           break
         }
@@ -386,6 +436,11 @@ export default {
           .el-input .el-input__inner {
             height: px2rem(90px);
             line-height: px2rem(90px);
+          }
+          .el-input.is-disabled .el-input__inner {
+            color: #ccc;
+            border: 1px solid #DBDBDB;
+            background-color: #FBFBFB;
           }
           .el-textarea {
             .el-textarea__inner {

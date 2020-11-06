@@ -11,7 +11,9 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
+            <div v-cloak>
+              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+            </div>
             <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
@@ -424,10 +426,16 @@ export default {
       userTime = formatDate(userTime, 'mm分ss秒')
       submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
       let name = ''
+      let workNumber = ''
       if (collectionForm && collectionForm.length) {
         for (let item of collectionForm) {
           if (item.unique_name === 'name') {
             name = item.value
+          }
+          if (item.unique_name === 'work_number') {
+            workNumber = item.value
+          }
+          if (name && workNumber) {
             break
           }
         }
@@ -441,6 +449,9 @@ export default {
         use_time: userTime,
         submit_time: submitTime,
         name
+      }
+      if (workNumber) {
+        data['work_number'] = workNumber
       }
       API.shareExamination({
         data
@@ -481,6 +492,10 @@ $primary-color: #ff6a45;
 $font-color: #333;
 $font-family: PingFangSC-Regular,PingFang SC;
 $font-weight: 400;
+
+[v-cloak] {
+  display: none;
+}
 
 .d-flex{
     display: flex !important;

@@ -98,6 +98,8 @@
       :isShowVideo="true"
       :show="isShowDrawCheck"
       :checkDraw="checkDraw"
+      :isGetDept="isGetDept"
+      :examId="id"
       @success="goExamPage()"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
@@ -139,7 +141,8 @@ export default {
       checkDraw: [],
       isNoLimit: false,
       isShowFindAll: false,
-      isShowInfo: false
+      isShowInfo: false,
+      isGetDept: false // 是否动态获取部门
     }
   },
   components: { MyModel, DrawCheckDialog, LiveVideo },
@@ -347,11 +350,17 @@ export default {
           // let imgCodeObj = null
           let indexAddress = -1
           let addressObj = null
+          let isArr = [false, false, false]
           for (let i = 0; i < checkDraw.length; i++) {
             let item = checkDraw[i]
             if (item.unique_name === 'name') {
               item.maxlength = 20
               item.type = 'text'
+              isArr[0] = true
+            } else if (item.unique_name === 'work_number') {
+              item.maxlength = 50
+              item.type = 'text'
+              isArr[1] = true
             } else if (item.unique_name === 'address') {
               item.maxlength = 50
               item.type = 'text'
@@ -382,6 +391,9 @@ export default {
               item.maxlength = 100
               item.type = 'text'
               let value = item.value
+              if (item.unique_name === 'department') {
+                isArr[2] = true
+              }
               if (value && value.length > 0) {
                 let valueArr = []
                 value.forEach(item => {
@@ -400,6 +412,12 @@ export default {
           }
           if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
+          }
+          if (limit.collection_form.is_open_check === 1) {
+            // console.log('xxxxxxx', isArr)
+            if (isArr[0] && isArr[1] && isArr[2]) {
+              this.isGetDept = true
+            }
           }
           // if (indexMobile !== -1 && indexAddress !== -1) {
           //   if (indexMobile < indexAddress) {
