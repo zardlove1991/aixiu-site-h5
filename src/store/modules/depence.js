@@ -104,9 +104,9 @@ const mutations = {
         break
       }
     }
-    if (!show) {
-       list.push(payload)
-     }
+    if (!show && payload.question_id) {
+      list.push(payload)
+    }
     // console.log(state.answerList, 'SET_ANSWER_LIST')
   },
   SET_LUCK_DRAW_LINK (state, payload) {
