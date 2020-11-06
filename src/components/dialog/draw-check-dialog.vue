@@ -198,11 +198,17 @@ export default {
               }
             }).then(res => {
               if (res) {
+                let department = ''
                 if (res.constructor === Object) {
-                  this.$set(this.checkData, 'department', res.response)
+                  department = res.response
                 } else if (res.constructor === String) {
-                  this.$set(this.checkData, 'department', res)
+                  department = res
                 }
+                if (!department) {
+                  Toast('抱歉，没有查到您的用户信息！')
+                  return
+                }
+                this.$set(this.checkData, 'department', department)
               }
             })
           }
@@ -316,7 +322,11 @@ export default {
         let key = item.unique_name
         let val = checkData[key]
         if (!val) {
-          Toast('请输入' + item.name)
+          if (key === 'department' && this.isGetDept) {
+            Toast('抱歉，没有查到您的用户信息！')
+          } else {
+            Toast('请输入' + item.name)
+          }
           flag = false
           break
         }

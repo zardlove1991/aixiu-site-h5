@@ -95,7 +95,7 @@ const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = true
-    // console.log(list, 'bedore_SET_ANSWER_LIST')
+    // console.log(list, payload, 'bedore_SET_ANSWER_LIST')
     if (list && list[0]) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].options_id && list[i].question_id === payload.question_id) {
@@ -103,7 +103,10 @@ const mutations = {
           show = false
         }
       }
-      if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
+      // if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
+      //   list.push(payload)
+      // }
+      if (show && payload.question_id) {
         list.push(payload)
       }
     } else {
@@ -273,6 +276,7 @@ function dealSaveRecord ({
   }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
+  console.log('dealSaveRecord', params, subject.type)
   if (subject.type === 'essay') {
     // 这边判断提交的问答题数据是否为空 为空就不发送请求
     if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
@@ -442,18 +446,23 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
-      /*
-      var datas = {
-        id: id,
-        mark: 'examination',
-        title: '',
-        member: STORAGE.get('userinfo'),
-        create_time: new Date().getTime()
+      let mark = 'examination'
+      let title = ''
+      if (state.examInfo) {
+        mark = state.examInfo.mark
+        title = state.examInfo.title
       }
-      API.sumbitUV({data: datas}).then(res => {
+      API.sumbitUV({ params: {
+        data: {
+          id,
+          mark,
+          title,
+          create_time: new Date().getTime()
+        },
+        member: STORAGE.get('userinfo')
+      }}).then(res => {
         console.log(res)
       })
-      */
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
@@ -564,6 +573,7 @@ const actions = {
       // 更改状态
       // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
+      commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
       if (!subject) {
         subject = {}
@@ -577,7 +587,7 @@ const actions = {
         this.changeAnswerTimer = setTimeout(() => {
           // 更新当前的回答题目的信息
           commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
-          commit('SET_ANSWER_LIST', result.params)
+          // commit('SET_ANSWER_LIST', result.params)
           // 返回数据
           resolve(result)
         }, 300)

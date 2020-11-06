@@ -238,13 +238,6 @@ export default {
           // 考试中
           this.isShowBreak = true
         }
-        if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
-          let content = info.limit.color_scheme.content
-          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
-        }
         if (info.limit) {
           let {
             day_userid_limit_num: dayUserIdLimit,
@@ -619,6 +612,7 @@ export default {
   .content-wrap{
     position: relative;
     padding: 0 px2rem(34px);
+    padding-bottom: px2rem(190px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
@@ -720,7 +714,7 @@ export default {
   .btn-area{
     display:flex;
     width:100%;
-    position:absolute;
+    position: fixed;;
     left:0;
     bottom:px2rem(100px);
   }
