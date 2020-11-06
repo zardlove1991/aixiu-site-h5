@@ -523,7 +523,7 @@ export default {
       let { link } = this.lottery
       console.log('link:', link)
       if (link) {
-        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType
+        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
       }
     },
     handleVoteData () {

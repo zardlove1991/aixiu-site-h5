@@ -104,7 +104,7 @@ const mutations = {
         break
       }
     }
-    if (!show) {
+    if (!show && payload.question_id) {
       list.push(payload)
     }
     // console.log(state.answerList, 'SET_ANSWER_LIST')
@@ -176,13 +176,13 @@ const mutations = {
   SET_ESSAY_ANSWER_INFO (state, payload) {
     let list = state.answerList
     for (let key in payload) {
-      console.log(key)
+      // console.log(key)
       if (list && list[0]) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].question_id === key) {
             list[i].value = payload[key]
           }
-          console.log(list[i])
+          // console.log(list[i])
         }
       } else {
         let params = {
@@ -191,7 +191,7 @@ const mutations = {
         }
         list.push(params)
       }
-      console.log(list, 'SET_ESSAY_ANSWER_INFO')
+      // console.log(list, 'SET_ESSAY_ANSWER_INFO')
       state.subjectAnswerInfo[key] = true
     }
     state.essayAnswerInfo = Object.assign({}, payload)
@@ -271,7 +271,7 @@ function dealSaveRecord ({
   }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
-  // console.log('dealSaveRecord', params, subject.type)
+  console.log('dealSaveRecord', params, subject.type)
   if (subject.type === 'essay') {
     // 这边判断提交的问答题数据是否为空 为空就不发送请求
     if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
@@ -447,18 +447,16 @@ const actions = {
         mark = state.examInfo.mark
         title = state.examInfo.title
       }
-      let arr = [{
-        id,
-        mark,
-        title,
-        create_time: new Date().getTime()
-      }]
-      // let dataStr = JSON.stringify(arr)
       let params = {
-        data: arr,
+        data: [{
+          id,
+          mark,
+          title,
+          create_time: new Date().getTime()
+        }],
         member: STORAGE.get('userinfo')
       }
-      console.log('sumbitUV', params)
+      // console.log('sumbitUV', params)
       API.sumbitUV({ data: params }).then(res => {
         console.log(res)
       })
