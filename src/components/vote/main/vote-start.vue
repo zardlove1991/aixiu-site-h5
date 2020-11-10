@@ -213,10 +213,10 @@
       :textSetting="{sign:'分享'}"
       @close="isShowLottery = false"></lottery-vote>
     <!-- 抽奖历史入口图标 -->
-    <div class="lottery_entrance" v-if="lottery.link">
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
       <div @click="goLotteryPage()">
         <img src="@/assets/vote/gift@3x.png" alt="">
-        <div class="info">{{lottery.remain_lottery_counts?`可抽奖${lottery.remain_lottery_counts}次`:'查看中奖情况'}}</div>
+        <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
   </div>
@@ -238,7 +238,7 @@ import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
-import { Spinner, Loadmore } from 'mint-ui'
+import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -317,8 +317,11 @@ export default {
       isShowRank: true, // 是否显示榜单
       activeIndex: null, // 当前正在操作的内容序号
       showLotteryEntrance: false,
+      lotteryEnterType: 'lottery',
       lottery: {},
-      isShowLottery: false
+      isShowLottery: false,
+      lotteryMsg: '',
+      isOpenShare: false
     }
   },
   created () {
@@ -380,9 +383,11 @@ export default {
           }
         }
         this.detailInfo = res
-        let {lottery} = res
+        // 校验抽奖入口条件
+        let {lottery, rule, today_votes: todayVotes} = res
         if (lottery) {
           this.lottery = lottery
+          this.checkLotteryOpen(lottery, rule, todayVotes)
         }
         STORAGE.set('detailInfo', res)
         // 分享
@@ -397,6 +402,40 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    // 如果有中奖记录和抽奖次数 默认显示
+    async checkLotteryOpen (lottery, rule, todayVotes) {
+      let openLottery = false
+      // 用户中奖记录
+      let res = await API.getUserLotteryList({
+        query: { id: lottery.lottery_id }
+      })
+      if (res.data.length > 0) {
+        this.lotteryEnterType = 'history'
+        openLottery = true
+        this.lotteryMsg = '查看中奖情况'
+      }
+      // 开启投票分享加抽奖次数
+      if (rule.lottery_config && rule.lottery_config.share) {
+        this.isOpenShare = true
+      }
+      // 抽奖入口
+      if (rule.lottery_config && rule.lottery_config.condition) {
+        // 只校验投票
+        let {value} = rule.lottery_config.condition
+        if (value) {
+          if (value <= todayVotes && lottery.remain_lottery_counts > 0) {
+            openLottery = true
+            this.lotteryEnterType = 'lottery'
+            this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
+          }
+        } else {
+          openLottery = true
+          this.lotteryEnterType = 'lottery'
+          this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
+        }
+      }
+      this.showLotteryEntrance = openLottery
     },
     sharePage (detailInfo) {
       if (!detailInfo) {
@@ -455,24 +494,36 @@ export default {
         indexpic: imgUrl,
         link: shareLink,
         mark: detailInfo.mark
-      }, this.setLotteryCount)
+      }, this.shareLottery)
     },
-    setLotteryCount () {
-      API.setLotteryCount({
-        query: {
-          id: this.id
-        }
-      }).then(lottery => {
-        if (lottery.lottery_id && lottery.remain_lottery_counts) {
-          this.isShowLottery = true
-          this.lottery = lottery
-        }
-      })
+    shareLottery () {
+      if (this.lottery.link && this.isOpenShare) {
+        API.shareLottery({
+          query: {
+            id: this.lottery.lottery_id
+          }
+        }).then(res => {
+          let {data} = res
+          if (!data.has_share) {
+            this.lotteryEnterType = 'lottery'
+            if (this.lottery.remain_lottery_counts) {
+              this.lottery.remain_lottery_counts++
+            } else {
+              this.lottery = {...this.lottery, remain_lottery_counts: 1}
+            }
+            this.isShowLottery = true
+            this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
+          } else {
+            Toast('感谢分享，你已经使用过分享送抽奖机会了！')
+          }
+        })
+      }
     },
     goLotteryPage () {
       let { link } = this.lottery
+      console.log('link:', link)
       if (link) {
-        window.location.href = link
+        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
       }
     },
     handleVoteData () {

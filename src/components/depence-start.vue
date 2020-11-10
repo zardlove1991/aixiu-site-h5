@@ -612,6 +612,7 @@ export default {
   .content-wrap{
     position: relative;
     padding: 0 px2rem(34px);
+    padding-bottom: px2rem(190px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
@@ -713,7 +714,7 @@ export default {
   .btn-area{
     display:flex;
     width:100%;
-    position:absolute;
+    position: fixed;;
     left:0;
     bottom:px2rem(100px);
   }
