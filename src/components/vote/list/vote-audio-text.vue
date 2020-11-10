@@ -25,7 +25,7 @@
           <p class="number-tip color-button_color"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
           <p class="vote-tip">{{item.total_votes}}{{signUnit}}</p>
         </div>
-        <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick"></vote-btn-group>
+        <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick($event, index)"></vote-btn-group>
       </div>
     </div>
   </div>
@@ -63,8 +63,8 @@ export default {
     jumpPage (page, data) {
       this.$emit('jump-page', page, data)
     },
-    btnClick (data) {
-      this.$emit('trigger-work', data)
+    btnClick (data, index) {
+      this.$emit('trigger-work', data, index)
     }
   }
 }
