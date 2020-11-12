@@ -1,5 +1,7 @@
 <template>
   <div class="vote-start-wrap">
+    <div v-if="isTestLink" id="test-btn" @click="appShare()">分享测试</div>
+    <!-- <div v-if="isTestLink" class="testResult" ref="testResult"></div> -->
     <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
@@ -321,11 +323,16 @@ export default {
       lottery: {},
       isShowLottery: false,
       lotteryMsg: '',
-      isOpenShare: false
+      isOpenShare: false,
+      //
+      isTestLink: false
     }
   },
   created () {
     this.initData()
+    if (/c2f14163c2a14ae3ba5fecc6d34eb22a/.test(location.href)) {
+      this.isTestLink = true
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -418,6 +425,11 @@ export default {
       // 开启投票分享加抽奖次数
       if (rule.lottery_config && rule.lottery_config.share) {
         this.isOpenShare = true
+        // app 开启分享功能
+        let _this = this
+        window.SmartCity.onShareSuccess((res) => {
+          _this.appShareSuccess(res)
+        })
       }
       // 抽奖入口
       if (rule.lottery_config && rule.lottery_config.condition) {
@@ -496,6 +508,7 @@ export default {
         mark: detailInfo.mark
       }, this.shareLottery)
     },
+    // 分享成功后的回调
     shareLottery () {
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
@@ -521,7 +534,6 @@ export default {
     },
     goLotteryPage () {
       let { link } = this.lottery
-      console.log('link:', link)
       if (link) {
         window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
       }
@@ -946,6 +958,25 @@ export default {
     searchClassify (val) {
       this.searchClassifyVal = val
       this.dealSearch('input-search', true)
+    },
+    appShare () {
+      let {rule: { share_settings: shareSettings }} = this.detailInfo
+      if (shareSettings) {
+        window.SmartCity.shareTo({
+          title: shareSettings.title,
+          brief: shareSettings.brief,
+          contentURL: shareSettings.link || location.href,
+          imageLink: shareSettings.indexpic[0] || ''
+        })
+      }
+    },
+    appShareSuccess (res) {
+      if (res) {
+        // 增加抽奖次数
+        if (res === 1) {
+          this.shareLottery()
+        }
+      }
     }
   }
 }
@@ -957,6 +988,18 @@ export default {
     width: 100%;
     height: 100vh;
     position: relative;
+    #test-btn, .testResult{
+      border: 1px solid #333;
+      padding: 15px;
+      position: fixed;
+      top: 40px;
+      left: 40px;
+      z-index: 100;
+      background: #fff;
+    }
+    .testResult {
+      top: 120px;
+    }
     .active-rule-wrap {
       position: absolute;
       z-index: 10;
