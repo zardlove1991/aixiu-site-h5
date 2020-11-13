@@ -46,6 +46,7 @@
         mark: mark
       }"
       :textSetting="detailInfo.text_setting"
+      @updateCard="updateCard"
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
@@ -277,6 +278,12 @@ export default {
     goLottery (link) {
       if (link) {
         window.location.href = link
+      }
+    },
+    updateCard () {
+      if (this.workDetail.remain_votes > 0) {
+        this.workDetail.remain_votes--
+        this.workDetail.total_votes++
       }
     },
     ...mapActions('vote', {
