@@ -136,15 +136,17 @@ export default {
       }
       .vjs-big-play-button {
         width: px2rem(80px) !important;
-        height: px2rem(80px) !important;
-        line-height: px2rem(80px) !important;
         font-size: px2rem(50px) !important;
         border-radius: 100%;
         z-index: 100;
         transform: translate(-50%, -50%) !important;
         margin-left: 0 !important;
-        margin-top: 0 !important;
       }
+    }
+    .vjs-custom-skin > .video-js .vjs-big-play-button {
+      height: px2rem(80px) !important;
+      line-height: px2rem(80px) !important;
+      margin-top: 0 !important;
     }
   }
   .small-video {
