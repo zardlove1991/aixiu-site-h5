@@ -1,19 +1,19 @@
 <template>
-  <div :class="['news-draft2-wrap', themeName + '-bg']">
-    <div :class="['draft2-index', indexData.size]" v-if="indexData && indexData.title">
-      <img class="draft2-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
-      <div :class="['draft2-content', themeName]">
+  <div :class="['news-article2-wrap', themeName + '-bg']">
+    <div :class="['article2-index', indexData.size]" v-if="indexData && indexData.title">
+      <img class="article2-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+      <div :class="['article2-content', themeName]">
         <div class="header">{{indexData.title}}</div>
         <div class="line"></div>
         <div class="source">{{indexData.source}} · {{indexData.date}}</div>
       </div>
     </div>
-    <div class="draft2-item"
+    <div class="article2-item"
       v-for="(item, index) in tmpList"
       :key="index"
       v-show="index !== 0">
-      <img :class="['draft2-item-img', item.size]" v-preview="item.src" :src="item.src" object-fit="cover" />
-      <div :class="['draft2-item-content', themeName]">
+      <img :class="['article2-item-img', item.size]" v-preview="item.src" :src="item.src" object-fit="cover" />
+      <div :class="['article2-item-content', themeName]">
         <div class="header">{{item.title}}</div>
         <div class="source">{{item.source}} · {{item.date}}</div>
       </div>
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData draft2', this.tmpList)
+      console.log('initData article2', this.tmpList)
       let tmpList = this.tmpList
       if (tmpList && tmpList.length > 0) {
         tmpList.map(item => {
@@ -74,13 +74,13 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .news-draft2-wrap {
+  .news-article2-wrap {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
     background-color: #ffffff;
     padding: 0 px2rem(30px);
-    .draft2-index {
+    .article2-index {
       position: relative;
       margin-top: px2rem(30px);
       margin-bottom: px2rem(120px);
@@ -93,7 +93,7 @@ export default {
       &.size-4-3 {
         padding-bottom: 75%;
       }
-      .draft2-img {
+      .article2-img {
         position: absolute;
         left: 0;
         top: 0;
@@ -103,7 +103,7 @@ export default {
         height: 100%;
         border-radius: px2rem(8px);
       }
-      .draft2-content {
+      .article2-content {
         position: absolute;
         background-color: #fff;
         left: 0;
@@ -142,7 +142,7 @@ export default {
         }
       }
     }
-    .draft2-item {
+    .article2-item {
       display: flex;
       align-items: center;
       width: 100%;
@@ -150,7 +150,7 @@ export default {
       &:last-child {
         margin-bottom: px2rem(30px);
       }
-      .draft2-item-img {
+      .article2-item-img {
         flex: 0 0 6.25rem;
         width: 6.25rem;
         margin-right: px2rem(30px);
@@ -162,7 +162,7 @@ export default {
         }
         border-radius: px2rem(8px);
       }
-      .draft2-item-content {
+      .article2-item-content {
         flex: 1;
         .header {
           margin-bottom: px2rem(5px);

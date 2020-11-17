@@ -1,19 +1,19 @@
 <template>
-  <div :class="['news-draft1-wrap', themeName + '-bg']">
-    <div :class="['draft1-index', indexData.size]" v-if="indexData && indexData.title">
-      <img class="draft1-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
-      <div class="draft1-content">
+  <div :class="['news-article1-wrap', themeName + '-bg']">
+    <div :class="['article1-index', indexData.size]" v-if="indexData && indexData.title">
+      <img class="article1-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+      <div class="article1-content">
         <div class="header">{{indexData.title}}</div>
         <div class="source">{{indexData.source}} · {{indexData.date}}</div>
       </div>
     </div>
-    <div class="draft1-next">
-      <div :class="['draft1-item', item.size]"
+    <div class="article1-next">
+      <div :class="['article1-item', item.size]"
         v-for="(item, index) in tmpList"
         :key="index"
         v-show="index !== 0">
-        <img class="draft1-img" v-preview="item.src" :src="item.src" object-fit="cover" />
-        <div class="draft1-content small">
+        <img class="article1-img" v-preview="item.src" :src="item.src" object-fit="cover" />
+        <div class="article1-content small">
           <div class="header">{{item.title}}</div>
           <div class="source">{{item.source}} · {{item.date}}</div>
         </div>
@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData draft1', this.tmpList)
+      console.log('initData article1', this.tmpList)
       let tmpList = this.tmpList
       if (tmpList && tmpList.length > 0) {
         tmpList.map(item => {
@@ -75,13 +75,13 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .news-draft1-wrap {
+  .news-article1-wrap {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
     background-color: #ffffff;
     padding: 0 px2rem(30px);
-    .draft1-index {
+    .article1-index {
       position: relative;
       margin-top: px2rem(30px);
       margin-bottom: 0.3125rem;
@@ -98,11 +98,11 @@ export default {
         padding-bottom: 75%;
       }
     }
-    .draft1-next {
+    .article1-next {
       width: 100%;
       display: flex;
       margin-bottom: px2rem(30px);
-      .draft1-item {
+      .article1-item {
         position: relative;
         margin-right: 0.3125rem;
         width: calc((100% - 0.3125rem) / 2);
@@ -121,7 +121,7 @@ export default {
         }
       }
     }
-    .draft1-img {
+    .article1-img {
       position: absolute;
       left: 0;
       top: 0;
@@ -131,7 +131,7 @@ export default {
       height: 100%;
       border-radius: px2rem(8px);
     }
-    .draft1-content {
+    .article1-content {
       position: absolute;
       left: 0;
       bottom: 0;

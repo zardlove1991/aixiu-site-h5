@@ -1,9 +1,9 @@
 <template>
-  <div :class="['news-draft3-wrap', themeName + '-bg']">
-    <div class="draft3-index">
-      <img class="draft3-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+  <div :class="['news-article3-wrap', themeName + '-bg']">
+    <div class="article3-index">
+      <img class="article3-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
     </div>
-    <div :class="['draft3-content', themeName]">
+    <div :class="['article3-content', themeName]">
       <div class="line"></div>
       <div class="source">{{indexData.source}} · {{indexData.date}}</div>
       <div class="header">{{indexData.title}}</div>
@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData draft3', this.tmpList)
+      console.log('initData article3', this.tmpList)
       let tmpList = this.tmpList
       if (tmpList && tmpList.length > 0) {
         let item = tmpList[0]
@@ -67,19 +67,19 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .news-draft3-wrap {
+  .news-article3-wrap {
     position: relative;
     width: 100%;
     height: 100vh;
     overflow-y: auto;
     background-color: #ffffff;
-    .draft3-index {
-      .draft3-img {
+    .article3-index {
+      .article3-img {
         width: 100%;
         height: 75%;
       }
     }
-    .draft3-content {
+    .article3-content {
       position: absolute;
       left: px2rem(60px);
       right: 0;

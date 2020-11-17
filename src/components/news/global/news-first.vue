@@ -10,7 +10,7 @@
       <div class="weather" v-if="weatherData.is_open" :style="{ color: weatherData.color_matching }">
         <span class="city">{{weatherData.city}}</span>
         <span class="temp">32°C</span>
-        <span :class="['weather-icon', 'sunshine']"></span>
+        <span :class="['weather-icon', 'qing']"></span>
       </div>
     </div>
   </div>
@@ -94,10 +94,9 @@ export default {
           margin-right: px2rem(20px);
           width: px2rem(40px);
           height: px2rem(40px);
-          background-size: px2rem(40px) px2rem(40px);
           background-repeat: no-repeat;
-          &.sunshine {
-            background-image: url('~@/assets/news/sunshine-icon.png');
+          &.qing {
+            @include img-retina('~@/assets/news/weather/qing.png', '~@/assets/news/weather/qing@2x.png', px2rem(40px), px2rem(40px));
           }
           // &.cloudy
         }

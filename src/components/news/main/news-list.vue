@@ -33,9 +33,9 @@ import { Loadmore } from 'mint-ui'
 // import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { setBrowserTitle } from '@/utils/utils'
 import NewsFirst from '@/components/news/global/news-first'
-import NewsDraft1 from '@/components/news/global/news-draft1'
-import NewsDraft2 from '@/components/news/global/news-draft2'
-import NewsDraft3 from '@/components/news/global/news-draft3'
+import NewsArticle1 from '@/components/news/global/news-article1'
+import NewsArticle2 from '@/components/news/global/news-article2'
+import NewsArticle3 from '@/components/news/global/news-article3'
 import NewsVideo1 from '@/components/news/global/news-video1'
 import NewsVideo2 from '@/components/news/global/news-video2'
 import NewsGallery1 from '@/components/news/global/news-gallery1'
@@ -50,9 +50,9 @@ export default {
   },
   components: {
     NewsFirst,
-    NewsDraft1,
-    NewsDraft2,
-    NewsDraft3,
+    NewsArticle1,
+    NewsArticle2,
+    NewsArticle3,
     NewsVideo1,
     NewsVideo2,
     NewsGallery1,
@@ -138,7 +138,7 @@ export default {
         theme_name: 'white',
         information_content_data: [{ // B1
           id: '1',
-          mark: 'draft1',
+          mark: 'article1',
           type: 'image', // 模版类型
           total_num: 3, // 模版总数据量
           limit: 3, // 图片数量
@@ -174,7 +174,7 @@ export default {
           }]
         }, {
           id: '3',
-          mark: 'draft2',
+          mark: 'article2',
           data: [{
             title: '新闻1', // 内容
             ratio: '16:9', // 图片比例
@@ -206,7 +206,7 @@ export default {
           }]
         }, {
           id: '4',
-          mark: 'draft3',
+          mark: 'article3',
           data: [{
             title: '新闻1', // 内容
             ratio: '16:9', // 图片比例
