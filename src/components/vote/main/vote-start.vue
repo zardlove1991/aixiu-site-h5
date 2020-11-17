@@ -321,11 +321,18 @@ export default {
       lottery: {},
       isShowLottery: false,
       lotteryMsg: '',
-      isOpenShare: false
+      isOpenShare: false,
+      shareConfigData: {}
     }
   },
   created () {
     this.initData()
+    let plat = getPlat()
+    if (plat === 'smartcity') {
+      window.SmartCity.onShareSuccess((res) => {
+        this.appShareCallBack()
+      })
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -486,6 +493,14 @@ export default {
         shareLink = delUrlParams(['code'])
       } else {
         shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+      }
+      this.shareConfigData = {
+        id: detailInfo.id,
+        title: shareTitle,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
       }
       this.initPageShareInfo({
         id: detailInfo.id,
@@ -937,11 +952,26 @@ export default {
     closeWorkVote () {
       this.isShowWorkVote = false
     },
+    appShareCallBack () {
+      if (this.shareConfigData.id && this.isOpenShare) {
+        this.setShare({
+          id: this.shareConfigData.id,
+          title: this.shareConfigData.title,
+          from: this.shareConfigData.from,
+          mark: this.shareConfigData.mark
+        }).then(
+          this.shareLottery()
+        )
+      }
+    },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
       setShareData: 'SET_SHARE_DATA',
       setMyVote: 'SET_MY_VOTE',
       setIsBtnAuth: 'SET_IS_BTN_AUTH'
+    }),
+    ...mapActions('depence', {
+      setShare: 'SET_SHARE'
     }),
     searchClassify (val) {
       this.searchClassifyVal = val
