@@ -135,7 +135,7 @@ export default {
         background-size: cover;
       }
       .vjs-big-play-button {
-        width: px2rem(80px);
+        width: px2rem(80px) !important;
         height: px2rem(80px) !important;
         line-height: px2rem(80px) !important;
         font-size: px2rem(50px) !important;

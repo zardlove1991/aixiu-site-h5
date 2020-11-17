@@ -135,7 +135,7 @@ export default {
           color_matching: 'red' // 配色
         },
         is_open_page_number: 1,
-        theme_name: 'normal',
+        theme_name: 'white',
         information_content_data: [{ // B1
           id: '1',
           mark: 'draft1',
