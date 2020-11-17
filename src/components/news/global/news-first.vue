@@ -95,10 +95,33 @@ export default {
           width: px2rem(40px);
           height: px2rem(40px);
           background-repeat: no-repeat;
+          &.xue {
+            @include img-retina('~@/assets/news/weather/xue.png', '~@/assets/news/weather/xue@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.lei {
+            @include img-retina('~@/assets/news/weather/lei.png', '~@/assets/news/weather/lei@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.shachen {
+            @include img-retina('~@/assets/news/weather/shachen.png', '~@/assets/news/weather/shachen@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.wu {
+            @include img-retina('~@/assets/news/weather/wu.png', '~@/assets/news/weather/wu@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.bingbao {
+            @include img-retina('~@/assets/news/weather/bingbao.png', '~@/assets/news/weather/bingbao@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.yun {
+            @include img-retina('~@/assets/news/weather/yun.png', '~@/assets/news/weather/yun@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.yu {
+            @include img-retina('~@/assets/news/weather/yu.png', '~@/assets/news/weather/yu@2x.png', px2rem(40px), px2rem(40px));
+          }
+          &.yin {
+            @include img-retina('~@/assets/news/weather/yin.png', '~@/assets/news/weather/yin@2x.png', px2rem(40px), px2rem(40px));
+          }
           &.qing {
             @include img-retina('~@/assets/news/weather/qing.png', '~@/assets/news/weather/qing@2x.png', px2rem(40px), px2rem(40px));
           }
-          // &.cloudy
         }
       }
     }
