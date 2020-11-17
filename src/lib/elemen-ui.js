@@ -6,6 +6,7 @@ import {
   Checkbox,
   Input,
   Upload,
+  Image,
   Loading
 } from 'element-ui'
 
@@ -16,5 +17,6 @@ export default function (Vue) {
   Vue.use(Checkbox)
   Vue.use(Input)
   Vue.use(Upload)
+  Vue.use(Image)
   Vue.use(Loading)
 }

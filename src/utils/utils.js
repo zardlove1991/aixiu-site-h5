@@ -94,6 +94,8 @@ export const setTheme = (id, name, isFirst) => {
       }
       STORAGE.set('detailInfo', info)
     })
+  } else if (name.indexOf('news') !== -1) {
+    // console.log('news')
   } else {
     // 测评
     API.getExamDetail({ query: { id } }).then(res => {
