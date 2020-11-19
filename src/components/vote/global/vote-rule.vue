@@ -3,7 +3,7 @@
     <div class="rule-dialog2">
       <div class="rule-dialog-main">
         <div class="rule-header">活动规则</div>
-        <div class="rule-content">{{introduce}}</div>
+        <div class="rule-content" v-html="introduce"></div>
       </div>
       <div class="close-btn-wrap">
         <div class="close-btn" @click.stop="close()"></div>
@@ -88,6 +88,7 @@ export default {
           line-height: px2rem(48px);
           color: #666;
           word-wrap: break-word;
+          white-space: pre-wrap;
         }
       }
       .close-btn-wrap {

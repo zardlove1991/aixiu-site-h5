@@ -190,7 +190,7 @@ export default {
         //   // 多选题目更改下当前题目回答的状态
         //   this.changeSubjectAnswerInfo({ subject })
         // }
-        if (['judge', 'radio', 'checkbox'].includes(subject.type)) {
+        if (['judge', 'radio', 'checkbox', 'pictureRadio', 'pictureMulti'].includes(subject.type)) {
           // 多选题目更改下当前题目回答的状态
           // this.changeSubjectAnswerInfo({ subject })
           await this.saveAnswerRecord(subject)
@@ -224,12 +224,25 @@ export default {
         return origin
       } else if (origin instanceof Array) {
         if (origin.length) {
-          return origin[0]
+          let obj = origin[0]
+          if (typeof obj === 'string') {
+            return obj
+          } else if (obj instanceof Object) {
+            if (obj.host && obj.filename) {
+              return obj.host + obj.filename
+            } else {
+              return obj
+            }
+          }
         } else {
           return null
         }
       } else if (origin instanceof Object) {
-        return origin
+        if (origin.host && origin.filename) {
+          return origin.host + origin.filename
+        } else {
+          return origin
+        }
       } else {
         return null
       }

@@ -220,18 +220,21 @@ export default {
         // 抽奖
         let lottery = res.lottery
         if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
+          console.log('抽奖！！')
           this.isShowLottery = true
           this.lottery = lottery
           this.$emit('close')
           this.voteDisable = false
-          this.$emit('success')
+          // this.$emit('success')
+          this.$emit('updateCard')
           return
         }
         this.$emit('close')
         this.voteDisable = false
         let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
         Toast('成功' + sign)
-        this.$emit('success')
+        // this.$emit('success')
+        this.$emit('updateCard')
       })
     }
   }

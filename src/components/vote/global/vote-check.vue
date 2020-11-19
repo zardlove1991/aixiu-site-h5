@@ -9,20 +9,20 @@
         <div class="check-item" v-if="checkVote.sex">
           <el-input placeholder="性别" readonly @focus="focusAction('sex')" @blur="blurAction()" v-model="checkData.sex"></el-input>
         </div>
-        <div class="check-item" v-if="checkVote.code">
+        <!-- <div class="check-item" v-if="checkVote.code">
           <el-input placeholder="图形验证码" @blur="blurAction()" maxlength="10" v-model="checkData.imgCode"></el-input>
           <div class="get-img-code"
             @click.stop="getImgCode()"
             :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div>
-        </div>
+        </div> -->
         <div class="check-item" v-if="checkVote.phone">
           <el-input placeholder="手机号" @blur="blurAction()" maxlength="11" v-model="checkData.phone"></el-input>
-          <div v-if="codeTime === 0" class="get-code" @click="getCode()">获取验证码</div>
-          <div v-if="codeTime !== 0" class="get-code">{{codeTime}}秒</div>
+          <!-- <div v-if="codeTime === 0" class="get-code" @click="getCode()">获取验证码</div>
+          <div v-if="codeTime !== 0" class="get-code">{{codeTime}}秒</div> -->
         </div>
-        <div class="check-item" v-if="checkVote.code">
+        <!-- <div class="check-item" v-if="checkVote.code">
           <el-input placeholder="验证码" @blur="blurAction()" maxlength="10" v-model="checkData.code"></el-input>
-        </div>
+        </div> -->
         <div class="check-item" v-if="checkVote.birthday">
           <el-input placeholder="生日" readonly @focus="focusAction('birthday')" @blur="blurAction()" v-model="checkData.birthday"></el-input>
         </div>
@@ -117,7 +117,7 @@ export default {
     },
     checkVote: {
       handler (val) {
-        this.getImgCode()
+        // this.getImgCode()
       },
       deep: true
     }
@@ -238,31 +238,35 @@ export default {
     sureCheckVote () {
       let checkVote = this.checkVote
       let checkData = this.checkData
-      if (checkVote.name && !checkData.name.trim()) {
+      if (checkVote.name && !checkData.name) {
         Toast('请输入姓名')
         return
       }
-      if (checkVote.sex && !checkData.sex.trim()) {
+      if (checkVote.sex && !checkData.sex) {
         Toast('请输入性别')
         return
       }
-      if (checkVote.phone && !checkData.phone.trim()) {
+      if (checkVote.phone && !checkData.phone) {
         Toast('请输入手机号')
         return
       }
-      if (checkVote.code && !checkData.code.trim()) {
-        Toast('请输入验证码')
-        return
-      }
-      if (checkVote.birthday && !checkData.birthday.trim()) {
+      // if (checkVote.code && !checkData.code) {
+      //   Toast('请输入验证码')
+      //   return
+      // }
+      if (checkVote.birthday && !checkData.birthday) {
         Toast('请输入生日')
         return
       }
-      if (checkVote.email && !checkData.email.trim()) {
+      if (checkVote.email && !checkData.email) {
         Toast('请输入邮箱')
         return
       }
-      if (checkVote.address && !checkData.address.trim()) {
+      if (checkVote.address && !checkData.address) {
+        Toast('请输入地址')
+        return
+      }
+      if (checkVote.address && !checkData.address_detail) {
         Toast('请输入详细地址')
         return
       }
@@ -277,7 +281,7 @@ export default {
         data: checkData
       }).then(res => {
         if (res.error_code) {
-          this.getImgCode()
+          // this.getImgCode()
           Toast(res.error_message)
           return
         }

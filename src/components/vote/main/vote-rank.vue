@@ -12,6 +12,7 @@
       </vote-classify-list>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
+        :class="myVoteData.image_ratio?'vertical':''"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
@@ -42,6 +43,7 @@
         :auto-fill="false">
         <div class="wrap">
           <div class="rank-list-item"
+           :class="item.image_ratio?'vertical':''"
             v-for="(item, index) in rankList" :key="index"
             @click.stop="jumpPage('votedetail', { worksId: item.id })">
             <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
@@ -309,6 +311,13 @@ export default {
               }
             }
           }
+          &.vertical{
+            .list-item-content {
+              .indexpic-wrap {
+                height: px2rem(182px);
+              }
+            }
+          }
         }
         &:last-child {
           padding-bottom: px2rem(30px);
@@ -349,6 +358,13 @@ export default {
           height: 100%;
           padding-right: px2rem(30px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        &.vertical{
+          height: px2rem(298px);
+          .indexpic-wrap {
+            width: px2rem(180px);
+            height: px2rem(252px);
+          }
         }
         .indexpic-wrap {
           position: relative;

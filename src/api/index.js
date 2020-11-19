@@ -13,9 +13,9 @@ instance.interceptors.request.use((config) => {
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
-  if (config.url.indexOf('setSubmit') > -1) {
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-  }
+  // if (config.url.indexOf('setSubmit') > -1) {
+  //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+  // }
   if (config.url.indexOf('setClick') < 0) {
     if (STORAGE.get('userinfo')) {
       config.params.member = STORAGE.get('userinfo')
@@ -170,6 +170,19 @@ export const createBase = (url, method, config = {}, api) => {
     url: getUrl(url, config, api),
     method,
     withCredentials: true,
+    ...config
+  })
+}
+
+export const createC4 = (url, method, config = {}, api) => {
+  api = 'c4'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    headers: {
+      'x-member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
+    },
     ...config
   })
 }

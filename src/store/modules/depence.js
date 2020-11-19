@@ -2,7 +2,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { METHODS, DEPENCE } from '@/common/currency'
-import { getEnglishChar, dealAnnexObject, randomNum } from '@/utils/utils'
+import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -94,22 +94,20 @@ const getters = {
 const mutations = {
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
-    let show = true
-    // console.log(list, 'bedore_SET_ANSWER_LIST')
-    if (list && list[0]) {
-      for (let i = 0; i < list.length; i++) {
-        if (list[i].options_id && list[i].question_id === payload.question_id) {
-          list[i].options_id = payload.options_id
-          show = false
-        }
+    let show = false
+    // console.log(list, payload, 'bedore_SET_ANSWER_LIST')
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i]
+      if (item.question_id === payload.question_id) {
+        item.options_id = payload.options_id
+        show = true
+        break
       }
-      if (show && payload.question_id && payload.options_id && payload.options_id[0]) {
-        list.push(payload)
-      }
-    } else {
+    }
+    if (!show && payload.question_id) {
       list.push(payload)
     }
-    console.log(state.answerList, 'SET_ANSWER_LIST')
+    // console.log(state.answerList, 'SET_ANSWER_LIST')
   },
   SET_LUCK_DRAW_LINK (state, payload) {
     state.luckDrawLink = payload
@@ -178,13 +176,13 @@ const mutations = {
   SET_ESSAY_ANSWER_INFO (state, payload) {
     let list = state.answerList
     for (let key in payload) {
-      console.log(key)
+      // console.log(key)
       if (list && list[0]) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].question_id === key) {
             list[i].value = payload[key]
           }
-          console.log(list[i])
+          // console.log(list[i])
         }
       } else {
         let params = {
@@ -193,7 +191,7 @@ const mutations = {
         }
         list.push(params)
       }
-      console.log(list, 'SET_ESSAY_ANSWER_INFO')
+      // console.log(list, 'SET_ESSAY_ANSWER_INFO')
       state.subjectAnswerInfo[key] = true
     }
     state.essayAnswerInfo = Object.assign({}, payload)
@@ -273,6 +271,7 @@ function dealSaveRecord ({
   }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
+  console.log('dealSaveRecord', params, subject.type)
   if (subject.type === 'essay') {
     // 这边判断提交的问答题数据是否为空 为空就不发送请求
     if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
@@ -383,23 +382,6 @@ const actions = {
         Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
-        var datas = {
-          param: {
-            data: [{
-              id: id,
-              mark: 'examination',
-              title: info.title,
-              member_id: STORAGE.get('userinfo').id,
-              // create_time: new Date().getTime(),
-              start_time: parseInt((new Date().getTime()) / 1000),
-              from: null,
-              hash: randomNum(13)
-            }]
-          }
-        }
-        API.setClick({params: datas}).then(res => {
-          console.log(res)
-        })
         resolve()
       }).catch(err => {
         Indicator.close() // 结束
@@ -459,18 +441,25 @@ const actions = {
       let id = state.examId || payload.id
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
-      /*
-      var datas = {
-        id: id,
-        mark: 'examination',
-        title: '',
-        member: STORAGE.get('userinfo'),
-        create_time: new Date().getTime()
+      let mark = 'examination'
+      let title = ''
+      if (state.examInfo) {
+        mark = state.examInfo.mark
+        title = state.examInfo.title
       }
-      API.sumbitUV({data: datas}).then(res => {
+      let params = {
+        data: [{
+          id,
+          mark,
+          title,
+          create_time: parseInt((new Date().getTime()) / 1000)
+        }],
+        member: STORAGE.get('userinfo')
+      }
+      // console.log('sumbitUV', params)
+      API.sumbitUV({ data: params }).then(res => {
         console.log(res)
       })
-      */
       Indicator.open({ spinnerType: 'fading-circle' })
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
@@ -581,6 +570,7 @@ const actions = {
       // 更改状态
       // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
+      commit('SET_ANSWER_LIST', result.params)
       let { isEmpty } = result
       if (!subject) {
         subject = {}
@@ -594,7 +584,7 @@ const actions = {
         this.changeAnswerTimer = setTimeout(() => {
           // 更新当前的回答题目的信息
           commit('SET_SUBJECT_ANSWER_INFO', subjectAnswerInfo)
-          commit('SET_ANSWER_LIST', result.params)
+          // commit('SET_ANSWER_LIST', result.params)
           // 返回数据
           resolve(result)
         }, 300)
@@ -629,13 +619,13 @@ const actions = {
     // 如果是解析的话直接不可以添加选项状态
     if (renderType === 'analysis') return
     // 处理当前选中的类型
-    if (['judge', 'radio'].includes(subjectInfo.type)) {
+    if (['judge', 'radio', 'pictureRadio'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = true
         else item.active = false
         return item
       })
-    } else if (['checkbox'].includes(subjectInfo.type)) {
+    } else if (['checkbox', 'pictureMulti'].includes(subjectInfo.type)) {
       subjectInfo.options.map((item, index) => {
         if (index === selectIndex) item.active = !item.active
         return item

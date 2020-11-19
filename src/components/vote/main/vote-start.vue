@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
       <!--背景标题-->
       <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', getPicTitleClass]">
@@ -100,14 +100,15 @@
         <div class="wrap">
           <vote-picture-text
             v-if="showModel === 'picture'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :detailInfo="detailInfo"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-picture-text>
           <vote-video-text v-if="showModel === 'video'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -115,7 +116,7 @@
           </vote-video-text>
           <vote-audio-text
             v-if="showModel === 'audio'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -123,7 +124,7 @@
           </vote-audio-text>
           <vote-text
             v-if="showModel === 'text'"
-            :workList="myWork.id ? [myWork, ...workList] : workList"
+            :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
@@ -169,6 +170,7 @@
       </div>
     </tips-dialog> -->
     <share-vote
+      ref="shareVote"
       :show="isShowWorkVote"
       :config="{
         voting_id: detailInfo.id,
@@ -176,6 +178,7 @@
         mark: detailInfo.mark
       }"
       :textSetting="detailInfo.text_setting"
+      @updateCard="updateCard"
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
@@ -204,6 +207,18 @@
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
+    <lottery-vote
+      :show="isShowLottery"
+      :lottery="lottery"
+      :textSetting="{sign:'分享'}"
+      @close="isShowLottery = false"></lottery-vote>
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
+      <div @click="goLotteryPage()">
+        <img src="@/assets/vote/gift@3x.png" alt="">
+        <div class="info">{{lotteryMsg}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -222,7 +237,8 @@ import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
-import { Spinner, Loadmore } from 'mint-ui'
+import LotteryVote from '@/components/vote/global/vote-lottery'
+import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
@@ -250,7 +266,8 @@ export default {
     ActiveStart,
     VoteClassifyList,
     Spinner,
-    Loadmore
+    Loadmore,
+    LotteryVote
   },
   data () {
     return {
@@ -272,6 +289,7 @@ export default {
       activeTips: [], // 再xxx内参加活动
       downloadLink: '', // 下载链接
       isShowWorkVote: false, // 给他投票弹窗
+      isCloseDialog: false, // 投票弹框显隐
       worksId: '',
       showModel: 'text', // 当前展示text/video/audio/picture
       isExamine: null, // 0 未报名 1 已报名
@@ -296,7 +314,14 @@ export default {
       isOpenClassify: false,
       isShowClassify: false,
       searchClassifyVal: '',
-      isShowRank: true // 是否显示榜单
+      isShowRank: true, // 是否显示榜单
+      activeIndex: null, // 当前正在操作的内容序号
+      showLotteryEntrance: false,
+      lotteryEnterType: 'lottery',
+      lottery: {},
+      isShowLottery: false,
+      lotteryMsg: '',
+      isOpenShare: false
     }
   },
   created () {
@@ -330,6 +355,13 @@ export default {
       } else {
         return ''
       }
+    },
+    allWorkList () {
+      if (this.myWork.id) {
+        return [this.myWork, ...this.workList]
+      } else {
+        return this.workList
+      }
     }
   },
   methods: {
@@ -351,6 +383,12 @@ export default {
           }
         }
         this.detailInfo = res
+        // 校验抽奖入口条件
+        let {lottery, rule, today_votes: todayVotes} = res
+        if (lottery) {
+          this.lottery = lottery
+          this.checkLotteryOpen(lottery, rule, todayVotes)
+        }
         STORAGE.set('detailInfo', res)
         // 分享
         this.sharePage(res)
@@ -365,6 +403,40 @@ export default {
         console.log(err)
       })
     },
+    // 如果有中奖记录和抽奖次数 默认显示
+    async checkLotteryOpen (lottery, rule, todayVotes) {
+      let openLottery = false
+      // 用户中奖记录
+      let res = await API.getUserLotteryList({
+        query: { id: lottery.lottery_id }
+      })
+      if (res.data.length > 0) {
+        this.lotteryEnterType = 'history'
+        openLottery = true
+        this.lotteryMsg = '查看中奖情况'
+      }
+      // 开启投票分享加抽奖次数
+      if (rule.lottery_config && rule.lottery_config.share) {
+        this.isOpenShare = true
+      }
+      // 抽奖入口
+      if (rule.lottery_config && rule.lottery_config.condition) {
+        // 只校验投票
+        let {value} = rule.lottery_config.condition
+        if (value) {
+          if (value <= todayVotes && lottery.remain_lottery_counts > 0) {
+            openLottery = true
+            this.lotteryEnterType = 'lottery'
+            this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
+          }
+        } else {
+          openLottery = true
+          this.lotteryEnterType = 'lottery'
+          this.lotteryMsg = `可抽奖${lottery.remain_lottery_counts}次`
+        }
+      }
+      this.showLotteryEntrance = openLottery
+    },
     sharePage (detailInfo) {
       if (!detailInfo) {
         return false
@@ -374,6 +446,11 @@ export default {
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
+      if (rule && rule.is_close_dialog) {
+        this.isCloseDialog = true
+      } else {
+        this.isCloseDialog = false
+      }
       if (rule && rule.share_settings) {
         let share = rule.share_settings
         let sharePic = share.indexpic
@@ -417,7 +494,37 @@ export default {
         indexpic: imgUrl,
         link: shareLink,
         mark: detailInfo.mark
-      })
+      }, this.shareLottery)
+    },
+    shareLottery () {
+      if (this.lottery.link && this.isOpenShare) {
+        API.shareLottery({
+          query: {
+            id: this.lottery.lottery_id
+          }
+        }).then(res => {
+          let {data} = res
+          if (!data.has_share) {
+            this.lotteryEnterType = 'lottery'
+            if (this.lottery.remain_lottery_counts) {
+              this.lottery.remain_lottery_counts++
+            } else {
+              this.lottery = {...this.lottery, remain_lottery_counts: 1}
+            }
+            this.isShowLottery = true
+            this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
+          } else {
+            Toast('感谢分享，你已经使用过分享送抽奖机会了！')
+          }
+        })
+      }
+    },
+    goLotteryPage () {
+      let { link } = this.lottery
+      console.log('link:', link)
+      if (link) {
+        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
+      }
     },
     handleVoteData () {
       let detailInfo = this.detailInfo
@@ -736,10 +843,18 @@ export default {
         count: 10,
         totalPages: 0
       }
-      this.workList = []
-      this.getVoteWorks(name, isClassifySearch)
+      // this.workList = []
+      this.getVoteWorks(name, isClassifySearch, 'clear')
     },
-    getVoteWorks (name = '', isClassifySearch = false) {
+    updateCard () {
+      if (this.activeIndex !== null && this.activeIndex !== undefined) {
+        this.allWorkList[this.activeIndex].total_votes++
+        if (this.remainVotes > 0) {
+          this.remainVotes--
+        }
+      }
+    },
+    getVoteWorks (name = '', isClassifySearch = false, type) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -773,6 +888,10 @@ export default {
         if (total % count !== 0) {
           totalPages = parseInt(total / count) + 1
         }
+        // 重新加载，防止回到顶部
+        if (type && type === 'clear') {
+          this.workList = []
+        }
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
         this.getRemainVotes(voteId)
@@ -791,20 +910,31 @@ export default {
         query: data
       })
     },
-    triggerWork (obj) {
+    triggerWork (obj, index) {
+      if (index !== null && index !== undefined) {
+        this.activeIndex = index
+      } else {
+        this.activeIndex = null
+      }
       let { data, slug } = obj
       let worksId = data.id
       this.worksId = worksId
-      // 给他投票
-      if (slug === 'vote') {
-        this.isShowWorkVote = true
-      } else if (slug === 'invote') {
-        // 拉票
-        let obj = this.$refs['canvass-vote']
-        if (obj) {
-          obj.saveSharer(worksId)
+      this.$nextTick(() => {
+        // 给他投票
+        if (slug === 'vote') {
+          if (this.isCloseDialog) {
+            this.$refs.shareVote.sureWorkVote()
+          } else {
+            this.isShowWorkVote = true
+          }
+        } else if (slug === 'invote') {
+          // 拉票
+          let obj = this.$refs['canvass-vote']
+          if (obj) {
+            obj.saveSharer(worksId)
+          }
         }
-      }
+      })
     },
     closeWorkVote () {
       this.isShowWorkVote = false
@@ -1233,6 +1363,22 @@ export default {
       border-radius: px2rem(35px);
       @include font-dpr(14px);
       color: #F36E4E;
+    }
+    .lottery_entrance{
+      position: absolute;
+      bottom: 7.5rem;
+      right: px2rem(30px);
+      text-align: center;
+      img {
+        width: 16vw;
+      }
+      .info{
+        background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 15px;
+        margin-top: -4px;
+      }
     }
   }
 </style>

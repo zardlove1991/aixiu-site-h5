@@ -10,6 +10,7 @@
           <span class="tip color-theme_color">{{key}}</span>
         </div>
         <div class="list-item"
+          :class="item.image_ratio?'vertical':''"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id })">
           <div class="item-indexpic"
@@ -29,11 +30,11 @@
               <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">{{item.showdate}}<span class="vote-tip">{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
+            <p class="content-desc color-theme_color">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
-      <div v-if="!noMore" class="scroll-tips" @click="getVoteWorks()">点击我，加载更多</div>
+      <div v-if="!noMore" class="scroll-tips" @click="initMyVoteList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
@@ -186,6 +187,11 @@ export default {
           display: flex;
           align-items: center;
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          &.vertical{
+            .item-indexpic {
+              height: px2rem(252px);
+            }
+          }
           .item-indexpic {
             position: relative;
             flex: 0 0 px2rem(180px);

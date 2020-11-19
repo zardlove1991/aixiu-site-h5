@@ -8,13 +8,19 @@ import { oauth } from '@/utils/userinfo'
 import { setTheme, setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 // 引入所有第三库
 import '@/lib/index'
+import VideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
+import 'vue-video-player/src/custom-theme.css'
+import 'videojs-flash'
+import 'videojs-contrib-hls'
 
+Vue.use(VideoPlayer)
 Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   let name = to.name
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart']
   if (allArr.includes(name) && !from.name) {
     // 第一次进入页面
     oauth((res) => {
@@ -36,14 +42,11 @@ router.afterEach((route, from) => {
   let name = router.currentRoute.name
   let id = router.currentRoute.params.id
   let isFirst = false
-  let themeArr = ['votebegin', 'votedetail', 'enrollstart']
-  let allArr = ['depencestart', ...themeArr]
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart']
   if (allArr.includes(name) && !from.name) {
     isFirst = true
   }
-  if (themeArr.includes(name)) {
-    setTheme(id, name, isFirst)
-  }
+  setTheme(id, name, isFirst)
 })
 
 /* eslint-disable no-new */

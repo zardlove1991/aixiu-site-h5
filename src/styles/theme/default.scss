@@ -6,6 +6,7 @@ $themeColor: var(--themeColor, #25C17C);
 $themeFadeColor:var(--themeColor,#4DD996);
 $btnColor: var(--buttonColor, #4DD996);
 $compColor: var(--component, #4DD996);
+$highColor: var(--highColor, #4DD996);
 
 // 其它背景颜色
 $audioBg: #f5f5f5;
@@ -56,7 +57,8 @@ $defaultColorMap: (
   audioBgOne: $audioBgOne,
   audioBgTwo: $audioBgTwo,
   audioProgressBar: $audioProgressBar,
-  compColor: $compColor
+  compColor: $compColor,
+  highColor: $highColor
 )
 
 // 导出变量

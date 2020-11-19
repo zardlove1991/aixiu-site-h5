@@ -12,7 +12,9 @@
       <div class="exam-statInfo">
         <div class="score-line">
           <div class="score-area">
-            <div class="my-score">{{optionData.score ? parseFloat(optionData.score) : 0 }}分</div>
+            <div v-cloak>
+              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+            </div>
             <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
@@ -47,7 +49,7 @@
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
             </div>
           </div>
-          <div v-if="showType === 'pie' && item.pieData && item.type === 'radio'">
+          <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
           </div>
           <ul v-if="item.options && item.options.length">
@@ -175,7 +177,9 @@ export default {
       typeOptions: {
         radio: '单选题',
         singleblank: '填空题',
-        checkbox: '多选题'
+        checkbox: '多选题',
+        pictureRadio: '图片单选',
+        pictureMulti: '图片多选'
       },
       statMsg: '',
       statMsgVisible: false,
@@ -306,7 +310,7 @@ export default {
                   trueOpt = trueOpt + ' ' + this.radioIndex[index]
                 }
                 pieData.push({
-                  name: options.name,
+                  name: opt.name,
                   percent
                 })
               })
@@ -437,8 +441,10 @@ export default {
         question_num: optionData.questions.length,
         correct_num: correntNum,
         use_time: userTime,
-        submit_time: submitTime,
-        name
+        submit_time: submitTime
+      }
+      if (name) {
+        data.name = name
       }
       API.shareExamination({
         data
@@ -458,10 +464,10 @@ export default {
       }
     },
     isCheckBox (val) {
-      return ['checkbox', 'multiple', 'pictureMultiple'].includes(val)
+      return ['checkbox', 'multiple', 'pictureMulti'].includes(val)
     },
     isChoiceOption (val) {
-      return ['checkbox', 'multiple', 'pictureMultiple', 'radio', 'pictureRadio'].includes(val)
+      return ['checkbox', 'multiple', 'pictureMulti', 'radio', 'pictureRadio'].includes(val)
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
@@ -479,6 +485,10 @@ $primary-color: #ff6a45;
 $font-color: #333;
 $font-family: PingFangSC-Regular,PingFang SC;
 $font-weight: 400;
+
+[v-cloak] {
+  display: none;
+}
 
 .d-flex{
     display: flex !important;

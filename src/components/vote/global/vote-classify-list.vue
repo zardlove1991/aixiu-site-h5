@@ -14,15 +14,15 @@
           :class="currentId === item.id ? 'active' : ''"
           @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
       </div>
-      <div class="dropdown-item item1">
-        <div v-if="tmpObj[currentId] && tmpObj[currentId].length">
+      <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
+        <div>
           <div class="classify-item"
             :class="currentId2 === item.id ? 'active2' : ''"
             @click.stop="toggleCheck2(item)" v-for="(item, index) in tmpObj[currentId]" :key="index">{{item.name}}</div>
         </div>
-        <div v-else>
+        <!-- <div v-else>
           <div class="classify-item no-data">暂无数据</div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -82,10 +82,14 @@ export default {
       this.currentId = item.id
       this.currentId2 = ''
       this.tempSearchVal = item.name
+      if (!item.child || item.child.length < 1) {
+        this.showClassifyAction()
+      }
     },
     toggleCheck2 (item) {
       this.currentId2 = item.id
       this.tempSearchVal = item.name
+      this.showClassifyAction()
     },
     showClassifyAction () {
       this.isShowClassify = !this.isShowClassify

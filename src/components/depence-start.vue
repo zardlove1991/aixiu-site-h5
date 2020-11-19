@@ -238,13 +238,6 @@ export default {
           // 考试中
           this.isShowBreak = true
         }
-        if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
-          let content = info.limit.color_scheme.content
-          document.getElementsByTagName('body')[0].style.setProperty('--bgColor', content.bg_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--buttonColor', content.button_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--themeColor', content.theme_color)
-          document.getElementsByTagName('body')[0].style.setProperty('--decorated', content.decorated)
-        }
         if (info.limit) {
           let {
             day_userid_limit_num: dayUserIdLimit,
@@ -386,10 +379,10 @@ export default {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
           let checkDraw = [...obj]
-          let indexMobile = -1
+          // let indexMobile = -1
+          // let codeObj = null
+          // let imgCodeObj = null
           let indexAddress = -1
-          let codeObj = null
-          let imgCodeObj = null
           let addressObj = null
           for (let i = 0; i < checkDraw.length; i++) {
             let item = checkDraw[i]
@@ -409,19 +402,19 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              indexMobile = i
-              imgCodeObj = {
-                name: '图形验证码',
-                unique_name: 'imgCode',
-                type: 'text',
-                maxlength: 10
-              }
-              codeObj = {
-                name: '验证码',
-                unique_name: 'verify_code',
-                type: 'text',
-                maxlength: 4
-              }
+              // indexMobile = i
+              // imgCodeObj = {
+              //   name: '图形验证码',
+              //   unique_name: 'imgCode',
+              //   type: 'text',
+              //   maxlength: 10
+              // }
+              // codeObj = {
+              //   name: '验证码',
+              //   unique_name: 'verify_code',
+              //   type: 'text',
+              //   maxlength: 4
+              // }
             } else {
               item.maxlength = 100
               item.type = 'text'
@@ -442,22 +435,25 @@ export default {
               }
             }
           }
-          if (indexMobile !== -1 && indexAddress !== -1) {
-            if (indexMobile < indexAddress) {
-              checkDraw.splice(indexMobile + 1, 0, codeObj)
-              checkDraw.splice(indexMobile, 0, imgCodeObj)
-              checkDraw.splice(indexAddress + 3, 0, addressObj)
-            } else {
-              checkDraw.splice(indexAddress + 1, 0, addressObj)
-              checkDraw.splice(indexMobile + 2, 0, codeObj)
-              checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
-            }
-          } else if (indexMobile === -1 && indexAddress !== -1) {
+          if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
-          } else if (indexMobile !== -1 && indexAddress === -1) {
-            checkDraw.splice(indexMobile + 1, 0, codeObj)
-            checkDraw.splice(indexMobile, 0, imgCodeObj)
           }
+          // if (indexMobile !== -1 && indexAddress !== -1) {
+          //   if (indexMobile < indexAddress) {
+          //     checkDraw.splice(indexMobile + 1, 0, codeObj)
+          //     checkDraw.splice(indexMobile, 0, imgCodeObj)
+          //     checkDraw.splice(indexAddress + 3, 0, addressObj)
+          //   } else {
+          //     checkDraw.splice(indexAddress + 1, 0, addressObj)
+          //     checkDraw.splice(indexMobile + 2, 0, codeObj)
+          //     checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
+          //   }
+          // } else if (indexMobile === -1 && indexAddress !== -1) {
+          //   checkDraw.splice(indexAddress + 1, 0, addressObj)
+          // } else if (indexMobile !== -1 && indexAddress === -1) {
+          //   checkDraw.splice(indexMobile + 1, 0, codeObj)
+          //   checkDraw.splice(indexMobile, 0, imgCodeObj)
+          // }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {
@@ -616,6 +612,7 @@ export default {
   .content-wrap{
     position: relative;
     padding: 0 px2rem(34px);
+    padding-bottom: px2rem(190px);
     .content{
       border-radius:px2rem(6px);
       box-shadow: 0 0 px2rem(10px) rgba(180, 180, 180, 0.17);
@@ -717,7 +714,7 @@ export default {
   .btn-area{
     display:flex;
     width:100%;
-    position:absolute;
+    position: fixed;;
     left:0;
     bottom:px2rem(100px);
   }

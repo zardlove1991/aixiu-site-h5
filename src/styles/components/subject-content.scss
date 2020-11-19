@@ -68,6 +68,9 @@
           // background-color: #fff;
           border: 0;
           @include bg-color('btnColor');
+          &.videoActive {
+            @include bg-linear-color('themeColor');
+          }
           &:after{
             content: '';
             width:px2rem(20px);
@@ -103,6 +106,9 @@
           color:#fff;
           position:relative;
           text-align: center;
+          &.videoActive {
+            @include bg-linear-color('themeColor');
+          }
           &:after{
             content:'';
             position: absolute;
