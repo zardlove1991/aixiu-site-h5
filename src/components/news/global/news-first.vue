@@ -10,7 +10,7 @@
       <div class="weather" v-if="weatherData.is_open" :style="{ color: weatherData.color_matching }">
         <span class="city">{{weatherData.city}}</span>
         <span class="temp">32°C</span>
-        <span :class="['weather-icon', 'qing']"></span>
+        <span :class="['weather-icon', weatherData.type ? weatherData.type: 'qing']"></span>
       </div>
     </div>
   </div>
@@ -18,6 +18,8 @@
 
 <script>
 import NewsImg from '@/components/news/global/base-bg-picture'
+import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   props: {
@@ -49,7 +51,28 @@ export default {
         this.url = indexPic.cover_img
       }
       this.infoData = infoData
-      this.weatherData = weatherData
+      this.getCityWeather(weatherData)
+    },
+    getCityWeather (data) {
+      if (data && data.is_open && data.select_data) {
+        let id = data.select_data
+        let weather = STORAGE.get('news_weather')
+        if (weather) {
+          this.weatherData = weather
+        } else {
+          API.getCityWeather({
+            query: { id }
+          }).then(res => {
+            let weather = {
+              ...res,
+              is_open: data.is_open,
+              color_matching: data.color_matching
+            }
+            this.weatherData = weather
+            STORAGE.set('news_weather', weather)
+          })
+        }
+      }
     }
   }
 }

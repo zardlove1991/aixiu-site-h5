@@ -83,6 +83,12 @@ let enrollUrl = {
   getMyEnrollCount: 'client/order/{id}/count' // 我的预约次数
 }
 
+// 资讯新闻
+let newsUrl = {
+  getNewsDetail: 'client/news/{id}/', // 获取资讯新闻详情
+  getCityWeather: 'client/news/weather/{id}/' // 获取城市天气
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
@@ -90,6 +96,7 @@ let configUrl = {
   ...examUrl,
   ...voteUrl,
   ...enrollUrl,
+  ...newsUrl,
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -156,5 +163,8 @@ export default {
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
   saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
   remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG),
-  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG)
+  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
+  // 新闻
+  getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
+  getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news')
 }

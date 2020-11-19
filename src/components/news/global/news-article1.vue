@@ -1,21 +1,25 @@
 <template>
   <div :class="['news-article1-wrap', themeName + '-bg']">
-    <div :class="['article1-index', indexData.size]" v-if="indexData && indexData.title">
-      <img class="article1-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+    <div :class="['article1-index', indexData.size]" v-if="indexData && indexData.title"
+      @click.stop="goPage(indexData)">
+      <img class="article1-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
+      <img class="article1-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
       <div class="article1-content">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="article1-next">
       <div :class="['article1-item', item.size]"
         v-for="(item, index) in tmpList"
         :key="index"
-        v-show="index !== 0">
-        <img class="article1-img" v-preview="item.src" :src="item.src" object-fit="cover" />
+        v-show="index !== 0"
+        @click.stop="goPage(item)">
+        <img class="article1-img" v-if="item.is_open_link"  :src="item.src" object-fit="cover" />
+        <img class="article1-img" v-else v-preview="item.src" :src="item.src" object-fit="cover" />
         <div class="article1-content small">
           <div class="header">{{item.title}}</div>
-          <div class="source">{{item.source}} · {{item.date}}</div>
+          <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
         </div>
       </div>
     </div>
@@ -68,6 +72,9 @@ export default {
         })
         this.indexData = tmpList[0]
       }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -79,8 +86,9 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
     .article1-index {
       position: relative;
       margin-top: px2rem(30px);

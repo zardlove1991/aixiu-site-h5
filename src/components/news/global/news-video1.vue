@@ -2,9 +2,9 @@
   <div :class="['news-video1-wrap', themeName + '-bg']">
     <div class="video1-index" v-if="indexData && indexData.title">
       <news-video-common :videoObj="indexData.videoObj" />
-      <div :class="['video1-content', themeName]">
+      <div :class="['video1-content', themeName]" @click.stop="goPage(indexData)">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="video1-next">
@@ -13,9 +13,9 @@
         :key="index"
         v-show="index !== 0">
         <news-video-common :isFull="true" :videoObj="item.videoObj" />
-        <div :class="['video1-content', 'small', themeName]">
+        <div :class="['video1-content', 'small', themeName]" @click.stop="goPage(item)">
           <div class="header">{{item.title}}</div>
-          <div class="source">{{item.source}} · {{item.date}}</div>
+          <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
         </div>
       </div>
     </div>
@@ -70,6 +70,9 @@ export default {
         })
         this.indexData = tmpList[0]
       }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -81,8 +84,9 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
     .video1-index {
       margin-top: px2rem(30px);
       margin-bottom: px2rem(40px);
@@ -122,7 +126,7 @@ export default {
           @include font-dpr(16px);
         }
       }
-      &.black {
+      &.newsblack {
         .header {
           color: #fff;
         }

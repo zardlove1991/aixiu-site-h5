@@ -35,10 +35,10 @@ export default {
     vertical-align: bottom;
     color: #fff;
     font-size: 0;
-    &.black {
+    &.newsblack {
       background: rgba(255, 255, 255, 0.2);
     }
-    &.white, &.normal {
+    &.newswhite, &.newsdiwen {
       background: rgba(0, 0, 0, 0.3);
     }
     .current-page {

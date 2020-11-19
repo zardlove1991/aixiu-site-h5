@@ -2,9 +2,9 @@
   <div :class="['news-video2-wrap', themeName + '-bg']">
     <div class="video2-index" v-if="indexData && indexData.title">
       <news-video-common :videoObj="indexData.videoObj" />
-      <div :class="['video2-content', themeName]">
+      <div :class="['video2-content', themeName]" @click.stop="goPage(indexData)">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="video2-item"
@@ -14,9 +14,9 @@
       <div class="video2-item-wrap small-video">
         <news-video-common :isFull="true" :videoObj="item.videoObj" />
       </div>
-      <div :class="['video2-item-content', themeName]">
+      <div :class="['video2-item-content', themeName]" @click.stop="goPage(item)">
         <div class="header">{{item.title}}</div>
-        <div class="source">{{item.source}} · {{item.date}}</div>
+        <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
       </div>
     </div>
   </div>
@@ -70,6 +70,9 @@ export default {
         })
         this.indexData = tmpList[0]
       }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -81,8 +84,9 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
     .video2-index {
       margin-top: px2rem(30px);
       margin-bottom: px2rem(40px);
@@ -102,7 +106,7 @@ export default {
           @include line-overflow(1);
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           .header {
             color: #fff;
           }
@@ -140,7 +144,7 @@ export default {
           @include line-overflow(1);
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           .header {
             color: #fff;
           }

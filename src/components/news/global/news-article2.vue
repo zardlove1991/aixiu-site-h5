@@ -1,21 +1,25 @@
 <template>
   <div :class="['news-article2-wrap', themeName + '-bg']">
-    <div :class="['article2-index', indexData.size]" v-if="indexData && indexData.title">
-      <img class="article2-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+    <div :class="['article2-index', indexData.size]" v-if="indexData && indexData.title"
+      @click.stop="goPage(indexData)">
+      <img class="article2-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
+      <img class="article2-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
       <div :class="['article2-content', themeName]">
         <div class="header">{{indexData.title}}</div>
         <div class="line"></div>
-        <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="article2-item"
       v-for="(item, index) in tmpList"
       :key="index"
-      v-show="index !== 0">
-      <img :class="['article2-item-img', item.size]" v-preview="item.src" :src="item.src" object-fit="cover" />
+      v-show="index !== 0"
+      @click.stop="goPage(item)">
+      <img :class="['article2-item-img', item.size]" v-if="item.is_open_link"  :src="item.src" object-fit="cover" />
+      <img :class="['article2-item-img', item.size]" v-else v-preview="item.src" :src="item.src" object-fit="cover" />
       <div :class="['article2-item-content', themeName]">
         <div class="header">{{item.title}}</div>
-        <div class="source">{{item.source}} · {{item.date}}</div>
+        <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
       </div>
     </div>
   </div>
@@ -67,6 +71,9 @@ export default {
         })
         this.indexData = tmpList[0]
       }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -78,8 +85,9 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
     .article2-index {
       position: relative;
       margin-top: px2rem(30px);
@@ -130,7 +138,7 @@ export default {
           color: #818181;
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           background-color: #222222;
           .header {
             color: #fff;
@@ -175,7 +183,7 @@ export default {
           color: #999999;
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           .header {
             color: #fff;
           }

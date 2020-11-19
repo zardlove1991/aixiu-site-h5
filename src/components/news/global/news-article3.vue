@@ -1,14 +1,16 @@
 <template>
   <div :class="['news-article3-wrap', themeName + '-bg']">
     <div class="article3-index">
-      <img class="article3-img" v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+      <img class="article3-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
+      <img class="article3-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
     </div>
-    <div :class="['article3-content', themeName]">
+    <div :class="['article3-content', themeName]"
+      @click.stop="goPage(indexData)">
       <div class="line"></div>
-      <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+      <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       <div class="header">{{indexData.title}}</div>
       <div class="desc">{{indexData.describe}}</div>
-      <div class="find-all" v-if="indexData.is_open_link === 1" @click="findAll()">查看更多</div>
+      <div class="find-all" v-if="indexData.is_open_link === 1" @click="goPage(indexData)">查看更多</div>
     </div>
   </div>
 </template>
@@ -58,8 +60,8 @@ export default {
         this.indexData = item
       }
     },
-    findAll () {
-      console.log('findAll')
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -72,7 +74,8 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
+    @include bg-linear-color('bgColor');
     .article3-index {
       .article3-img {
         width: 100%;
@@ -122,7 +125,7 @@ export default {
         @include font-dpr(15px);
         color: #FF6A45;
       }
-      &.black  {
+      &.newsblack  {
         background-color: #222222;
         .source {
           color: #fff;

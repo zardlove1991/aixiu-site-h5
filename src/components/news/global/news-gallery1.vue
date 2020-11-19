@@ -1,13 +1,32 @@
 <template>
   <div :class="['news-gallery1-wrap', themeName + '-bg']">
-    <div class="gallery1-index" v-if="indexData && indexData.title">
+    <div class="gallery1-index" v-if="indexData && indexData.title"
+      @click="goPage(indexData)">
       <!-- 单张图片 4:3 -->
       <div class="gallery1-index-flex" v-if="indexData.material.length === 1">
         <div class="base imgs-1">
-          <img class="imgs-item imgs-all"
-            v-preview="item.material[0]"
+          <el-image
+            class="imgs-item imgs-all"
+            v-if="indexData.is_open_link"
+            :src="indexData.material[0]"
+            fit="cover">
+          </el-image>
+          <el-image
+            class="imgs-item imgs-all"
+            v-else
+            :src="indexData.material[0]"
+            :preview-src-list="indexData.material"
+            fit="cover">
+          </el-image>
+          <!-- <img class="imgs-item imgs-all"
+            v-if="indexData.is_open_link"
             :src="indexData.material[0]"
             object-fit="cover" />
+          <img class="imgs-item imgs-all"
+            v-else
+            v-preview="item.material[0]"
+            :src="indexData.material[0]"
+            object-fit="cover" /> -->
           <div class="gallery1-number">
             <span class="gallery-icon"></span>{{indexData.material.length}}
           </div>
@@ -16,16 +35,52 @@
       <!-- 两张图片 -->
       <div class="gallery1-index-flex" v-if="indexData.material.length === 2">
         <div class="base imgs-2">
-          <img class="imgs-item imgs-left"
-            v-preview="item.material[0]"
+          <el-image
+            class="imgs-item imgs-left"
+            v-if="indexData.is_open_link"
+            :src="indexData.material[0]"
+            fit="cover">
+          </el-image>
+          <el-image
+            class="imgs-item imgs-left"
+            v-else
+            :src="indexData.material[0]"
+            :preview-src-list="indexData.material"
+            fit="cover">
+          </el-image>
+          <!-- <img class="imgs-item imgs-left"
+            v-if="indexData.is_open_link"
             :src="indexData.material[0]"
             object-fit="cover" />
+          <img class="imgs-item imgs-left"
+            v-else
+            v-preview="item.material[0]"
+            :src="indexData.material[0]"
+            object-fit="cover" /> -->
         </div>
         <div class="base imgs-2">
-          <img class="imgs-item imgs-right"
-            v-preview="item.material[1]"
+          <el-image
+            class="imgs-item imgs-right"
+            v-if="indexData.is_open_link"
+            :src="indexData.material[1]"
+            fit="cover">
+          </el-image>
+          <el-image
+            class="imgs-item imgs-right"
+            v-else
+            :src="indexData.material[1]"
+            :preview-src-list="indexData.material"
+            fit="cover">
+          </el-image>
+          <!-- <img class="imgs-item imgs-right"
+            v-if="indexData.is_open_link"
             :src="indexData.material[1]"
             object-fit="cover" />
+          <img class="imgs-item imgs-right"
+            v-else
+            v-preview="item.material[1]"
+            :src="indexData.material[1]"
+            object-fit="cover" /> -->
           <div class="gallery1-number">
             <span class="gallery-icon"></span>{{indexData.material.length}}
           </div>
@@ -34,23 +89,77 @@
       <!-- 三张及多张图片 -->
       <div class="gallery1-index-flex" v-if="indexData.material.length >= 3">
         <div class="base imgs-2">
-          <img class="imgs-item imgs-left"
-            v-preview="indexData.material[0]"
+          <el-image
+            class="imgs-item imgs-left"
+            v-if="indexData.is_open_link"
+            :src="indexData.material[0]"
+            fit="cover">
+          </el-image>
+          <el-image
+            class="imgs-item imgs-left"
+            v-else
+            :src="indexData.material[0]"
+            :preview-src-list="indexData.material"
+            fit="cover">
+          </el-image>
+          <!-- <img class="imgs-item imgs-left"
+            v-if="indexData.is_open_link"
             :src="indexData.material[0]"
             object-fit="cover" />
+          <img class="imgs-item imgs-left"
+            v-else
+            v-preview="indexData.material[0]"
+            :src="indexData.material[0]"
+            object-fit="cover" /> -->
         </div>
         <div class="base imgs-3">
           <div class="imgs-3-top">
-            <img class="imgs-item imgs-right-top"
-              v-preview="indexData.material[1]"
+            <el-image
+              class="imgs-item imgs-right-top"
+              v-if="indexData.is_open_link"
+              :src="indexData.material[1]"
+              fit="cover">
+            </el-image>
+            <el-image
+              class="imgs-item imgs-right-top"
+              v-else
+              :src="indexData.material[1]"
+              :preview-src-list="indexData.material"
+              fit="cover">
+            </el-image>
+            <!-- <img class="imgs-item imgs-right-top"
+              v-if="indexData.is_open_link"
               :src="indexData.material[1]"
               object-fit="cover" />
+            <img class="imgs-item imgs-right-top"
+              v-else
+              v-preview="indexData.material[1]"
+              :src="indexData.material[1]"
+              object-fit="cover" /> -->
           </div>
           <div class="imgs-3-bottom">
-            <img class="imgs-item imgs-right-bottom"
-              v-preview="indexData.material[2]"
+            <el-image
+              class="imgs-item imgs-right-top"
+              v-if="indexData.is_open_link"
+              :src="indexData.material[2]"
+              fit="cover">
+            </el-image>
+            <el-image
+              class="imgs-item imgs-right-top"
+              v-else
+              :src="indexData.material[2]"
+              :preview-src-list="indexData.material"
+              fit="cover">
+            </el-image>
+            <!-- <img class="imgs-item imgs-right-bottom"
+              v-if="indexData.is_open_link"
               :src="indexData.material[2]"
               object-fit="cover" />
+            <img class="imgs-item imgs-right-bottom"
+              v-else
+              v-preview="indexData.material[2]"
+              :src="indexData.material[2]"
+              object-fit="cover" /> -->
             <div class="gallery1-number">
               <span class="gallery-icon"></span>{{indexData.material.length}}
             </div>
@@ -59,25 +168,39 @@
       </div>
       <div :class="['gallery1-content', themeName]">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}} · {{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="gallery1-item"
       v-for="(item, index) in tmpList"
       :key="index"
-      v-show="index !== 0">
-      <div class="gallery1-img-wrap">
-        <img v-if="item.material && item.material.length"
-        :class="['gallery1-item-img', item.size]"
-        v-preview="item.material[0]"
-        :src="item.material[0]" object-fit="cover" />
+      v-show="index !== 0"
+      @click.stop="goPage(item)">
+      <div class="gallery1-img-wrap" v-if="item.material && item.material.length">
+        <el-image
+          :class="['gallery1-item-img', item.size]"
+          v-if="item.is_open_link"
+          :src="item.material[0]"
+          fit="cover">
+        </el-image>
+        <el-image
+          :class="['gallery1-item-img', item.size]"
+          v-else
+          :src="item.material[0]"
+          :preview-src-list="item.material"
+          fit="cover">
+        </el-image>
+        <!--
+        <img :class="['gallery1-item-img', item.size]" v-if="item.is_open_link" :src="item.material[0]" object-fit="cover" />
+        <img :class="['gallery1-item-img', item.size]" v-else v-preview="item.material[0]" :src="item.material[0]" object-fit="cover" />
+        -->
         <div class="gallery1-number">
           <span class="gallery-icon"></span>{{item.material.length}}
         </div>
       </div>
       <div :class="['gallery1-item-content', themeName]">
         <div class="header">{{item.title}}</div>
-        <div class="source">{{item.source}} · {{item.date}}</div>
+        <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
       </div>
     </div>
   </div>
@@ -125,6 +248,9 @@ export default {
         })
         this.indexData = tmpList[0]
       }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
     }
   }
 }
@@ -136,8 +262,9 @@ export default {
     width: 100%;
     height: 100vh;
     overflow-y: auto;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
     .gallery1-index {
       margin-top: px2rem(30px);
       margin-bottom: px2rem(40px);
@@ -216,7 +343,7 @@ export default {
           @include line-overflow(1);
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           .header {
             color: #fff;
           }
@@ -265,7 +392,7 @@ export default {
           @include line-overflow(1);
           @include font-dpr(12px);
         }
-        &.black {
+        &.newsblack {
           .header {
             color: #fff;
           }
