@@ -29,7 +29,17 @@
     </div>
     <!--交卷的弹窗-->
     <my-model
-      :show="(unDoSubjectLength !== 0 && (isShowSubmitModel || showSubmitModel))"
+      :show="(unDoSubjectLength !== 0 && isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
+      :showBtn="false">
+      <div class="submit-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="desc">还有<span class="no-do-tips"> {{unDoSubjectLength}} </span>题没有作答，需答完才可以交卷！</div>
+        <div class="submit-all-tip-btn" @click.stop="toggleSubmitModel()">再看看</div>
+      </div>
+    </my-model>
+    <my-model
+      :show="(unDoSubjectLength !== 0 && !isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
       doneText="确定交卷"
       cancelText="再看看"
       @confirm="confirmSubmitModel"
@@ -86,6 +96,10 @@ export default {
       default: 0
     },
     showSubmitModel: {
+      type: Boolean,
+      default: false
+    },
+    isOpenSubmitAll: {
       type: Boolean,
       default: false
     }
@@ -409,7 +423,7 @@ export default {
       font-weight: 500;
       margin-bottom: px2rem(47px);
     }
-    .tip-bg{
+    .tip-bg {
       width: px2rem(370px);
       height: px2rem(224px);
       margin:0  auto;
@@ -417,7 +431,7 @@ export default {
       background-repeat: no-repeat;
       background-position: center;
     }
-    .desc{
+    .desc {
       line-height: 1;
       padding-top: px2rem(30px);
       @include font-dpr(14px);
@@ -425,6 +439,23 @@ export default {
       .no-do-tips {
         color: #FF6A45;
       }
+    }
+    .submit-all-tip-btn  {
+      width:px2rem(305px);
+      height:px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      color:#fff;
+      // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include bg-linear-color('themeColor');
+      @include font-dpr(16px);
+      margin:0 auto;
+      margin-top: px2rem(50px);
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -ms-border-radius: 5px;
+      -o-border-radius: 5px;
     }
   }
   .submit-success-model{

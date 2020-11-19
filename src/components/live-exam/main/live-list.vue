@@ -5,6 +5,7 @@
       <exam-header
         :list="examList"
         :showSubmitModel.sync="isShowSubmitModel"
+        :isOpenSubmitAll="isOpenSubmitAll"
         :curIndex="currentSubjectIndex"
         @timeup="endTime"
         @notimeup="noEndTime"
@@ -129,7 +130,8 @@ export default {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
       isShowSuspendModels: false,
-      isShowSubmitModel: false
+      isShowSubmitModel: false,
+      isOpenSubmitAll: false
     }
   },
   components: {
@@ -196,6 +198,10 @@ export default {
           renderType: rtp,
           listType
         })
+        let isAll = this.examInfo.limit.is_open_submit_all
+        if (isAll) {
+          this.isOpenSubmitAll = true
+        }
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
       } catch (err) {

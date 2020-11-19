@@ -864,7 +864,9 @@ export default {
     updateCard () {
       if (this.activeIndex !== null && this.activeIndex !== undefined) {
         this.allWorkList[this.activeIndex].total_votes++
-        this.remainVotes--
+        if (this.remainVotes > 0) {
+          this.remainVotes--
+        }
       }
     },
     getVoteWorks (name = '', isClassifySearch = false, type) {

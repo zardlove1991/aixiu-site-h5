@@ -18,9 +18,12 @@
 
 <script>
 import { videoPlayer } from 'vue-video-player'
+import STORAGE from '@/utils/storage'
+import API from '@/api/module/examination'
 
 export default {
   props: {
+    id: String,
     videoObj: {
       type: Object,
       default: () => {
@@ -108,11 +111,25 @@ export default {
       player.play()
     },
     onPlayerPlay (player) {
-      console.log('onPlayerPlay')
       player.play()
+      let startTime = parseInt((new Date().getTime()) / 1000)
+      STORAGE.set('video-start-time', startTime)
     },
     onPlayerPause (player) {
-      console.log('onPlayerPause')
+      let id = this.id
+      let endTime = parseInt((new Date().getTime()) / 1000)
+      let startTime = STORAGE.get('video-start-time')
+      if (startTime && id) {
+        API.setLiveVideoTime({
+          data: {
+            play_begin: startTime,
+            play_end: endTime,
+            examination_id: id
+          }
+        }).then(() => {
+          STORAGE.remove('video-start-time')
+        })
+      }
     }
   }
 }
