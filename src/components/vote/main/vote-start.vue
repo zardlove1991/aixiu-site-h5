@@ -538,7 +538,9 @@ export default {
       let { link } = this.lottery
       console.log('link:', link)
       if (link) {
-        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
+        window.location.href = link +
+        '?lotteryEnterType=' + this.lotteryEnterType +
+        '&time=' + new Date().getTime()
       }
     },
     handleVoteData () {
@@ -864,7 +866,9 @@ export default {
     updateCard () {
       if (this.activeIndex !== null && this.activeIndex !== undefined) {
         this.allWorkList[this.activeIndex].total_votes++
-        this.remainVotes--
+        if (this.remainVotes > 0) {
+          this.remainVotes--
+        }
       }
     },
     getVoteWorks (name = '', isClassifySearch = false, type) {
