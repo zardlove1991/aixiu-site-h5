@@ -447,8 +447,10 @@ export default {
         question_num: optionData.questions.length,
         correct_num: correntNum,
         use_time: userTime,
-        submit_time: submitTime,
-        name
+        submit_time: submitTime
+      }
+      if (name) {
+        data['name'] = name
       }
       if (workNumber) {
         data['work_number'] = workNumber

@@ -56,7 +56,7 @@ export default {
             posterUrl,
             videoUrl
           }
-          console.log('posterUrl', posterUrl)
+          // console.log('posterUrl', posterUrl)
         }
         this.beginInterval()
       } catch (err) {
