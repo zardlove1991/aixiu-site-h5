@@ -130,6 +130,7 @@
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-text>
+          <div v-show="!loading && !noMore" class="scroll-tips">—— 下拉加载更多 ——</div>
         </div>
         <div slot="bottom" class="mint-loadmore-top">
           <div class="loading-box" v-if="!noMore && loading">
