@@ -271,7 +271,7 @@ function dealSaveRecord ({
   }
   let params = { question_id: subject.id }
   // 问答题保存参数和普通题目不同这边需要区分
-  console.log('dealSaveRecord', params, subject.type)
+  // console.log('dealSaveRecord', params, subject.type)
   if (subject.type === 'essay') {
     // 这边判断提交的问答题数据是否为空 为空就不发送请求
     if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
@@ -295,7 +295,19 @@ function dealSaveRecord ({
     }
   } else if (['singleblank', 'mulitblank', 'optionblank'].includes(subject.type)) {
     let curBlankInfo = blankAnswerInfo[subject.id]
-    if (!curBlankInfo || !curBlankInfo.length) dataIsEmpty = true
+    if (curBlankInfo && curBlankInfo.length > 0) {
+      let tmpCount = 0
+      for (let val of curBlankInfo) {
+        if (val === '') {
+          ++tmpCount
+        }
+      }
+      if (tmpCount === curBlankInfo.length) {
+        dataIsEmpty = true
+      }
+    } else {
+      dataIsEmpty = true
+    }
     if (['singleblank', 'mulitblank'].includes(subject.type)) params.options_id = curBlankInfo
     else if (subject.type === 'optionblank') params.value = curBlankInfo
   } else {
