@@ -1,6 +1,6 @@
 <template>
   <div>
-    <live-video :videoObj="videoObj" />
+    <live-video :videoObj="videoObj" :id="id" />
     <router-view />
   </div>
 </template>
@@ -8,7 +8,8 @@
 <script>
 import LiveVideo from '@/components/live-exam/global/live-video'
 import { mapActions, mapGetters } from 'vuex'
-// import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
+import API from '@/api/module/examination'
 
 export default {
   props: {
@@ -19,7 +20,8 @@ export default {
       videoObj: {
         posterUrl: '',
         videoUrl: ''
-      }
+      },
+      interval: null
     }
   },
   created () {
@@ -28,6 +30,11 @@ export default {
   components: { LiveVideo },
   computed: {
     ...mapGetters('depence', ['examInfo'])
+  },
+  beforeDestroy () {
+    // 清除定时器
+    console.log('beforeDestroy interval')
+    this.clearSetInterval()
   },
   methods: {
     async initData () {
@@ -49,10 +56,44 @@ export default {
             posterUrl,
             videoUrl
           }
-          console.log('posterUrl', posterUrl)
+          // console.log('posterUrl', posterUrl)
         }
+        this.beginInterval()
       } catch (err) {
         console.log(err)
+      }
+    },
+    clearSetInterval () {
+      if (this.interval) {
+        clearInterval(this.interval)
+        this.interval = null
+        this.setLiveVideoTime()
+      }
+    },
+    beginInterval (endTime, dealCb, doneCb) {
+      let timer = this.interval
+      this.clearSetInterval()
+      // 每隔10min执行1次
+      let time = 1000 * 60 * 10
+      timer = setInterval(() => {
+        this.setLiveVideoTime()
+      }, time)
+      this.interval = timer
+    },
+    setLiveVideoTime () {
+      let id = this.id
+      let endTime = parseInt((new Date().getTime()) / 1000)
+      let startTime = STORAGE.get('video-start-time')
+      if (startTime && id) {
+        API.setLiveVideoTime({
+          data: {
+            play_begin: startTime,
+            play_end: endTime,
+            examination_id: id
+          }
+        }).then(() => {
+          STORAGE.set('video-start-time', endTime)
+        })
       }
     },
     ...mapActions('depence', {

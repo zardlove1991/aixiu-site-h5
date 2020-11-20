@@ -74,7 +74,18 @@
       </div>
     </my-model>
     <my-model
-      :show="isShowBreak"
+      :show="isShowBreak && isOpenSubmitAll"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip-btn tip-btn-top" @click.stop="cancelBreakModel">继续答题</div>
+      </div>
+    </my-model>
+    <my-model
+      :show="isShowBreak && !isOpenSubmitAll"
       :isLock="true"
       doneText="直接交卷"
       cancelText="继续答题"
@@ -142,7 +153,8 @@ export default {
       isNoLimit: false,
       isShowFindAll: false,
       isShowInfo: false,
-      isGetDept: false // 是否动态获取部门
+      isGetDept: false, // 是否动态获取部门
+      isOpenSubmitAll: false
     }
   },
   components: { MyModel, DrawCheckDialog, LiveVideo },
@@ -229,13 +241,17 @@ export default {
             day_userid_limit_num: dayUserIdLimit,
             ip_limit_num: ipLimit,
             userid_limit_num: userIdLimit,
-            submit_rules: submitRules
+            submit_rules: submitRules,
+            is_open_submit_all: isOpenSubmitAll
           } = info.limit
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
           }
           if (dayUserIdLimit === 0 && ipLimit === 0 && userIdLimit === 0) {
             this.isNoLimit = true
+          }
+          if (isOpenSubmitAll) {
+            this.isOpenSubmitAll = true
           }
         }
         STORAGE.set('guid', this.examInfo.guid)
@@ -751,12 +767,14 @@ export default {
       @include bg-linear-color('themeColor');
       @include font-dpr(16px);
       margin:0 auto;
-      margin-top:px2rem;
       border-radius: 5px;
       -webkit-border-radius: 5px;
       -moz-border-radius: 5px;
       -ms-border-radius: 5px;
       -o-border-radius: 5px;
+    }
+    .tip-btn-top {
+      margin-top: px2rem(50px);
     }
     .close-icon {
       position: absolute;

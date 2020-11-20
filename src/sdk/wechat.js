@@ -101,6 +101,7 @@ let wechat = {
       STORAGE.remove('appid')
       STORAGE.remove('detailInfo')
       STORAGE.remove('scope_limit')
+      STORAGE.remove('video-start-time')
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         this.getVoteAuthScope(id)
