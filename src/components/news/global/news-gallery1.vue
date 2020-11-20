@@ -168,7 +168,7 @@
       </div>
       <div :class="['gallery1-content', themeName]">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="gallery1-item"

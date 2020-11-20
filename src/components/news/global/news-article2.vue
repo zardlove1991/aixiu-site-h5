@@ -7,7 +7,7 @@
       <div :class="['article2-content', themeName]">
         <div class="header">{{indexData.title}}</div>
         <div class="line"></div>
-        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="article2-item"

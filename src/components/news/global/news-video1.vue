@@ -4,7 +4,7 @@
       <news-video-common :videoObj="indexData.videoObj" />
       <div :class="['video1-content', themeName]" @click.stop="goPage(indexData)">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="video1-next">

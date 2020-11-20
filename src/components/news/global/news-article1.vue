@@ -6,7 +6,7 @@
       <img class="article1-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
       <div class="article1-content">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}}<span v-if="item.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
       </div>
     </div>
     <div class="article1-next">
