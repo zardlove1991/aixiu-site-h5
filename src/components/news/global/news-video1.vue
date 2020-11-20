@@ -4,7 +4,7 @@
       <news-video-common :videoObj="indexData.videoObj" />
       <div :class="['video1-content', themeName]" @click.stop="goPage(indexData)">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
       </div>
     </div>
     <div class="video1-next">
@@ -15,7 +15,7 @@
         <news-video-common :isFull="true" :videoObj="item.videoObj" />
         <div :class="['video1-content', 'small', themeName]" @click.stop="goPage(item)">
           <div class="header">{{item.title}}</div>
-          <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
+          <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
         </div>
       </div>
     </div>
@@ -31,6 +31,7 @@ export default {
       type: String,
       default: 'white'
     },
+    showTime: String,
     tmpList: {
       type: Array,
       default: () => {

@@ -6,7 +6,7 @@
       <img class="article1-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
       <div class="article1-content">
         <div class="header">{{indexData.title}}</div>
-        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
       </div>
     </div>
     <div class="article1-next">
@@ -19,7 +19,7 @@
         <img class="article1-img" v-else v-preview="item.src" :src="item.src" object-fit="cover" />
         <div class="article1-content small">
           <div class="header">{{item.title}}</div>
-          <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
+          <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
         </div>
       </div>
     </div>
@@ -33,6 +33,7 @@ export default {
       type: String,
       default: 'white'
     },
+    showTime: String,
     tmpList: {
       type: Array,
       default: () => {

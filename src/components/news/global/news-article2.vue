@@ -7,7 +7,7 @@
       <div :class="['article2-content', themeName]">
         <div class="header">{{indexData.title}}</div>
         <div class="line"></div>
-        <div class="source">{{indexData.source}}<span v-if="indexData.date"> · </span>{{indexData.date}}</div>
+        <div class="source">{{indexData.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
       </div>
     </div>
     <div class="article2-item"
@@ -19,7 +19,7 @@
       <img :class="['article2-item-img', item.size]" v-else v-preview="item.src" :src="item.src" object-fit="cover" />
       <div :class="['article2-item-content', themeName]">
         <div class="header">{{item.title}}</div>
-        <div class="source">{{item.source}}<span v-if="item.date"> · </span>{{item.date}}</div>
+        <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
       </div>
     </div>
   </div>
@@ -32,6 +32,7 @@ export default {
       type: String,
       default: 'white'
     },
+    showTime: String,
     tmpList: {
       type: Array,
       default: () => {
