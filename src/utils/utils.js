@@ -95,7 +95,13 @@ export const setTheme = (id, name, isFirst) => {
       STORAGE.set('detailInfo', info)
     })
   } else if (name.indexOf('news') !== -1) {
-    // console.log('news')
+    API.getNewsDetail({ query: { id } }).then(res => {
+      let info = res
+      if (isFirst && info && info.id) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
+      }
+    })
   } else {
     // 测评
     API.getExamDetail({ query: { id } }).then(res => {

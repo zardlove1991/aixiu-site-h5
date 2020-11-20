@@ -15,6 +15,7 @@
         :themeName="themeName"
         :newsInfo="newsInfo"
         :tmpList="currentData"
+        :showTime="showTime"
         :is="currentStepName"
         @goPage="goPage">
       </component>
@@ -70,6 +71,7 @@ export default {
       currentStepName: '',
       themeName: '',
       config: {},
+      showTime: '',
       loading: false
     }
   },
@@ -125,6 +127,19 @@ export default {
           }
           this.loading = false
           this.newsInfo = res
+          let time = res.updated_at
+          if (time) {
+            let date = new Date(time.replace(/-/g, '/'))
+            let month = date.getMonth() + 1
+            let day = date.getDate()
+            if (month < 10) {
+              month = '0' + month
+            }
+            if (day < 10) {
+              day = '0' + day
+            }
+            this.showTime = month + '-' + day
+          }
           // 设置主题
           this.setNewsTheme(res)
           // 设置标题
