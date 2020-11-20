@@ -529,9 +529,9 @@ export default {
             this.isShowLottery = true
             this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
           } else {
-            if (!localStorage.getItem('has_share_online' + this.lottery.lottery_id)) {
+            if (!STORAGE.get('has_share_online' + this.lottery.lottery_id)) {
               Toast('感谢分享，你已经使用过分享送抽奖机会了！')
-              STORAGE.get('has_share_online' + this.lottery.lottery_id, true)
+              STORAGE.set('has_share_online' + this.lottery.lottery_id, true)
             }
           }
         })
