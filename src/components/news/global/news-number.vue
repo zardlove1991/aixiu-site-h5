@@ -35,6 +35,7 @@ export default {
     vertical-align: bottom;
     color: #fff;
     font-size: 0;
+    z-index: 10;
     &.newsblack {
       background: rgba(255, 255, 255, 0.2);
     }
