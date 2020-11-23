@@ -1,8 +1,21 @@
 <template>
   <div :class="['news-article3-wrap', themeName + '-bg']">
     <div class="article3-index">
-      <img class="article3-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
-      <img class="article3-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+      <el-image
+        class="article3-img"
+        v-if="indexData.is_open_link"
+        :src="indexData.src"
+        fit="cover">
+      </el-image>
+      <el-image
+        class="article3-img"
+        v-else
+        :src="indexData.src"
+        :preview-src-list="[indexData.src]"
+        fit="cover">
+      </el-image>
+      <!-- <img class="article3-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
+      <img class="article3-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" /> -->
     </div>
     <div :class="['article3-content', themeName]"
       @click.stop="goPage(indexData)">
