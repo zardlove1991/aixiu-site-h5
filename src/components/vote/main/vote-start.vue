@@ -87,7 +87,7 @@
           </vote-classify-list>
           <div class="name-bar-wrap">
             <input class="search-input" type="text" placeholder="名称/来源/编号" v-model="searchVal"
-                @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
+                @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" @input="dealSearch('input-search')"/>
             <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
             </div>
           </div>
