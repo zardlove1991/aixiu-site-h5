@@ -2,8 +2,21 @@
   <div :class="['news-article2-wrap', themeName + '-bg']">
     <div :class="['article2-index', indexData.size]" v-if="indexData && indexData.title"
       @click.stop="goPage(indexData)">
-      <img class="article2-img" v-if="indexData.is_open_link"  :src="indexData.src" object-fit="cover" />
-      <img class="article2-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" />
+      <el-image
+        class="article2-img"
+        v-if="indexData.is_open_link"
+        :src="indexData.src"
+        fit="cover">
+      </el-image>
+      <el-image
+        class="article2-img"
+        v-else
+        :src="indexData.src"
+        :preview-src-list="[indexData.src]"
+        fit="cover">
+      </el-image>
+      <!-- <img class="article2-img" v-if="indexData.is_open_link" :src="indexData.src" object-fit="cover" />
+      <img class="article2-img" v-else v-preview="indexData.src" :src="indexData.src" object-fit="cover" /> -->
       <div :class="['article2-content', themeName]">
         <div class="header">{{indexData.title}}</div>
         <div class="line"></div>
@@ -15,8 +28,21 @@
       :key="index"
       v-show="index !== 0"
       @click.stop="goPage(item)">
-      <img :class="['article2-item-img', item.size]" v-if="item.is_open_link"  :src="item.src" object-fit="cover" />
-      <img :class="['article2-item-img', item.size]" v-else v-preview="item.src" :src="item.src" object-fit="cover" />
+      <el-image
+        :class="['article2-item-img', item.size]"
+        v-if="item.is_open_link"
+        :src="item.src"
+        fit="cover">
+      </el-image>
+      <el-image
+        :class="['article2-item-img', item.size]"
+        v-else
+        :src="item.src"
+        :preview-src-list="[item.src]"
+        fit="cover">
+      </el-image>
+      <!-- <img :class="['article2-item-img', item.size]" v-if="item.is_open_link"  :src="item.src" object-fit="cover" />
+      <img :class="['article2-item-img', item.size]" v-else v-preview="item.src" :src="item.src" object-fit="cover" /> -->
       <div :class="['article2-item-content', themeName]">
         <div class="header">{{item.title}}</div>
         <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
