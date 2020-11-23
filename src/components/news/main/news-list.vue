@@ -307,6 +307,10 @@ export default {
       align-items: center;
       .el-image-viewer__mask {
         opacity: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
       }
       .el-image-viewer__close {
         right: 0;
