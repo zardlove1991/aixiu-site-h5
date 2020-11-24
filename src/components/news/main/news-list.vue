@@ -242,7 +242,12 @@ export default {
       }
       if (!shareLink) {
         let local = window.location
-        shareLink = local.origin + '/newstart/' + id
+        let pathname = local.pathname
+        let index = pathname.indexOf('newslist')
+        if (index !== -1) {
+          pathname = pathname.replace(/newslist/, 'newstart')
+        }
+        shareLink = local.origin + pathname
         // shareLink = delUrlParams(['code'])
       } else {
         shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
