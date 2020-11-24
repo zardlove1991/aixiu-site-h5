@@ -214,7 +214,7 @@
       :textSetting="{sign:'分享'}"
       @close="isShowLottery = false"></lottery-vote>
     <!-- 抽奖历史入口图标 -->
-    <div class="lottery_entrance" v-if="showLotteryEntrance">
+    <div class="lottery_entrance" v-show="showLotteryEntrance">
       <div @click="goLotteryPage()">
         <img src="@/assets/vote/gift@3x.png" alt="">
         <div class="info">{{lotteryMsg}}</div>
