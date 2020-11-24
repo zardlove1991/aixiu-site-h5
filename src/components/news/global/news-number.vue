@@ -1,7 +1,9 @@
 <template>
   <div
     :class="['news-number-wrap', config.themeName]"
-    v-if="config.currentStepName !== 'news-first' && config.isShow === 1">
+    v-if="config.currentStepName !== 'news-first' &&
+    config.currentStepName !== 'news-end' &&
+    config.isShow === 1">
     <span class="current-page">{{config.currentStep}}</span>
     <span class="line">/</span>
     <span class="total-page">{{config.totalPage}}</span>

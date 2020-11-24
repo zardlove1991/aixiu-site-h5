@@ -3,7 +3,7 @@
     <news-img :url="url" />
     <div class="content">
       <div v-if="infoData.is_open" :style="{ color: infoData.color_matching }">
-        <div class="date" v-if="infoData.activity_date">{{infoData.activity_date}}</div>
+        <div class="date" v-if="infoData.show_date">{{infoData.show_date}}</div>
         <div class="date-week" v-if="infoData.week_format">{{infoData.week_format}}</div>
         <div class="date2" v-if="infoData.lunar_date_format">{{infoData.lunar_date_format}}</div>
       </div>
@@ -50,7 +50,17 @@ export default {
       if (indexPic && indexPic.cover_img) {
         this.url = indexPic.cover_img
       }
-      this.infoData = infoData
+      if (infoData && infoData.activity_date) {
+        let date = infoData.activity_date
+        let arr = date.split('-')
+        if (arr.length === 3) {
+          infoData.show_date = arr[1] + '月' + arr[2] + '日'
+        } else {
+          let newdate = new Date()
+          infoData.show_date = newdate.getMonth() + 1 + '月' + newdate.getDay()
+        }
+        this.infoData = infoData
+      }
       this.getCityWeather(weatherData)
     },
     getCityWeather (data) {
