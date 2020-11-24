@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import mixins from '@/mixins/index'
+// import mixins from '@/mixins/index'
 import { Toast, Loadmore } from 'mint-ui'
 // import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { setBrowserTitle } from '@/utils/utils'
@@ -47,7 +47,7 @@ import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
 
 export default {
-  mixins: [mixins],
+  // mixins: [mixins],
   props: {
     id: String
   },
@@ -154,7 +154,7 @@ export default {
           }
           this.toggleStep(step)
           // 分享
-          this.sharePage()
+          // this.sharePage()
         })
       } catch (err) {
         this.loading = false
