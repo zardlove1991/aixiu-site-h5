@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData article3', this.tmpList)
+      // console.log('initData article3', this.tmpList)
       let tmpList = this.tmpList
       if (tmpList && tmpList.length > 0) {
         let item = tmpList[0]

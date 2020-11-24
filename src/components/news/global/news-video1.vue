@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData video1', this.tmpList)
+      // console.log('initData video1', this.tmpList)
       let tmpList = this.tmpList
       if (tmpList && tmpList.length > 0) {
         tmpList.map(item => {
