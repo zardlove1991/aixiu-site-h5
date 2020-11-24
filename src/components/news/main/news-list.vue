@@ -209,11 +209,11 @@ export default {
       if (!newsInfo) {
         return
       }
-      let { id, title, mark, introduce, indexpic, share_settings: share } = newsInfo
+      let { id, title, mark, index_pic: indexpic, share_settings: share } = newsInfo
       let imgUrl = ''
       let shareLink = ''
+      let shareBrief = ''
       let shareTitle = title
-      let shareBrief = introduce
       if (share) {
         let sharePic = share.indexpic
         if (share.title) {
@@ -222,7 +222,9 @@ export default {
         if (share.brief) {
           shareBrief = share.brief
         }
-        shareLink = share.link
+        if (share.link) {
+          shareLink = share.link
+        }
         if (sharePic) {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
@@ -236,12 +238,8 @@ export default {
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
-        } else if (indexpic) {
-          if (indexpic.host && indexpic.filename) {
-            imgUrl = 'http:' + indexpic.host + indexpic.filename
-          } else if (indexpic.url) {
-            imgUrl = indexpic.url
-          }
+        } else if (indexpic && indexpic.cover_img) {
+          imgUrl = indexpic.cover_img
         }
       }
       if (!shareLink) {
