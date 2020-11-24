@@ -259,6 +259,7 @@ export default {
           if (submitRules.is_open_raffle) {
             let { type, value } = submitRules.jump_conditions
             if (type && value) {
+              // 开启跳转条件 满足条件才展示
               if (type === 'score') {
                 if (res.score >= value) {
                   tempUrl = raffleUrl
@@ -270,6 +271,7 @@ export default {
                 }
               }
             } else {
+              // 无条件跳转
               tempUrl = raffleUrl
             }
           }
