@@ -250,7 +250,7 @@ export default {
         if (index !== -1) {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
-        shareLink = local.origin + pathname
+        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + local.origin + pathname
         // shareLink = delUrlParams(['code'])
       } else {
         shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
