@@ -89,6 +89,7 @@ export default {
       this.setRedirectParams(params)
     },
     initPageShareInfo (data, callback) {
+      console.log('xxxxxxxxxx initPageShareInfo')
       let auth = () => {
         let params = {
           title: data.title, // 分享标题
@@ -97,6 +98,7 @@ export default {
           link: data.link, // 分享链接
           success: () => {
             // 用户确认分享后执行的回调函数
+            console.log('xxxxxxxxxx setShare')
             this.setShare({
               id: data.id,
               title: params.title,
