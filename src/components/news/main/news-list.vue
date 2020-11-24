@@ -154,7 +154,7 @@ export default {
           }
           this.toggleStep(step)
           // 分享
-          this.sharePage(res)
+          this.sharePage()
         })
       } catch (err) {
         this.loading = false
@@ -204,11 +204,12 @@ export default {
         }
       }
     },
-    sharePage (detailInfo) {
-      if (!detailInfo) {
-        return false
+    sharePage () {
+      let newsInfo = this.newsInfo
+      if (!newsInfo) {
+        return
       }
-      let { id, title, introduce, indexpic, share_settings: share } = detailInfo
+      let { id, title, mark, introduce, indexpic, share_settings: share } = newsInfo
       let imgUrl = ''
       let shareLink = ''
       let shareTitle = title
@@ -261,7 +262,7 @@ export default {
         desc: shareBrief,
         indexpic: imgUrl,
         link: shareLink,
-        mark: detailInfo.mark
+        mark: mark
       })
     },
     nextStep () {
