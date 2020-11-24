@@ -23,9 +23,9 @@
     <news-number :config="{
       isShow: newsInfo.is_open_page_number,
       themeName,
-      currentStep,
+      currentStep: isFirst ? currentStep - 1 : currentStep,
       currentStepName,
-      totalPage: pages && pages.length }" />
+      totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }" />
   </div>
 </template>
 
@@ -72,6 +72,7 @@ export default {
       themeName: '',
       config: {},
       showTime: '',
+      isFirst: false,
       loading: false
     }
   },
@@ -180,13 +181,15 @@ export default {
         return false
       }
       let { information_content_data: pages, index_pic: indexPic } = res
+      let newsObj = [...pages]
       if (indexPic.cover_img) {
-        pages.unshift({ mark: 'first' })
+        this.isFirst = true
+        newsObj.unshift({ mark: 'first' })
       }
       if (indexPic.back_cover_img) {
-        pages.push({ mark: 'end' })
+        newsObj.push({ mark: 'end' })
       }
-      this.pages = pages
+      this.pages = newsObj
     },
     toggleStep (step) {
       let pages = this.pages
