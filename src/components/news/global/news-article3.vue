@@ -102,7 +102,7 @@ export default {
       right: 0;
       top: 30%;
       bottom: px2rem(60px);
-      padding: px2rem(25px) px2rem(57px);
+      padding: px2rem(40px) px2rem(57px) px2rem(25px) px2rem(57px);
       box-shadow: 0px -2px 12px 5px rgba(0, 0, 0, 0.04);
       border-radius: 16px 0px 0px 16px;
       background-color: #fff;
@@ -116,6 +116,7 @@ export default {
         border-radius: px2rem(2px);
       }
       .source {
+        line-height: 1;
         color: #999;
         @include font-dpr(12px);
       }
@@ -147,6 +148,7 @@ export default {
         }
         .header {
           color: #fff;
+          opacity: 0.9;
         }
         .desc {
           color: #fff;

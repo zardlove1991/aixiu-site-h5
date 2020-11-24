@@ -254,6 +254,7 @@ export default {
       } else {
         shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
       }
+      console.log('xxxxxxx', shareLink)
       this.initPageShareInfo({
         id,
         title: shareTitle,

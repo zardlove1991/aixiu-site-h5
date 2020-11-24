@@ -169,6 +169,7 @@ export default {
           background-color: #222222;
           .header {
             color: #fff;
+            opacity: 0.9;
           }
           .source {
             color: #fff;
@@ -213,6 +214,7 @@ export default {
         &.newsblack {
           .header {
             color: #fff;
+            opacity: 0.9;
           }
           .source {
             color: #fff;
