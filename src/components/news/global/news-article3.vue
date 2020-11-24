@@ -147,6 +147,7 @@ export default {
         }
         .header {
           color: #fff;
+          opacity: 0.9;
         }
         .desc {
           color: #fff;

@@ -347,6 +347,7 @@ export default {
         &.newsblack {
           .header {
             color: #fff;
+            opacity: 0.9;
           }
           .source {
             opacity: 0.5;
@@ -396,6 +397,7 @@ export default {
         &.newsblack {
           .header {
             color: #fff;
+            opacity: 0.9;
           }
           .source {
             color: #fff;
