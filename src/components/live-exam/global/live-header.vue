@@ -232,7 +232,7 @@ export default {
       let link = this.luckDrawLink
       if (link) {
         this.isLuckSubmitSuccess = false
-        window.location.href = link
+        window.location.replace = link
         this.setLuckDrawLink('')
       } else {
         this.isLuckSubmitSuccess = false
