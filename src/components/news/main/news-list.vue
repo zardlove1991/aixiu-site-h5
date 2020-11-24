@@ -116,7 +116,7 @@ export default {
   },
   methods: {
     initData () {
-      console.log('initData', this.id)
+      // console.log('initData', this.id)
       this.loading = true
       try {
         API.getNewsDetail({
