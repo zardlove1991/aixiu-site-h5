@@ -1,6 +1,6 @@
 <template>
   <div :class="['news-article2-wrap', themeName + '-bg']">
-    <div :class="['article2-index', indexData.size]" v-if="indexData && indexData.title"
+    <div :class="['article2-index', indexData.size ? indexData.size : 'size-16-9']" v-if="indexData && indexData.title"
       @click.stop="goPage(indexData)">
       <el-image
         class="article2-img"
@@ -29,13 +29,13 @@
       v-show="index !== 0"
       @click.stop="goPage(item)">
       <el-image
-        :class="['article2-item-img', item.size]"
+        :class="['article2-item-img', item.size ? item.size : 'size-4-3']"
         v-if="item.is_open_link"
         :src="item.src"
         fit="cover">
       </el-image>
       <el-image
-        :class="['article2-item-img', item.size]"
+        :class="['article2-item-img', item.size ? item.size : 'size-4-3']"
         v-else
         :src="item.src"
         @click.stop="showImg(0, [item.src])"
