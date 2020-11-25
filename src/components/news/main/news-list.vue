@@ -108,7 +108,7 @@ export default {
       let calcHeight = baseHeight / 2 // 滚动差x像素时进入下一页
       console.log('handleScroll', ',baseHeight= ' + baseHeight, ',calcHeight= ' + calcHeight, ',top= ' + top)
       let scroll = top - this.tmpHight
-      let nodes = document.getElementsByClassName('news-start-wrap')
+      // let nodes = document.getElementsByClassName('news-start-wrap')
       this.tmpHight = top
       if (scroll < 0) {
         // 向上滚动
@@ -116,13 +116,13 @@ export default {
           let beforeHeight = baseHeight * (currentStep - 1)
           // if ((top - calcHeight) <= beforeHeight) {
           if (top <= (beforeHeight - calcHeight)) {
-            if (nodes && nodes.length) {
-              nodes[0].scrollTop = baseHeight * (currentStep - 2)
-              this.currentStep = currentStep - 1
-              STORAGE.set('current_step', currentStep - 1)
-            }
-            // this.currentStep = currentStep - 1
-            // STORAGE.set('current_step', currentStep - 1)
+            // if (nodes && nodes.length) {
+            //   nodes[0].scrollTop = baseHeight * (currentStep - 2)
+            //   this.currentStep = currentStep - 1
+            //   STORAGE.set('current_step', currentStep - 1)
+            // }
+            this.currentStep = currentStep - 1
+            STORAGE.set('current_step', currentStep - 1)
           }
         }
       } else {
@@ -130,13 +130,13 @@ export default {
         let newHeight = baseHeight * currentStep
         if ((top + calcHeight) >= newHeight) {
           // 置顶
-          if (nodes && nodes.length) {
-            nodes[0].scrollTop = newHeight
-            this.currentStep = currentStep + 1
-            STORAGE.set('current_step', currentStep + 1)
-          }
-          // this.currentStep = currentStep + 1
-          // STORAGE.set('current_step', currentStep + 1)
+          // if (nodes && nodes.length) {
+          //   nodes[0].scrollTop = newHeight
+          //   this.currentStep = currentStep + 1
+          //   STORAGE.set('current_step', currentStep + 1)
+          // }
+          this.currentStep = currentStep + 1
+          STORAGE.set('current_step', currentStep + 1)
         }
       }
     },
