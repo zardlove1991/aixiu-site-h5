@@ -1,6 +1,6 @@
 <template>
-  <div :class="['news-start-wrap', themeName + '-bg']">
-    <mt-loadmore ref="news-start-loadmore"
+  <div :class="['news-start-wrap', themeName + '-bg']" @scroll="handleScroll($event)">
+    <!-- <mt-loadmore ref="news-start-loadmore"
       :bottom-method="nextStep"
       :bottom-all-loaded="lastPage"
       :bottom-pull-text="bottomTxt"
@@ -20,12 +20,22 @@
         @goPage="goPage"
         @showImg="showImg">
       </component>
-    </mt-loadmore>
+    </mt-loadmore> -->
+    <component
+      v-for="(page, index) in pages" :key="index"
+      :themeName="themeName"
+      :newsInfo="newsInfo"
+      :tmpList="page.data"
+      :showTime="showTime"
+      :is="page.name"
+      @goPage="goPage"
+      @showImg="showImg">
+    </component>
     <news-number :config="{
       isShow: newsInfo.is_open_page_number,
       themeName,
       currentStep: isFirst ? currentStep - 1 : currentStep,
-      currentStepName,
+      currentStepName: (currentStep === 1 && isFirst) ? 'news-first' : '',
       totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }" />
     <base-preview :show.sync="isPreview" :currentImg="currentImg" :previewList="previewList" />
   </div>
@@ -71,7 +81,7 @@ export default {
     return {
       newsInfo: {},
       pages: [],
-      currentStep: 0,
+      currentStep: 1,
       currentStepName: '',
       themeName: '',
       config: {},
@@ -80,48 +90,89 @@ export default {
       loading: false,
       isPreview: false,
       currentImg: 0,
-      previewList: []
+      previewList: [],
+      tmpHight: 0
     }
   },
   computed: {
-    lastPage () {
-      // 当滚动到最后一页时
-      let pages = this.pages
-      if (pages && pages.length) {
-        return this.currentStep >= pages.length
-      }
-      return true
-    },
-    topTxt () {
-      return this.currentStep <= 1 ? '' : '上一页'
-    },
-    topLoadTxt () {
-      return this.currentStep <= 1 ? '' : '加载中...'
-    },
-    bottomTxt () {
-      return this.lastPage ? '' : '下一页'
-    },
-    bottomLoadTxt () {
-      return this.lastPage ? '' : '加载中...'
-    },
-    currentData () {
-      let step = this.currentStep
-      let pages = this.pages
-      if (step > 0 && step <= pages.length) {
-        let tmp = step - 1
-        let obj = this.pages[tmp]
-        if (obj && obj.data) {
-          return obj.data
-        }
-        return []
-      }
-      return []
-    }
+    // lastPage () {
+    //   // 当滚动到最后一页时
+    //   let pages = this.pages
+    //   if (pages && pages.length) {
+    //     return this.currentStep >= pages.length
+    //   }
+    //   return true
+    // },
+    // topTxt () {
+    //   return this.currentStep <= 1 ? '' : '上一页'
+    // },
+    // topLoadTxt () {
+    //   return this.currentStep <= 1 ? '' : '加载中...'
+    // },
+    // bottomTxt () {
+    //   return this.lastPage ? '' : '下一页'
+    // },
+    // bottomLoadTxt () {
+    //   return this.lastPage ? '' : '加载中...'
+    // },
+    // currentData () {
+    //   let step = this.currentStep
+    //   let pages = this.pages
+    //   if (step > 0 && step <= pages.length) {
+    //     let tmp = step - 1
+    //     let obj = this.pages[tmp]
+    //     if (obj && obj.data) {
+    //       return obj.data
+    //     }
+    //     return []
+    //   }
+    //   return []
+    // }
   },
   created () {
     this.initData()
   },
+  mounted () {
+  },
   methods: {
+    handleScroll (event) {
+      let ele = event.srcElement ? event.srcElement : event.target
+      let currentStep = this.currentStep
+      let top = ele.scrollTop
+      let baseHeight = ele.clientHeight
+      let calcHeight = 200 // 滚动差x像素时进入下一页
+      // console.log('handleScroll', baseHeight, top)
+      let scroll = top - this.tmpHight
+      let nodes = document.getElementsByClassName('news-start-wrap')
+      this.tmpHight = top
+      if (scroll < 0) {
+        // 向上滚动
+        if (currentStep > 1) {
+          let beforeHeight = baseHeight * (currentStep - 1)
+          // if ((top - calcHeight) <= beforeHeight) {
+          if (top <= (beforeHeight - calcHeight)) {
+            // console.log('yyyyy', beforeHeight)
+            if (nodes && nodes.length) {
+              nodes[0].scrollTop = baseHeight * (currentStep - 2)
+              this.currentStep = currentStep - 1
+              STORAGE.set('current_step', currentStep - 1)
+            }
+          }
+        }
+      } else {
+        // 向下滚动
+        let newHeight = baseHeight * currentStep
+        if ((top + calcHeight) >= newHeight) {
+          // 置顶
+          // console.log('xxxxxxxxxx ok', newHeight)
+          if (nodes && nodes.length) {
+            nodes[0].scrollTop = newHeight
+            this.currentStep = currentStep + 1
+            STORAGE.set('current_step', currentStep + 1)
+          }
+        }
+      }
+    },
     initData () {
       // console.log('initData', this.id)
       this.loading = true
@@ -159,6 +210,7 @@ export default {
           if (!step) {
             step = 1
           }
+          this.currentStep = step
           this.toggleStep(step)
           // 分享
           // this.sharePage()
@@ -167,6 +219,17 @@ export default {
         this.loading = false
         console.log(err)
       }
+    },
+    toggleStep (step) {
+      this.$nextTick(() => {
+        let nodes = document.getElementsByClassName('news-start-wrap')
+        if (nodes && nodes.length) {
+          let baseHeight = nodes[0].clientHeight
+          if (step > 1) {
+            nodes[0].scrollTop = baseHeight * (step - 1)
+          }
+        }
+      })
     },
     setNewsTheme (res) {
       if (!res) {
@@ -196,21 +259,26 @@ export default {
       if (indexPic.back_cover_img) {
         newsObj.push({ mark: 'end' })
       }
-      this.pages = newsObj
-    },
-    toggleStep (step) {
-      let pages = this.pages
-      if (pages && pages.length >= step) {
-        STORAGE.set('current_step', step)
-        let tmp = step - 1
-        let page = pages[tmp]
-        if (page && page.mark) {
-          let mark = 'news-' + page.mark
-          this.currentStep = step
-          this.currentStepName = mark
+      for (let item of newsObj) {
+        if (item && item.mark) {
+          item.name = 'news-' + item.mark
         }
       }
+      this.pages = newsObj
     },
+    // toggleStep (step) {
+    //   let pages = this.pages
+    //   if (pages && pages.length >= step) {
+    //     STORAGE.set('current_step', step)
+    //     let tmp = step - 1
+    //     let page = pages[tmp]
+    //     if (page && page.mark) {
+    //       let mark = 'news-' + page.mark
+    //       this.currentStep = step
+    //       this.currentStepName = mark
+    //     }
+    //   }
+    // },
     sharePage () {
       let newsInfo = this.newsInfo
       if (!newsInfo) {
@@ -270,24 +338,24 @@ export default {
         mark: mark
       })
     },
-    nextStep () {
-      let step = this.currentStep
-      ++step
-      this.$nextTick(() => {
-        this.$refs['news-start-loadmore'].onBottomLoaded()
-        this.toggleStep(step)
-      })
-    },
-    preStep () {
-      let step = this.currentStep
-      if (step > 1) {
-        --step
-      }
-      this.$nextTick(() => {
-        this.$refs['news-start-loadmore'].onTopLoaded()
-        this.toggleStep(step)
-      })
-    },
+    // nextStep () {
+    //   let step = this.currentStep
+    //   ++step
+    //   this.$nextTick(() => {
+    //     this.$refs['news-start-loadmore'].onBottomLoaded()
+    //     this.toggleStep(step)
+    //   })
+    // },
+    // preStep () {
+    //   let step = this.currentStep
+    //   if (step > 1) {
+    //     --step
+    //   }
+    //   this.$nextTick(() => {
+    //     this.$refs['news-start-loadmore'].onTopLoaded()
+    //     this.toggleStep(step)
+    //   })
+    // },
     goPage (item) {
       let isOpenLink = item.is_open_link
       let url = item.link_url
@@ -312,6 +380,9 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .news-start-wrap {
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
     &.newsdiwen-bg, .newsdiwen-bg {
       background-size: 100% 100%;
       background-image: url('~@/assets/news/normal-bg.png');
@@ -321,41 +392,6 @@ export default {
     }
     .mint-loadmore-text {
       color: #999;
-    }
-    .el-image-viewer__wrapper {
-      display: flex;
-      align-items: center;
-      .el-image-viewer__mask {
-        opacity: 1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-      .el-image-viewer__close {
-        right: 0;
-        left: px2rem(42px);
-        top: px2rem(56px);
-      }
-      .el-icon-circle-close {
-        display: inline-block;
-        width: px2rem(32px);
-        height: px2rem(32px);
-        background-size: px2rem(32px) px2rem(32px);
-        background-image: url('~@/assets/news/close-icon.png');
-        &::before {
-          content: ''
-        }
-      }
-      .el-image-viewer__actions {
-        display: none;
-      }
-      // .el-image-viewer__canvas {
-      // height: 80%;
-      // }
-      img {
-        object-fit: contain;
-      }
     }
   }
 </style>
