@@ -151,12 +151,13 @@ export default {
           let beforeHeight = baseHeight * (currentStep - 1)
           // if ((top - calcHeight) <= beforeHeight) {
           if (top <= (beforeHeight - calcHeight)) {
-            // console.log('yyyyy', beforeHeight)
-            if (nodes && nodes.length) {
-              nodes[0].scrollTop = baseHeight * (currentStep - 2)
-              this.currentStep = currentStep - 1
-              STORAGE.set('current_step', currentStep - 1)
-            }
+            // if (nodes && nodes.length) {
+            //   nodes[0].scrollTop = baseHeight * (currentStep - 2)
+            //   this.currentStep = currentStep - 1
+            //   STORAGE.set('current_step', currentStep - 1)
+            // }
+            this.currentStep = currentStep - 1
+            STORAGE.set('current_step', currentStep - 1)
           }
         }
       } else {
@@ -164,12 +165,13 @@ export default {
         let newHeight = baseHeight * currentStep
         if ((top + calcHeight) >= newHeight) {
           // 置顶
-          // console.log('xxxxxxxxxx ok', newHeight)
-          if (nodes && nodes.length) {
-            nodes[0].scrollTop = newHeight
-            this.currentStep = currentStep + 1
-            STORAGE.set('current_step', currentStep + 1)
-          }
+          // if (nodes && nodes.length) {
+          //   nodes[0].scrollTop = newHeight
+          //   this.currentStep = currentStep + 1
+          //   STORAGE.set('current_step', currentStep + 1)
+          // }
+          this.currentStep = currentStep + 1
+          STORAGE.set('current_step', currentStep + 1)
         }
       }
     },
@@ -266,19 +268,6 @@ export default {
       }
       this.pages = newsObj
     },
-    // toggleStep (step) {
-    //   let pages = this.pages
-    //   if (pages && pages.length >= step) {
-    //     STORAGE.set('current_step', step)
-    //     let tmp = step - 1
-    //     let page = pages[tmp]
-    //     if (page && page.mark) {
-    //       let mark = 'news-' + page.mark
-    //       this.currentStep = step
-    //       this.currentStepName = mark
-    //     }
-    //   }
-    // },
     sharePage () {
       let newsInfo = this.newsInfo
       if (!newsInfo) {
