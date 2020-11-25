@@ -23,8 +23,9 @@
       </div>
     </div>
     <div class="article1-next">
-      <div :class="['article1-item', item.size]"
+      <div
         v-for="(item, index) in tmpList"
+        :class="['article1-item', item.size]"
         :key="index"
         v-show="index !== 0"
         @click.stop="goPage(item)">
@@ -74,6 +75,14 @@ export default {
   },
   created () {
     this.initData()
+  },
+  watch: {
+    tmpList: {
+      handler (val) {
+        this.initData()
+      },
+      deep: true
+    }
   },
   methods: {
     initData () {

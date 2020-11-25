@@ -74,6 +74,14 @@ export default {
   created () {
     this.initData()
   },
+  watch: {
+    tmpList: {
+      handler (val) {
+        this.initData()
+      },
+      deep: true
+    }
+  },
   methods: {
     initData () {
       // console.log('initData article2', this.tmpList)
