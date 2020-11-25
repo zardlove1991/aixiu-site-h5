@@ -116,13 +116,13 @@ export default {
           let beforeHeight = baseHeight * (currentStep - 1)
           // if ((top - calcHeight) <= beforeHeight) {
           if (top <= (beforeHeight - calcHeight)) {
-            if (nodes && nodes.length) {
-              nodes[0].scrollTop = baseHeight * (currentStep - 2)
-              this.currentStep = currentStep - 1
-              STORAGE.set('current_step', currentStep - 1)
-            }
-            // this.currentStep = currentStep - 1
-            // STORAGE.set('current_step', currentStep - 1)
+            // if (nodes && nodes.length) {
+            //   nodes[0].scrollTop = baseHeight * (currentStep - 2)
+            //   this.currentStep = currentStep - 1
+            //   STORAGE.set('current_step', currentStep - 1)
+            // }
+            this.currentStep = currentStep - 1
+            STORAGE.set('current_step', currentStep - 1)
           }
         }
       } else {
@@ -130,13 +130,13 @@ export default {
         let newHeight = baseHeight * currentStep
         if ((top + calcHeight) >= newHeight) {
           // 置顶
-          if (nodes && nodes.length) {
-            nodes[0].scrollTop = newHeight
-            this.currentStep = currentStep + 1
-            STORAGE.set('current_step', currentStep + 1)
-          }
-          // this.currentStep = currentStep + 1
-          // STORAGE.set('current_step', currentStep + 1)
+          // if (nodes && nodes.length) {
+          //   nodes[0].scrollTop = newHeight
+          //   this.currentStep = currentStep + 1
+          //   STORAGE.set('current_step', currentStep + 1)
+          // }
+          this.currentStep = currentStep + 1
+          STORAGE.set('current_step', currentStep + 1)
         }
       }
     },
