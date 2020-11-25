@@ -135,12 +135,13 @@ export default {
         background-size: cover;
       }
       .vjs-big-play-button {
-        width: px2rem(80px) !important;
+        width: px2rem(80px);
         font-size: px2rem(50px) !important;
         border-radius: 100%;
         z-index: 100;
         transform: translate(-50%, -50%) !important;
         margin-left: 0 !important;
+        border: 0;
       }
     }
     .vjs-custom-skin > .video-js .vjs-big-play-button {
@@ -152,6 +153,20 @@ export default {
   .small-video {
     .vjs-current-time, .vjs-volume-panel, .vjs-time-control.vjs-time-divider, .vjs-duration, .vjs-progress-control {
       display: none !important;
+    }
+     .video-js .vjs-big-play-button {
+      width: px2rem(40px) !important;
+      font-size: px2rem(30px) !important;
+      border-radius: 100%;
+      z-index: 100;
+      transform: translate(-50%, -50%) !important;
+      margin-left: 0 !important;
+      border: 0;
+    }
+    .vjs-custom-skin > .video-js .vjs-big-play-button  {
+      height: px2rem(40px) !important;
+      line-height: px2rem(40px) !important;
+      margin-top: 0 !important;
     }
   }
 </style>
