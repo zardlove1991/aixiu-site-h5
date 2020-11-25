@@ -99,7 +99,7 @@
             class="imgs-item imgs-left"
             v-else
             :src="indexData.material[0]"
-            :preview-src-list="indexData.material"
+            @click.stop="showImg(0, indexData.material)"
             fit="cover">
           </el-image>
           <!-- <img class="imgs-item imgs-left"
@@ -124,7 +124,7 @@
               class="imgs-item imgs-right-top"
               v-else
               :src="indexData.material[1]"
-              :preview-src-list="indexData.material"
+              @click.stop="showImg(1, indexData.material)"
               fit="cover">
             </el-image>
             <!-- <img class="imgs-item imgs-right-top"
@@ -148,7 +148,7 @@
               class="imgs-item imgs-right-top"
               v-else
               :src="indexData.material[2]"
-              :preview-src-list="indexData.material"
+              @click.stop="showImg(2, indexData.material)"
               fit="cover">
             </el-image>
             <!-- <img class="imgs-item imgs-right-bottom"
@@ -187,7 +187,7 @@
           :class="['gallery1-item-img', item.size]"
           v-else
           :src="item.material[0]"
-          :preview-src-list="item.material"
+          @click.stop="showImg(0, item.material)"
           fit="cover">
         </el-image>
         <!--
@@ -260,6 +260,12 @@ export default {
     },
     goPage (item) {
       this.$emit('goPage', item)
+    },
+    showImg (index, list = []) {
+      this.$emit('showImg', {
+        index,
+        list
+      })
     }
   }
 }
