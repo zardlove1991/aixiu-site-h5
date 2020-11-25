@@ -17,7 +17,8 @@
         :tmpList="currentData"
         :showTime="showTime"
         :is="currentStepName"
-        @goPage="goPage">
+        @goPage="goPage"
+        @showImg="showImg">
       </component>
     </mt-loadmore>
     <news-number :config="{
@@ -26,6 +27,7 @@
       currentStep: isFirst ? currentStep - 1 : currentStep,
       currentStepName,
       totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }" />
+    <base-preview :show.sync="isPreview" :currentImg="currentImg" :previewList="previewList" />
   </div>
 </template>
 
@@ -45,6 +47,7 @@ import NewsEnd from '@/components/news/global/news-end'
 import NewsNumber from '@/components/news/global/news-number'
 import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
+import BasePreview from '@/components/news/global/base-preview'
 
 export default {
   // mixins: [mixins],
@@ -61,7 +64,8 @@ export default {
     NewsGallery1,
     NewsEnd,
     NewsNumber,
-    Loadmore
+    Loadmore,
+    BasePreview
   },
   data () {
     return {
@@ -73,7 +77,10 @@ export default {
       config: {},
       showTime: '',
       isFirst: false,
-      loading: false
+      loading: false,
+      isPreview: false,
+      currentImg: 0,
+      previewList: []
     }
   },
   computed: {
@@ -291,6 +298,12 @@ export default {
         return false
       }
       window.location.href = url
+    },
+    showImg (item) {
+      let { index, list } = item
+      this.isPreview = true
+      this.currentImg = index
+      this.previewList = list
     }
   }
 }

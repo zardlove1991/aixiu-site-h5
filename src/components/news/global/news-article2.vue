@@ -12,7 +12,7 @@
         class="article2-img"
         v-else
         :src="indexData.src"
-        :preview-src-list="[indexData.src]"
+        @click.stop="showImg(0, [indexData.src])"
         fit="cover">
       </el-image>
       <!-- <img class="article2-img" v-if="indexData.is_open_link" :src="indexData.src" object-fit="cover" />
@@ -38,7 +38,7 @@
         :class="['article2-item-img', item.size]"
         v-else
         :src="item.src"
-        :preview-src-list="[item.src]"
+        @click.stop="showImg(0, [item.src])"
         fit="cover">
       </el-image>
       <!-- <img :class="['article2-item-img', item.size]" v-if="item.is_open_link"  :src="item.src" object-fit="cover" />
@@ -109,6 +109,12 @@ export default {
     },
     goPage (item) {
       this.$emit('goPage', item)
+    },
+    showImg (index, list = []) {
+      this.$emit('showImg', {
+        index,
+        list
+      })
     }
   }
 }
