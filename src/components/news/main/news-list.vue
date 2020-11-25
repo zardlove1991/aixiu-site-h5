@@ -1,5 +1,5 @@
 <template>
-  <div :class="['news-start-wrap', themeName + '-bg']" @scroll="handleScroll($event)">
+  <div :class="['news-start-wrap', themeName + '-bg']" @scroll.stop="handleScroll($event)">
     <!-- <mt-loadmore ref="news-start-loadmore"
       :bottom-method="nextStep"
       :bottom-all-loaded="lastPage"
