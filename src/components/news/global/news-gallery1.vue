@@ -178,13 +178,13 @@
       @click.stop="goPage(item)">
       <div class="gallery1-img-wrap" v-if="item.material && item.material.length">
         <el-image
-          :class="['gallery1-item-img', item.size]"
+          :class="['gallery1-item-img', item.size ? item.size : 'size-4-3']"
           v-if="item.is_open_link"
           :src="item.material[0]"
           fit="cover">
         </el-image>
         <el-image
-          :class="['gallery1-item-img', item.size]"
+          :class="['gallery1-item-img', item.size ? item.size : 'size-4-3']"
           v-else
           :src="item.material[0]"
           @click.stop="showImg(0, item.material)"

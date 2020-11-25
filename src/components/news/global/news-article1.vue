@@ -1,6 +1,6 @@
 <template>
   <div :class="['news-article1-wrap', themeName + '-bg']">
-    <div :class="['article1-index', indexData.size]" v-if="indexData && indexData.title"
+    <div :class="['article1-index', indexData.size ? indexData.size : 'size-4-47']" v-if="indexData && indexData.title"
       @click.stop="goPage(indexData)">
       <el-image
         class="article1-img"
@@ -25,7 +25,7 @@
     <div class="article1-next">
       <div
         v-for="(item, index) in tmpList"
-        :class="['article1-item', item.size]"
+        :class="['article1-item', item.size ? item.size : 'size-4-43']"
         :key="index"
         v-show="index !== 0"
         @click.stop="goPage(item)">
