@@ -94,41 +94,6 @@ export default {
       tmpHight: 0
     }
   },
-  computed: {
-    // lastPage () {
-    //   // 当滚动到最后一页时
-    //   let pages = this.pages
-    //   if (pages && pages.length) {
-    //     return this.currentStep >= pages.length
-    //   }
-    //   return true
-    // },
-    // topTxt () {
-    //   return this.currentStep <= 1 ? '' : '上一页'
-    // },
-    // topLoadTxt () {
-    //   return this.currentStep <= 1 ? '' : '加载中...'
-    // },
-    // bottomTxt () {
-    //   return this.lastPage ? '' : '下一页'
-    // },
-    // bottomLoadTxt () {
-    //   return this.lastPage ? '' : '加载中...'
-    // },
-    // currentData () {
-    //   let step = this.currentStep
-    //   let pages = this.pages
-    //   if (step > 0 && step <= pages.length) {
-    //     let tmp = step - 1
-    //     let obj = this.pages[tmp]
-    //     if (obj && obj.data) {
-    //       return obj.data
-    //     }
-    //     return []
-    //   }
-    //   return []
-    // }
-  },
   created () {
     this.initData()
   },
@@ -141,7 +106,7 @@ export default {
       let top = ele.scrollTop
       let baseHeight = ele.clientHeight
       let calcHeight = baseHeight / 2 // 滚动差x像素时进入下一页
-      // console.log('handleScroll', baseHeight, top)
+      console.log('handleScroll', ',baseHeight= ' + baseHeight, ',calcHeight= ' + calcHeight, ',top= '+ top)
       let scroll = top - this.tmpHight
       let nodes = document.getElementsByClassName('news-start-wrap')
       this.tmpHight = top
