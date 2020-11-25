@@ -106,7 +106,7 @@ export default {
       let top = ele.scrollTop
       let baseHeight = ele.clientHeight
       let calcHeight = baseHeight / 2 // 滚动差x像素时进入下一页
-      console.log('handleScroll', ',baseHeight= ' + baseHeight, ',calcHeight= ' + calcHeight, ',top= '+ top)
+      console.log('handleScroll', ',baseHeight= ' + baseHeight, ',calcHeight= ' + calcHeight, ',top= ' + top)
       let scroll = top - this.tmpHight
       let nodes = document.getElementsByClassName('news-start-wrap')
       this.tmpHight = top
