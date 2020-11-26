@@ -9,12 +9,15 @@ import { setTheme, setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
 // 引入所有第三库
 import '@/lib/index'
 import VideoPlayer from 'vue-video-player'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'video.js/dist/video-js.css'
 import 'vue-video-player/src/custom-theme.css'
 import 'videojs-flash'
 import 'videojs-contrib-hls'
+import 'swiper/swiper-bundle.css'
 
 Vue.use(VideoPlayer)
+Vue.use(VueAwesomeSwiper)
 Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()

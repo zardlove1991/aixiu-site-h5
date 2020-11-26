@@ -1,8 +1,7 @@
 <template>
   <div
     :class="['news-number-wrap', config.themeName]"
-    v-if="config.currentStepName !== 'news-first' &&
-    config.currentStep <= config.totalPage &&
+    v-if="config.currentStep <= config.totalPage &&
     config.isShow === 1">
     <span class="current-page">{{config.currentStep}}</span>
     <span class="line">/</span>
@@ -26,7 +25,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .news-number-wrap {
-    position: fixed;
+    position: absolute;
     left: 0;
     bottom: 10%;
     padding: 0 px2rem(35px) 0 px2rem(22px);

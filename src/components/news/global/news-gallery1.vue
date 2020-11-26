@@ -203,10 +203,13 @@
         <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
       </div>
     </div>
+    <news-number :config="config" />
   </div>
 </template>
 
 <script>
+import NewsNumber from '@/components/news/global/news-number'
+
 export default {
   props: {
     themeName: {
@@ -219,12 +222,21 @@ export default {
       default: () => {
         return []
       }
+    },
+    config: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data () {
     return {
       indexData: {}
     }
+  },
+  components: {
+    NewsNumber
   },
   created () {
     this.initData()
@@ -274,6 +286,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .news-gallery1-wrap {
+    position: relative;
     width: 100%;
     height: 100vh;
     overflow-y: auto;

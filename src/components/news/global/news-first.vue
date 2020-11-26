@@ -9,7 +9,7 @@
       </div>
       <div class="weather" v-if="weatherData.is_open" :style="{ color: weatherData.color_matching }">
         <span class="city">{{weatherData.city}}</span>
-        <span class="temp">32°C</span>
+        <span class="temp">{{weatherData.temperature}}</span>
         <span :class="['weather-icon', weatherData.type ? weatherData.type: 'qing']"></span>
       </div>
     </div>

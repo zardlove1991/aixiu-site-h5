@@ -1,39 +1,37 @@
 <template>
   <div :class="['news-start-wrap', themeName + '-bg']">
-    <mt-loadmore ref="news-start-loadmore"
-      :bottom-method="nextStep"
-      :bottom-all-loaded="lastPage"
-      :bottom-pull-text="bottomTxt"
-      :bottom-drop-text="bottomTxt"
-      :bottom-loading-text="bottomLoadTxt"
-      :top-pull-text="topTxt"
-      :top-drop-text="topTxt"
-      :top-loading-text="topLoadTxt"
-      :top-method="preStep"
-      :auto-fill="false">
-      <component
-        :themeName="themeName"
-        :newsInfo="newsInfo"
-        :tmpList="currentData"
-        :showTime="showTime"
-        :is="currentStepName"
-        @goPage="goPage"
-        @showImg="showImg">
-      </component>
-    </mt-loadmore>
-    <news-number :config="{
-      isShow: newsInfo.is_open_page_number,
-      themeName,
-      currentStep: isFirst ? currentStep - 1 : currentStep,
-      currentStepName,
-      totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }" />
+    <swiper :options="swiperOption2">
+      <swiper-slide v-for="(page, index) in pages" :key="index">
+        <component
+          :themeName="themeName"
+          :newsInfo="newsInfo"
+          :tmpList="page.data"
+          :showTime="showTime"
+          :config="{
+            isShow: newsInfo.is_open_page_number,
+            themeName,
+            currentStep: isFirst ? index : index + 1,
+            totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }"
+          :is="page.name"
+          @goPage="goPage"
+          @showImg="showImg">
+        </component>
+        <span>{{index}}</span>
+        <!-- <news-number :config="{
+          isShow: newsInfo.is_open_page_number,
+          themeName,
+          currentStep: isFirst ? index : index + 1,
+          currentStepName: (index === 0 && isFirst) ? 'news-first' : '',
+          totalPage: newsInfo.information_content_data && newsInfo.information_content_data.length }" /> -->
+      </swiper-slide>
+    </swiper>
     <base-preview :show.sync="isPreview" :currentImg="currentImg" :previewList="previewList" />
   </div>
 </template>
 
 <script>
 // import mixins from '@/mixins/index'
-import { Toast, Loadmore } from 'mint-ui'
+import { Toast } from 'mint-ui'
 // import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { setBrowserTitle } from '@/utils/utils'
 import NewsFirst from '@/components/news/global/news-first'
@@ -45,9 +43,10 @@ import NewsVideo2 from '@/components/news/global/news-video2'
 import NewsGallery1 from '@/components/news/global/news-gallery1'
 import NewsEnd from '@/components/news/global/news-end'
 import NewsNumber from '@/components/news/global/news-number'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
 import BasePreview from '@/components/news/global/base-preview'
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 
 export default {
   // mixins: [mixins],
@@ -64,14 +63,15 @@ export default {
     NewsGallery1,
     NewsEnd,
     NewsNumber,
-    Loadmore,
-    BasePreview
+    BasePreview,
+    Swiper,
+    SwiperSlide
   },
   data () {
     return {
       newsInfo: {},
       pages: [],
-      currentStep: 0,
+      currentStep: 1,
       currentStepName: '',
       themeName: '',
       config: {},
@@ -80,46 +80,18 @@ export default {
       loading: false,
       isPreview: false,
       currentImg: 0,
-      previewList: []
-    }
-  },
-  computed: {
-    lastPage () {
-      // 当滚动到最后一页时
-      let pages = this.pages
-      if (pages && pages.length) {
-        return this.currentStep >= pages.length
+      previewList: [],
+      swiperOption2: {
+        // initialSlide: 3,
+        direction: 'vertical',
+        speed: 800
       }
-      return true
-    },
-    topTxt () {
-      return this.currentStep <= 1 ? '' : '上一页'
-    },
-    topLoadTxt () {
-      return this.currentStep <= 1 ? '' : '加载中...'
-    },
-    bottomTxt () {
-      return this.lastPage ? '' : '下一页'
-    },
-    bottomLoadTxt () {
-      return this.lastPage ? '' : '加载中...'
-    },
-    currentData () {
-      let step = this.currentStep
-      let pages = this.pages
-      if (step > 0 && step <= pages.length) {
-        let tmp = step - 1
-        let obj = this.pages[tmp]
-        if (obj && obj.data) {
-          return obj.data
-        }
-        return []
-      }
-      return []
     }
   },
   created () {
     this.initData()
+  },
+  mounted () {
   },
   methods: {
     initData () {
@@ -155,11 +127,12 @@ export default {
           // 初始化页面
           this.initPages(res)
           // 页面跳转
-          let step = STORAGE.get('current_step')
-          if (!step) {
-            step = 1
-          }
-          this.toggleStep(step)
+          // let step = STORAGE.get('current_step')
+          // if (!step) {
+          //   step = 1
+          // }
+          // this.currentStep = step
+          // this.toggleStep(step)
           // 分享
           // this.sharePage()
         })
@@ -196,20 +169,12 @@ export default {
       if (indexPic.back_cover_img) {
         newsObj.push({ mark: 'end' })
       }
-      this.pages = newsObj
-    },
-    toggleStep (step) {
-      let pages = this.pages
-      if (pages && pages.length >= step) {
-        STORAGE.set('current_step', step)
-        let tmp = step - 1
-        let page = pages[tmp]
-        if (page && page.mark) {
-          let mark = 'news-' + page.mark
-          this.currentStep = step
-          this.currentStepName = mark
+      for (let item of newsObj) {
+        if (item && item.mark) {
+          item.name = 'news-' + item.mark
         }
       }
+      this.pages = newsObj
     },
     sharePage () {
       let newsInfo = this.newsInfo
@@ -270,24 +235,6 @@ export default {
         mark: mark
       })
     },
-    nextStep () {
-      let step = this.currentStep
-      ++step
-      this.$nextTick(() => {
-        this.$refs['news-start-loadmore'].onBottomLoaded()
-        this.toggleStep(step)
-      })
-    },
-    preStep () {
-      let step = this.currentStep
-      if (step > 1) {
-        --step
-      }
-      this.$nextTick(() => {
-        this.$refs['news-start-loadmore'].onTopLoaded()
-        this.toggleStep(step)
-      })
-    },
     goPage (item) {
       let isOpenLink = item.is_open_link
       let url = item.link_url
@@ -312,6 +259,9 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .news-start-wrap {
+    width: 100%;
+    height: 100vh;
+    // overflow-y: auto;
     &.newsdiwen-bg, .newsdiwen-bg {
       background-size: 100% 100%;
       background-image: url('~@/assets/news/normal-bg.png');
@@ -322,40 +272,11 @@ export default {
     .mint-loadmore-text {
       color: #999;
     }
-    .el-image-viewer__wrapper {
-      display: flex;
-      align-items: center;
-      .el-image-viewer__mask {
-        opacity: 1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-      .el-image-viewer__close {
-        right: 0;
-        left: px2rem(42px);
-        top: px2rem(56px);
-      }
-      .el-icon-circle-close {
-        display: inline-block;
-        width: px2rem(32px);
-        height: px2rem(32px);
-        background-size: px2rem(32px) px2rem(32px);
-        background-image: url('~@/assets/news/close-icon.png');
-        &::before {
-          content: ''
-        }
-      }
-      .el-image-viewer__actions {
-        display: none;
-      }
-      // .el-image-viewer__canvas {
-      // height: 80%;
-      // }
-      img {
-        object-fit: contain;
-      }
+    .swiper-container {
+      width: 100%;
+      height: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 </style>
