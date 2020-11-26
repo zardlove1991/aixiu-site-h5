@@ -25,10 +25,13 @@
       <div class="desc">{{indexData.describe}}</div>
       <div class="find-all" v-if="indexData.is_open_link === 1" @click="goPage(indexData)">查看更多</div>
     </div>
+    <news-number :config="config" />
   </div>
 </template>
 
 <script>
+import NewsNumber from '@/components/news/global/news-number'
+
 export default {
   props: {
     themeName: {
@@ -41,12 +44,21 @@ export default {
       default: () => {
         return []
       }
+    },
+    config: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data () {
     return {
       indexData: {}
     }
+  },
+  components: {
+    NewsNumber
   },
   created () {
     this.initData()

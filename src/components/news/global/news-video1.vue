@@ -19,11 +19,13 @@
         </div>
       </div>
     </div>
+    <news-number :config="config" />
   </div>
 </template>
 
 <script>
 import NewsVideoCommon from '@/components/news/global/base-video'
+import NewsNumber from '@/components/news/global/news-number'
 
 export default {
   props: {
@@ -37,10 +39,16 @@ export default {
       default: () => {
         return []
       }
+    },
+    config: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   components: {
-    NewsVideoCommon
+    NewsVideoCommon, NewsNumber
   },
   data () {
     return {
@@ -90,6 +98,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .news-video1-wrap {
+    position: relative;
     width: 100%;
     height: 100vh;
     overflow-y: auto;
