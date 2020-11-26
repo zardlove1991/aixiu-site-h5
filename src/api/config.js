@@ -1,8 +1,8 @@
 import { getEnvironment } from '@/utils/app'
 const protocol = window.location.protocol
 const env = getEnvironment()
-const suffix = env === 'online' ? '-ax-' : `-ax-${env}`
-const host = `${suffix}${v2}.aihoge.com`
+const suffix = env === 'online' ? '-ax' : `-ax-${env}`
+const host = `${suffix}.aihoge.com`
 
 export default {
   'submit': `${protocol}//result${host}/`,
