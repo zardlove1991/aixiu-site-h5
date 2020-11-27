@@ -13,6 +13,7 @@ export default {
   'reserve': `${protocol}//reserve${suffix}${v2}.aihoge.com/`,
   'public': `${protocol}//public${suffix}${v2}.aihoge.com/`,
   'c4': `${protocol}//c4api${suffix}${v2}.aihoge.com/`,
+  'news': `${protocol}//news${suffix}${v2}.aihoge.com/`,
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
