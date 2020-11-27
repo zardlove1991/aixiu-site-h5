@@ -152,9 +152,9 @@ export default {
       border-radius: 100%;
       z-index: 100;
     }
-    .video-js .vjs-fullscreen-control {
-      display: none;
-    }
+    // .video-js .vjs-fullscreen-control {
+    //   display: none;
+    // }
     .bg {
       width: 100%;
       height: 100%;
