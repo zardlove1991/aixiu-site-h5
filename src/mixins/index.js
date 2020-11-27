@@ -97,6 +97,7 @@ export default {
           link: data.link, // 分享链接
           success: () => {
             // 用户确认分享后执行的回调函数
+            console.log('setShare', data)
             this.setShare({
               id: data.id,
               title: params.title,
@@ -107,6 +108,9 @@ export default {
             if (callback && typeof callback === 'function') {
               callback()
             }
+          },
+          fail: function (err) {
+            console.log(err)
           },
           cancel: function () {
             // 用户取消分享后执行的回调函数

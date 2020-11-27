@@ -12,6 +12,12 @@ let wechat = {
     let url = host + '?appid=' + appid + '&redirect_uri=' + newRedirectUri + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
     return url
   },
+  async getDefaultScope () {
+    let scopeLimit = 'snsapi_userinfo'
+    STORAGE.set('scope_limit', scopeLimit)
+    const url = wechat.getAuthUrl(scopeLimit)
+    window.location.href = url
+  },
   async getVoteAuthScope (id) {
     let params = { id }
     let scopeLimit = 'snsapi_userinfo'
@@ -46,12 +52,6 @@ let wechat = {
       const url = wechat.getAuthUrl(scopeLimit)
       window.location.href = url
     })
-  },
-  async getEnrollScope () {
-    let scopeLimit = 'snsapi_userinfo'
-    STORAGE.set('scope_limit', scopeLimit)
-    const url = wechat.getAuthUrl(scopeLimit)
-    window.location.href = url
   },
   async h5Signature (info, cbk) {
     let scope = STORAGE.get('scope_limit')
@@ -96,20 +96,17 @@ let wechat = {
     let pathname = window.location.pathname
     let id = this.getActiveId(pathname)
     if (id) {
-      STORAGE.remove('userinfo')
-      STORAGE.remove('component_appid')
-      STORAGE.remove('appid')
-      STORAGE.remove('detailInfo')
-      STORAGE.remove('scope_limit')
-      STORAGE.remove('video-start-time')
+      STORAGE.clear()
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票
         this.getVoteAuthScope(id)
-      } else if (pathname.indexOf('enrollstart') !== -1) {
-        this.getEnrollScope()
       } else if (pathname.indexOf('depencestart') !== -1 || pathname.indexOf('livestart') !== -1) {
         // 测评
         this.getExamAuthScope(id)
+      } else if (pathname.indexOf('enrollstart') !== -1) {
+        this.getDefaultScope()
+      } else if (pathname.indexOf('newstart') !== -1) {
+        this.getDefaultScope()
       }
     }
   }
