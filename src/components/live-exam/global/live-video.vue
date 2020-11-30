@@ -13,6 +13,9 @@
       @play="onPlayerPlay($event)"
       @click="fullScreen">
     </video-player>
+    <div class="refresh-wrap" @click="refreshVideo()">
+      <i class="refresh-icon"></i>
+    </div>
   </div>
 </template>
 
@@ -130,6 +133,16 @@ export default {
           STORAGE.remove('video-start-time')
         })
       }
+    },
+    refreshVideo () {
+      // console.log('refreshVideo')
+      let videoObj = this.videoObj
+      if (!videoObj || !videoObj.videoUrl) {
+        return
+      }
+      let videoUrl = videoObj.videoUrl
+      this.playerOptions.sources[0].src = videoUrl
+      // console.log(videoUrl, this.$refs.videoPlayer)
     }
   }
 }
@@ -152,9 +165,9 @@ export default {
       border-radius: 100%;
       z-index: 100;
     }
-    .video-js .vjs-fullscreen-control {
-      display: none;
-    }
+    // .video-js .vjs-fullscreen-control {
+    //   display: none;
+    // }
     .bg {
       width: 100%;
       height: 100%;
@@ -171,6 +184,26 @@ export default {
       background-position: center;
       background-repeat: no-repeat;
       @include img-retina('~@/assets/common/empty_indepic_bg@2x.png','~@/assets/common/empty_indepic_bg@3x.png', 100%, 100%);
+    }
+    .refresh-wrap {
+      position: absolute;
+      top: px2rem(171px);
+      right: 0;
+      height: px2rem(72px);
+      width: px2rem(72px);
+      z-index: 102;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: px2rem(100px) 0px 0px px2rem(100px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .refresh-icon {
+        display: inline-block;
+        width: px2rem(40px);
+        height: px2rem(40px);
+        background-size: px2rem(40px) px2rem(40px);
+        background-image: url('~@/assets/live-exam/refresh-icon.png');
+      }
     }
   }
 </style>
