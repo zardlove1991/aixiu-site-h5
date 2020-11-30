@@ -39,6 +39,7 @@ export default {
   },
   data () {
     return {
+      isPlay: false,
       defaultPoster: require('@/assets/common/main-header@2x.png'),
       playerOptions: {
         // playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
@@ -114,11 +115,13 @@ export default {
       player.play()
     },
     onPlayerPlay (player) {
+      this.isPlay = true
       player.play()
       let startTime = parseInt((new Date().getTime()) / 1000)
       STORAGE.set('video-start-time', startTime)
     },
     onPlayerPause (player) {
+      this.isPlay = false
       let id = this.id
       let endTime = parseInt((new Date().getTime()) / 1000)
       let startTime = STORAGE.get('video-start-time')
@@ -140,9 +143,15 @@ export default {
       if (!videoObj || !videoObj.videoUrl) {
         return
       }
+      const player = this.$refs.videoPlayer.player
       let videoUrl = videoObj.videoUrl
-      this.playerOptions.sources[0].src = videoUrl
-      // console.log(videoUrl, this.$refs.videoPlayer)
+      if (this.isPlay) {
+        player.pause()
+        this.playerOptions.sources[0].src = videoUrl
+        player.play()
+      } else {
+        this.playerOptions.sources[0].src = videoUrl
+      }
     }
   }
 }
