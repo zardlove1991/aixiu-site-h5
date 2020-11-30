@@ -13,6 +13,9 @@
       @play="onPlayerPlay($event)"
       @click="fullScreen">
     </video-player>
+    <div class="refresh-wrap" @click="refreshVideo()">
+      <i class="refresh-icon"></i>
+    </div>
   </div>
 </template>
 
@@ -36,6 +39,7 @@ export default {
   },
   data () {
     return {
+      isPlay: false,
       defaultPoster: require('@/assets/common/main-header@2x.png'),
       playerOptions: {
         // playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
@@ -111,11 +115,13 @@ export default {
       player.play()
     },
     onPlayerPlay (player) {
+      this.isPlay = true
       player.play()
       let startTime = parseInt((new Date().getTime()) / 1000)
       STORAGE.set('video-start-time', startTime)
     },
     onPlayerPause (player) {
+      this.isPlay = false
       let id = this.id
       let endTime = parseInt((new Date().getTime()) / 1000)
       let startTime = STORAGE.get('video-start-time')
@@ -129,6 +135,22 @@ export default {
         }).then(() => {
           STORAGE.remove('video-start-time')
         })
+      }
+    },
+    refreshVideo () {
+      // console.log('refreshVideo')
+      let videoObj = this.videoObj
+      if (!videoObj || !videoObj.videoUrl) {
+        return
+      }
+      const player = this.$refs.videoPlayer.player
+      let videoUrl = videoObj.videoUrl
+      if (this.isPlay) {
+        player.pause()
+        this.playerOptions.sources[0].src = videoUrl
+        player.play()
+      } else {
+        this.playerOptions.sources[0].src = videoUrl
       }
     }
   }
@@ -171,6 +193,26 @@ export default {
       background-position: center;
       background-repeat: no-repeat;
       @include img-retina('~@/assets/common/empty_indepic_bg@2x.png','~@/assets/common/empty_indepic_bg@3x.png', 100%, 100%);
+    }
+    .refresh-wrap {
+      position: absolute;
+      top: px2rem(171px);
+      right: 0;
+      height: px2rem(72px);
+      width: px2rem(72px);
+      z-index: 102;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: px2rem(100px) 0px 0px px2rem(100px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .refresh-icon {
+        display: inline-block;
+        width: px2rem(40px);
+        height: px2rem(40px);
+        background-size: px2rem(40px) px2rem(40px);
+        background-image: url('~@/assets/live-exam/refresh-icon.png');
+      }
     }
   }
 </style>
