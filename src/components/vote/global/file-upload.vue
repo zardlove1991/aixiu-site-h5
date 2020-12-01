@@ -1,7 +1,7 @@
 <template>
   <div class="vote-upload">
-    <div class="upload-picture-item"
-      v-show="(flag === 'picture' || flag === 'videoCover' ) && fileList.length"
+    <div :class="['upload-picture-item', flag === 'videoCover' ? 'video-cover' : '']"
+      v-show="(flag === 'picture' || flag === 'videoCover') && fileList.length"
       v-for="(item, index) in fileList" :key="index">
       <img :src="item.url"
         @click.stop="_setPreviewState"
@@ -150,7 +150,7 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
-      console.log('onSuccess', response)
+      // console.log('onSuccess', response)
       let { obj, duration, width, height } = response
       if (!obj) {
         return
@@ -209,6 +209,10 @@ export default {
       margin: 0 px2rem(30px) px2rem(25px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
+      &.video-cover {
+        width: px2rem(470px);
+        height: px2rem(260px);
+      }
       img {
         border-radius: px2rem(8px);
       }
