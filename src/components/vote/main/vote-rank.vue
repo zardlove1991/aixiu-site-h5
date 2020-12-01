@@ -24,7 +24,7 @@
           </div>
           <div class="indexpic-wrap"
             v-if="flag === 'video' && myVoteData.material && myVoteData.material.video && myVoteData.material.video.length"
-            :style="{ backgroundImage: 'url(' + myVoteData.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
+            :style="{ backgroundImage: `url(${myVoteData.material.video[0].cover_image ? myVoteData.material.video[0].cover_image : myVoteData.material.video[0].cover}?x-oss-process=image/resize,w_400)`}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
             <div class="play-icon"></div>
           </div>
@@ -55,7 +55,7 @@
               </div>
               <div class="indexpic-wrap"
                 v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
-                :style="{ backgroundImage: 'url(' + item.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
+                :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
                 <div class="rank-num">{{item.numbering}}号</div>
                 <div class="play-icon"></div>
               </div>
