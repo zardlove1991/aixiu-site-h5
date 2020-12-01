@@ -242,7 +242,7 @@ import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
+import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -398,6 +398,7 @@ export default {
           this.checkLotteryOpen(lottery, rule, todayVotes)
         }
         STORAGE.set('detailInfo', res)
+        setBrowserTitle(res.title)
         // 分享
         this.sharePage(res)
         this.setLocation()
