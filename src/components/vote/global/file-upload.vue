@@ -1,7 +1,7 @@
 <template>
   <div class="vote-upload">
     <div class="upload-picture-item"
-      v-show="flag === 'picture' && fileList.length"
+      v-show="(flag === 'picture' || flag === 'videoCover' ) && fileList.length"
       v-for="(item, index) in fileList" :key="index">
       <img :src="item.url"
         @click.stop="_setPreviewState"
@@ -65,6 +65,10 @@ export default {
   data () {
     return {
       settings: {
+        videoCover: {
+          limit: 1,
+          accept: 'image/*'
+        },
         picture: {
           limit: 9,
           // accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
@@ -138,6 +142,7 @@ export default {
           this.fileList.splice(i, 1)
         }
       }
+      this.$emit('changeFile')
     },
     // 文件超出个数
     handleExceed () {
@@ -145,6 +150,7 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
+      console.log('onSuccess', response)
       let { obj, duration, width, height } = response
       if (!obj) {
         return

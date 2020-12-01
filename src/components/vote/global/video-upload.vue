@@ -5,6 +5,7 @@
         :data="fileList[0]"
         :isShowDelBtn="true"
         :isSmall="true"
+        :noSetCover="true"
         @deleteFile="handleRemove">
       </vote-video>
     </div>
