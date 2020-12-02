@@ -7,7 +7,8 @@ import {
   Input,
   Upload,
   Image,
-  Loading
+  Loading,
+  Cascader
 } from 'element-ui'
 
 export default function (Vue) {
@@ -19,4 +20,5 @@ export default function (Vue) {
   Vue.use(Upload)
   Vue.use(Image)
   Vue.use(Loading)
+  Vue.use(Cascader)
 }

@@ -245,6 +245,10 @@ const routes = [{
   meta: {
     title: '新闻专题'
   }
+}, {
+  path: '/drawlist',
+  name: 'drawlist',
+  component: getOtherComponent('list', 'draw')
 }]
 
 let router = new Router({
