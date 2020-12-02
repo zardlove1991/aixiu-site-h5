@@ -90,6 +90,10 @@ let newsUrl = {
   getCityWeather: 'client/news/weather/{id}/' // 获取城市天气
 }
 
+let drawUrl = {
+  getMyDrawList: 'xiuzan/account/mine/'
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
@@ -98,6 +102,7 @@ let configUrl = {
   ...voteUrl,
   ...enrollUrl,
   ...newsUrl,
+  ...drawUrl,
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -168,5 +173,7 @@ export default {
   getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
   // 新闻
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
-  getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news')
+  getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
+  // 抽奖
+  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG)
 }

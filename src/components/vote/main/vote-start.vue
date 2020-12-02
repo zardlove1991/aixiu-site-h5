@@ -541,7 +541,6 @@ export default {
     },
     goLotteryPage () {
       let { link } = this.lottery
-      console.log('link:', link)
       if (link) {
         window.location.href = link +
         '?lotteryEnterType=' + this.lotteryEnterType +
