@@ -185,10 +185,11 @@ export default {
       }
     },
     goLotteryPage (draw) {
-      let { h5_url: h5Url } = draw
+      let { h5_url: h5Url, id } = draw
       let link = h5Url.split('?t=')[0]
       window.location.href = link +
         '?lotteryEnterType=history' +
+        '&gid=' + id +
         '&time=' + new Date().getTime()
     }
   }
