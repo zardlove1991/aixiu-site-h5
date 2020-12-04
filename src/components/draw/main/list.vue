@@ -2,28 +2,33 @@
   <div class="my-draw-list">
     <div class="filter">
       <div class="flex">
-        <div>
+        <div class="flex-one">
           <div class="input-box">
-            <el-cascader
-              v-model="date"
-              popper-class="my-draw-list-popper"
-              :props="{value: dateOptions.value}"
-              :options="dateOptions"
-              @change="resetPage('date', $event)"></el-cascader>
+            <el-dropdown @command="changeDate" trigger="click">
+              <span class="el-dropdown-link active">
+                {{date}}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown" class="mydraw-dropdown-menu">
+                <el-dropdown-item :command="item" v-for="(item, index) in dateOptions" :key="index">{{item}}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
         </div>
-        <div>
+        <div class="flex-one">
           <div class="input-box">
-            <el-cascader
-              v-model="status"
-              :placeholder="'领取状态'"
-              popper-class="my-draw-list-popper"
-              :options="statusOptions"
-              @change="resetPage('status', $event)"></el-cascader>
+            <el-dropdown @command="changeStatus" trigger="click">
+              <span class="el-dropdown-link" :class="(status===0||status)&&'active'">
+                {{status===0?'全部':status?statusOptions[status]:'领取状态'}}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown" class="mydraw-dropdown-menu">
+                <el-dropdown-item :command="index" v-for="(item, index) in statusOptions" :key="index">{{item}}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
         </div>
       </div>
-      <div class="overview-content-wrap">
+    </div>
+    <div class="overview-content-wrap">
         <mt-loadmore
             ref="loadmore"
             :bottom-method="loadMore"
@@ -61,30 +66,26 @@
             </div>
         </mt-loadmore>
       </div>
-    </div>
   </div>
 </template>
 <script>
 import mixins from '@/mixins/index'
 import { Loadmore } from 'mint-ui'
 import API from '@/api/module/examination'
+import { setBrowserTitle } from '@/utils/utils'
 export default {
   mixins: [mixins],
   data () {
     return {
       date: '',
-      dateOptions: [
-        {value: '2019-10', label: '2019-10'}
-      ],
-      status: '',
+      dateOptions: ['2019-10'],
+      status: null,
       statusOptions: [
-        {value: '', label: '全部'},
-        {value: 2, label: '已领取'},
-        {value: 1, label: '未领取'},
-        {value: 3, label: '已过期'}
+        '全部', '未领取', '已领取', '已过期'
       ],
       page: 1,
       size: 10,
+      count: 0,
       noMore: false,
       loading: false,
       listDate: []
@@ -92,6 +93,7 @@ export default {
   },
   components: {Loadmore},
   mounted () {
+    setBrowserTitle('我的中奖记录')
     this.setDateOptions()
   },
   methods: {
@@ -110,32 +112,34 @@ export default {
           startYear++
         }
         const _date = startYear + '-' + startMonth.toString().padStart(2, '0')
-        this.dateOptions.unshift({
-          value: _date,
-          label: _date
-        })
+        this.dateOptions.unshift(_date)
       }
-      this.date = this.dateOptions[0].value
+      this.date = this.dateOptions[0]
       this.$nextTick(() => {
         this.getDate()
       })
     },
-    resetPage (type, value) {
+    changeStatus (command) {
       this.page = 1
       this.noMore = false
       this.listDate = []
-      if (type === 'date') {
-        this.date = value[0]
-      } else if (type === 'status') {
-        this.status = value[0]
-      }
+      this.status = command
+      this.$nextTick(() => {
+        this.getDate()
+      })
+    },
+    changeDate (command) {
+      this.date = command
+      this.page = 1
+      this.noMore = false
+      this.listDate = []
       this.$nextTick(() => {
         this.getDate()
       })
     },
     getDate () {
       let query = {
-        status: this.status,
+        status: this.status || '',
         draw_time: this.date,
         page: this.page,
         size: this.size
@@ -145,16 +149,17 @@ export default {
         params: {...query}
       }).then(res => {
         this.loading = false
-        let {data} = res
+        let {data, count} = res
+        this.count = count
         if (data.length < this.size) {
           this.noMore = true
         }
         this.listDate.push(...data)
-        this.$nextTick(() => {
-          this.$refs.loadmore.onBottomLoaded()
-        })
       }).catch(() => {
         this.loading = false
+      })
+      this.$nextTick(() => {
+        this.$refs.loadmore.onBottomLoaded()
       })
     },
     loadMore () {
@@ -191,30 +196,30 @@ export default {
 </script>
 <style lang="scss">
   @import "@/styles/index.scss";
-  div.my-draw-list-popper {
+  .mydraw-dropdown-menu {
     margin-top: 0!important;
     left: 0!important;
+    top: 45px!important;
     width: 100%;
     border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow: auto;
     .popper__arrow{
       display: none;
     }
-    .el-cascader-menu{
-      width: 100%;
-    }
-    .el-cascader-menu__list {
+    .el-dropdown-menu__item {
       padding-left: 15%;
-      .el-cascader-node {
-        padding-left: 0;
-        i{display: none;}
-        span{padding-left: 0;}
-      }
-      .el-cascader-node.is-active{
-        color: #FF6A45;
-      }
     }
   }
   .my-draw-list{
+    height: 100vh;
+    overflow-y: auto;
+    .overview-content-wrap{
+      padding-bottom: 4rem;
+    }
+    .flex-one{
+      flex: 1;
+    }
     .flex{
       display: flex;
       text-align: center;
@@ -222,13 +227,11 @@ export default {
         display: inline-block;
         width: 70%;
       }
-      .el-input__inner {
-        border: none;
-        text-align: center;
-        color: #FF6A45;
-      }
-      .el-cascader{
+      .el-dropdown{
         line-height: 45px;
+        .el-dropdown-link.active{
+          color: #FF6A45;
+        }
       }
     }
     .item{
