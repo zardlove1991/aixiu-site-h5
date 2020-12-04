@@ -126,7 +126,7 @@ export default {
       this.listDate = []
       if (type === 'date') {
         this.date = value[0]
-      } else {
+      } else if (type === 'status') {
         this.status = value[0]
       }
       this.$nextTick(() => {
@@ -135,7 +135,7 @@ export default {
     },
     getDate () {
       let query = {
-        status: this.status && this.status[0],
+        status: this.status,
         draw_time: this.date,
         page: this.page,
         size: this.size
