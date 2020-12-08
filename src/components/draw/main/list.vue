@@ -216,7 +216,13 @@ export default {
     height: 100vh;
     overflow-y: auto;
     .overview-content-wrap{
-      padding-bottom: 4rem;
+      padding: 45px 0 4rem;
+    }
+    .filter{
+      width: 100%;
+      position: fixed;
+      z-index: 1;
+      background: #fff;
     }
     .flex-one{
       flex: 1;
