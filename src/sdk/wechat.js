@@ -98,14 +98,14 @@ let wechat = {
     if (id) {
       STORAGE.clear()
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
-        // 投票
+        // 投票 抽奖列表
         this.getVoteAuthScope(id)
       } else if (pathname.indexOf('depencestart') !== -1 || pathname.indexOf('livestart') !== -1) {
         // 测评
         this.getExamAuthScope(id)
       } else if (pathname.indexOf('enrollstart') !== -1) {
         this.getDefaultScope()
-      } else if (pathname.indexOf('newstart') !== -1) {
+      } else if (pathname.indexOf('newstart') !== -1 || pathname.indexOf('drawlist') !== -1) {
         this.getDefaultScope()
       }
     }
