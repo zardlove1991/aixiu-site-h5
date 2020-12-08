@@ -81,7 +81,7 @@ export default {
       dateOptions: ['2019-10'],
       status: null,
       statusOptions: [
-        '全部', '未领取', '已领取', '已过期'
+        '全部', '未领取', '已领取', '已过期', '已过期'
       ],
       page: 1,
       size: 10,
