@@ -96,7 +96,7 @@ export const oauth = (cbk) => {
   if (id) {
     STORAGE.clear()
     if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1 ||
-      pathname.indexOf('enrollstart') !== -1 || pathname.indexOf('newstart') !== -1) {
+      pathname.indexOf('enrollstart') !== -1 || pathname.indexOf('newstart') !== -1 || pathname.indexOf('drawlist') !== -1) {
       smartcity.authorize((code, sdkInfo) => {
         if (code > 0) {
           smartcity.h5Signature(sdkInfo, cbk)
