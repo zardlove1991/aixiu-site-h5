@@ -18,7 +18,7 @@
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
           <div class="item-indexpic"
             v-if="flag === 'video' && item.works.material && item.works.material.video && item.works.material.video.length"
-            :style="{ backgroundImage: 'url(' + item.works.material.video[0].cover + '?x-oss-process=image/resize,w_400)'}">
+            :style="{ backgroundImage: `url(${item.works.material.video[0].cover_image ? item.works.material.video[0].cover_image : item.works.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
             <div class="play-icon"></div>
           </div>
           <div class="item-content">

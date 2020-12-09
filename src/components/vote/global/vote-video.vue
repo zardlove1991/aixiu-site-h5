@@ -16,7 +16,7 @@
     <!--视频遮罩层-->
     <div class="thumb-wrap"
       v-show="isShowPoster"
-      :style="{ backgroundImage: 'url('+ data.cover +')'}">
+      :style="{ backgroundImage: `url(${getBgImg})`}">
       <div :class="['play-icon', isSmall ? 'small' : '']" @click.stop='setPlay'></div>
     </div>
     <i class="file-delete-icon" v-if="isShowDelBtn" @click="deleteFile(data)"></i>
@@ -39,6 +39,10 @@ export default {
     isSmall: {
       type: Boolean,
       default: false
+    },
+    noSetCover: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -52,6 +56,17 @@ export default {
     isPlay (newState) {
       let myVideo = this.video
       newState ? myVideo.play() : myVideo.pause()
+    }
+  },
+  computed: {
+    getBgImg () {
+      let noSetCover = this.noSetCover
+      let data = this.data
+      if (noSetCover) {
+        return data.cover
+      } else {
+        return data.cover_image ? data.cover_image : data.cover
+      }
     }
   },
   mounted () {
