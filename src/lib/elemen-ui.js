@@ -7,7 +7,11 @@ import {
   Input,
   Upload,
   Image,
-  Loading
+  Loading,
+  Cascader,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'element-ui'
 
 export default function (Vue) {
@@ -19,4 +23,8 @@ export default function (Vue) {
   Vue.use(Upload)
   Vue.use(Image)
   Vue.use(Loading)
+  Vue.use(Cascader)
+  Vue.use(Dropdown)
+  Vue.use(DropdownMenu)
+  Vue.use(DropdownItem)
 }
