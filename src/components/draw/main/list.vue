@@ -6,10 +6,10 @@
           <div class="input-box">
             <el-dropdown @command="changeDate" trigger="click">
               <span class="el-dropdown-link active">
-                {{date}}<i class="el-icon-arrow-down el-icon--right"></i>
+                {{date||'全部'}}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown" class="mydraw-dropdown-menu">
-                <el-dropdown-item :command="item" v-for="(item, index) in dateOptions" :key="index">{{item}}</el-dropdown-item>
+                <el-dropdown-item :command="item" v-for="(item, index) in dateOptions" :key="index">{{item||'全部'}}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -114,6 +114,7 @@ export default {
         const _date = startYear + '-' + startMonth.toString().padStart(2, '0')
         this.dateOptions.unshift(_date)
       }
+      this.dateOptions.unshift('')
       this.date = this.dateOptions[0]
       this.$nextTick(() => {
         this.getDate()
@@ -202,7 +203,9 @@ export default {
     left: 0!important;
     top: 45px!important;
     width: 100%;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 4px!important;
+    box-shadow: 0 6px 6px 0 rgba(0,0,0,.1)!important;
+    border-top: none!important;
     max-height: 200px;
     overflow: auto;
     .popper__arrow{
