@@ -5,7 +5,6 @@ const protocol = window.location.protocol
 // const host = `${suffix}.aihoge.com`
 const config = require('../../setting.json')
 const host = config.CUSTOM_HOST
-console.log(config, 999999)
 
 export default {
   'submit': `${protocol}//result${host}/`,
