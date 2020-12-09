@@ -6,10 +6,10 @@
       @click.stop="jumpPage(item.is_my ? 'voteoneself' : 'votedetail', { worksId: item.id })">
       <div class="work-poster-wrap"
         v-if="item.material.video && item.material.video.length"
-        :style="{ backgroundImage: 'url('+ item.material.video[0].cover+')'}">
+        :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover })`}">
         <div class="poster-thumb">
           <div class="thumb-bg" :class="[ item.bgClass ]"></div>
-          <div class="thumb-poster" :style="{ backgroundImage: 'url('+ item.material.video[0].cover+')'}"></div>
+          <div class="thumb-poster" :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover })`}"></div>
         </div>
         <div :class="['poster-infos-wrap', item.is_my ? 'my-infos-wrap' : '']">
           <div class="info-number"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号 · {{item.total_votes}}{{signUnit}}</div>

@@ -449,6 +449,7 @@ export default {
     }
   }
   .btn-wrap {
+    width: 100%;
     margin-top: px2rem(60px);
     padding-bottom: px2rem(60px);
     display: flex;
@@ -460,7 +461,7 @@ export default {
       // color: #FFA46A;
       @include border('all', px2rem(1px), solid, 'highColor');
       @include font-color('highColor');
-      transform: rotateZ(360deg);
+      // transform: rotateZ(360deg);
       height: px2rem(90px);
       // line-height:px2rem(90px);
       // text-align: center;

@@ -2,9 +2,21 @@
   <div class="form-submit-wrap">
     <form>
       <div v-if="flag === 'video'" class="form-item">
-        <div class="form-title">上传视频<span class="form-tips">(视频格式为MP4)</span></div>
+        <div class="form-title">上传视频</div>
+        <div class="form-tips-div">视频格式为MP4，时长不能超过60s</div>
         <div class="form-content">
           <video-upload :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+        </div>
+      </div>
+      <div v-if="flag === 'video'" class="form-item">
+        <div class="form-title">视频封面<span class="form-tips">(选填)</span></div>
+        <div class="form-tips-div">建议比例16:9，支持PNG、JPG、GIF格式， 小于5M</div>
+        <div class="form-content">
+          <file-upload :loading.sync="videoCoverLoading"
+            flag="videoCover"
+            :fileList="videoCoverList"
+            @changeFile="changeVideoCoverFile">
+          </file-upload>
         </div>
       </div>
       <div v-if="flag === 'picture'" class="form-item">
@@ -29,7 +41,7 @@
       <div class="form-item">
         <div class="form-title">名称</div>
         <div class="form-content">
-          <el-input v-model="examineData.name" @blur="blurAction()" maxlength="20"></el-input>
+          <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
         </div>
       </div>
       <div class="form-item">
@@ -123,7 +135,10 @@ export default {
       isOpenClassify: false,
       isShowClassify: false,
       classifyData: [],
-      defaultSelect: {}
+      defaultSelect: {},
+      videoCoverLoading: false,
+      videoCoverList: [],
+      videoCover: ''
     }
   },
   methods: {
@@ -156,8 +171,18 @@ export default {
               this.fileList = res.material.image
               this.material.image = res.material.image
             } else if (flag === 'video') {
-              this.fileList = res.material.video
-              this.material.video = res.material.video
+              let video = res.material.video
+              this.fileList = video
+              this.material.video = video
+              if (video && video.length) {
+                let url = video[0].cover_image
+                if (url) {
+                  this.videoCoverList = [{
+                    url
+                  }]
+                  this.videoCover = url
+                }
+              }
             } else if (flag === 'audio') {
               this.fileList = res.material.audio
               this.material.audio = res.material.audio
@@ -295,11 +320,35 @@ export default {
         this.material = {...this.material}
       }
       if (this.flag === 'video') {
+        if (this.videoCover) {
+          fileList.forEach(item => {
+            item.cover_image = this.videoCover
+          })
+        }
         this.material = {...this.material, video: [...this.fileList]}
       } else if (this.flag === 'picture') {
         this.material = {...this.material, image: [...this.fileList]}
       } else if (this.flag === 'audio') {
         this.material = {...this.material, audio: [...this.fileList]}
+      }
+    },
+    changeVideoCoverFile () {
+      let videoCoverList = this.videoCoverList
+      let material = this.material
+      let coverImage = ''
+      if (videoCoverList && videoCoverList.length) {
+        let img = videoCoverList[0]
+        if (img.url) {
+          coverImage = img.url
+        } else {
+          coverImage = `${img.host}${img.filename}`
+        }
+      }
+      if (material && material.video) {
+        if (material.video.length) {
+          material.video[0].cover_image = coverImage
+        }
+        this.videoCover = coverImage
       }
     }
   }
