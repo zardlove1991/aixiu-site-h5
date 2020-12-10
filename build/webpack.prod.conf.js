@@ -117,7 +117,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       },
       {
-        from: path.resolve(__dirname, '../setting.json'),
+        from: path.resolve(__dirname, '../setting.js'),
         to: config.build.assetsRoot,
         ignore: ['.*']
       }

@@ -3,7 +3,7 @@ const protocol = window.location.protocol
 // const env = getEnvironment()
 // const suffix = env === 'online' ? '-ax' : `-ax-${env}`
 // const host = `${suffix}.aihoge.com`
-const config = require('../../setting.json')
+const config = localStorage.getItem(location.host) ? JSON.parse(localStorage.getItem(location.host)) : {}
 const host = config.CUSTOM_HOST
 
 export default {
