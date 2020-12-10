@@ -14,3 +14,4 @@ function fileReplaceConf(){
   done
 }
 fileReplaceConf /m2odata/www/setting.js
+fileReplaceConf /m2odata/www/index.html
