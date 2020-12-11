@@ -322,7 +322,10 @@ export default {
       this.previewTimer = setInterval(() => {
         let isShowModelThumb = this.isShowModelThumb // 全局模态框状态
         let previewEl = document.querySelector('.lg-preview-wrapper')
-        let isPreview = !(previewEl.style.display === 'none')
+        let isPreview = ''
+        if (previewEl) {
+          isPreview = !(previewEl.style.display === 'none')
+        }
         console.log('当前图片预览状态', isPreview)
         // 设置全局模态框状态 相同状态就不设置
         if (isShowModelThumb !== isPreview) this.setModelThumbState(isPreview)

@@ -1,0 +1,159 @@
+<template>
+  <div :class="['news-video1-wrap', themeName + '-bg']">
+    <div class="video1-index" v-if="indexData && indexData.title">
+      <news-video-common :videoObj="indexData.videoObj" />
+      <div :class="['video1-content', themeName]" @click.stop="goPage(indexData)">
+        <div class="header">{{indexData.title}}</div>
+        <div class="source">{{indexData.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
+      </div>
+    </div>
+    <div class="video1-next">
+      <div class="video1-item small-video"
+        v-for="(item, index) in tmpList"
+        :key="index"
+        v-show="index !== 0">
+        <news-video-common :isFull="true" :videoObj="item.videoObj" />
+        <div :class="['video1-content', 'small', themeName]" @click.stop="goPage(item)">
+          <div class="header">{{item.title}}</div>
+          <div class="source">{{item.source}}<span v-if="showTime"> · </span>{{showTime}}</div>
+        </div>
+      </div>
+    </div>
+    <news-number :config="config" />
+  </div>
+</template>
+
+<script>
+import NewsVideoCommon from '@/components/news/global/base-video'
+import NewsNumber from '@/components/news/global/news-number'
+
+export default {
+  props: {
+    themeName: {
+      type: String,
+      default: 'white'
+    },
+    showTime: String,
+    tmpList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    config: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
+  },
+  components: {
+    NewsVideoCommon, NewsNumber
+  },
+  data () {
+    return {
+      indexData: {}
+    }
+  },
+  created () {
+    this.initData()
+  },
+  watch: {
+    tmpList: {
+      handler (val) {
+        this.initData()
+      },
+      deep: true
+    }
+  },
+  methods: {
+    initData () {
+      // console.log('initData video1', this.tmpList)
+      let tmpList = this.tmpList
+      if (tmpList && tmpList.length > 0) {
+        tmpList.map(item => {
+          let posterUrl = ''
+          let ratio = item.ratio
+          let material = item.material
+          if (material && material.length) {
+            posterUrl = material[0]
+          }
+          item.videoObj = {
+            ratio,
+            posterUrl,
+            videoUrl: item.video_url
+          }
+          return item
+        })
+        this.indexData = tmpList[0]
+      }
+    },
+    goPage (item) {
+      this.$emit('goPage', item)
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+  @import "@/styles/index.scss";
+  .news-video1-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    // background-color: #ffffff;
+    padding: 0 px2rem(30px);
+    @include bg-linear-color('bgColor');
+    .video1-index {
+      margin-top: px2rem(30px);
+      margin-bottom: px2rem(40px);
+      width: 100%;
+      border-radius: px2rem(8px);
+    }
+    .video1-next {
+      width: 100%;
+      display: flex;
+      margin-bottom: px2rem(30px);
+      .video1-item {
+        margin-right: 0.9375rem;
+        width: calc((100% - 0.9375rem) / 2);
+        height: 0px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+    .video1-content {
+      margin-top: px2rem(20px);
+      width: 100%;
+      border-radius: px2rem(8px);
+      .header {
+        color: #333;
+        margin-bottom: px2rem(5px);
+        @include line-overflow(2);
+        @include font-dpr(18px);
+        font-weight: bold;
+      }
+      .source {
+        color: #999;
+        @include font-dpr(12px);
+      }
+      &.small {
+        .header {
+          @include font-dpr(16px);
+        }
+      }
+      &.newsblack {
+        .header {
+          color: #fff;
+          opacity: 0.9;
+        }
+        .source {
+          opacity: 0.5;
+          color: #fff;
+        }
+      }
+    }
+  }
+</style>

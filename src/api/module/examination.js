@@ -43,7 +43,8 @@ let examUrl = {
   unlockCourse: 'client/examination/submitted', // 解锁课程
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getExamAuthScope: 'open/examination/detail', // 测评授权接口
-  getInfoDept: 'client/examination/import/verify' // 获取信息收集用户的部门
+  getInfoDept: 'client/examination/import/verify', // 获取信息收集用户的部门
+  setLiveVideoTime: 'client/examination/live/statistics' // 直播答题观看时间
 }
 
 // 投票相关接口
@@ -83,6 +84,16 @@ let enrollUrl = {
   getMyEnrollCount: 'client/order/{id}/count' // 我的预约次数
 }
 
+// 资讯新闻
+let newsUrl = {
+  getNewsDetail: 'client/news/{id}/', // 获取资讯新闻详情
+  getCityWeather: 'client/news/weather/{id}/' // 获取城市天气
+}
+
+let drawUrl = {
+  getMyDrawList: 'xiuzan/account/mine/'
+}
+
 // 不带GUID
 let configUrl = {
   ...QCloundUrl,
@@ -90,6 +101,8 @@ let configUrl = {
   ...examUrl,
   ...voteUrl,
   ...enrollUrl,
+  ...newsUrl,
+  ...drawUrl,
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -126,6 +139,7 @@ export default {
   getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
+  setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
@@ -156,5 +170,10 @@ export default {
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
   saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
   remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG),
-  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG)
+  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
+  // 新闻
+  getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
+  getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
+  // 抽奖
+  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG)
 }

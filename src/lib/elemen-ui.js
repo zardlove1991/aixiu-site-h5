@@ -6,7 +6,12 @@ import {
   Checkbox,
   Input,
   Upload,
-  Loading
+  Image,
+  Loading,
+  Cascader,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'element-ui'
 
 export default function (Vue) {
@@ -16,5 +21,10 @@ export default function (Vue) {
   Vue.use(Checkbox)
   Vue.use(Input)
   Vue.use(Upload)
+  Vue.use(Image)
   Vue.use(Loading)
+  Vue.use(Cascader)
+  Vue.use(Dropdown)
+  Vue.use(DropdownMenu)
+  Vue.use(DropdownItem)
 }

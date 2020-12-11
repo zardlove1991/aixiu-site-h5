@@ -87,7 +87,7 @@
           </vote-classify-list>
           <div class="name-bar-wrap">
             <input class="search-input" type="text" placeholder="名称/来源/编号" v-model="searchVal"
-                @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" />
+                @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" @input="dealSearch('input-search')"/>
             <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
             </div>
           </div>
@@ -130,6 +130,7 @@
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-text>
+          <div v-show="!loading && !noMore" class="scroll-tips">—— 下拉加载更多 ——</div>
         </div>
         <div slot="bottom" class="mint-loadmore-top">
           <div class="loading-box" v-if="!noMore && loading">
@@ -241,7 +242,7 @@ import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, getAppSign, delUrlParams } from '@/utils/utils'
+import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -321,11 +322,18 @@ export default {
       lottery: {},
       isShowLottery: false,
       lotteryMsg: '',
-      isOpenShare: false
+      isOpenShare: false,
+      shareConfigData: {}
     }
   },
   created () {
     this.initData()
+    let plat = getPlat()
+    if (plat === 'smartcity') {
+      window.SmartCity.onShareSuccess((res) => {
+        this.appShareCallBack()
+      })
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -390,6 +398,7 @@ export default {
           this.checkLotteryOpen(lottery, rule, todayVotes)
         }
         STORAGE.set('detailInfo', res)
+        setBrowserTitle(res.title)
         // 分享
         this.sharePage(res)
         this.setLocation()
@@ -487,6 +496,14 @@ export default {
       } else {
         shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
       }
+      this.shareConfigData = {
+        id: detailInfo.id,
+        title: shareTitle,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
+      }
       this.initPageShareInfo({
         id: detailInfo.id,
         title: shareTitle,
@@ -514,16 +531,20 @@ export default {
             this.isShowLottery = true
             this.lotteryMsg = `可抽奖${this.lottery.remain_lottery_counts}次`
           } else {
-            Toast('感谢分享，你已经使用过分享送抽奖机会了！')
+            if (!STORAGE.get('has_share_online' + this.lottery.lottery_id)) {
+              Toast('感谢分享，你已经使用过分享送抽奖机会了！')
+              STORAGE.set('has_share_online' + this.lottery.lottery_id, true)
+            }
           }
         })
       }
     },
     goLotteryPage () {
       let { link } = this.lottery
-      console.log('link:', link)
       if (link) {
-        window.location.href = link + '?lotteryEnterType=' + this.lotteryEnterType + '&time=' + new Date().getTime()
+        window.location.href = link +
+        '?lotteryEnterType=' + this.lotteryEnterType +
+        '&time=' + new Date().getTime()
       }
     },
     handleVoteData () {
@@ -939,11 +960,26 @@ export default {
     closeWorkVote () {
       this.isShowWorkVote = false
     },
+    appShareCallBack () {
+      if (this.shareConfigData.id && this.isOpenShare) {
+        this.setShare({
+          id: this.shareConfigData.id,
+          title: this.shareConfigData.title,
+          from: this.shareConfigData.from,
+          mark: this.shareConfigData.mark
+        }).then(
+          this.shareLottery()
+        )
+      }
+    },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
       setShareData: 'SET_SHARE_DATA',
       setMyVote: 'SET_MY_VOTE',
       setIsBtnAuth: 'SET_IS_BTN_AUTH'
+    }),
+    ...mapActions('depence', {
+      setShare: 'SET_SHARE'
     }),
     searchClassify (val) {
       this.searchClassifyVal = val

@@ -5,6 +5,7 @@
       <exam-header
         :list="examList"
         :showSubmitModel.sync="isShowSubmitModel"
+        :isOpenSubmitAll="isOpenSubmitAll"
         :curIndex="currentSubjectIndex"
         @timeup="endTime"
         @notimeup="noEndTime"
@@ -129,7 +130,8 @@ export default {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
       isShowSuspendModels: false,
-      isShowSubmitModel: false
+      isShowSubmitModel: false,
+      isOpenSubmitAll: false
     }
   },
   components: {
@@ -196,6 +198,10 @@ export default {
           renderType: rtp,
           listType
         })
+        let isAll = this.examInfo.limit.is_open_submit_all
+        if (isAll) {
+          this.isOpenSubmitAll = true
+        }
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
       } catch (err) {
@@ -443,6 +449,7 @@ export default {
     }
   }
   .btn-wrap {
+    width: 100%;
     margin-top: px2rem(60px);
     padding-bottom: px2rem(60px);
     display: flex;
@@ -454,7 +461,7 @@ export default {
       // color: #FFA46A;
       @include border('all', px2rem(1px), solid, 'highColor');
       @include font-color('highColor');
-      transform: rotateZ(360deg);
+      // transform: rotateZ(360deg);
       height: px2rem(90px);
       // line-height:px2rem(90px);
       // text-align: center;

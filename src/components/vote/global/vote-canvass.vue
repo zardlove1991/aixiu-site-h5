@@ -119,7 +119,8 @@ export default {
               isLongCover = img.height > img.width
             }
           } else if (this.flag === 'video' && res.material.video && res.material.video.length) {
-            params.cover = res.material.video[0].cover + coverExt
+            let cover = res.material.video[0].cover_image ? res.material.video[0].cover_image : res.material.video[0].cover
+            params.cover = cover + coverExt
           } else if (this.flag === 'audio' && res.material.audio && res.material.audio.length) {
             params.audioTime = res.material.audio[0].duration
             params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt

@@ -15,6 +15,7 @@ export default {
   'reserve': `${protocol}//reserve${host}/`,
   'public': `${protocol}//public${host}/`,
   'c4': `${protocol}//c4api${host}/`,
+  'news': `${protocol}//news${host}.aihoge.com/`,
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
