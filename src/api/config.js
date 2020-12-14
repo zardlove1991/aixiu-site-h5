@@ -4,18 +4,18 @@ const protocol = window.location.protocol
 // const suffix = env === 'online' ? '-ax' : `-ax-${env}`
 // const host = `${suffix}.aihoge.com`
 const config = localStorage.getItem(location.host) ? JSON.parse(localStorage.getItem(location.host)) : {}
-const host = config.CUSTOM_HOST
+const host = config.CUSTOM_API
 
 export default {
-  'submit': `${protocol}//result${host}/`,
-  'user': `${protocol}//member${host}/`,
-  'exam': `${protocol}//examinationapi${host}/`,
-  'vote': `${protocol}//voteapi${host}/`,
-  'mlink': `${protocol}//m${host}/`,
-  'reserve': `${protocol}//reserve${host}/`,
-  'public': `${protocol}//public${host}/`,
-  'c4': `${protocol}//c4api${host}/`,
-  'news': `${protocol}//news${host}.aihoge.com/`,
+  'submit': `${protocol}//${host}/result/`,
+  'user': `${protocol}//${host}/member/`,
+  'exam': `${protocol}//${host}/examinationapi/`,
+  'vote': `${protocol}//${host}/voteapi/`,
+  'mlink': `${protocol}//m${host}/m/`,
+  'reserve': `${protocol}//${host}/reserve/`,
+  'public': `${protocol}//${host}/public/`,
+  'c4': `${protocol}//${host}/c4api/`,
+  'news': `${protocol}//${host}/news/`,
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
