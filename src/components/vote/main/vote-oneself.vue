@@ -60,13 +60,13 @@
         </div>
       </div>
     </div>
-    <div class="submit-btn-wrap color-button_color"
-      v-if="selfData.audit_status === 3 && selfData.audit_count < 2"
+    <!-- <div class="submit-btn-wrap color-button_color"
+      v-if="selfData.audit_status === 3"
       @click="jumpPage('votesubmit', { worksId: selfData.id })">
       <span class="menu-text color-button_text">修改</span>
-    </div>
+    </div> -->
     <div class="submit-btn-wrap color-button_color"
-      v-if="selfData.audit_status === 2 && selfData.audit_count < 2"
+      v-if="selfData.audit_status === 2"
       @click="jumpPage('votesubmit', { worksId: selfData.id })">
       <span class="menu-text color-button_text">重新报名</span>
     </div>
