@@ -1,21 +1,16 @@
-// import { getEnvironment } from '@/utils/app'
-const protocol = window.location.protocol
-// const env = getEnvironment()
-// const suffix = env === 'online' ? '-ax' : `-ax-${env}`
-// const host = `${suffix}.aihoge.com`
 const config = localStorage.getItem(location.host) ? JSON.parse(localStorage.getItem(location.host)) : {}
-const host = config.CUSTOM_API
+const host = `${window.location.protocol}//${window.location.host}/api`
 
 export default {
-  'submit': `${protocol}//${host}/result/`,
-  'user': `${protocol}//${host}/member/`,
-  'exam': `${protocol}//${host}/examinationapi/`,
-  'vote': `${protocol}//${host}/voteapi/`,
+  'submit': `${host}/result/`,
+  'user': `${host}/member/`,
+  'exam': `${host}/examinationapi/`,
+  'vote': `${host}/voteapi/`,
   'mlink': `${protocol}//m${host}/m/`,
-  'reserve': `${protocol}//${host}/reserve/`,
-  'public': `${protocol}//${host}/public/`,
-  'c4': `${protocol}//${host}/c4api/`,
-  'news': `${protocol}//${host}/news/`,
+  'reserve': `${host}/reserve/`,
+  'public': `${host}/public/`,
+  'c4': `${host}/c4api/`,
+  'news': `${host}/news/`,
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
