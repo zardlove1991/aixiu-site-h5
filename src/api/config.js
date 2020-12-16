@@ -1,5 +1,6 @@
 const config = localStorage.getItem(location.host) ? JSON.parse(localStorage.getItem(location.host)) : {}
 const host = `${window.location.protocol}//${window.location.host}/api`
+const apiHost = config.CUSTOM_HOST
 
 export default {
   'submit': `${host}/result/`,
@@ -9,7 +10,7 @@ export default {
   'mlink': `${protocol}//m${host}/m/`,
   'reserve': `${host}/reserve/`,
   'public': `${host}/public/`,
-  'c4': `${host}/c4api/`,
+  'c4': `//c4api${apiHost}/`,
   'news': `${host}/news/`,
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
