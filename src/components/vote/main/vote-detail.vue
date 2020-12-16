@@ -95,13 +95,15 @@ export default {
         signUpStatus: 1, // 报名中
         voteStatus: 2, // 投票中
         endStatus: 3, // 已结束
-        noSignUp: 4 // 未开始报名
+        noSignUp: 4, // 未开始报名
+        signUpVoteStatus: 5 // 边报名边投票
       },
       detailInfo: {},
       signUnit: '票',
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
-      isCloseDialog: false // 是否开启投票弹框
+      isCloseDialog: false, // 是否开启投票弹框
+      isOpenVoteReport: true
     }
   },
   created () {
@@ -205,6 +207,7 @@ export default {
       let flag = startTimeMS > nowTime
       if (endTimeMS <= nowTime) {
         this.setIsBtnAuth(0)
+        return
       }
       let status = flag ? noStatus : voteStatus
       this.setIsBtnAuth(status === noStatus ? 0 : 1)
