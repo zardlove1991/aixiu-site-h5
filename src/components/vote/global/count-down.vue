@@ -23,7 +23,7 @@
       </div>
     </div>
     <!--可投票数字提醒-->
-    <div class="right-vote-tip" v-show="status === 2">
+    <div class="right-vote-tip" v-show="status === 2 || status === 5">
       <span class="vote-title-tip color-link_text">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
       <span class="vote-tip-num color-link_text">{{ remainVotes ? remainVotes : 0 }}</span>
     </div>

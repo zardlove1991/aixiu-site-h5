@@ -102,8 +102,7 @@ export default {
       signUnit: '票',
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
-      isCloseDialog: false, // 是否开启投票弹框
-      isOpenVoteReport: true
+      isCloseDialog: false // 是否开启投票弹框
     }
   },
   created () {
