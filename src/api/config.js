@@ -1,5 +1,6 @@
 const config = localStorage.getItem(location.host) ? JSON.parse(localStorage.getItem(location.host)) : {}
-const host = `${window.location.protocol}//${window.location.host}/api`
+// const host = `${window.location.protocol}//${window.location.host}/api`
+const host = `//${config.CUSTOM_API}`
 const apiHost = config.CUSTOM_HOST
 
 export default {
