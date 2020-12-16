@@ -7,7 +7,7 @@ export default {
   'user': `${host}/member/`,
   'exam': `${host}/examinationapi/`,
   'vote': `${host}/voteapi/`,
-  'mlink': `${protocol}//m${host}/m/`,
+  'mlink': `${host}/m/`,
   'reserve': `${host}/reserve/`,
   'public': `${host}/public/`,
   'c4': `//c4api${apiHost}/`,
