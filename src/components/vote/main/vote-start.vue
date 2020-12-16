@@ -1,6 +1,27 @@
 <template>
   <div class="vote-start-wrap">
     <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+      <template
+        v-if="isOpenVoteReport &&
+          (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
+          isReportAuth === 1">
+        <div class="report-top-wrap" v-if="isExamine === 0">
+          <div class="report-msg"><span class="tips">我也要参加</span></div>
+          <div class="report-btn" @click="jumpPage('votesubmit')">立即报名</div>
+        </div>
+        <div class="report-top-wrap" v-if="isExamine === 1">
+          <div class="report-msg" v-if="myWorkStatus === 3">
+            <span class="tips">作品已提交成功，后台正在审核中</span>
+          </div>
+          <div class="report-msg" v-if="myWorkStatus === 1">
+            <span class="tips">作品已审核通过，快去拉票吧</span>
+          </div>
+          <div class="report-msg" v-if="myWorkStatus === 2">
+            <span class="tips">作品审核被打回</span>
+          </div>
+          <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div>
+        </div>
+      </template>
       <!--背景标题-->
       <div v-if="detailInfo.title"
         :class="['overview-indexpic-wrap', getPicTitleClass]">
@@ -64,7 +85,8 @@
             <span class="menu-text color-button_text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
           </div>
         </div>
-        <div class="overview-menus-wrap" v-if="status === statusCode.signUpStatus && isReportAuth === 1">
+        <div class="overview-menus-wrap"
+          v-if="!isOpenVoteReport && status === statusCode.signUpStatus && isReportAuth === 1">
           <div class="menu-wrap color-button_color"
             @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
             <span class="menu-text color-button_text" v-if="isExamine === 1">查看我的作品</span>
@@ -149,6 +171,7 @@
     <count-down
       v-if="status !== statusCode.endStatus"
       :status="status"
+      :isOpenVoteReport="isOpenVoteReport"
       :remainVotes="remainVotes"
       :textSetting="detailInfo.text_setting"
       :voteDate="voteDate">
@@ -162,14 +185,6 @@
         <button class="dialog-ok-btn" @click="isShowSearch = false">好的</button>
       </div>
     </tips-dialog>
-    <!-- <tips-dialog
-      :show="isShowEnd"
-      @close="isShowEnd = false">
-      <div class="search-dialog-wrap flex-column-dialog" slot="tips-content">
-        <div class="search-header">活动已经结束</div>
-        <button class="dialog-ok-btn" @click="isShowEnd = false">好的</button>
-      </div>
-    </tips-dialog> -->
     <share-vote
       ref="shareVote"
       :show="isShowWorkVote"
@@ -280,7 +295,8 @@ export default {
         signUpStatus: 1, // 报名中
         voteStatus: 2, // 投票中
         endStatus: 3, // 已结束
-        noSignUp: 4 // 未开始报名
+        noSignUp: 4, // 未开始报名
+        signUpVoteStatus: 5 // 边报名边投票
       },
       searchVal: '', // 搜索框输入内容
       searchBarFocus: false, // 搜索框是否获取焦点
@@ -323,7 +339,9 @@ export default {
       isShowLottery: false,
       lotteryMsg: '',
       isOpenShare: false,
-      shareConfigData: {}
+      shareConfigData: {},
+      myWorkStatus: null, // 作品审核状态
+      isOpenVoteReport: true
     }
   },
   created () {
@@ -405,7 +423,12 @@ export default {
         // 作品列表
         this.getVoteWorks()
         // 初始化时间
-        this.initReportTime()
+        if (this.isOpenVoteReport) {
+          // 边投票边报名
+          this.initVoteReportTime()
+        } else {
+          this.initReportTime()
+        }
         // 其他限制
         this.handleVoteData()
       }).catch(err => {
@@ -571,10 +594,13 @@ export default {
       if (limit.is_open_list === 0) {
         this.isShowRank = false
       }
-      if (myWork && myWork.id && myWork.audit_status === 1) {
-        myWork.is_my = 1
-        this.myWork = myWork
-        this.setMyVote(myWork)
+      if (myWork && myWork.id) {
+        this.myWorkStatus = myWork.audit_status
+        if (myWork.audit_status === 1) {
+          myWork.is_my = 1
+          this.myWork = myWork
+          this.setMyVote(myWork)
+        }
       }
       if (setup && setup.color_scheme) {
         this.colorName = setup.color_scheme.name
@@ -653,6 +679,109 @@ export default {
         })
       } else if (plat === 'wechat') {
         this.getLocation()
+      }
+    },
+    initVoteReportTime () {
+      let detailInfo = this.detailInfo
+      if (!detailInfo) {
+        return
+      }
+      let nowTime = new Date().getTime()
+      let { id, rule, start_time: startTime, end_time: endTime } = detailInfo
+      let {
+        report_status: reportStatus,
+        report_start_time: reportStartTime,
+        report_end_time: reportEndTime
+      } = rule
+      let status = null
+      let { noStatus, endStatus, signUpStatus, voteStatus, signUpVoteStatus } = this.statusCode
+      if (reportStatus && reportStatus === 2) {
+        // 开启了报名
+        let minTime = startTime > reportStartTime ? reportStartTime : startTime
+        let minTimeMs = minTime * 1000
+        let startTimeMs = startTime * 1000
+        let endTimeMs = endTime * 1000
+        let reportStartTimeMs = reportStartTime * 1000
+        let reportEndTimeMs = reportEndTime * 1000
+        // console.log(minTime, minTimeMs, startTimeMs, endTimeMs, reportStartTimeMs, reportEndTimeMs)
+        let flag = minTimeMs > nowTime
+        if (endTimeMs <= nowTime) {
+          // 已经结束
+          status = endStatus
+          this.status = endStatus
+          if (!this.isModelShow) {
+            this.isShowEnd = true
+          }
+          this.setIsModelShow(true)
+          this.setIsBtnAuth(0)
+          return
+        }
+        let time = flag ? minTimeMs : endTimeMs
+        if (flag) {
+          // 还未开始
+          status = noStatus
+          if (!this.isModelShow) {
+            this.isShowStart = true
+          }
+          this.setIsModelShow(true)
+          this.setIsBtnAuth(0)
+        } else {
+          // 活动中
+          let isReport = false
+          let isVote = false
+          if (nowTime < reportEndTimeMs && nowTime > reportStartTimeMs) {
+            isReport = true
+          }
+          if (nowTime < endTimeMs && nowTime > startTimeMs) {
+            isVote = true
+          }
+          if (isReport && !isVote) {
+            // 报名中
+            status = signUpStatus
+            console.log('report....')
+            this.setIsBtnAuth(0)
+          } else if (!isReport && isVote) {
+            // 投票中
+            console.log('voteing....')
+            status = voteStatus
+            this.setIsBtnAuth(1)
+          } else if (isReport && isVote) {
+            // 报名且投票
+            console.log('report.... voteing....')
+            status = signUpVoteStatus
+            this.setIsBtnAuth(1)
+          }
+          console.log('isBtnAuth= ', this.isBtnAuth)
+          // 获取剩余票数
+          this.getRemainVotes(id)
+          // 检查是否报名
+          this.checkUserReport(id)
+        }
+        this.status = status
+        this.startCountTime(time, (timeArr) => {
+          // console.log(time, timeArr)
+          // 更改当前投票的时间
+          this.voteDate = timeArr
+          this.startDate = timeArr
+        }, () => {
+          if (flag) {
+            if (this.isShowStart) {
+              this.isShowStart = false
+            }
+            this.initVoteReportTime()
+          } else {
+            // 结束后关闭
+            console.log('ending....')
+            this.status = endStatus
+            if (!this.isModelShow) {
+              this.isShowEnd = true
+            }
+            this.setIsModelShow(true)
+            this.setIsBtnAuth(0)
+          }
+        })
+      } else {
+        this.initVoteTime()
       }
     },
     initReportTime () {
@@ -995,6 +1124,31 @@ export default {
     width: 100%;
     height: 100vh;
     position: relative;
+    .report-top-wrap {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      width: 100%;
+      height: px2rem(80px);
+      background:rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 px2rem(22px);
+      .report-msg {
+        @include font-dpr(14px);
+        color: #FFFFFF;
+      }
+      .report-btn {
+        padding: 0 px2rem(20px);
+        height: px2rem(56px);
+        line-height: px2rem(56px);
+        background-color: #FC7465;
+        border-radius: px2rem(8px);
+        @include font-dpr(14px);
+        color: #FFFFFF;
+      }
+    }
     .active-rule-wrap {
       position: absolute;
       z-index: 10;

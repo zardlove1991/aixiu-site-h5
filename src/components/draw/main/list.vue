@@ -204,7 +204,7 @@ export default {
     top: 45px!important;
     width: 100%;
     border-radius: 0 0 4px 4px!important;
-    box-shadow: 0 6px 6px 0 rgba(0,0,0,.1)!important;
+    box-shadow: 0 6px 6px 0 rgba(0,0,0,.06)!important;
     border-top: none!important;
     max-height: 200px;
     overflow: auto;

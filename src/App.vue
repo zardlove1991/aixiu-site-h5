@@ -4,7 +4,7 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
-    <div class="no-suppot-wrap" v-if="isBrowser">不支持在浏览器中打开</div>
+    <div class="no-suppot-wrap" v-if="isBrowser">{{tipMsg}}</div>
   </div>
 </template>
 
@@ -19,7 +19,8 @@ export default {
   },
   data () {
     return {
-      isBrowser: false
+      isBrowser: false,
+      tipMsg: ''
     }
   },
   created () {
@@ -30,6 +31,7 @@ export default {
       let plat = getPlat()
       if (plat === 'browser') {
         this.isBrowser = true
+        this.tipMsg = '不支持在浏览器中打开'
       }
     }
   }

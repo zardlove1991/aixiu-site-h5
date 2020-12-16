@@ -46,6 +46,10 @@ export default {
     status: {
       type: Number
     },
+    isOpenVoteReport: {
+      type: Boolean,
+      default: false
+    },
     textSetting: {
       type: Object,
       default: () => {
@@ -57,20 +61,31 @@ export default {
     statusMsg () {
       let statusMsg = {}
       let textSetting = this.textSetting
-      if (textSetting && textSetting.sign) {
-        let vote = textSetting.sign
+      let isOpenVoteReport = this.isOpenVoteReport
+      if (isOpenVoteReport) {
         statusMsg = {
-          0: vote + '开始',
-          1: '报名结束',
-          2: vote + '结束',
-          4: '报名开始'
+          0: '活动开始',
+          1: '活动结束',
+          2: '活动结束',
+          4: '活动结束',
+          5: '活动结束'
         }
       } else {
-        statusMsg = {
-          0: '投票开始',
-          1: '报名结束',
-          2: '投票结束',
-          4: '报名开始'
+        if (textSetting && textSetting.sign) {
+          let vote = textSetting.sign
+          statusMsg = {
+            0: vote + '开始',
+            1: '报名结束',
+            2: vote + '结束',
+            4: '报名开始'
+          }
+        } else {
+          statusMsg = {
+            0: '投票开始',
+            1: '报名结束',
+            2: '投票结束',
+            4: '报名开始'
+          }
         }
       }
       return statusMsg
