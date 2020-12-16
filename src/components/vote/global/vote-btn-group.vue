@@ -2,8 +2,8 @@
   <div class="vote-btn-group-wrap">
     <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">{{getShareTxt}}</button>
     <button class="options-vote"
-      :class="{ disabled: !remainVotes || $store.state.vote.isBtnAuth !== 1 }"
-      :disabled="!remainVotes || $store.state.vote.isBtnAuth !== 1"
+      :class="{ disabled: !remainVotes || isBtnAuth !== 1 }"
+      :disabled="!remainVotes || isBtnAuth !== 1"
       @click.stop="btnClick(data, index, 'vote')">{{getVoteTxt}}
     </button>
   </div>
@@ -11,8 +11,7 @@
 
 <script>
 import STORAGE from '@/utils/storage'
-// import { mapGetters } from 'vuex'
-// import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -31,8 +30,7 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters('vote', ['isBtnAuth']),
-    // ...mapState('vote', ['isBtnAuth']),
+    ...mapGetters('vote', ['isBtnAuth']),
     getVoteTxt () {
       let detailInfo = STORAGE.get('detailInfo')
       let data = this.data

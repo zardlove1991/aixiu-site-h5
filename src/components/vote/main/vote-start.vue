@@ -5,7 +5,7 @@
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
           isReportAuth === 1">
-        <div class="report-top-wrap" v-if="isExamine === 0">
+        <div class="report-top-wrap" v-if="isExamine === 0 && status !== statusCode.voteStatus">
           <div class="report-msg"><span class="tips">我也要参加</span></div>
           <div class="report-btn" @click="jumpPage('votesubmit')">立即报名</div>
         </div>
@@ -341,7 +341,7 @@ export default {
       isOpenShare: false,
       shareConfigData: {},
       myWorkStatus: null, // 作品审核状态
-      isOpenVoteReport: true
+      isOpenVoteReport: false
     }
   },
   created () {
@@ -422,9 +422,18 @@ export default {
         this.setLocation()
         // 作品列表
         this.getVoteWorks()
-        // 初始化时间
-        if (this.isOpenVoteReport) {
-          // 边投票边报名
+        // 是否开启边投票边报名
+        let isOpenVoteReport = 0
+        if (rule.limit.is_open_enroll_vote) {
+          isOpenVoteReport = rule.limit.is_open_enroll_vote
+        }
+        if (isOpenVoteReport === 1) {
+          isOpenVoteReport = true
+        } else {
+          isOpenVoteReport = false
+        }
+        this.isOpenVoteReport = isOpenVoteReport
+        if (isOpenVoteReport) {
           this.initVoteReportTime()
         } else {
           this.initReportTime()
@@ -693,8 +702,8 @@ export default {
         report_start_time: reportStartTime,
         report_end_time: reportEndTime
       } = rule
-      let status = null
-      let { noStatus, endStatus, signUpStatus, voteStatus, signUpVoteStatus } = this.statusCode
+      // let status = null
+      let { noStatus, endStatus } = this.statusCode
       if (reportStatus && reportStatus === 2) {
         // 开启了报名
         let minTime = startTime > reportStartTime ? reportStartTime : startTime
@@ -703,11 +712,9 @@ export default {
         let endTimeMs = endTime * 1000
         let reportStartTimeMs = reportStartTime * 1000
         let reportEndTimeMs = reportEndTime * 1000
-        // console.log(minTime, minTimeMs, startTimeMs, endTimeMs, reportStartTimeMs, reportEndTimeMs)
         let flag = minTimeMs > nowTime
         if (endTimeMs <= nowTime) {
           // 已经结束
-          status = endStatus
           this.status = endStatus
           if (!this.isModelShow) {
             this.isShowEnd = true
@@ -719,50 +726,26 @@ export default {
         let time = flag ? minTimeMs : endTimeMs
         if (flag) {
           // 还未开始
-          status = noStatus
+          this.status = noStatus
           if (!this.isModelShow) {
             this.isShowStart = true
           }
           this.setIsModelShow(true)
           this.setIsBtnAuth(0)
         } else {
-          // 活动中
-          let isReport = false
-          let isVote = false
-          if (nowTime < reportEndTimeMs && nowTime > reportStartTimeMs) {
-            isReport = true
-          }
-          if (nowTime < endTimeMs && nowTime > startTimeMs) {
-            isVote = true
-          }
-          if (isReport && !isVote) {
-            // 报名中
-            status = signUpStatus
-            console.log('report....')
-            this.setIsBtnAuth(0)
-          } else if (!isReport && isVote) {
-            // 投票中
-            console.log('voteing....')
-            status = voteStatus
-            this.setIsBtnAuth(1)
-          } else if (isReport && isVote) {
-            // 报名且投票
-            console.log('report.... voteing....')
-            status = signUpVoteStatus
-            this.setIsBtnAuth(1)
-          }
-          console.log('isBtnAuth= ', this.isBtnAuth)
           // 获取剩余票数
           this.getRemainVotes(id)
           // 检查是否报名
           this.checkUserReport(id)
         }
-        this.status = status
         this.startCountTime(time, (timeArr) => {
           // console.log(time, timeArr)
           // 更改当前投票的时间
           this.voteDate = timeArr
           this.startDate = timeArr
+          if (!flag) {
+            this.endVoteReportTime(id, startTimeMs, endTimeMs, reportStartTimeMs, reportEndTimeMs)
+          }
         }, () => {
           if (flag) {
             if (this.isShowStart) {
@@ -782,6 +765,38 @@ export default {
         })
       } else {
         this.initVoteTime()
+      }
+    },
+    endVoteReportTime (id, startTimeMs, endTimeMs, reportStartTimeMs, reportEndTimeMs) {
+      let nowTime = new Date().getTime()
+      let isReport = false
+      let isVote = false
+      let status = this.status
+      let { signUpStatus, voteStatus, signUpVoteStatus } = this.statusCode
+      if (nowTime < reportEndTimeMs && nowTime > reportStartTimeMs) {
+        isReport = true
+      }
+      if (nowTime < endTimeMs && nowTime > startTimeMs) {
+        isVote = true
+      }
+      if (isReport && !isVote) {
+        // 报名中
+        if (status !== signUpStatus) {
+          this.status = signUpStatus
+          this.setIsBtnAuth(0)
+        }
+      } else if (!isReport && isVote) {
+        // 投票中
+        if (status !== voteStatus) {
+          this.status = voteStatus
+          this.setIsBtnAuth(1)
+        }
+      } else if (isReport && isVote) {
+        // 报名且投票
+        if (status !== signUpVoteStatus) {
+          this.status = signUpVoteStatus
+          this.setIsBtnAuth(1)
+        }
       }
     },
     initReportTime () {
