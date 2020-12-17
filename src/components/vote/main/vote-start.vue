@@ -14,10 +14,10 @@
             <span class="tips">作品已提交成功，后台正在审核中</span>
           </div>
           <div class="report-msg" v-if="myWorkStatus === 1">
-            <span class="tips">作品已审核通过，快去拉票吧</span>
+            <i class="vote-ok"></i><div class="tips">作品已审核通过，快去拉票吧</div>
           </div>
           <div class="report-msg" v-if="myWorkStatus === 2">
-            <span class="tips">作品审核被打回</span>
+            <i class="vote-no"></i><div class="tips">作品审核被打回</div>
           </div>
           <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div>
         </div>
@@ -1151,8 +1151,26 @@ export default {
       justify-content: space-between;
       padding: 0 px2rem(22px);
       .report-msg {
-        @include font-dpr(14px);
-        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        .vote-ok {
+          display: inline-block;
+          margin-right: px2rem(10px);
+          width: px2rem(30px);
+          height: px2rem(30px);
+          @include img-retina('~@/assets/vote/vote-ok@2x.png','~@/assets/vote/vote-ok@3x.png', 100%, 100%);
+        }
+        .vote-no {
+          display: inline-block;
+          margin-right: px2rem(10px);
+          width: px2rem(30px);
+          height: px2rem(30px);
+          @include img-retina('~@/assets/vote/vote-no@2x.png','~@/assets/vote/vote-no@3x.png', 100%, 100%);
+        }
+        .tips {
+          @include font-dpr(14px);
+          color: #FFFFFF;
+        }
       }
       .report-btn {
         padding: 0 px2rem(20px);
