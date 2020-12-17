@@ -75,7 +75,7 @@
           </div>
         </div>
         <!--菜单-->
-        <div class="overview-menus-wrap" v-if="status !== statusCode.signUpStatus">
+        <div class="overview-menus-wrap" v-if="status !== null && status !== statusCode.signUpStatus">
           <div class="menu-wrap menu-right" v-if="isShowRank" @click.stop="jumpPage('voterank')">
             <i class="examfont iconjiangbei rank color-button_text"></i>
             <span class="menu-text color-button_text">榜单</span>
@@ -797,6 +797,8 @@ export default {
           this.status = signUpVoteStatus
           this.setIsBtnAuth(1)
         }
+      } else if (!isReport && !isVote) {
+        this.setIsBtnAuth(0)
       }
     },
     initReportTime () {
@@ -1139,6 +1141,9 @@ export default {
     width: 100%;
     height: 100vh;
     position: relative;
+    [v-cloak] {
+      display: none;
+    }
     .report-top-wrap {
       position: absolute;
       z-index: 10;
