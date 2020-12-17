@@ -1,9 +1,9 @@
 var config = {
   CUSTOM_HOST: '{{CUSTOM_HOST}}',
-  CUSTOM_API: '{{CUSTOM_API}}',
   CUSTOM_APPID: '{{CUSTOM_APPID}}',
   CUSTOM_COMP_APPID: '{{CUSTOM_COMP_APPID}}',
-  CUSTOM_REDIRECT_URI: '{{CUSTOM_REDIRECT_URI}}'
+  CUSTOM_REDIRECT_URI: '{{CUSTOM_REDIRECT_URI}}',
+  CUSTOM_PLAT: '{{CUSTOM_PLAT}}'
 }
 
 console.log('settingConfig-------', config)
