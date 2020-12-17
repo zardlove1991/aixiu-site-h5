@@ -215,10 +215,13 @@ export default {
       padding-left: 15%;
     }
   }
-  .my-draw-list{
+  .my-draw-list {
     height: 100vh;
     overflow-y: auto;
-    .overview-content-wrap{
+    * {
+      outline: none;
+    }
+    .overview-content-wrap {
       padding: 45px 0 4rem;
     }
     .filter{
