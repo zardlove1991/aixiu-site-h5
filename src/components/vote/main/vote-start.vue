@@ -1141,9 +1141,6 @@ export default {
     width: 100%;
     height: 100vh;
     position: relative;
-    [v-cloak] {
-      display: none;
-    }
     .report-top-wrap {
       position: absolute;
       z-index: 10;
