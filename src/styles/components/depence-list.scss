@@ -107,6 +107,8 @@
       right: 0;
       bottom: 0;
       z-index: 101;
+      max-height: px2rem(420px);
+      overflow-y: auto;
       .title{
         box-sizing: border-box;
         font-size:px2rem(28px);
@@ -255,9 +257,9 @@
       margin-bottom:px2rem(60px);
       box-sizing: border-box;
       background-color:#fff;
-      &.iphonex-h{
-        // height: px2rem(160px);
-      }
+      // &.iphonex-h{
+      // height: px2rem(160px);
+      // }
       .prev-wrap{
         width: px2rem(305px);
         border:1px solid #FFA46A;
