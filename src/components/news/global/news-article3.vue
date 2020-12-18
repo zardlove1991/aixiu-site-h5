@@ -156,7 +156,7 @@ export default {
       }
       .desc {
         @include font-dpr(15px);
-        @include line-overflow(6);
+        @include line-overflow(10);
         word-wrap: break-word;
         word-break: break-all;
         color: #666;

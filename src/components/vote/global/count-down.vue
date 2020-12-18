@@ -2,7 +2,7 @@
   <div class="count-down-wrap color-decorated">
     <!--时间结构-->
     <div class="left-time-wrap">
-      <span class="title-tip">距离<span class="title-tip-2">{{statusMsg[status]}}</span>还有</span>
+      <span class="title-tip">距离<span class="title-tip-2">{{statusMsg[status] ? statusMsg[status] : '活动结束'}}</span>还有</span>
       <div class="time-count-wrap">
         <p class="day-tip color-button_color">
           <span class="time-num color-button_text">{{voteDate[0]}}</span>
@@ -23,7 +23,7 @@
       </div>
     </div>
     <!--可投票数字提醒-->
-    <div class="right-vote-tip" v-show="status === 2">
+    <div class="right-vote-tip" v-show="status === 2 || status === 5">
       <span class="vote-title-tip color-link_text">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
       <span class="vote-tip-num color-link_text">{{ remainVotes ? remainVotes : 0 }}</span>
     </div>
@@ -46,6 +46,10 @@ export default {
     status: {
       type: Number
     },
+    isOpenVoteReport: {
+      type: Boolean,
+      default: false
+    },
     textSetting: {
       type: Object,
       default: () => {
@@ -57,20 +61,31 @@ export default {
     statusMsg () {
       let statusMsg = {}
       let textSetting = this.textSetting
-      if (textSetting && textSetting.sign) {
-        let vote = textSetting.sign
+      let isOpenVoteReport = this.isOpenVoteReport
+      if (isOpenVoteReport) {
         statusMsg = {
-          0: vote + '开始',
-          1: '报名结束',
-          2: vote + '结束',
-          4: '报名开始'
+          0: '活动开始',
+          1: '活动结束',
+          2: '活动结束',
+          4: '活动结束',
+          5: '活动结束'
         }
       } else {
-        statusMsg = {
-          0: '投票开始',
-          1: '报名结束',
-          2: '投票结束',
-          4: '报名开始'
+        if (textSetting && textSetting.sign) {
+          let vote = textSetting.sign
+          statusMsg = {
+            0: vote + '开始',
+            1: '报名结束',
+            2: vote + '结束',
+            4: '报名开始'
+          }
+        } else {
+          statusMsg = {
+            0: '投票开始',
+            1: '报名结束',
+            2: '投票结束',
+            4: '报名开始'
+          }
         }
       }
       return statusMsg
