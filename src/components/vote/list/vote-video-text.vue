@@ -3,7 +3,7 @@
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
-      @click.stop="jumpPage(item.is_my ? 'voteoneself' : 'votedetail', { worksId: item.id })">
+      @click.stop="jumpPage('votedetail', { worksId: item.id })">
       <div class="work-poster-wrap"
         v-if="item.material.video && item.material.video.length"
         :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover })`}">
