@@ -733,6 +733,7 @@ export default {
           this.setIsModelShow(true)
           this.setIsBtnAuth(0)
         } else {
+          this.setIsBtnAuth(0)
           // 获取剩余票数
           this.getRemainVotes(id)
           // 检查是否报名
@@ -797,8 +798,6 @@ export default {
           this.status = signUpVoteStatus
           this.setIsBtnAuth(1)
         }
-      } else if (!isReport && !isVote) {
-        this.setIsBtnAuth(0)
       }
     },
     initReportTime () {
