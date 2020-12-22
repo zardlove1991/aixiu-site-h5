@@ -2,7 +2,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-import globalConfig from '@/api/config'
 const env = getEnvironment()
 
 export default {
