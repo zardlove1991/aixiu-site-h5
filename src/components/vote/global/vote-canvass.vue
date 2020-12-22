@@ -120,7 +120,7 @@ export default {
           title: res.name,
           source: res.source,
           qrcode,
-          type: 'commonvotes',
+          // type: 'commonvotes',
           lastvotes: voteTip,
           background_img: bgImage,
           template_id: templateId,
