@@ -4,7 +4,7 @@
       <el-input v-model="tempSearchVal"
         :readonly="true"
         @blur="blurAction()"
-        placeholder="全部分类">
+        placeholder="全部">
       </el-input>
       <div :class="['vote-type-base', !isShowClassify ? 'vote-type-down': 'vote-type-up']"></div>
     </div>
@@ -61,7 +61,7 @@ export default {
       }).then(res => {
         let data = res.data
         if (data && data.length) {
-          this.classifyData = [{ id: '', name: '全部分类' }, ...data]
+          this.classifyData = [{ id: '', name: '全部' }, ...data]
           this.currentId = data[0].id
           this.initClassifyData(data)
         }
@@ -94,7 +94,7 @@ export default {
     showClassifyAction () {
       this.isShowClassify = !this.isShowClassify
       if (!this.isShowClassify && this.tempSearchVal) {
-        if (this.tempSearchVal === '全部分类') {
+        if (this.tempSearchVal === '全部') {
           this.$emit('success', '')
         } else {
           this.$emit('success', this.tempSearchVal)
