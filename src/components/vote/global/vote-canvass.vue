@@ -5,7 +5,7 @@
      <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
-      :textSetting="{sign:'拉票'}"
+      :textSetting="{sign: '拉票'}"
       @close="isShowLottery = false"></lottery-vote>
   </div>
 </template>
@@ -73,7 +73,7 @@ export default {
         if (!res) {
           return
         }
-        console.log('拉票数据：', res)
+        // console.log('拉票数据：', res)
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
@@ -101,6 +101,19 @@ export default {
           invotekey: code,
           worksId
         }, detailInfo)
+        let limit = detailInfo.rule.limit
+        // 海报其他参数
+        let bgImage = ''
+        let templateId = ''
+        let sponsor = ''
+        let sponsorLogo = ''
+        if (limit.canvassing_poster) {
+          let cavObj = limit.canvassing_poster
+          bgImage = cavObj.background_img ? cavObj.background_img : ''
+          templateId = cavObj.template_id ? cavObj.template_id : ''
+          sponsor = cavObj.sponsor ? cavObj.sponsor : ''
+          sponsorLogo = cavObj.sponsor_logo ? cavObj.sponsor_logo : ''
+        }
         let params = {
           avatar: avatarUrl,
           numbering,
@@ -108,7 +121,11 @@ export default {
           source: res.source,
           qrcode,
           type: 'commonvotes',
-          lastvotes: voteTip
+          lastvotes: voteTip,
+          background_img: bgImage,
+          template_id: templateId,
+          sponsor,
+          sponsor_logo: sponsorLogo
         }
         if (res.material) {
           let isLongCover = false
@@ -131,7 +148,6 @@ export default {
           // 判断是否长图 如果是就修改为不截断参数
           if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
         }
-        let limit = detailInfo.rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           if (res.type_name) {
             params.source = res.type_name + ' | ' + params.source

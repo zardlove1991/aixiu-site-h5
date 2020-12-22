@@ -39,8 +39,8 @@
       :show="isShowMax"
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
-        <div class="workvote-header">{{textSetting.sign === '致敬' ? '暂时无法致敬' : '这个作品太火爆了'}}</div>
-        <div class="workvote-header">{{voteTime}}秒后再{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吧！</div>
+        <div class="workvote-header">该作品{{textSetting.sign}}存在异常</div>
+        <div class="workvote-header">已被锁定{{voteTime}}分钟</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
         </div>
@@ -172,7 +172,7 @@ export default {
       }
       // 区域限制
       let { rule } = detailInfo
-      let { area_limit: areaLimit } = rule
+      let { area_limit: areaLimit, user_limit_times: limitTime } = rule
       if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
         this.limitArea = areaLimit.area
         // 区域限制，传入经纬度
@@ -187,11 +187,12 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          console.log('xxxxxx', errCode)
+          // console.log('xxxxxx', errCode)
           if (errCode === 'WORKS_LOCKED') {
-            let msg = res.error_message
+            // let msg = res.error_message
+            // this.voteTime = msg
             this.isShowMax = true
-            this.voteTime = msg
+            this.voteTime = limitTime
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
