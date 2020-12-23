@@ -1,8 +1,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { isIOSsystem, isWeixnBrowser } from '@/utils/app'
+import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-import globalConfig from '@/api/config'
+const env = getEnvironment()
 
 export default {
   props: {
@@ -47,7 +47,9 @@ export default {
       // 执行调用
       let url = window.location.href.split('#')[0]
       // encodeURIComponent(location.href.split('#')[0])
-      let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
+      // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
+      // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
+      let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
       this.getWeixinInfo({
         url,
         sign: 'wechat',
