@@ -22,14 +22,6 @@ export const setTheme = (id, name, isFirst) => {
     // 投票
     API.getVodeDetail({ query: { id } }).then((res) => {
       let info = res
-      let url = info.indexpic
-      if (url) {
-        if (url.constructor === Object) {
-          info.indexpic.url = url.host + url.filename
-        } else if (url.constructor === String) {
-          info.indexpic = { url }
-        }
-      }
       if (info.rule && info.rule.page_setup) {
         let { background, color_scheme: colorScheme } = info.rule.page_setup
         if (background && colorScheme && colorScheme.content) {

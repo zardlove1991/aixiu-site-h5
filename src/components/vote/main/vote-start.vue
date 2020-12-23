@@ -22,23 +22,14 @@
           <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div>
         </div>
       </template>
-      <!--背景标题-->
-      <div v-if="detailInfo.title"
-        :class="['overview-indexpic-wrap', getPicTitleClass]">
-        <div class="pic-thumb"
-          :class="{
-            nopic: !detailInfo.indexpic || !detailInfo.indexpic.url,
-            haspic: detailInfo.indexpic && detailInfo.indexpic.url
-          }">
-          <div v-if="detailInfo.indexpic && detailInfo.indexpic.url" class="pic-indexpic"
-            :style="{ backgroundImage: 'url(' + detailInfo.indexpic.url + ')'}"></div>
-          <div v-if="detailInfo.rule.limit.is_display_title === 0"></div>
-          <div v-else class="pic-title">
-            <span :class="(!detailInfo.indexpic || !detailInfo.indexpic.url) ? 'nopic-title' : ''">{{detailInfo.title}}</span>
-          </div>
-        </div>
+      <div :class="['vote-swipe-wrap', indexRadio]">
+        <mt-swipe class="vote-mt-swipe" :auto="4000">
+          <mt-swipe-item v-for="(item, index) in swipeList" :key="index">
+            <img :src="item" />
+          </mt-swipe-item>
+        </mt-swipe>
       </div>
-      <div v-else class="overview-indexpic-empty"></div>
+      <div class="overview-title" v-if="detailInfo.title">{{detailInfo.title}}</div>
       <!--当前机构描述-->
       <div class="overview-organizers" v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name color-high_text" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
@@ -341,7 +332,9 @@ export default {
       isOpenShare: false,
       shareConfigData: {},
       myWorkStatus: null, // 作品审核状态
-      isOpenVoteReport: false
+      isOpenVoteReport: false,
+      indexRadio: '', // 轮播图比例
+      swipeList: [] // 轮播图片数组
     }
   },
   created () {
@@ -366,22 +359,6 @@ export default {
       let { page, totalPages } = this.pager
       return page >= totalPages
     },
-    getPicTitleClass () {
-      let detailInfo = this.detailInfo
-      if (!detailInfo) {
-        return ''
-      }
-      if (!detailInfo.indexpic || !detailInfo.indexpic.url) {
-        let isDisplayTitle = detailInfo.rule.limit.is_display_title
-        if (isDisplayTitle === 0) {
-          return 'notitle-wrap'
-        } else {
-          return 'nopic-wrap'
-        }
-      } else {
-        return ''
-      }
-    },
     allWorkList () {
       if (this.myWork.id) {
         return [this.myWork, ...this.workList]
@@ -402,11 +379,15 @@ export default {
       }).then((res) => {
         let url = res.indexpic
         if (url) {
+          let swipeList = []
           if (url.constructor === Object) {
-            res.indexpic.url = url.host + url.filename
+            swipeList.push(url.host + url.filename)
           } else if (url.constructor === String) {
-            res.indexpic = { url }
+            swipeList.push(url)
+          } else if (url.constructor === Array) {
+            swipeList = [...url]
           }
+          this.swipeList = swipeList
         }
         this.detailInfo = res
         // 校验抽奖入口条件
@@ -422,6 +403,17 @@ export default {
         this.setLocation()
         // 作品列表
         this.getVoteWorks()
+        // 索引图尺寸比例
+        if (rule.limit.indexpic_ratio) {
+          let ratio = rule.limit.indexpic_ratio
+          ratio = ratio.replace('.', '')
+          let arr = ratio.split(':')
+          let size = ''
+          if (arr.length === 2) {
+            size = 'size-' + arr[0] + '-' + arr[1]
+          }
+          this.indexRadio = size
+        }
         // 是否开启边投票边报名
         let isOpenVoteReport = 0
         if (rule.limit.is_open_enroll_vote) {
@@ -516,10 +508,17 @@ export default {
             imgUrl = sharePic
           }
         } else if (indexpic) {
-          if (indexpic.host && indexpic.filename) {
+          if (indexpic.constructor === Array && indexpic.length > 0) {
+            let obj = indexpic[0]
+            if (obj.constructor === Object) {
+              imgUrl = 'http:' + obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
             imgUrl = 'http:' + indexpic.host + indexpic.filename
-          } else if (indexpic.url) {
-            imgUrl = indexpic.url
+          } else if (indexpic.constructor === String) {
+            imgUrl = indexpic
           }
         }
       }
@@ -936,11 +935,15 @@ export default {
       }).then((res) => {
         let url = res.indexpic
         if (url) {
+          let swipeList = []
           if (url.constructor === Object) {
-            res.indexpic.url = url.host + url.filename
+            swipeList.push(url.host + url.filename)
           } else if (url.constructor === String) {
-            res.indexpic = { url }
+            swipeList.push(url)
+          } else if (url.constructor === Array) {
+            swipeList = [...url]
           }
+          this.swipeList = swipeList
         }
         this.detailInfo = res
         STORAGE.set('detailInfo', res)
@@ -1187,7 +1190,7 @@ export default {
       position: absolute;
       z-index: 10;
       right: 0;
-      bottom: 55%;
+      top: 10%;
       width: px2rem(57px);
       height: px2rem(220px);
       color: #fff;
@@ -1229,83 +1232,57 @@ export default {
       &.hide {
         overflow: hidden;
       }
-      // background-color: #221A6E;
-      // @include bg-color('bgColor');
-      transform: translateX(0);
       &.status-no-end {
         padding-bottom: px2rem(200px);
       }
-      .overview-indexpic-wrap {
+      .vote-swipe-wrap {
         position: relative;
         width: 100%;
-        height: px2rem(500px);
-        overflow: hidden;
-        &.nopic-wrap {
-          height: px2rem(220px);
+        height: 0;
+        padding-bottom: 56.25%;
+        &.size-16-9 {
+          padding-bottom: 56.25%;
         }
-        &.notitle-wrap {
-          height: 0;
+        &.size-4-3 {
+          padding-bottom: 75%;
         }
-        .pic-thumb {
-          position: relative;
-          .pic-indexpic {
-            width: 100vw;
-            height: 100%;
-            transform: translateX(27.5%);
-            background-size: 100%;
-            background-repeat: no-repeat;
-          }
-          .pic-title {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100vw - 35px);
-            padding: px2rem(30px) px2rem(45px);
-            text-align: center;
-            @include bg-linear-color('compColor');
-            border-radius: px2rem(16px) px2rem(16px) 0 0;
-            box-sizing: border-box;
-            font-weight: 500;
-            color: #fff;
-            @include font-dpr(22px);
-            .nopic-title {
-              display: inline-block;
-              width: 100%;
-              max-height: px2rem(160px);
-              @include line-overflow(2);
+        .mint-swipe.vote-mt-swipe {
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: 0 0 px2rem(40px) px2rem(40px);
+          .mint-swipe-items-wrap, .mint-swipe-item {
+            border-radius: 0 0 px2rem(40px) px2rem(40px);
+            img {
+              border-radius: 0 0 px2rem(40px) px2rem(40px);
             }
           }
-          ::after {
-            box-shadow: 0 0 20px 3px rgba(0, 0, 0, 0.3) inset;
-            content: "";
+          .mint-swipe-indicators .mint-swipe-indicator {
+            width: px2rem(12px);
+            height: px2rem(12px);
+            background: #EBEBEB;
+            opacity: 1;
+            &.is-active {
+              width: px2rem(28px);
+              border-radius: px2rem(6px);
+              @include bg-color('btnColor');
+            }
           }
         }
-        .pic-thumb, .pic-thumb::after {
-          position: absolute;
-          bottom: 0;
-          width: 155%;
-          left: -27.5%;
-          height: 100%;
-          border-radius: 0 0 50% 50%;
-          overflow: hidden;
-          box-shadow: 0 3px 25px 3px rgba(0, 0, 0, 0.1);
-        }
-        .pic-thumb.haspic {
-          .pic-indexpic {
-            transform: translateX(51%);
-          }
-          .pic-title {
-            transform: translateX(-48.8%);
-          }
-        }
-        .pic-thumb.haspic, .pic-thumb.haspic::after{
-          width: 200%;
-          left:-51%;
-        }
-        .pic-thumb.nopic, .pic-thumb.nopic::after {
-          height: 200%;
-        }
+      }
+      .overview-title {
+        margin-top: px2rem(40px);
+        padding: 0 px2rem(30px);
+        width: 100%;
+        font-weight: 500;
+        color: #fff;
+        text-align: center;
+        @include font-dpr(22px);
+        @include line-overflow(2);
       }
       .overview-organizers {
         width: 100%;
