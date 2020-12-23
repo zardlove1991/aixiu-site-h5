@@ -1,9 +1,9 @@
 <template>
-  <div class="active-stop-dialog"
+  <div class="active-start-dialog"
     v-if="show"
     :class="{'lock': isLock}">
     <!--弹窗模块-->
-    <div class="active-stop-content">
+    <div class="active-start-content">
       <div class="title">活动未开始，请耐心等待</div>
       <div class="tips">倒计时</div>
       <div class="time-count-wrap">
@@ -69,7 +69,7 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .active-stop-dialog {
+  .active-start-dialog {
     position: fixed;
     left: 0;
     top: 0;
@@ -81,7 +81,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .active-stop-content {
+    .active-start-content {
       position: relative;
       width: px2rem(575px);
       border-radius: px2rem(8px);
