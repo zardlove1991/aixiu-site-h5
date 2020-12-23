@@ -23,7 +23,10 @@
         </div>
       </template>
       <div :class="['vote-swipe-wrap', indexRadio]">
-        <mt-swipe class="vote-mt-swipe" :auto="4000">
+        <mt-swipe
+          class="vote-mt-swipe"
+          :auto="4000"
+          :show-indicators="swipeList.length > 1 ? true : false">
           <mt-swipe-item v-for="(item, index) in swipeList" :key="index">
             <img :src="item" />
           </mt-swipe-item>
