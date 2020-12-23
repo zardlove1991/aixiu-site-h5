@@ -87,7 +87,7 @@
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
             <div class="true-answer-title">正确答案：<span>{{item.trueOption}}</span></div>
-            <div>答案解析：{{item.analysis}}</div>
+            <div v-if="item.analysis">答案解析：{{item.analysis}}</div>
           </div>
         </div>
         <div v-else>
@@ -121,7 +121,7 @@
                 正确答案<span v-if="item.extra.answer.length > 1">{{index + 1}}</span>：
                 <span>{{aw.answer}}</span>
               </div>
-              <div>答案解析：{{item.analysis}}</div>
+              <div v-if="item.analysis">答案解析：{{item.analysis}}</div>
             </div>
           </div>
         </div>

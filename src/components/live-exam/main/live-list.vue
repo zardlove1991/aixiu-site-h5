@@ -341,6 +341,8 @@ export default {
       right: 0;
       bottom: 0;
       z-index: 99;
+      max-height: px2rem(420px);
+      overflow-y: auto;
       .title {
         box-sizing: border-box;
         font-size:px2rem(28px);
