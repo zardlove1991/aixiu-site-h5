@@ -321,6 +321,11 @@ export default {
       for (let item of checkDraw) {
         let key = item.unique_name
         let val = checkData[key]
+        let defaultValue = item.default_value
+        if (defaultValue) {
+          val = defaultValue
+          checkData[key] = defaultValue
+        }
         if (!val) {
           if (key === 'department' && this.isGetDept) {
             Toast('抱歉，没有查到您的用户信息！')
