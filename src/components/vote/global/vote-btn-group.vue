@@ -61,7 +61,13 @@ export default {
       }
       if (textSetting) {
         if (data.is_my === 1) {
-          return '帮自己' + textSetting.sign
+          let share = textSetting.share
+          if (share) {
+            share = share.substring(share.length - 2)
+            return '帮自己' + share
+          } else {
+            return '帮自己拉票'
+          }
         } else {
           return textSetting.share
         }
