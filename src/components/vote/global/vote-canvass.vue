@@ -1,8 +1,12 @@
 <template>
   <div class="canvass-dialog-wrap" v-if="show" @click.stop="close()">
-    <img class="poster-img" :src="sharePoster" @click.stop />
-    <div class="poster-tips">长按图片保存或转发朋友圈</div>
-     <lottery-vote
+    <div class="no-poster"  v-if="!sharePoster">
+      <div class="no-poster-bg" @click.stop></div>
+      <div class="poster-tips">海报正在生成中...</div>
+    </div>
+    <img class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop />
+    <div class="poster-tips" v-if="sharePoster">长按图片保存或转发朋友圈</div>
+    <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
       :textSetting="{sign: '拉票'}"
@@ -41,6 +45,7 @@ export default {
   },
   methods: {
     saveSharer (worksId) {
+      this.show = true
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo || !worksId) {
         return
@@ -160,7 +165,6 @@ export default {
             return
           }
           this.sharePoster = res.image
-          this.show = true
         })
         // 拉票抽奖
         let lottery = res.lottery
@@ -201,6 +205,7 @@ export default {
     },
     close () {
       this.show = false
+      this.sharePoster = ''
     },
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'
@@ -224,6 +229,29 @@ export default {
     flex-direction: column;
     pointer-events: auto;
     z-index: 99;
+    .no-poster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .no-poster-bg {
+        display: inline-block;
+        margin-bottom: px2rem(20px);
+        width: px2rem(54px);
+        height: px2rem(57px);
+        @include img-retina('~@/assets/vote/loading@2x.png', '~@/assets/vote/loading@3x.png', px2rem(54px), px2rem(57px));
+        animation: circle 5s infinite linear;
+        -webkit-animation: circle 5s infinite linear;
+      }
+      @-webkit-keyframes circle {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(+360deg);
+        }
+      }
+    }
     .poster-img {
       width: 88%;
       height: auto;
