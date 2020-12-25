@@ -327,13 +327,18 @@ export default {
           checkData[key] = defaultValue
         }
         if (!val) {
-          if (key === 'department' && this.isGetDept) {
-            Toast('抱歉，没有查到您的用户信息！')
+          if (key === 'Vq8iwxwk3Owr') {
+            val = item.name
+            checkData[key] = item.name
           } else {
-            Toast('请输入' + item.name)
+            if (key === 'department' && this.isGetDept) {
+              Toast('抱歉，没有查到您的用户信息！')
+            } else {
+              Toast('请输入' + item.name)
+            }
+            flag = false
+            break
           }
-          flag = false
-          break
         }
         if (key === 'mobile') {
           let res = this.checkMobile(val)
