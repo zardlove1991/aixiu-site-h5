@@ -182,12 +182,12 @@ export default {
     },
     async cancelSuspendModel () {
       let examId = this.id
-      let subject = this.currentSubjectInfo
+      // let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
       this.toggleSuspendModel()
       // 提交试卷
       try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        // await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -208,16 +208,11 @@ export default {
     },
     submitExam () {
       // console.log(this.answerList)
-      if (this.examInfo && this.examInfo.mark === 'examination@random') {
-        this.saveAnswerRecords(this.answerList)
-      }
+      this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      // this.saveAnswerRecords(this.answerList)
-      if (this.examInfo && this.examInfo.mark === 'examination@random') {
-        this.saveAnswerRecords(this.answerList)
-      }
+      this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels
