@@ -3,7 +3,7 @@
     <div class="header-tip flex-v-center flex-between">
       <span class="icon-wrap flex-v-center">
         <i class="tips-icon"></i>
-        <span class="tips-title">测评已提交</span>
+        <span class="tips-title">测评 已提交</span>
       </span>
       <div @click="backUrl" class="back-btn">返回试题页</div>
     </div>
@@ -12,7 +12,7 @@
         <div class="score-line">
           <div class="score-area">
             <div v-cloak>
-              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) > 100 ? 100 : parseFloat(optionData.score) }}分</div>
             </div>
             <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
