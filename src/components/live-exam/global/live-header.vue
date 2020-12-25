@@ -183,10 +183,10 @@ export default {
       }
     },
     async confirmSubmitModel () {
-      let subject = this.currentSubjectInfo
+      // let subject = this.currentSubjectInfo
       this.toggleSubmitModel()
       try {
-        await this.sendSaveRecordOption(subject) // 检查最后一题的提交
+        // await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
         clearInterval(this.timer)
         let rules = this.examInfo.limit.submit_rules

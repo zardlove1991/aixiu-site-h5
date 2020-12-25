@@ -222,12 +222,12 @@ export default {
     },
     async cancelSuspendModel () {
       let examId = this.id
-      let subject = this.currentSubjectInfo
+      // let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
       this.toggleSuspendModel()
       // 提交试卷
       try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        // await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam()
         this.$router.replace({
           path: `/livestart/${examId}/start`,

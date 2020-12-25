@@ -229,8 +229,8 @@ export default {
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
-        // this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
-        this.saveAnswerRecord(data)
+        this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        // this.saveAnswerRecord(data)
       }, delayTime)
     },
     _getUnderlineTemplate (params) {
