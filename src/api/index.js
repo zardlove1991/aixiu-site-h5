@@ -67,8 +67,15 @@ instance.interceptors.response.use((res, xhr) => {
       return Promise.reject(data)
     }
   }
+  const dom = document.getElementById('watting-wrap')
+  if (STORAGE.get('userinfo') && dom) {
+    dom.style.display = 'none'
+  }
   return data.response || data.result || data
 }, (error) => {
+  if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) { // 请求超时
+    window.location.href = '/waitting.html'
+  }
   let rej = null
   let res = error.response
   console.log('error 接口请求错误信息', error)
