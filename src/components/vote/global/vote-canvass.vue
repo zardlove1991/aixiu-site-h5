@@ -167,15 +167,15 @@ export default {
           this.sharePoster = res.image
         })
         // 拉票抽奖
-        let lottery = res.lottery
-        if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
-          this.isShowLottery = true
-          this.lottery = lottery
-          // this.$emit('close')
-          // this.voteDisable = false
-          // this.$emit('success')
-          // this.$emit('updateCard')
-        }
+        // let lottery = res.lottery
+        // if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
+        // this.isShowLottery = true
+        // this.lottery = lottery
+        // this.$emit('close')
+        // this.voteDisable = false
+        // this.$emit('success')
+        // this.$emit('updateCard')
+        // }
       })
     },
     dealUrlConcat (params, detailInfo) {
