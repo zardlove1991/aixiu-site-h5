@@ -31,7 +31,9 @@ function dealError ({code, msg}) {
   const route = window.$vue.$route
   let query = route.query
   let params = route.params
-  if (code === 'error-login') {
+  if (apiConfig.WATTING_ERROR_CODE.indexOf(code) !== -1) {
+    window.location.href = '/waitting.html'
+  } else if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
     if (!query.plat) {
