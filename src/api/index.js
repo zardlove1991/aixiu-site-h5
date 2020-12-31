@@ -75,7 +75,7 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return data.response || data.result || data
 }, (error) => {
-  const status = error.response.status
+  const status = error.response && error.response.status
   if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) { // 请求超时
     window.location.href = '/waitting.html'
   } else if (status && Number(status) >= 400 && Number(status) < 500) {
