@@ -43,10 +43,17 @@
       window.onload = function () {
         var dom = document.getElementById('line_up-times')
         var times = 30
+        function getQueryString(name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+          var r = window.location.search.substr(1).match(reg);
+          if (r != null) return decodeURI(r[2]);
+          return null;
+        }
         var timer = setInterval(function () {
           if (times <= 1) {
             clearInterval(times)
-            history.back(-1)
+            var originUrl = getQueryString('origin')
+            window.location.href = originUrl
           } else {
             times -= 1
             dom.textContent = times < 10 ? '0' + times : times

@@ -31,11 +31,7 @@ function dealError ({code, msg}) {
   const route = window.$vue.$route
   let query = route.query
   let params = route.params
-  if (code && Number(code) >= 400 && Number(code) < 500) {
-    window.location.href = '/waitting.html'
-  } else if (code && Number(code) >= 500) {
-    window.location.href = '/error.html'
-  } else if (code === 'error-login') {
+  if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
     if (!query.plat) {
@@ -76,12 +72,12 @@ instance.interceptors.response.use((res, xhr) => {
   return data.response || data.result || data
 }, (error) => {
   const status = error.response && error.response.status
-  if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) { // 请求超时
-    window.location.href = '/waitting.html'
-  } else if (status && Number(status) >= 400 && Number(status) < 500) {
-    window.location.href = '/waitting.html'
-  } else if (status && Number(status) >= 500) {
-    window.location.href = '/error.html'
+  const url = encodeURI(window.location.href)
+  const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  if (isTimeout || (Number(status) >= 400 && Number(status) < 500)) {
+    window.location.href = `/waitting.html?origin=${url}`
+  } else if (Number(status) >= 500) {
+    window.location.href = `/error.html?origin=${url}`
   }
   let rej = null
   let res = error.response
@@ -107,7 +103,8 @@ instance.interceptors.response.use((res, xhr) => {
       }
     }
   } else {
-    window.location.href = '/waitting.html'
+    const url = encodeURI(window.location.href)
+    window.location.href = `/waitting.html?origin=${url}`
     rej = {
       error_code: 'AJAX_ERROR',
       error_message: '服务器开小差了，请稍后再试~',
