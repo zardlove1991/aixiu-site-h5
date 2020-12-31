@@ -31,8 +31,10 @@ function dealError ({code, msg}) {
   const route = window.$vue.$route
   let query = route.query
   let params = route.params
-  if (apiConfig.WATTING_ERROR_CODE.indexOf(code) !== -1) {
+  if (code && Number(code) >= 400 && Number(code) < 500) {
     window.location.href = '/waitting.html'
+  } else if (code && Number(code) >= 500) {
+    window.location.href = '/error.html'
   } else if (code === 'error-login') {
     let nowUrl = decodeURIComponent(window.location.href)
     let host = apiConfig[getApiFlag()]
@@ -73,8 +75,13 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return data.response || data.result || data
 }, (error) => {
+  const status = error.response.status
   if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) { // 请求超时
     window.location.href = '/waitting.html'
+  } else if (status && Number(status) >= 400 && Number(status) < 500) {
+    window.location.href = '/waitting.html'
+  } else if (status && Number(status) >= 500) {
+    window.location.href = '/error.html'
   }
   let rej = null
   let res = error.response
@@ -100,6 +107,7 @@ instance.interceptors.response.use((res, xhr) => {
       }
     }
   } else {
+    window.location.href = '/waitting.html'
     rej = {
       error_code: 'AJAX_ERROR',
       error_message: '服务器开小差了，请稍后再试~',
