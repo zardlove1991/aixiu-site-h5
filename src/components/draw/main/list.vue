@@ -305,6 +305,7 @@ export default {
     }
     .scroll-tips {
       text-align: center;
+      color: #999;
     }
     .mint-loadmore-top{
       // margin-top: 0;
