@@ -32,7 +32,8 @@
           </mt-swipe-item>
         </mt-swipe>
       </div>
-      <div class="overview-title" v-if="detailInfo.title">{{detailInfo.title}}</div>
+      <div class="overview-title" v-if="detailInfo.rule.limit.is_display_title === 0"></div>
+      <div class="overview-title" v-else>{{detailInfo.title ? detailInfo.title : ''}}</div>
       <!--当前机构描述-->
       <div class="overview-organizers" v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name color-high_text" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
