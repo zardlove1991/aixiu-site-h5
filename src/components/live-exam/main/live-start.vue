@@ -18,7 +18,7 @@
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
-        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info">{{examInfo.brief}}</div>
+        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info" v-html="examInfo.brief"></div>
         <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
         <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
@@ -553,6 +553,8 @@ export default {
         @include font-dpr(15px);
         color: #999999;
         line-height: px2rem(40px);
+        word-wrap: break-word;
+        white-space: pre-wrap;
         &.exam-overflow {
           @include line-overflow(2);
         }

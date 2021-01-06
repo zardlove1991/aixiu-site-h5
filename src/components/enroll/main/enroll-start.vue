@@ -10,7 +10,7 @@
     </div>
     <div class="enroll-main">
       <div class="enroll-title"><span class="enroll-line">{{enrollInfo.title}}</span></div>
-      <div class="enroll-rule" id="enroll-rule-info">{{enrollInfo.introduce}}</div>
+      <div class="enroll-rule" id="enroll-rule-info" v-html="enrollInfo.introduce"></div>
       <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = true">查看更多</div>
       <div class="enroll-date-wrap">
         <div class="date-range" v-if="enrollInfo.duration">{{enrollInfo.duration.start_time}} - {{enrollInfo.duration.end_time}}</div>
@@ -949,6 +949,8 @@ export default {
         @include line-overflow(2);
         color: #999999;
         line-height: px2rem(40px);
+        word-wrap: break-word;
+        white-space: pre-wrap;
       }
       .find-all-rule {
         margin-top: px2rem(20px);

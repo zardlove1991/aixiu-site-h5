@@ -164,10 +164,62 @@ export default {
         })
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
+        this.sharePage()
       } catch (err) {
         console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
+    },
+    sharePage () {
+      let examInfo = this.examInfo
+      if (!examInfo) {
+        return
+      }
+      let limit = examInfo.limit
+      let title = ''
+      let link = ''
+      let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        title = share.share_title ? share.share_title : examInfo.title
+        link = share.share_url
+        desc = share.share_brief ? share.share_brief : examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = examInfo.indexpic
+        if (picObj) {
+          if (picObj.constructor === Object && picObj.host && picObj.filename) {
+            imgUrl = 'http:' + picObj.host + picObj.filename
+          } else if (picObj.constructor === String) {
+            imgUrl = picObj
+          }
+        } else if (indexObj) {
+          if (indexObj.host && indexObj.filename) {
+            imgUrl = 'http:' + indexObj.host + indexObj.filename
+          } else if (indexObj.url) {
+            imgUrl = indexObj.url
+          }
+        }
+      }
+      if (!link) {
+        let local = window.location
+        let pathname = local.pathname
+        let index = pathname.indexOf('depencelist')
+        if (index !== -1) {
+          pathname = pathname.replace(/depencelist/, 'depencestart')
+        }
+        link = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + local.origin + pathname
+      } else {
+        link = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + link
+      }
+      this.initPageShareInfo({
+        id: examInfo.id,
+        title,
+        desc,
+        indexpic: imgUrl,
+        link,
+        mark: 'examination'
+      })
     },
     async confirmSuspendModel () {
       let examId = this.id
@@ -182,12 +234,12 @@ export default {
     },
     async cancelSuspendModel () {
       let examId = this.id
-      let subject = this.currentSubjectInfo
+      // let subject = this.currentSubjectInfo
       let redirectParams = this.redirectParams
       this.toggleSuspendModel()
       // 提交试卷
       try {
-        await this.sendSaveRecordOption(subject) // 检查多选考试的提交
+        // await this.sendSaveRecordOption(subject) // 检查多选考试的提交
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
@@ -208,16 +260,11 @@ export default {
     },
     submitExam () {
       // console.log(this.answerList)
-      if (this.examInfo && this.examInfo.mark === 'examination@random') {
-        this.saveAnswerRecords(this.answerList)
-      }
+      this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      // this.saveAnswerRecords(this.answerList)
-      if (this.examInfo && this.examInfo.mark === 'examination@random') {
-        this.saveAnswerRecords(this.answerList)
-      }
+      this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels

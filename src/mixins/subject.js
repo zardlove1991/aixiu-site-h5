@@ -61,7 +61,7 @@ export default {
         if (isShowModel && (newIndex > oldIndex)) this.showOpsModel()
       }
       // 检查是否有特殊类型提醒的提交操作
-      this.sendSaveRecordOption(subject)
+      // this.sendSaveRecordOption(subject)
       // 清空当前页面的视频组件信息
       if (this.curSubjectVideo && this.curSubjectVideos.length) this.setCurSubjectVideos([])
     },
@@ -192,8 +192,9 @@ export default {
         // }
         if (['judge', 'radio', 'checkbox', 'pictureRadio', 'pictureMulti'].includes(subject.type)) {
           // 多选题目更改下当前题目回答的状态
-          // this.changeSubjectAnswerInfo({ subject })
-          await this.saveAnswerRecord(subject)
+          this.changeSubjectAnswerInfo({ subject })
+          // 单个提交
+          // await this.saveAnswerRecord(subject)
         }
       } catch (err) {
         console.log(err)
