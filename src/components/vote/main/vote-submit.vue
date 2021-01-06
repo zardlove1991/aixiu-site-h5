@@ -44,14 +44,9 @@
           <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
         </div>
       </div>
-      <div class="form-item">
-        <div class="form-title">来源</div>
-        <div class="form-content">
-          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
-        </div>
-      </div>
       <div class="form-item" v-if="isOpenClassify">
-        <div class="form-title">分类</div>
+        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
+        <div class="form-title" v-else>分类</div>
         <div class="form-content classify-wrap">
           <el-input v-model="examineData.type_name"
             :readonly="true"
@@ -60,6 +55,13 @@
             @blur="blurAction()">
           </el-input>
           <div class="drop-icon"></div>
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
+        <div class="form-title" v-else>来源</div>
+        <div class="form-content">
+          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="flag !== 'text'">
