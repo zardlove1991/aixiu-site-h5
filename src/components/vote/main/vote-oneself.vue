@@ -38,13 +38,15 @@
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
         </div>
-        <div class="header">
-          <span>来源：</span>
-          <span class="header-txt">{{selfData.source}}</span>
-        </div>
         <div class="header" v-if="isOpenClassify">
-          <span>分类：</span>
+          <span v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区：</span>
+          <span v-else>分类：</span>
           <span class="header-txt">{{selfData.type_name}}</span>
+        </div>
+        <div class="header">
+          <span v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村：</span>
+          <span v-else>来源：</span>
+          <span class="header-txt">{{selfData.source}}</span>
         </div>
         <div class="header" v-show="flag !== 'text'">
           <span>描述：</span>
