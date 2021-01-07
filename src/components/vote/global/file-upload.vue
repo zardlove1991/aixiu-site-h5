@@ -1,6 +1,7 @@
 <template>
-  <div class="vote-upload">
-    <div :class="['upload-picture-item', flag === 'videoCover' ? 'video-cover' : '']"
+  <div :class="['vote-upload', imageRatio ? 'vote-upload-vertical' : '']">
+    <div :class="['upload-picture-item', flag === 'videoCover' ? 'video-cover' : '',
+      imageRatio ? 'vertical' : '']"
       v-show="(flag === 'picture' || flag === 'videoCover') && fileList.length"
       v-for="(item, index) in fileList" :key="index">
       <img :src="item.url"
@@ -44,6 +45,12 @@ import SubjectMixin from '@/mixins/subject'
 export default {
   mixins: [ SubjectMixin ],
   props: {
+    imageRatio: {
+      type: Number,
+      default: () => {
+        return 0
+      }
+    },
     fileList: {
       type: Array,
       default: () => {
@@ -204,17 +211,25 @@ export default {
         @include font-dpr(30px);
       }
     }
+    &.vote-upload-vertical .el-upload {
+      height: calc(6.25rem * 5.6 / 4);
+      line-height: calc(6.25rem * 5.6 / 4);
+    }
     .upload-picture-item {
       position: relative;
       margin: 0 px2rem(30px) px2rem(25px) 0;
       width: px2rem(200px);
       height: px2rem(200px);
+      img {
+        border-radius: px2rem(8px);
+      }
       &.video-cover {
         width: px2rem(470px);
         height: px2rem(260px);
       }
-      img {
-        border-radius: px2rem(8px);
+      &.vertical {
+        width: 6.25rem;
+        height: calc(6.25rem * 5.6 / 4);
       }
       .file-delete-icon {
         display: inline-block;
