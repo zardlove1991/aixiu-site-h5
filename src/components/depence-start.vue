@@ -1,6 +1,7 @@
 <template lang="html">
   <!--当前开始考试页面-->
-  <div class="depence-start-wrap depence-wrap" v-if="examInfo">
+  <div class="depence-start-wrap depence-wrap" v-if="examInfo"
+    :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <div class="header-top"
       v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
@@ -517,7 +518,7 @@ export default {
   // background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
-  @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  // @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
   .exam-time{
     @include font-dpr(15px);
     color:#fff;
