@@ -518,7 +518,7 @@ export default {
   // background-color:#1F52E7;
   background-repeat: no-repeat;
   background-position: center;
-  @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
+  // @include img-retina('~@/assets/common/bg@2x.png','~@/assets/common/bg@3x.png', 100%, 100%);
   .exam-time{
     @include font-dpr(15px);
     color:#fff;
