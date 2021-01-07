@@ -1,6 +1,7 @@
 <template lang="html">
   <!--当前开始考试页面-->
-  <div class="depence-start-wrap depence-wrap" v-if="examInfo">
+  <div class="depence-start-wrap depence-wrap" v-if="examInfo"
+    :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <div class="header-top"
       v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
