@@ -1,5 +1,6 @@
 <template lang="html">
-  <div class="denpncelist-wrap depence-wrap" v-if="examList.length">
+  <div class="denpncelist-wrap depence-wrap" v-if="examList.length"
+    :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
       :list="examList"
