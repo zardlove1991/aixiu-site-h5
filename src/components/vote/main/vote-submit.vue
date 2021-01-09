@@ -10,7 +10,7 @@
       </div>
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">视频封面<span class="form-tips">(选填)</span></div>
-        <div class="form-tips-div">建议比例16:9，支持PNG、JPG、GIF格式， 小于5M</div>
+        <div class="form-tips-div">建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
         <div class="form-content">
           <file-upload :loading.sync="videoCoverLoading"
             flag="videoCover"
@@ -21,9 +21,10 @@
       </div>
       <div v-if="flag === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div">(图片最多上传9张，支持PNG、JPG、GIF格式)</div>
+        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸）；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
+        <div class="form-tips-div" v-else>建议比例：1:1；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-content">
-          <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
+          <file-upload :imageRatio="imageRatio" :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="flag === 'audio'" class="form-item">
@@ -140,7 +141,8 @@ export default {
       defaultSelect: {},
       videoCoverLoading: false,
       videoCoverList: [],
-      videoCover: ''
+      videoCover: '',
+      imageRatio: 0 // 图片模式
     }
   },
   methods: {
@@ -153,6 +155,13 @@ export default {
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           isOpenClassify = true
           this.isOpenClassify = true
+        }
+        // 判断图片模式
+        let pageSetup = detailInfo.rule.page_setup
+        if (pageSetup.image_ratio) {
+          this.imageRatio = 1
+        } else {
+          this.imageRatio = 0
         }
       }
       let { worksId } = this.$route.query
