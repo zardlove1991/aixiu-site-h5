@@ -71,12 +71,14 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return data.response || data.result || data
 }, (error) => {
-  const status = error.response && error.response.status
+  const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  if (isTimeout || (Number(status) >= 400 && Number(status) < 500)) {
+  if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
     window.location.href = `/waitting.html?origin=${url}`
-  } else if (Number(status) >= 500) {
+  } else if (status === 422) {
+    window.location.href = `/nodata.html?origin=${url}`
+  } else if (status >= 500) {
     window.location.href = `/error.html?origin=${url}`
   }
   let rej = null
