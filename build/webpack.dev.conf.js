@@ -66,12 +66,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       },
       {
-        from: path.resolve(__dirname, '../waitting.html'),
-        to: config.build.assetsRoot,
-        ignore: ['.*']
-      },
-      {
-        from: path.resolve(__dirname, '../error.html'),
+        from: path.resolve(__dirname, '../waitting.html', '../error.html', '../nodata.html'),
         to: config.build.assetsRoot,
         ignore: ['.*']
       }
