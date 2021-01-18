@@ -4,12 +4,12 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage('votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :class="imageRatio?'vertical':''" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}">
-        <div class="poster-thumb">
-          <div class="thumb-bg"></div>
-          <div class="thumb-poster" :style="{ backgroundImage: 'url('+(item.material.image.length && item.material.image[0].url)+'?x-oss-process=image/resize,w_400)'}"></div>
-          <div class="thumb-num" v-show="item.material.image_counts > 1">{{item.material.image_counts}}</div>
-        </div>
+      <div class="work-poster-wrap" :class="imageRatio? 'vertical' : 'horizontal'">
+        <img
+          class="thumb-bg"
+          :src="(item.material.image.length && item.material.image[0].url) + '?x-oss-process=image/resize,w_400'"
+          object-fit="cover" />
+        <div class="thumb-num" v-show="item.material.image_counts > 1">{{item.material.image_counts}}</div>
         <div :class="['poster-infos-wrap', item.is_my ? 'my-infos-wrap' : '']">
           <div class="info-number">
             <span v-show="item.is_my">我的 · </span>{{item.numbering}} · {{item.total_votes}}{{signUnit}}
@@ -98,14 +98,14 @@ export default {
       width: 50%;
       padding: px2rem(25px) px2rem(15px) px2rem(25px) px2rem(30px);
       &:nth-child(odd) {
-        .thumb-bg {
+        .thumb-bg img {
           background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg1@2x.png');
         }
       }
       &:nth-child(even) {
         // padding-right: 0;
         padding: px2rem(25px) px2rem(30px) px2rem(25px) px2rem(15px);
-        .thumb-bg {
+        .thumb-bg img {
           background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
         }
       }
@@ -115,62 +115,39 @@ export default {
       .work-poster-wrap {
         position: relative;
         width: 100%;
-        height: px2rem(340px);
-        // width: px2rem(330px);
-        // height: px2rem(330px);
-        border-radius: 4px;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        &.vertical{
-          height: calc((50vw - 1.40625rem)*5.6/4);
+        height: 0px;
+        border-radius: px2rem(4px);
+        &.horizontal {
+          padding-bottom: 100%;
         }
-        .poster-thumb {
+        &.vertical {
+          padding-bottom: 140%;
+          // height: calc((50vw - 1.40625rem)*5.6/4);
+        }
+        .thumb-bg {
           position: absolute;
-          top: 0;
           left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
           width: 100%;
           height: 100%;
-          border-radius: 4px;
-          overflow: hidden;
-          background-color: rgba(255, 255, 255, 0.5);
-          .thumb-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 4px;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
-          }
-          .thumb-poster {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 4px;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-          }
-          .thumb-num {
-            position: absolute;
-            right: px2rem(10px);
-            bottom: px2rem(10px);
-            width: px2rem(60px);
-            height: px2rem(40px);
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            padding-left: px2rem(38px);
-            border-radius: px2rem(2px);
-            font-size: px2rem(18px);
-            color: #fff;
-            background: rgba(0,0,0,0.5) url('http://xzh5.hoge.cn/new-vote/images/commvote_image_icon@3x.png') no-repeat 5px center / 9px 8px;
-          }
+          border-radius: px2rem(4px);
+        }
+        .thumb-num {
+          position: absolute;
+          right: px2rem(10px);
+          bottom: px2rem(10px);
+          width: px2rem(60px);
+          height: px2rem(40px);
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          padding-left: px2rem(38px);
+          border-radius: px2rem(2px);
+          font-size: px2rem(18px);
+          color: #fff;
+          background: rgba(0,0,0,0.5) url('http://xzh5.hoge.cn/new-vote/images/commvote_image_icon@3x.png') no-repeat 5px center / 9px 8px;
         }
         .poster-infos-wrap {
           position: absolute;
