@@ -20,7 +20,8 @@
       <div class="oneself-content">
         <div class="onself-picture-wrap"
           v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
-          <div class="onself-picture-item" v-for="(item, index) in selfData.material.image" :key="index">
+          <div :class="['onself-picture-item', imageRatio ? 'vertical' : '']"
+            v-for="(item, index) in selfData.material.image" :key="index">
             <img :src="item.url"
               @click.stop="_setPreviewState"
               v-preview="item.url"
@@ -38,13 +39,15 @@
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
         </div>
-        <div class="header">
-          <span>来源：</span>
-          <span class="header-txt">{{selfData.source}}</span>
-        </div>
         <div class="header" v-if="isOpenClassify">
-          <span>分类：</span>
+          <span v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区：</span>
+          <span v-else>分类：</span>
           <span class="header-txt">{{selfData.type_name}}</span>
+        </div>
+        <div class="header">
+          <span v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村：</span>
+          <span v-else>来源：</span>
+          <span class="header-txt">{{selfData.source}}</span>
         </div>
         <div class="header" v-show="flag !== 'text'">
           <span>描述：</span>
@@ -96,7 +99,8 @@ export default {
     return {
       selfData: {},
       textSetting: {},
-      isOpenClassify: false
+      isOpenClassify: false,
+      imageRatio: 0 // 图片模式
     }
   },
   methods: {
@@ -109,6 +113,13 @@ export default {
         let limit = detailInfo.rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           this.isOpenClassify = true
+        }
+        // 判断图片模式
+        let pageSetup = detailInfo.rule.page_setup
+        if (pageSetup.image_ratio) {
+          this.imageRatio = 1
+        } else {
+          this.imageRatio = 0
         }
       }
     },
@@ -238,6 +249,10 @@ export default {
             margin: 0 px2rem(20px) px2rem(20px) 0;
             width: px2rem(200px);
             height: px2rem(200px);
+            &.vertical {
+              width: 6.25rem;
+              height: calc(6.25rem * 5.6 / 4);
+            }
             img {
               border-radius: px2rem(8px);
             }

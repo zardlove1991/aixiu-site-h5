@@ -65,8 +65,22 @@ instance.interceptors.response.use((res, xhr) => {
       return Promise.reject(data)
     }
   }
+  const dom = document.getElementById('watting-wrap')
+  if (STORAGE.get('userinfo') && dom) {
+    dom.style.display = 'none'
+  }
   return data.response || data.result || data
 }, (error) => {
+  const status = error.response && Number(error.response.status)
+  const url = encodeURI(window.location.href)
+  const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
+    window.location.href = `/waitting.html?origin=${url}`
+  } else if (status === 422) {
+    window.location.href = `/nodata.html?origin=${url}`
+  } else if (status >= 500) {
+    window.location.href = `/error.html?origin=${url}`
+  }
   let rej = null
   let res = error.response
   console.log('error 接口请求错误信息', error)
@@ -91,6 +105,8 @@ instance.interceptors.response.use((res, xhr) => {
       }
     }
   } else {
+    const url = encodeURI(window.location.href)
+    window.location.href = `/waitting.html?origin=${url}`
     rej = {
       error_code: 'AJAX_ERROR',
       error_message: '服务器开小差了，请稍后再试~',
