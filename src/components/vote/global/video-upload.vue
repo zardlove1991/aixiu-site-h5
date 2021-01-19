@@ -1,6 +1,8 @@
 <template>
-  <div class="vote-upload">
-    <div v-if="fileList.length" class="upload-video-wrap">
+  <div :class="['vote-upload', videoMode === '3' ? 'vote-upload-vertical' : '']">
+    <div
+      v-if="fileList.length"
+      :class="['upload-video-wrap', videoMode === '3' ? 'vertical': '']">
       <vote-video
         :data="fileList[0]"
         :isShowDelBtn="true"
@@ -40,6 +42,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    videoMode: {
+      type: String,
+      default: '1'
     }
   },
   components: {
@@ -194,9 +200,17 @@ export default {
         @include font-dpr(30px);
       }
     }
+    &.vote-upload-vertical .el-upload {
+      height: px2rem(300px);
+      line-height: px2rem(300px);
+    }
     .upload-video-wrap {
       width: px2rem(470px);
-      height: px2rem(260px);
+      height: px2rem(264px);
+      &.vertical {
+        width: px2rem(250px);
+        height: px2rem(375px);
+      }
     }
   }
 </style>

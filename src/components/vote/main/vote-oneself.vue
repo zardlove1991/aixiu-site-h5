@@ -28,7 +28,7 @@
               preview-nav-enable="false" />
           </div>
         </div>
-        <div class="onself-video-wrap"
+        <div :class="['onself-video-wrap', videoMode === '3' ? 'vertical' : '']"
           v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
           <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
@@ -100,7 +100,8 @@ export default {
       selfData: {},
       textSetting: {},
       isOpenClassify: false,
-      imageRatio: 0 // 图片模式
+      imageRatio: 0, // 图片模式
+      videoMode: '1'
     }
   },
   methods: {
@@ -113,6 +114,9 @@ export default {
         let limit = detailInfo.rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           this.isOpenClassify = true
+        }
+        if (limit.show_mode) {
+          this.videoMode = limit.show_mode
         }
         // 判断图片模式
         let pageSetup = detailInfo.rule.page_setup
@@ -260,7 +264,10 @@ export default {
         }
         .onself-video-wrap {
           width: px2rem(470px);
-          height: px2rem(260px);
+          height: px2rem(264px);
+          &.vertical {
+            height: px2rem(705px);
+          }
         }
         .onself-text-wrap {
           @include font-dpr(15px);

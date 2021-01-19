@@ -10,13 +10,13 @@
           <span class="tip color-theme_color">{{key}}</span>
         </div>
         <div class="list-item"
-          :class="item.image_ratio?'vertical':''"
+          :class="(item.image_ratio || videoMode === '3') ? 'vertical' : ''"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id })">
           <div class="item-indexpic"
             v-if="flag === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
-          <div class="item-indexpic"
+          <div class="item-indexpic video-wrap"
             v-if="flag === 'video' && item.works.material && item.works.material.video && item.works.material.video.length"
             :style="{ backgroundImage: `url(${item.works.material.video[0].cover_image ? item.works.material.video[0].cover_image : item.works.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
             <div class="play-icon"></div>
@@ -62,7 +62,8 @@ export default {
       },
       firstUnit: '投了',
       signUnit: '票',
-      tip: '暂无列表记录'
+      tip: '暂无列表记录',
+      videoMode: '1'
     }
   },
   props: {
@@ -85,19 +86,23 @@ export default {
   methods: {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
-      if (detailInfo && detailInfo.text_setting) {
-        let sign = detailInfo.text_setting.sign
-        let tmp = sign.split('')
-        this.tip = '暂无' + sign + '记录'
-        if (tmp.length >= 2) {
-          let signUnit = tmp[1]
-          console.log('xxxxxxx', signUnit)
-          if (signUnit !== '票') {
-            this.firstUnit = sign
-            this.signUnit = '次'
-          } else {
-            this.firstUnit = '投了'
-            this.signUnit = '票'
+      if (detailInfo) {
+        if (detailInfo.rule && detailInfo.rule.limit && detailInfo.rule.limit.show_mode) {
+          this.videoMode = detailInfo.rule.limit.show_mode
+        }
+        if (detailInfo.text_setting) {
+          let sign = detailInfo.text_setting.sign
+          let tmp = sign.split('')
+          this.tip = '暂无' + sign + '记录'
+          if (tmp.length >= 2) {
+            let signUnit = tmp[1]
+            if (signUnit !== '票') {
+              this.firstUnit = sign
+              this.signUnit = '次'
+            } else {
+              this.firstUnit = '投了'
+              this.signUnit = '票'
+            }
           }
         }
       }
@@ -190,6 +195,9 @@ export default {
           &.vertical{
             .item-indexpic {
               height: px2rem(252px);
+            }
+            .item-indexpic.video-wrap {
+              height: px2rem(270px);
             }
           }
           .item-indexpic {

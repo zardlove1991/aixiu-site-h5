@@ -3,17 +3,21 @@
     <form>
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">上传视频</div>
-        <div class="form-tips-div">视频格式为MP4，时长不能超过60s</div>
+        <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，时长不能超过60s；建议尺寸3:4.5</div>
+        <div class="form-tips-div" v-else>视频格式为MP4，时长不能超过60s；竖屏上传建议尺寸16:9</div>
         <div class="form-content">
-          <video-upload :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
         </div>
       </div>
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">视频封面<span class="form-tips">(选填)</span></div>
-        <div class="form-tips-div">建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
+        <div class="form-tips-div"></div>
+        <div class="form-tips-div" v-if="videoMode === '3'">建议比例3:4.5，支持PNG、JPG、GIF格式，小于5M</div>
+        <div class="form-tips-div" v-else>建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
         <div class="form-content">
           <file-upload :loading.sync="videoCoverLoading"
             flag="videoCover"
+            :imageRatio="videoMode === '3' ? 1 : 0"
             :fileList="videoCoverList"
             @changeFile="changeVideoCoverFile">
           </file-upload>
@@ -24,7 +28,13 @@
         <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸）；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-tips-div" v-else>建议比例：1:1；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-content">
-          <file-upload :imageRatio="imageRatio" :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
+          <file-upload
+            :imageRatio="imageRatio"
+            :loading.sync="loading"
+            :flag="flag"
+            :fileList="fileList"
+            @changeFile="changeFile">
+          </file-upload>
         </div>
       </div>
       <div v-if="flag === 'audio'" class="form-item">
@@ -142,7 +152,8 @@ export default {
       videoCoverLoading: false,
       videoCoverList: [],
       videoCover: '',
-      imageRatio: 0 // 图片模式
+      imageRatio: 0, // 图片模式
+      videoMode: '1'
     }
   },
   methods: {
@@ -155,6 +166,9 @@ export default {
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           isOpenClassify = true
           this.isOpenClassify = true
+        }
+        if (limit.show_mode) {
+          this.videoMode = limit.show_mode
         }
         // 判断图片模式
         let pageSetup = detailInfo.rule.page_setup

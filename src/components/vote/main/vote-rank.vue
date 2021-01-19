@@ -12,7 +12,7 @@
       </vote-classify-list>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        :class="myVoteData.image_ratio?'vertical':''"
+        :class="(myVoteData.image_ratio || videoMode === '3') ? 'vertical' : ''"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
@@ -22,7 +22,7 @@
             :style="{ backgroundImage: 'url(' + myVoteData.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap"
+          <div class="indexpic-wrap video-wrap"
             v-if="flag === 'video' && myVoteData.material && myVoteData.material.video && myVoteData.material.video.length"
             :style="{ backgroundImage: `url(${myVoteData.material.video[0].cover_image ? myVoteData.material.video[0].cover_image : myVoteData.material.video[0].cover}?x-oss-process=image/resize,w_400)`}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
@@ -43,7 +43,7 @@
         :auto-fill="false">
         <div class="wrap">
           <div class="rank-list-item"
-           :class="item.image_ratio?'vertical':''"
+           :class="(item.image_ratio || videoMode === '3') ? 'vertical' : ''"
             v-for="(item, index) in rankList" :key="index"
             @click.stop="jumpPage('votedetail', { worksId: item.id })">
             <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
@@ -53,7 +53,7 @@
                 :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
                 <div class="rank-num">{{item.numbering}}号</div>
               </div>
-              <div class="indexpic-wrap"
+              <div class="indexpic-wrap video-wrap"
                 v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
                 :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
                 <div class="rank-num">{{item.numbering}}号</div>
@@ -113,7 +113,8 @@ export default {
       isOpenClassify: false,
       isShowClassify: false,
       searchVal: '',
-      isShowMy: true
+      isShowMy: true,
+      videoMode: '1'
     }
   },
   props: {
@@ -136,16 +137,21 @@ export default {
   methods: {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
-      if (detailInfo && detailInfo.text_setting) {
-        let tmp = detailInfo.text_setting.sign.split('')
-        if (tmp.length >= 2) {
-          let signUnit = tmp[1]
-          if (signUnit === '力') {
-            this.signUnit = '助力值'
-          } else if (signUnit === '敬') {
-            this.signUnit = '致敬数'
-          } else {
-            this.signUnit = signUnit
+      if (detailInfo) {
+        if (detailInfo.text_setting) {
+          let tmp = detailInfo.text_setting.sign.split('')
+          if (tmp.length >= 2) {
+            let signUnit = tmp[1]
+            if (signUnit === '力') {
+              this.signUnit = '助力值'
+            } else if (signUnit === '敬') {
+              this.signUnit = '致敬数'
+            } else {
+              this.signUnit = signUnit
+            }
+          }
+          if (detailInfo.rule && detailInfo.rule.limit && detailInfo.rule.limit.show_mode) {
+            this.videoMode = detailInfo.rule.limit.show_mode
           }
         }
       }
@@ -316,6 +322,9 @@ export default {
               .indexpic-wrap {
                 height: px2rem(182px);
               }
+              .indexpic-wrap.video-wrap {
+                height: px2rem(195px);
+              }
             }
           }
         }
@@ -364,6 +373,10 @@ export default {
           .indexpic-wrap {
             width: px2rem(180px);
             height: px2rem(252px);
+          }
+          .indexpic-wrap.video-wrap {
+            width: px2rem(180px);
+            height: px2rem(270px);
           }
         }
         .indexpic-wrap {

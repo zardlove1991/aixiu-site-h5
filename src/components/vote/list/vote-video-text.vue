@@ -78,7 +78,8 @@ export default {
       .work-poster-wrap {
         position: relative;
         width: 100%;
-        height: px2rem(388px);
+        // height: px2rem(388px);
+        height: calc((100vw - 1.875rem) * 9 / 16);
         border-radius: 4px;
         background-repeat: no-repeat;
         background-position: center;
@@ -120,7 +121,7 @@ export default {
             height: 100%;
             border-radius: px2rem(8px);
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: cover;
             background-position: center;
           }
         }

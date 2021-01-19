@@ -8,7 +8,7 @@
           @click.stop="goLottery(workDetail.lottery.link)">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
       <!--媒体组件渲染-->
-      <div class="detail-video-wrap"
+      <div :class="['detail-video-wrap', videoMode === '3' ? 'vertical' : '']"
         v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
         <vote-video class="base-video"
           v-for="(video, index) in workDetail.material.video" :key="index"
@@ -102,6 +102,7 @@ export default {
       signUnit: '票',
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
+      videoMode: '1',
       isCloseDialog: false // 是否开启投票弹框
     }
   },
@@ -154,6 +155,9 @@ export default {
       let limit = detailInfo.rule.limit
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
+      }
+      if (limit.show_mode) {
+        this.videoMode = limit.show_mode
       }
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
@@ -348,8 +352,11 @@ export default {
       }
       .detail-video-wrap {
         width: 100%;
-        height: px2rem(390px);
+        height: calc((100vw - 1.875rem) * 9 / 16);
         margin-bottom: px2rem(40px);
+        &.vertical {
+          height: calc((100vw - 1.875rem) * 4.5 / 3);
+        }
       }
       .base-video, .base-audio, .base-image {
         width: 100%;

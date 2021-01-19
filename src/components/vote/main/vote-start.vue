@@ -126,13 +126,23 @@
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-picture-text>
-          <vote-video-text v-if="showModel === 'video'"
+          <vote-video-text
+            v-if="showModel === 'video' && videoMode === '1'"
             :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
             :signUnit="signUnit"
             @trigger-work="triggerWork">
           </vote-video-text>
+          <vote-video-text2
+            v-else
+            :workList="allWorkList"
+            :remainVotes="remainVotes"
+            @jump-page="jumpPage"
+            :signUnit="signUnit"
+            :videoMode="videoMode"
+            @trigger-work="triggerWork">
+          </vote-video-text2>
           <vote-audio-text
             v-if="showModel === 'audio'"
             :workList="allWorkList"
@@ -238,6 +248,7 @@
 <script>
 import VotePictureText from '@/components/vote/list/vote-picture-text'
 import VoteVideoText from '@/components/vote/list/vote-video-text'
+import VoteVideoText2 from '@/components/vote/list/vote-video-text2'
 import VoteAudioText from '@/components/vote/list/vote-audio-text'
 import VoteText from '@/components/vote/list/vote-text'
 import CountDown from '@/components/vote/global/count-down'
@@ -266,6 +277,7 @@ export default {
   components: {
     VotePictureText,
     VoteVideoText,
+    VoteVideoText2,
     VoteAudioText,
     VoteText,
     CountDown,
@@ -340,7 +352,8 @@ export default {
       myWorkStatus: null, // 作品审核状态
       isOpenVoteReport: false,
       indexRadio: '', // 轮播图比例
-      swipeList: [] // 轮播图片数组
+      swipeList: [], // 轮播图片数组
+      videoMode: '1' // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
     }
   },
   created () {
@@ -419,6 +432,9 @@ export default {
             size = 'size-' + arr[0] + '-' + arr[1]
           }
           this.indexRadio = size
+        }
+        if (rule.limit.show_mode) {
+          this.videoMode = rule.limit.show_mode
         }
         // 是否开启边投票边报名
         let isOpenVoteReport = 0
