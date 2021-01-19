@@ -4,7 +4,7 @@
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">上传视频</div>
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，时长不能超过60s；建议尺寸3:4.5</div>
-        <div class="form-tips-div" v-else>视频格式为MP4，时长不能超过60s；竖屏上传建议尺寸16:9</div>
+        <div class="form-tips-div" v-else>视频格式为MP4，时长不能超过60s；建议尺寸16:9</div>
         <div class="form-content">
           <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
         </div>
