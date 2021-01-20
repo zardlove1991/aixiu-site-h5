@@ -23,14 +23,18 @@ export const setTheme = (id, name, isFirst) => {
     API.getVodeDetail({ query: { id } }).then((res) => {
       let info = res
       if (info.rule && info.rule.page_setup) {
-        let { background, color_scheme: colorScheme } = info.rule.page_setup
+        let { background, color_scheme: colorScheme, font_color: fontColor } = info.rule.page_setup
         if (background && colorScheme && colorScheme.content) {
           let content = colorScheme.content
           let bodyEle = document.getElementsByTagName('body')[0]
+          if (!fontColor) {
+            fontColor = '#fff'
+          }
           bodyEle.style.setProperty('--bgColor', content.bg_color)
           bodyEle.style.setProperty('--buttonColor', content.button_color)
           bodyEle.style.setProperty('--component', content.component)
           bodyEle.style.setProperty('--decorated', content.decorated)
+          bodyEle.style.setProperty('--fontColor', fontColor)
           // 改背景图片
           if (background.indexpic && background.indexpic.length) {
             let picObj = background.indexpic[0]
