@@ -115,7 +115,8 @@ export default {
       pop: {}, // 弹窗显示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isLuckDraw: false, // 是否是有资格抽奖
-      luckDrawTips: [] // 抽奖提示内容
+      luckDrawTips: [], // 抽奖提示内容
+      timer: null
     }
   },
   components: {
@@ -149,11 +150,21 @@ export default {
       if (newVal) this._moveProgressBtn()
     }
   },
+  beforeDestroy () {
+    // 清除定时器
+    this.clearSetInterval()
+  },
   mounted () {
     this.initCountTime()
     this._moveProgressBtn()
   },
   methods: {
+    clearSetInterval () {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
     initCountTime () {
       let limitTime = this.examInfo.limit_time
       this.duration = this.list[0].remain_time
