@@ -613,26 +613,26 @@ const actions = {
         subjectAnswerInfo[subject.id] = false
       } else {
         subjectAnswerInfo[subject.id] = true
-        // 将每次改动的答案存入
-        let key = 'answer_record_' + state.examId
-        let arr = STORAGE.get(key)
-        if (arr && arr.length) {
-          let isExit = false
-          for (let item of arr) {
-            if (item.question_id === params.question_id) {
-              item.options_id = params.options_id
-              isExit = true
-              break
-            }
-          }
-          if (!isExit) {
-            arr = [...arr, params]
-          }
-        } else {
-          arr = [params]
-        }
-        STORAGE.set(key, arr)
       }
+      // 将每次改动的答案存入
+      let key = 'answer_record_' + state.examId
+      let arr = STORAGE.get(key)
+      if (arr && arr.length) {
+        let isExit = false
+        for (let item of arr) {
+          if (item.question_id === params.question_id) {
+            item.options_id = params.options_id
+            isExit = true
+            break
+          }
+        }
+        if (!isExit) {
+          arr = [...arr, params]
+        }
+      } else {
+        arr = [params]
+      }
+      STORAGE.set(key, arr)
       // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
       if (optionFlag === 'check-answer') {
         // 处理当多个更新时候的多次请求
