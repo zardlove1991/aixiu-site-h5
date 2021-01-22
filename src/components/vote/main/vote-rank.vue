@@ -219,7 +219,7 @@ export default {
           id: this.id
         },
         query: data
-      })      
+      })
     },
     searchClassify (val) {
       if (val !== this.searchVal) {
