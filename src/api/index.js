@@ -69,6 +69,10 @@ instance.interceptors.response.use((res, xhr) => {
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'
   }
+  if (res.status === 204) {
+    const url = encodeURI(window.location.href)
+    window.location.href = `/nodata.html?origin=${url}`
+  }
   return data.response || data.result || data
 }, (error) => {
   const status = error.response && Number(error.response.status)
@@ -76,9 +80,7 @@ instance.interceptors.response.use((res, xhr) => {
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
     window.location.href = `/waitting.html?origin=${url}`
-  } else if (status === 422) {
-    window.location.href = `/nodata.html?origin=${url}`
-  } else if (status >= 500) {
+  } else if (status >= 500 || status === 422) {
     window.location.href = `/error.html?origin=${url}`
   }
   let rej = null
