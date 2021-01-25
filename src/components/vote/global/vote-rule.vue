@@ -84,6 +84,8 @@ export default {
         }
         .rule-content {
           width: 100%;
+          height: px2rem(720px);
+          overflow-y: auto;
           @include font-dpr(15px);
           line-height: px2rem(48px);
           color: #666;
