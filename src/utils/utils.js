@@ -210,22 +210,6 @@ export const getPlat = () => {
   return 'browser'
 }
 
-/**
- * 判断当前打开的是手机还是pc浏览器
- */
-export const isPC = () => {
-  let userAgentInfo = navigator.userAgent
-  let agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod']
-  let flag = true
-  for (let v = 0; v < agents.length; v++) {
-    if (userAgentInfo.indexOf(agents[v]) > 0) {
-      flag = false
-      break
-    }
-  }
-  return flag
-}
-
 export const setClick = (id, title, mark) => {
   let datas = {
     param: {
