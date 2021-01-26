@@ -96,7 +96,15 @@ let wechat = {
     let pathname = window.location.pathname
     let id = this.getActiveId(pathname)
     if (id) {
-      STORAGE.clear()
+      // STORAGE.clear()
+      STORAGE.remove('scope_limit')
+      STORAGE.remove('statInfo')
+      STORAGE.remove('userinfo')
+      STORAGE.remove('detailInfo')
+      STORAGE.remove('component_appid')
+      STORAGE.remove('appid')
+      STORAGE.remove('location')
+      STORAGE.remove('news_weather')
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票 抽奖列表
         this.getVoteAuthScope(id)

@@ -196,6 +196,10 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
+      let answerRecord = STORAGE.get('answer_record_' + examId)
+      if (answerRecord && answerRecord.length) {
+        this.saveAnswerRecords({ examId, answerList: answerRecord })
+      }
       await this.endExam({ id: examId })
       this.initStartInfo()
       this.isShowBreak = false
@@ -498,6 +502,7 @@ export default {
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
       endExam: 'END_EXAM'
