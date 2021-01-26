@@ -9,7 +9,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlat } from '@/utils/utils'
+import { getPlat, getUrlParam } from '@/utils/utils'
 
 export default {
   name: 'App',
@@ -22,10 +22,17 @@ export default {
   methods: {
     goPage () {
       let plat = getPlat()
-      console.log('getBrowser', plat)
       if (plat === 'browser' || plat === 'dingding' || plat === 'dingdone') {
-        this.$router.replace({
-          path: '/browser'
+        let url = encodeURIComponent(window.location.href)
+        let activeUrl = getUrlParam('active_url')
+        if (activeUrl) {
+          url = activeUrl
+        }
+        this.$router.push({
+          path: '/browser',
+          query: {
+            active_url: url
+          }
         })
       }
     }

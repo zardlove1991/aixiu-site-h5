@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       isMobile: true,
-      activeUrl: 'http://www.baidu.com'
+      activeUrl: ''
     }
   },
   created () {
@@ -51,6 +51,10 @@ export default {
         this.isMobile = false
       } else {
         this.isMobile = true
+      }
+      let { active_url: activeUrl } = this.$route.query
+      if (activeUrl) {
+        this.activeUrl = decodeURIComponent(activeUrl)
       }
     },
     hiddenDom () {
@@ -70,9 +74,8 @@ export default {
       })
     },
     copyLink () {
-      const instance = window.$vue
       let url = this.activeUrl
-      instance.$copyText(url).then((e) => {
+      this.$copyText(url).then((e) => {
         Toast('复制成功')
       }, (e) => {
         Toast('复制失败')
