@@ -592,7 +592,7 @@ export default {
           .bg {
             width: 100%;
             height:px2rem(150px);
-            @include bg-linear-color('themeColor');
+            @include bg-color('themeColor');
             opacity: 0.06;
             border-radius: px2rem(12px);
           }
@@ -690,7 +690,7 @@ export default {
     border: none;
     color:#fff;
     @include font-dpr(16px);
-    @include bg-linear-color('themeColor');
+    @include bg-color('themeColor');
   }
   .end-exambtn{
     flex:1;
@@ -766,7 +766,7 @@ export default {
       text-align: center;
       color:#fff;
       // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-      @include bg-linear-color('themeColor');
+      @include bg-color('themeColor');
       @include font-dpr(16px);
       margin:0 auto;
       border-radius: 5px;
@@ -842,7 +842,7 @@ export default {
       .password-limit-surebtn {
         width: px2rem(305px);
         height: px2rem(90px);
-        @include bg-linear-color('themeColor');
+        @include bg-color('themeColor');
         // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
         border-radius: px2rem(12px);
         font-size: px2rem(34px);

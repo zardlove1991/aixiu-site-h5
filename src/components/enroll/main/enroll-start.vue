@@ -903,7 +903,7 @@ export default {
             background: #EBEBEB;
             opacity: 1;
             &.is-active {
-              @include bg-linear-color('compColor');
+              @include bg-color('compColor');
               // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
             }
           }
@@ -1060,7 +1060,7 @@ export default {
               @include bg-alpha-color('bgColor', 0.2);
             }
             &.active {
-              @include bg-linear-color('compColor');
+              @include bg-color('compColor');
               // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
               color: #fff;
               .date-item1 {
@@ -1108,7 +1108,7 @@ export default {
             box-shadow: 0 5px 13px 0 rgba(216,216,216,0.48);
           }
           &.active {
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
           }
         }
         .tool-tip {

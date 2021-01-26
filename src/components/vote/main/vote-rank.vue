@@ -302,7 +302,7 @@ export default {
           padding-left: px2rem(30px);
           margin: px2rem(30px) px2rem(30px) px2rem(30px) 0;
           // background: linear-gradient(-90deg, #604AC4 0%, #4543BA 100%);
-          @include bg-linear-color('compColor');
+          @include bg-color('compColor');
           border-radius: px2rem(4px);
           .list-item-content {
             border-bottom: 0;

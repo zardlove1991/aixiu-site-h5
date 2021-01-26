@@ -156,7 +156,7 @@ export default {
           color: #fff;
         }
         &.item1 {
-          @include bg-linear-color('compColor');
+          @include bg-color('compColor');
           color: rgba(255, 255, 255, 0.5);
         }
         .classify-item {
@@ -165,7 +165,7 @@ export default {
           height: px2rem(80px);
           line-height: px2rem(80px);
           &.active {
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
           }
           &.active2 {
             color: #fff;

@@ -1401,7 +1401,7 @@ export default {
             content: '';
             width: 100%;
             height:100%;
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
             opacity: 0.3;
             border-radius: px2rem(8px);
           }

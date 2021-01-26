@@ -267,7 +267,7 @@ export default {
       background-image: url('~@/assets/news/normal-bg.png');
     }
     &.newsblack-bg {
-      @include bg-linear-color('bgColor');
+      @include bg-color('bgColor');
     }
     .mint-loadmore-text {
       color: #999;
