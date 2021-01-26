@@ -15,13 +15,6 @@ const routeBase = () => {
 Vue.use(Router)
 
 const routes = [{
-  path: '/browser',
-  name: 'browserpage',
-  component: getComponent('browser'),
-  meta: {
-    title: '加载中...'
-  }
-}, {
   path: '/depencelist/:id',
   name: 'depencelist',
   component: getComponent('depence-list'),
