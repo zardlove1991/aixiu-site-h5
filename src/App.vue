@@ -4,7 +4,6 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
-    <div class="no-suppot-wrap" v-if="isBrowser">{{tipMsg}}</div>
   </div>
 </template>
 
@@ -17,21 +16,17 @@ export default {
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
   },
-  data () {
-    return {
-      isBrowser: false,
-      tipMsg: ''
-    }
-  },
   created () {
-    this.getBrowser()
+    this.goPage()
   },
   methods: {
-    getBrowser () {
+    goPage () {
       let plat = getPlat()
-      if (plat === 'browser') {
-        this.isBrowser = true
-        this.tipMsg = '不支持在浏览器中打开'
+      console.log('getBrowser', plat)
+      if (plat === 'browser' || plat === 'dingding' || plat === 'dingdone') {
+        this.$router.replace({
+          path: '/browser'
+        })
       }
     }
   }
