@@ -1347,7 +1347,8 @@ export default {
             transform: translateY(-50%);
             width: 1px;
             height: 10px;
-            background-color: rgba(255, 255, 255, 0.2);
+            @include font-color('fontColor');
+            opacity: 0.2;
             content: "";
           }
           &:last-child {
