@@ -115,7 +115,11 @@ instance.interceptors.response.use((res, xhr) => {
     }
   } else {
     const url = encodeURI(window.location.href)
-    window.location.href = `/waitting.html?origin=${url}`
+    if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+      window.location.href = `/waitting.html?origin=${url}`
+    } else {
+      store.dispatch('setDialogVisible', true)
+    }
     rej = {
       error_code: 'AJAX_ERROR',
       error_message: '服务器开小差了，请稍后再试~',
