@@ -27,7 +27,9 @@ export const setTheme = (id, name, isFirst) => {
         if (background && colorScheme && colorScheme.content) {
           let content = colorScheme.content
           let bodyEle = document.getElementsByTagName('body')[0]
-          if (!fontColor) {
+          if (fontColor === '2') {
+            fontColor = 'rgba(0, 0, 0, 0.8)'
+          } else {
             fontColor = '#fff'
           }
           bodyEle.style.setProperty('--bgColor', content.bg_color)
