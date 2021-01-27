@@ -2,7 +2,7 @@
   <div :class="['oneself-submit-wrap', darkMark === '2' ? 'light' : '']">
     <div class="works-no">作品编号：<span class="no-tet">{{selfData.numbering ? selfData.numbering : '暂无'}}</span></div>
     <div class="examine-wrap">
-      <div :class="'examine-icon-' + selfData.audit_status"></div>
+      <div :class="['examine-icon-' + selfData.audit_status, colorName]"></div>
       <div class="status-tips-wait" v-if="selfData.audit_status === 3">作品正在审核中，请耐心等候哦～</div>
       <div class="status-tips-success" v-if="selfData.audit_status === 1">
         <p class="success-tips1">恭喜，审核已通过</p>
@@ -97,6 +97,7 @@ export default {
   },
   data () {
     return {
+      colorName: '', // 配色名称
       selfData: {},
       textSetting: {},
       isOpenClassify: false,
@@ -128,6 +129,9 @@ export default {
         }
         if (pageSetup.font_color) {
           this.darkMark = pageSetup.font_color
+        }
+        if (pageSetup.color_scheme) {
+          this.colorName = pageSetup.color_scheme.name
         }
       }
     },
@@ -313,8 +317,14 @@ export default {
         color: rgba(0, 0, 0, 0.4);
       }
       .examine-wrap {
-        .examine-icon-3 {
-          @include img-retina("~@/assets/vote/examine-load-light@2x.png","~@/assets/vote/examine-load-light@3x.png", 100%, 100%);
+        .examine-icon-3.baicheng {
+          @include img-retina("~@/assets/vote/baicheng-load@2x.png","~@/assets/vote/baicheng-load@3x.png", 100%, 100%);
+        }
+        .examine-icon-3.bailv {
+          @include img-retina("~@/assets/vote/bailv-load@2x.png","~@/assets/vote/bailv-load@3x.png", 100%, 100%);
+        }
+        .examine-icon-3.baijin {
+          @include img-retina("~@/assets/vote/baijin-load@2x.png","~@/assets/vote/baijin-load@3x.png", 100%, 100%);
         }
         .status-tips-success .success-tips2 {
           color: rgba(0, 0, 0, 0.4);
