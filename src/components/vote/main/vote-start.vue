@@ -1254,6 +1254,12 @@ export default {
       &.baicheng{
         @include img-retina('~@/assets/vote/baicheng@2x.png','~@/assets/vote/baicheng@3x.png', 100%, 100%);
       }
+      &.bailv{
+        @include img-retina('~@/assets/vote/bailv@2x.png','~@/assets/vote/bailv@3x.png', 100%, 100%);
+      }
+      &.baijin{
+        @include img-retina('~@/assets/vote/baijin@2x.png','~@/assets/vote/baijin@3x.png', 100%, 100%);
+      }
     }
     .commvote-overview {
       width: 100%;
