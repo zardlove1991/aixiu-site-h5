@@ -1458,10 +1458,14 @@ export default {
             font-weight: 500;
             line-height: 1;
             margin-bottom: px2rem(20px);
+            position: relative;
+            z-index: 2;
           }
           .vote-desc {
             @include font-dpr(11px);
             line-height: 1;
+            position: relative;
+            z-index: 2;
           }
         }
         &.light .vote-cols-wrap {
