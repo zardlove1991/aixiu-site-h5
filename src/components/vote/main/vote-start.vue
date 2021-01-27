@@ -1466,8 +1466,17 @@ export default {
             @include bg-color('btnColor');
             opacity: 0.15;
           }
+          &.picture-text:nth-child(1):before {
+            background-image: url('~@/assets/vote/picture-icon.png');
+          }
           &.video-text:nth-child(1):before {
             @include img-retina('~@/assets/vote/video-icon@2x.png', '~@/assets/vote/video-icon@3x.png', px2rem(72px), px2rem(127px));
+          }
+          &.audio-text:nth-child(1):before {
+            background-image: url('~@/assets/vote/audio-icon.png');
+          }
+          &.text-text:nth-child(1):before {
+            background-image: url('~@/assets/vote/text-icon.png');
           }
           &:nth-child(2):before {
             @include img-retina('~@/assets/vote/vote-icon@2x.png', '~@/assets/vote/vote-icon@3x.png', px2rem(100px), px2rem(130px));
