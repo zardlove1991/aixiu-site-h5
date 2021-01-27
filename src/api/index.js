@@ -1,9 +1,11 @@
 import axios from 'axios'
+import store from '@/store/index'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
+let currentApi = ''
 const instance = axios.create({
   timeout: apiConfig.timeout
 })
@@ -79,7 +81,11 @@ instance.interceptors.response.use((res, xhr) => {
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
-    window.location.href = `/waitting.html?origin=${url}`
+    if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+      window.location.href = `/waitting.html?origin=${url}`
+    } else {
+      store.dispatch('setDialogVisible', true)
+    }
   } else if (status >= 500 || status === 422) {
     window.location.href = `/error.html?origin=${url}`
   }
@@ -119,6 +125,7 @@ instance.interceptors.response.use((res, xhr) => {
 })
 
 const getUrl = (url, config = {}, api = 'exam') => {
+  currentApi = url
   if (!url) {
     console.warn('接口地址不能为空')
     return false
