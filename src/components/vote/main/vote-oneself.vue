@@ -33,7 +33,7 @@
           <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
         <vote-audio
-          v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>
+          v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
         <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
         <div class="header first-header">
           <span>名称：</span>

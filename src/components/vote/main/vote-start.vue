@@ -139,7 +139,7 @@
             @trigger-work="triggerWork">
           </vote-video-text>
           <vote-video-text2
-            v-else
+            v-if="showModel === 'video' && videoMode !== '1'"
             :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"
@@ -149,6 +149,7 @@
           </vote-video-text2>
           <vote-audio-text
             v-if="showModel === 'audio'"
+            :darkMark="darkMark"
             :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"

@@ -71,6 +71,6 @@
   }
   .vote-tip {
     @include font-dpr(14px);
-    color: #fff;
+    @include font-color('fontColor');
   }
 }

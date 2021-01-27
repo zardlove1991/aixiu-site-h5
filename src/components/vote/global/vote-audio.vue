@@ -1,5 +1,6 @@
 <template>
-  <div class="commvote-base-audio-wrap">
+  <div :class="['commvote-base-audio-wrap', darkMark === '2' ? 'light' : '']">
+    <div class="audio-light-bg" v-if="darkMark === '2'"></div>
     <p class="audio-name">{{data.filename}}</p>
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
@@ -23,6 +24,7 @@ import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
+    darkMark: String,
     data: {
       type: Object,
       default: () => {
@@ -195,6 +197,25 @@ export default {
       width: px2rem(40px);
       height: px2rem(40px);
       @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
+    }
+    &.light {
+      .audio-light-bg {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        @include bg-color('btnColor');
+        opacity: 0.15;
+      }
+      .audio-name, .audio-control-wrap .run-stime, .audio-control-wrap .run-etime {
+        @include font-color('descColor');
+      }
+      .audio-play-icon {
+        @include bg-alpha-color('btnColor', 0.4);
+        // opacity: ;
+        background-image: url('~@/assets/vote/audio-play-icon.png');
+      }
     }
   }
 </style>

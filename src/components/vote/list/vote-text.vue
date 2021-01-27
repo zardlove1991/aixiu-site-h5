@@ -83,21 +83,23 @@ export default {
           align-items: center;
           margin-bottom: px2rem(10px);
           .work-title-txt {
-            color: #fff;
+            @include font-color('fontColor');
             @include font-dpr(16px);
             @include txt-overflow(px2rem(590px));
           }
         }
         .work-desc {
           margin-left: px2rem(50px);
-          color: rgba(255,255,255, 0.7);
+          @include font-color('fontColor');
+          opacity: 0.7;
           @include font-dpr(13px);
           @include txt-overflow(px2rem(590px));
         }
       }
       .work-content-info {
         @include font-dpr(14px);
-        color: rgba(255,255,255, 0.7);
+        @include font-color('fontColor');
+        opacity: 0.7;
         @include line-overflow(2)
       }
       .work-options-wrap {

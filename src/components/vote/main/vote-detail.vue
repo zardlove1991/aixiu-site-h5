@@ -18,6 +18,7 @@
       <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
         <vote-audio class="base-audio"
           v-for="(audio, index) in workDetail.material.audio" :key="index"
+          :darkMark="darkMark"
           :data="audio">
         </vote-audio>
       </div>
@@ -103,7 +104,8 @@ export default {
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
       videoMode: '1',
-      isCloseDialog: false // 是否开启投票弹框
+      isCloseDialog: false, // 是否开启投票弹框
+      darkMark: '1' // 1: 深色系 2: 浅色系
     }
   },
   created () {
@@ -145,6 +147,9 @@ export default {
         this.imageRatio = 1
       } else {
         this.imageRatio = 0
+      }
+      if (pageSetup.font_color) {
+        this.darkMark = pageSetup.font_color
       }
       // 判断投票弹窗
       if (detailInfo.rule && detailInfo.rule.is_close_dialog) {
