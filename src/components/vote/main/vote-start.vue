@@ -1411,7 +1411,7 @@ export default {
             background-repeat: no-repeat;
             background-size: contain;
             background-position: right center;
-            z-index: 100;
+            z-index: 2;
           }
           &:after{
             position: absolute;
