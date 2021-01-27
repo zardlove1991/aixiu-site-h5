@@ -19,7 +19,7 @@ const routes = [{
   name: 'browserpage',
   component: getComponent('browser'),
   meta: {
-    title: '加载中...'
+    title: '爱秀'
   }
 }, {
   path: '/depencelist/:id',
