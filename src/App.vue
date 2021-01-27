@@ -4,17 +4,27 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
+    <errorDialog/>
+    <div class="no-suppot-wrap" v-if="isBrowser">{{tipMsg}}</div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { getPlat, getUrlParam } from '@/utils/utils'
+import errorDialog from './components/error-dialog'
 
 export default {
   name: 'App',
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
+  },
+  components: { errorDialog },
+  data () {
+    return {
+      isBrowser: false,
+      tipMsg: ''
+    }
   },
   created () {
     this.goPage()
