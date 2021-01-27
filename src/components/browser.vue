@@ -99,6 +99,9 @@ export default {
       background: rgba(255, 255, 255, 0.5);
       box-shadow: 0px 0px px2rem(16px) 0px rgba(0, 0, 0, 0.06);
       border-radius: px2rem(32px);
+      &.pc {
+        width: 70%;
+      }
       .top-bg {
         position: absolute;
         top: 0;
