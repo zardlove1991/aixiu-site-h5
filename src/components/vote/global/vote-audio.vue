@@ -11,7 +11,9 @@
         </div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
-      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay"></div>
+      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay">
+        <div class="audio-icon"></div>
+      </div>
     </div>
     <!--音频元素-->
     <audio ref="audio" preload='auto' @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
@@ -175,17 +177,25 @@ export default {
         }
       }
       .audio-play-icon {
+        position: relative;
         width: px2rem(56px);
         height: px2rem(56px);
         border-radius: 50%;
         background-color: rgba(255,255,255,0.3);
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: px2rem(20px);
-        background-image: url('http://xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
         margin-left: px2rem(30px);
         &.play {
           animation: audioPlay 1s linear infinite;
+        }
+        .audio-icon {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: px2rem(20px);
+          background-image: url('http://xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
         }
       }
     }
@@ -212,9 +222,8 @@ export default {
         @include font-color('descColor');
       }
       .audio-play-icon {
-        @include bg-alpha-color('btnColor', 0.4);
-        // opacity: ;
-        background-image: url('~@/assets/vote/audio-play-icon.png');
+        @include bg-color('btnColor');
+        opacity: 0.4;
       }
     }
   }
