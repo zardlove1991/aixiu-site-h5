@@ -211,10 +211,26 @@ const mutations = {
 }
 
 // 定义一些列表处理方法
-function dealInitExamList ({ list, renderType }) {
+function dealInitExamList ({ list, renderType, id }) {
   let tempEassyAnswerInfo = {} // 临时保存当前问答题信息
   let tempOralAnswerInfo = {} // 临时保存语音问答题的数据
   let tempBlankAnswerInfo = {} // 临时保存的填空提数据
+  // 处理之前填写数据
+  let answerRecord = STORAGE.get('answer_record_' + id)
+  if (answerRecord && answerRecord.length) {
+    for (let subject of list) {
+      for (let item of answerRecord) {
+        if (subject.id === item.question_id) {
+          if (item.options_id.constructor === String) {
+            subject.answer = [item.options_id]
+          } else {
+            subject.answer = [...item.options_id]
+          }
+          break
+        }
+      }
+    }
+  }
   // 处理列表
   list.forEach((subject, index) => {
     let curType = subject.type
@@ -363,7 +379,7 @@ const actions = {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
           // 处理列表的初始化操作
-          let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType })
+          let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType, id })
           // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', examList)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
@@ -476,6 +492,7 @@ const actions = {
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+        STORAGE.remove('answer_record_' + id)
         commit('SET_BLANK_ANSWER_INFO', {})
         commit('SET_CURRENT_SUBJECT_INDEX', 0)
         // 结束
@@ -501,6 +518,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       let id = state.examId
       let examList = state.answerList
+      if (!id) {
+        id = payload.examId
+        examList = payload.answerList
+      }
       let data = {
         params: []
       }
@@ -514,6 +535,7 @@ const actions = {
         // 结束
         Indicator.close()
         if (saveInfo[0].success === 1) {
+          STORAGE.remove('answer_record_' + id)
           resolve()
         } else {
           throw new Error('error')
@@ -583,12 +605,34 @@ const actions = {
       // console.log('xxxx', result, optionFlag)
       // commit('SET_ANSWER_LIST', result.params)
       commit('SET_ANSWER_LIST', result.params)
-      let { isEmpty } = result
+      let { isEmpty, params } = result
       if (!subject) {
         subject = {}
       }
-      if (isEmpty) subjectAnswerInfo[subject.id] = false
-      else subjectAnswerInfo[subject.id] = true
+      if (isEmpty) {
+        subjectAnswerInfo[subject.id] = false
+      } else {
+        subjectAnswerInfo[subject.id] = true
+      }
+      // 将每次改动的答案存入
+      let key = 'answer_record_' + state.examId
+      let arr = STORAGE.get(key)
+      if (arr && arr.length) {
+        let isExit = false
+        for (let item of arr) {
+          if (item.question_id === params.question_id) {
+            item.options_id = params.options_id
+            isExit = true
+            break
+          }
+        }
+        if (!isExit) {
+          arr = [...arr, params]
+        }
+      } else {
+        arr = [params]
+      }
+      STORAGE.set(key, arr)
       // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
       if (optionFlag === 'check-answer') {
         // 处理当多个更新时候的多次请求
