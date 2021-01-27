@@ -155,7 +155,8 @@ export default {
       .work-title {
         height: px2rem(50px);
         @include font-dpr(16px);
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         line-height: px2rem(50px);
         margin-top: px2rem(15px);
         margin-bottom: px2rem(8px);
@@ -166,7 +167,8 @@ export default {
       .work-desc {
         margin-bottom: px2rem(25px);
         @include font-dpr(14px);
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         opacity: 0.7;
         line-height: 1;
         overflow: hidden;

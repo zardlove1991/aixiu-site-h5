@@ -1,5 +1,5 @@
 <template>
-  <div class="oneself-submit-wrap">
+  <div :class="['oneself-submit-wrap', darkMark === '2' ? 'light' : '']">
     <div class="works-no">作品编号：<span class="no-tet">{{selfData.numbering ? selfData.numbering : '暂无'}}</span></div>
     <div class="examine-wrap">
       <div :class="'examine-icon-' + selfData.audit_status"></div>
@@ -101,7 +101,8 @@ export default {
       textSetting: {},
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
-      videoMode: '1'
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1' // 1: 深色系 2: 浅色系
     }
   },
   methods: {
@@ -124,6 +125,9 @@ export default {
           this.imageRatio = 1
         } else {
           this.imageRatio = 0
+        }
+        if (pageSetup.font_color) {
+          this.darkMark = pageSetup.font_color
         }
       }
     },
@@ -166,7 +170,7 @@ export default {
       @include font-dpr(14px);
       color: rgba(255, 255, 255, 0.5);
       .no-tet {
-        color: #fff;
+        @include font-color('fontColor');
       }
     }
     .examine-wrap {
@@ -194,14 +198,14 @@ export default {
       }
       .status-tips-wait {
         @include font-dpr(15px);
-        color: #FFFFFF;
+        @include font-color('fontColor');
       }
       .status-tips-success {
         text-align: center;
         line-height: px2rem(50px);
         .success-tips1 {
           @include font-dpr(15px);
-          color: #FFFFFF;
+          @include font-color('fontColor');
           font-weight: 500;
         }
         .success-tips2 {
@@ -214,7 +218,7 @@ export default {
         line-height: px2rem(60px);
         @include font-dpr(15px);
         .fail-tips1 {
-          color: #FFFFFF;
+          @include font-color('fontColor');
           font-weight: 500;
         }
         .fail-tips2 {
@@ -271,7 +275,7 @@ export default {
         }
         .onself-text-wrap {
           @include font-dpr(15px);
-          color: #fff;
+          @include font-color('fontColor');
         }
         .header {
           margin-bottom: px2rem(20px);
@@ -286,7 +290,7 @@ export default {
           }
           .header-txt {
             flex: 1;
-            color: #fff;
+            @include font-color('fontColor');
           }
         }
       }
@@ -302,6 +306,29 @@ export default {
       .menu-text {
         @include font-dpr(14px);
         color: #fff;
+      }
+    }
+    &.light {
+      .works-no {
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .examine-wrap {
+        .examine-icon-3 {
+          @include img-retina("~@/assets/vote/examine-load-light@2x.png","~@/assets/vote/examine-load-light@3x.png", 100%, 100%);
+        }
+        .status-tips-success .success-tips2 {
+          color: rgba(0, 0, 0, 0.4);
+        }
+        .examine-title-wrap {
+          @include font-color('descColor');
+          opacity: 0.4;
+          .line {
+            @include border('bottom', 1px, dashed, 'descColor')
+          }
+        }
+        .oneself-content .header {
+          color: rgba(0, 0, 0, 0.4);
+        }
       }
     }
   }

@@ -36,7 +36,8 @@ export default {
     }
     .empty-tip {
       font-size: px2rem(32px);
-      color: rgba(255, 255, 255, 0.4);
+      @include font-color('fontColor');
+      opacity: 0.4;
       margin-top: px2rem(20px);
     }
   }

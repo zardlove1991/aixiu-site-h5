@@ -5,16 +5,16 @@
       v-for="(item, index) in workList" :key="index"
       @click.stop="jumpPage('votedetail', { worksId : item.id })">
       <div class="work-header-wrap">
-        <div class="work-title color-theme_color">
-          <div class="icon-square-wrap color-button_color"></div>
+        <div class="work-title">
+          <div class="icon-square-wrap"></div>
           <div class="work-title-txt">{{item.name}}</div>
         </div>
-        <div class="work-desc color-theme_color" v-show="item.source">—— {{item.source}}</div>
+        <div class="work-desc" v-show="item.source">—— {{item.source}}</div>
       </div>
-      <p class="work-content-info color-theme_color">{{item.introduce}}</p>
+      <p class="work-content-info">{{item.introduce}}</p>
       <div class="work-options-wrap">
         <div class="info-number-wrap">
-          <p class="number-tip color-button_color"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
+          <p class="number-tip"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
           <p class="vote-tip">{{item.total_votes}}{{signUnit}}</p>
         </div>
         <div class="info-options-wrap">

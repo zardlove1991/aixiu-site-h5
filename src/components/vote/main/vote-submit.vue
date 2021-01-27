@@ -1,5 +1,5 @@
 <template>
-  <div class="form-submit-wrap">
+  <div :class="['form-submit-wrap', darkMark === '2' ? 'light' : '']">
     <form>
       <div v-if="flag === 'video'" class="form-item">
         <div class="form-title">上传视频</div>
@@ -153,7 +153,8 @@ export default {
       videoCoverList: [],
       videoCover: '',
       imageRatio: 0, // 图片模式
-      videoMode: '1'
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1' // 1: 深色系 2: 浅色系
     }
   },
   methods: {
@@ -162,7 +163,8 @@ export default {
       let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
-        let limit = detailInfo.rule.limit
+        let rule = detailInfo.rule
+        let limit = rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           isOpenClassify = true
           this.isOpenClassify = true
@@ -170,12 +172,17 @@ export default {
         if (limit.show_mode) {
           this.videoMode = limit.show_mode
         }
-        // 判断图片模式
-        let pageSetup = detailInfo.rule.page_setup
-        if (pageSetup.image_ratio) {
-          this.imageRatio = 1
-        } else {
-          this.imageRatio = 0
+        let pageSetup = rule.page_setup
+        if (pageSetup) {
+          // 判断图片模式
+          if (pageSetup.image_ratio) {
+            this.imageRatio = 1
+          } else {
+            this.imageRatio = 0
+          }
+          if (pageSetup.font_color) {
+            this.darkMark = pageSetup.font_color
+          }
         }
       }
       let { worksId } = this.$route.query
@@ -392,7 +399,8 @@ export default {
       .form-title {
         display: flex;
         align-items: center;
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         @include font-dpr(16px);
       }
       .form-tips {
@@ -425,7 +433,8 @@ export default {
           border-radius: px2rem(8px);
           padding: 0 px2rem(30px);
           @include font-dpr(16px);
-          color: #fff;
+          // color: #fff;
+          @include font-color('fontColor');
           border: 0;
         }
         .el-input .el-input__inner {
@@ -460,6 +469,27 @@ export default {
       .menu-text {
         @include font-dpr(14px);
         color: #fff;
+      }
+    }
+    &.light {
+      .form-item {
+        .form-tips, .form-tips-div  {
+          color: rgba(0, 0, 0, 0.4);
+        }
+        .form-content {
+          .el-input__inner, .el-textarea__inner {
+            background-color: #fff;
+          }
+        }
+        .el-textarea .el-input__count {
+          color: rgba(0, 0, 0, 0.4);
+        }
+      }
+      .el-upload--picture-card i {
+        color: rgba(0, 0, 0, 0.1);
+      }
+      .el-upload {
+        background-color: #fff;
       }
     }
   }

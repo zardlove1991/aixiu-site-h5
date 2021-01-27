@@ -36,56 +36,56 @@
       <div class="overview-title" v-else>{{detailInfo.title ? detailInfo.title : ''}}</div>
       <!--当前机构描述-->
       <div class="overview-organizers" v-if="detailInfo.organizers && detailInfo.organizers.length">
-        <span class="name color-high_text" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
+        <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
       <!--主要内容包裹-->
       <div class="overview-content-wrap">
         <!--信息展示-->
-        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
-          <div :class="['vote-cols-wrap', 'color-content', showModel + '-text']">
-            <span class="vote-count color-normal_text">{{detailInfo.report_count}}</span>
-            <span class="vote-desc color-normal_text">作品数</span>
+        <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
+          <div :class="['vote-cols-wrap', showModel + '-text']">
+            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <span class="vote-desc">作品数</span>
           </div>
-          <div class="vote-cols-wrap color-content">
-            <span class="vote-count color-normal_text">{{detailInfo.votes}}</span>
-            <span class="vote-desc color-normal_text">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
+          <div class="vote-cols-wrap">
+            <span class="vote-count">{{detailInfo.votes}}</span>
+            <span class="vote-desc">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
-          <div class="vote-cols-wrap color-content">
-            <span class="vote-count color-normal_text">{{detailInfo.views_count}}</span>
-            <span class="vote-desc color-normal_text">访问次数</span>
+          <div class="vote-cols-wrap">
+            <span class="vote-count">{{detailInfo.views_count}}</span>
+            <span class="vote-desc">访问次数</span>
           </div>
         </div>
-        <div class="overview-vote-wrap" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
-          <div class="vote-cols-wrap color-content signup-icon">
-            <span class="vote-count color-normal_text">{{detailInfo.report_count}}</span>
-            <span class="vote-desc color-normal_text">报名次数</span>
+        <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
+          <div class="vote-cols-wrap signup-icon">
+            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <span class="vote-desc">报名次数</span>
           </div>
-          <div class="vote-cols-wrap color-content examine-icon">
-            <span class="vote-count color-normal_text">{{detailInfo.report_pass_count}}</span>
-            <span class="vote-desc color-normal_text">已通过审核</span>
+          <div class="vote-cols-wrap examine-icon">
+            <span class="vote-count">{{detailInfo.report_pass_count}}</span>
+            <span class="vote-desc">已通过审核</span>
           </div>
-          <div class="vote-cols-wrap color-content">
-            <span class="vote-count color-normal_text">{{detailInfo.views_count}}</span>
-            <span class="vote-desc color-normal_text">访问次数</span>
+          <div class="vote-cols-wrap">
+            <span class="vote-count">{{detailInfo.views_count}}</span>
+            <span class="vote-desc">访问次数</span>
           </div>
         </div>
         <!--菜单-->
         <div class="overview-menus-wrap" v-if="status !== null && status !== statusCode.signUpStatus">
           <div class="menu-wrap menu-right" v-if="isShowRank" @click.stop="jumpPage('voterank')">
-            <i class="examfont iconjiangbei rank color-button_text"></i>
-            <span class="menu-text color-button_text">榜单</span>
+            <i class="examfont iconjiangbei rank"></i>
+            <span class="menu-text">榜单</span>
           </div>
           <div class="menu-wrap" @click.stop="jumpPage('votemy')">
-            <i class="examfont iconwodetoupiao mine color-button_text"></i>
-            <span class="menu-text color-button_text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
+            <i class="examfont iconwodetoupiao mine"></i>
+            <span class="menu-text">{{detailInfo.text_setting && detailInfo.text_setting.mine ? detailInfo.text_setting.mine : '我的投票'}}</span>
           </div>
         </div>
         <div class="overview-menus-wrap"
           v-if="!isOpenVoteReport && status === statusCode.signUpStatus && isReportAuth === 1">
-          <div class="menu-wrap color-button_color"
+          <div class="menu-wrap"
             @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
-            <span class="menu-text color-button_text" v-if="isExamine === 1">查看我的作品</span>
-            <span class="menu-text color-button_text" v-if="isExamine === 0">立即报名</span>
+            <span class="menu-text" v-if="isExamine === 1">查看我的作品</span>
+            <span class="menu-text" v-if="isExamine === 0">立即报名</span>
           </div>
         </div>
         <!-- <div class="overview-list-title-wrap">
@@ -100,9 +100,10 @@
             v-if="isOpenClassify"
             :searchVal.sync="searchClassifyVal"
             :id="id"
+            :darkMark="darkMark"
             @success="searchClassify">
           </vote-classify-list>
-          <div class="name-bar-wrap">
+          <div :class="['name-bar-wrap', darkMark === '2' ? 'light' : '']">
             <input v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'" class="search-input" type="text" placeholder="名称/乡镇及行政村/编号" v-model="searchVal"
                 @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" @input="dealSearch('input-search')"/>
             <input v-else class="search-input" type="text" placeholder="名称/来源/编号" v-model="searchVal"
@@ -181,6 +182,7 @@
       :isOpenVoteReport="isOpenVoteReport"
       :remainVotes="remainVotes"
       :textSetting="detailInfo.text_setting"
+      :darkMark="darkMark"
       :voteDate="voteDate">
     </count-down>
     <!-- 未找到搜索内容弹窗 -->
@@ -353,7 +355,8 @@ export default {
       isOpenVoteReport: false,
       indexRadio: '', // 轮播图比例
       swipeList: [], // 轮播图片数组
-      videoMode: '1' // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1' // 1: 深色系 2: 浅色系
     }
   },
   created () {
@@ -435,6 +438,9 @@ export default {
         }
         if (rule.limit.show_mode) {
           this.videoMode = rule.limit.show_mode
+        }
+        if (rule.page_setup && rule.page_setup.font_color) {
+          this.darkMark = rule.page_setup.font_color
         }
         // 是否开启边投票边报名
         let isOpenVoteReport = 0
@@ -1063,6 +1069,10 @@ export default {
         params: params
       }).then(res => {
         let { data, page: pageInfo } = res
+        // 重新加载，防止回到顶部
+        if (type && type === 'clear') {
+          this.workList = []
+        }
         if (!data || !data.length) {
           if (name && !isClassifySearch) {
             this.isShowSearch = true
@@ -1078,10 +1088,6 @@ export default {
         let totalPages = total / count
         if (total % count !== 0) {
           totalPages = parseInt(total / count) + 1
-        }
-        // 重新加载，防止回到顶部
-        if (type && type === 'clear') {
-          this.workList = []
         }
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
@@ -1245,6 +1251,9 @@ export default {
       &.heihong{
         @include img-retina('~@/assets/vote/heihong@2x.png','~@/assets/vote/heihong@3x.png', 100%, 100%);
       }
+      &.baicheng{
+        @include img-retina('~@/assets/vote/baicheng@2x.png','~@/assets/vote/baicheng@3x.png', 100%, 100%);
+      }
     }
     .commvote-overview {
       width: 100%;
@@ -1301,8 +1310,8 @@ export default {
         padding: 0 px2rem(30px);
         width: 100%;
         font-weight: 500;
-        color: #fff;
         text-align: center;
+        @include font-color('fontColor');
         @include font-dpr(22px);
         @include line-overflow(2);
       }
@@ -1315,7 +1324,8 @@ export default {
           position: relative;
           display: inline-block;
           font-size: px2rem(30px);
-          color: rgba(255, 255, 255, 0.7);
+          // color: rgba(255, 255, 255, 0.7);
+          @include font-color('fontColor');
           padding-right: 8px;
           margin-right: 6px;
           vertical-align: top;
@@ -1381,6 +1391,7 @@ export default {
           justify-content: center;
           height: px2rem(130px);
           padding: px2rem(20px);
+          color: #fff;
           &:before {
             position: absolute;
             top: 0;
@@ -1434,14 +1445,35 @@ export default {
           }
           .vote-count {
             @include font-dpr(18px);
-            color: #fff;
+            font-weight: 500;
             line-height: 1;
             margin-bottom: px2rem(20px);
           }
           .vote-desc {
             @include font-dpr(11px);
-            color: #fff;
             line-height: 1;
+          }
+        }
+        &.light .vote-cols-wrap {
+          @include font-color('descColor');
+          &:after {
+            @include bg-color('btnColor');
+            opacity: 0.15;
+          }
+          &.video-text:nth-child(1):before {
+            @include img-retina('~@/assets/vote/video-icon@2x.png', '~@/assets/vote/video-icon@3x.png', px2rem(72px), px2rem(127px));
+          }
+          &:nth-child(2):before {
+            @include img-retina('~@/assets/vote/vote-icon@2x.png', '~@/assets/vote/vote-icon@3x.png', px2rem(100px), px2rem(130px));
+          }
+          &:nth-child(3):before {
+            @include img-retina('~@/assets/vote/visited-icon@2x.png', '~@/assets/vote/visited-icon@3x.png', px2rem(73px), px2rem(130px));
+          }
+          &.signup-icon:before {
+            @include img-retina('~@/assets/vote/signup-icon@2x.png', '~@/assets/vote/signup-icon@3x.png', px2rem(86px), px2rem(120px));
+          }
+          &.examine-icon:before {
+            @include img-retina('~@/assets/vote/examine-icon@2x.png', '~@/assets/vote/examine-icon@3x.png', px2rem(93px), px2rem(120px));
           }
         }
       }
@@ -1518,7 +1550,7 @@ export default {
             flex: 1;
             padding: px2rem(20px);
             font-size: px2rem(28px);
-            color: #fff;
+            @include font-color('fontColor');
             border: none;
             outline: none;
             background: none !important;
@@ -1538,6 +1570,18 @@ export default {
             &.focus {
               background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
               background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
+            }
+          }
+          &.light {
+            background-color: #fff;
+            .search-input::placeholder {
+              color: rgba(0, 0, 0, 0.4);
+            }
+            .search-icon {
+              background-image: url('~@/assets/vote/search-icon.png');
+              &.focus {
+                background-image: url('~@/assets/vote/search-icon.png');
+              }
             }
           }
         }
