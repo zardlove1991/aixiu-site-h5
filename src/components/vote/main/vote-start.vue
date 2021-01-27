@@ -43,14 +43,17 @@
         <!--信息展示-->
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
           <div :class="['vote-cols-wrap', showModel + '-text']">
+            <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.report_count}}</span>
             <span class="vote-desc">作品数</span>
           </div>
           <div class="vote-cols-wrap">
+            <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.votes}}</span>
             <span class="vote-desc">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
           <div class="vote-cols-wrap">
+            <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.views_count}}</span>
             <span class="vote-desc">访问次数</span>
           </div>
@@ -1408,6 +1411,7 @@ export default {
             background-repeat: no-repeat;
             background-size: contain;
             background-position: right center;
+            z-index: 100;
           }
           &:after{
             position: absolute;
@@ -1470,7 +1474,7 @@ export default {
             background-image: url('~@/assets/vote/picture-icon.png');
           }
           &.video-text:nth-child(1):before {
-            @include img-retina('~@/assets/vote/video-icon@2x.png', '~@/assets/vote/video-icon@3x.png', px2rem(72px), px2rem(127px));
+            background-image: url('~@/assets/vote/video-icon.png');
           }
           &.audio-text:nth-child(1):before {
             background-image: url('~@/assets/vote/audio-icon.png');
@@ -1479,16 +1483,16 @@ export default {
             background-image: url('~@/assets/vote/text-icon.png');
           }
           &:nth-child(2):before {
-            @include img-retina('~@/assets/vote/vote-icon@2x.png', '~@/assets/vote/vote-icon@3x.png', px2rem(100px), px2rem(130px));
+            background-image: url('~@/assets/vote/vote-icon.png');
           }
           &:nth-child(3):before {
-            @include img-retina('~@/assets/vote/visited-icon@2x.png', '~@/assets/vote/visited-icon@3x.png', px2rem(73px), px2rem(130px));
+            background-image: url('~@/assets/vote/visited-icon.png');
           }
           &.signup-icon:before {
-            @include img-retina('~@/assets/vote/signup-icon@2x.png', '~@/assets/vote/signup-icon@3x.png', px2rem(86px), px2rem(120px));
+            background-image: url('~@/assets/vote/signup-light-icon.png');
           }
           &.examine-icon:before {
-            @include img-retina('~@/assets/vote/examine-icon@2x.png', '~@/assets/vote/examine-icon@3x.png', px2rem(93px), px2rem(120px));
+            background-image: url('~@/assets/vote/examine-light-icon.png');
           }
         }
       }
