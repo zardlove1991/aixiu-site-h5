@@ -80,8 +80,9 @@
         var currentTime = new Date().getTime()
         var currentUrl = window.location.href.toString();
         var times = getUrlParam('refresh_times')
+        var re = /(refresh_times=)([^&]*)/gi
         if (!times || currentTime - times > 1000 * 60 * 60) { // 1小时间隔
-          window.location.href = currentUrl +'?refresh_times='+currentTime
+          window.location.href = currentUrl.replace(re, 'refresh_times='+currentTime)
         }
       }
       function getUrlParam (key) {
