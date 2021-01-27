@@ -1,13 +1,13 @@
 <template>
-  <div class="commvote-mine color-bg_color">
+  <div class="commvote-mine">
     <my-page-empty v-if="mineArr && !mineArr.length" :tip="tip"></my-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
         v-for="(list, key, index) in mineList" :key="index">
         <div class="date-tip">
-          <i class="examfont iconriqi color-theme_color"></i>
-          <span class="tip color-theme_color">{{key}}</span>
+          <i class="examfont iconriqi"></i>
+          <span class="tip">{{key}}</span>
         </div>
         <div class="list-item"
           :class="(item.image_ratio || videoMode === '3') ? 'vertical' : ''"
@@ -22,15 +22,15 @@
             <div class="play-icon"></div>
           </div>
           <div class="item-content">
-            <div class="content-title color-theme_color">
+            <div class="content-title">
               <div class="icon-arrow-wrap" v-if="flag === 'audio'">
                 <div class="arrow-top"></div>
-                <div class="arrow-bottom color-button_color"></div>
+                <div class="arrow-bottom"></div>
               </div>
-              <div class="icon-square-wrap color-button_color" v-if="flag === 'text'"></div>
+              <div class="icon-square-wrap" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
-            <p class="content-desc color-theme_color">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
+            <p class="content-desc">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
           </div>
         </div>
       </div>
@@ -181,7 +181,7 @@ export default {
           display: flex;
           align-items: center;
           font-size: px2rem(28px);
-          color: #fff;
+          @include font-color('fontColor');
           .iconriqi {
             margin-right: px2rem(25px);
           }
@@ -231,7 +231,7 @@ export default {
               align-items: center;
               margin-bottom: px2rem(10px);
               .content-title-txt {
-                color: #fff;
+                @include font-color('fontColor');
                 font-size: px2rem(30px);
                 @include txt-overflow(px2rem(490px));
               }
@@ -240,7 +240,7 @@ export default {
               display: flex;
               align-items: center;
               font-size: px2rem(24px);
-              color: #fff;
+              @include font-color('fontColor');
               opacity: 0.7;
               .vote-tip {
                 margin-left: 4px;
