@@ -159,6 +159,7 @@
           </vote-audio-text>
           <vote-text
             v-if="showModel === 'text'"
+            :darkMark="darkMark"
             :workList="allWorkList"
             :remainVotes="remainVotes"
             @jump-page="jumpPage"

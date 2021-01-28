@@ -4,6 +4,7 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
       @click.stop="jumpPage('votedetail', { worksId: item.id })">
+      <div v-if="darkMark === '2'" class="work-item-line"></div>
       <div class="work-header-wrap">
         <div class="work-title">
           <div v-if="darkMark === '2'" :class="['light-audio-icon', colorName]" ></div>
@@ -78,14 +79,29 @@ export default {
   @import "@/styles/components/vote/base.scss";
   .audio-work-list-wrap {
     .work-list-item {
+      position: relative;
       padding: px2rem(30px);
       border-bottom: 1px solid rgba(255,255,255, 0.2);
+      .work-item-line {
+        position: absolute;
+        bottom: 0;
+        left: px2rem(30px);
+        right: px2rem(30px);
+        @include border('bottom', 1px, solid, 'descColor');
+        opacity: 0.2;
+      }
       &.my-wrap {
         border-bottom: 0;
         @include img-retina('~@/assets/vote/audio-text-mybg@2x.png','~@/assets/vote/audio-text-mybg@3x.png', 100%, 100%);
+        .work-item-line {
+          border-bottom: 0;
+        }
       }
       &:last-child {
         border-bottom: 0;
+        .work-item-line {
+          border-bottom: 0;
+        }
       }
       .work-header-wrap {
         margin-bottom: px2rem(30px);
