@@ -85,9 +85,11 @@ instance.interceptors.response.use((res, xhr) => {
       window.location.href = `/waitting.html?origin=${url}`
     } else {
       store.dispatch('setDialogVisible', true)
+      return
     }
   } else if (status >= 500 || status === 422) {
-    window.location.href = `/error.html?origin=${url}`
+    // window.location.href = `/error.html?origin=${url}`
+    window.location.href = `/waitting.html?origin=${url}`
   }
   let rej = null
   let res = error.response
@@ -114,10 +116,15 @@ instance.interceptors.response.use((res, xhr) => {
     }
   } else {
     const url = encodeURI(window.location.href)
-    window.location.href = `/waitting.html?origin=${url}`
+    if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+      window.location.href = `/waitting.html?origin=${url}`
+    } else {
+      store.dispatch('setDialogVisible', true)
+      return
+    }
     rej = {
       error_code: 'AJAX_ERROR',
-      error_message: '服务器开小差了，请稍后再试~',
+      error_message: '活动太火爆了',
       status: 500
     }
   }

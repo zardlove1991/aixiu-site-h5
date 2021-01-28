@@ -29,7 +29,7 @@
     </div>
     <!--交卷的弹窗-->
     <my-model
-      :show="(unDoSubjectLength !== 0 && isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
+      :show="(unDoSubjectLength > 0 && isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
       :showBtn="false">
       <div class="submit-model" slot="content">
         <div class="tip-title">操作提示</div>
@@ -39,7 +39,7 @@
       </div>
     </my-model>
     <my-model
-      :show="(unDoSubjectLength !== 0 && !isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
+      :show="(unDoSubjectLength > 0 && !isOpenSubmitAll && (isShowSubmitModel || showSubmitModel))"
       doneText="确定交卷"
       cancelText="再看看"
       @confirm="confirmSubmitModel"
@@ -52,7 +52,7 @@
     </my-model>
     <!--去人交卷的-->
     <my-model
-      :show="(unDoSubjectLength === 0 && (isShowSubmitModel || showSubmitModel))"
+      :show="(unDoSubjectLength <= 0 && (isShowSubmitModel || showSubmitModel))"
       doneText="再看看"
       cancelText="确定交卷"
       @confirm="toggleSubmitModel"
