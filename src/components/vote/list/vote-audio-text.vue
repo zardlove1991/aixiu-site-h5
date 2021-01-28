@@ -1,12 +1,13 @@
 <template>
-  <div :class="['audio-work-list-wrap', , darkMark === '2' ? 'audio-light' : '']">
+  <div class="audio-work-list-wrap">
     <div
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
       @click.stop="jumpPage('votedetail', { worksId: item.id })">
       <div class="work-header-wrap">
         <div class="work-title">
-          <div class="icon-arrow-wrap">
+          <div v-if="darkMark === '2'" :class="['light-audio-icon', colorName]" ></div>
+          <div v-else class="icon-arrow-wrap">
             <div class="arrow-top"></div>
             <div class="arrow-bottom"></div>
           </div>
@@ -38,6 +39,7 @@ import VoteBtnGroup from '@/components/vote/global/vote-btn-group'
 
 export default {
   props: {
+    colorName: String,
     darkMark: String,
     workList: {
       type: Array,
@@ -96,6 +98,22 @@ export default {
             @include font-dpr(16px);
             @include txt-overflow(px2rem(590px));
           }
+          .light-audio-icon {
+            margin-right: px2rem(20px);
+            width: px2rem(30px);
+            height: px2rem(30px);
+            background-size: px2rem(30px) px2rem(30px);
+            background-image: url('~@/assets/vote/baicheng-audio.png');
+            &.baicheng {
+              background-image: url('~@/assets/vote/baicheng-audio.png');
+            }
+            &.bailv {
+              background-image: url('~@/assets/vote/bailv-audio.png');
+            }
+            &.baijin {
+              background-image: url('~@/assets/vote/baijin-audio.png');
+            }
+          }
         }
         .work-desc {
           margin-left: px2rem(50px);
@@ -110,11 +128,6 @@ export default {
         justify-content: space-between;
         align-items: center;
         padding-top: px2rem(30px);
-      }
-    }
-    &.audio-light {
-      .icon-arrow-wrap .arrow-bottom {
-        border-left-color: $descColor !important;
       }
     }
   }

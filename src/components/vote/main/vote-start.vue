@@ -35,7 +35,7 @@
       <div class="overview-title" v-if="detailInfo.rule && detailInfo.rule.limit.is_display_title === 0"></div>
       <div class="overview-title" v-else>{{detailInfo.title ? detailInfo.title : ''}}</div>
       <!--当前机构描述-->
-      <div class="overview-organizers" v-if="detailInfo.organizers && detailInfo.organizers.length">
+      <div :class="['overview-organizers', darkMark === '2' ? 'light-org' : ''] " v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
       <!--主要内容包裹-->
@@ -149,6 +149,7 @@
           </vote-video-text2>
           <vote-audio-text
             v-if="showModel === 'audio'"
+            :colorName="colorName"
             :darkMark="darkMark"
             :workList="allWorkList"
             :remainVotes="remainVotes"
@@ -179,7 +180,7 @@
       <div v-if="loading" class="scroll-tips">加载中...</div>
       -->
     </div>
-    <div class="active-rule-wrap default" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
+    <div class="active-rule-wrap" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
     <count-down
       v-if="status !== statusCode.endStatus"
       :status="status"
@@ -1347,8 +1348,7 @@ export default {
             transform: translateY(-50%);
             width: 1px;
             height: 10px;
-            @include font-color('fontColor');
-            opacity: 0.2;
+            background-color: rgba(255, 255, 255, 0.2);
             content: "";
           }
           &:last-child {
@@ -1358,6 +1358,9 @@ export default {
           &:last-child::after {
             display: none;
           }
+        }
+        &.light-org .name::after {
+          background-color: rgba(0, 0, 0, 0.2);
         }
       }
       .overview-content-wrap {
