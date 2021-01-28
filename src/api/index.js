@@ -85,7 +85,7 @@ instance.interceptors.response.use((res, xhr) => {
       window.location.href = `/waitting.html?origin=${url}`
     } else {
       store.dispatch('setDialogVisible', true)
-      return Promise.reject({})
+      return
     }
   } else if (status >= 500 || status === 422) {
     // window.location.href = `/error.html?origin=${url}`
@@ -120,7 +120,7 @@ instance.interceptors.response.use((res, xhr) => {
       window.location.href = `/waitting.html?origin=${url}`
     } else {
       store.dispatch('setDialogVisible', true)
-      return Promise.reject({})
+      return
     }
     rej = {
       error_code: 'AJAX_ERROR',
