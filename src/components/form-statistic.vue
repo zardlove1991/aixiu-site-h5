@@ -18,7 +18,7 @@
             <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
-            <div class="my-text rank-area"><i class="line-static-icon"></i>总分排名<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
+            <div class="my-text rank-area"><i class="line-static-icon"></i>{{examInfo.mark === 'examination@random' ? '分数排名' : '总分排名'}}<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
             <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
