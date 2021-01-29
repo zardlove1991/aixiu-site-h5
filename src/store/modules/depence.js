@@ -630,7 +630,9 @@ const actions = {
           arr = [...arr, params]
         }
       } else {
-        arr = [params]
+        if (params.question_id) {
+          arr = [params]
+        }
       }
       STORAGE.set(key, arr)
       // 这边针对检查答案和保存信息做下区分 (检查的时候不需要频繁提交)
