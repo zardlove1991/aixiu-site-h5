@@ -249,7 +249,7 @@ export default {
             window.location.replace(link.url)
           }, 1000)
         } else if (result) {
-          let examId = this.examId
+          let examId = examInfo.id
           this.$router.replace({
             path: `/statistic/${examId}`
           })
