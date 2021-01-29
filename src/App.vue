@@ -31,7 +31,7 @@ export default {
         if (activeUrl) {
           url = activeUrl
         }
-        this.$router.push({
+        this.$router.replace({
           path: '/browser',
           query: {
             active_url: url
