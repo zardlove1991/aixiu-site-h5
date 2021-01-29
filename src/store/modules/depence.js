@@ -378,7 +378,7 @@ const actions = {
         Indicator.close()
         resolve()
       }).catch(err => {
-        Toast(err.error_message || '获取题目列表出错')
+        // Toast(err.error_message || '获取题目列表出错')
         // 结束
         Indicator.close()
         reject(err)
@@ -418,7 +418,7 @@ const actions = {
           throw new Error(info.error_message)
         }
       }).catch(err => {
-        Toast(err.error_message || '获取答题卡信息出错')
+        // Toast(err.error_message || '获取答题卡信息出错')
         // 结束
         Indicator.close()
         reject(err)
@@ -490,7 +490,7 @@ const actions = {
           throw new Error({error_message: '结束考试出错'})
         }
       }).catch(err => {
-        Toast(err.error_message || '结束考试出错')
+        // Toast(err.error_message || '结束考试出错')
         // 结束
         Indicator.close()
         reject(err)
@@ -519,9 +519,9 @@ const actions = {
           throw new Error('error')
         }
       }).catch(err => {
-        if (err.error_code !== 'invalid-options_id') {
-          Toast(err.error_message || '提交试卷信息出错，请重试')
-        }
+        // if (err.error_code !== 'invalid-options_id') {
+        //   Toast(err.error_message || '提交试卷信息出错，请重试')
+        // }
         // 结束
         Indicator.close()
         reject(err)
@@ -558,7 +558,7 @@ const actions = {
             throw new Error('保存答题记录出错')
           }
         }).catch(err => {
-          Toast(err.error_message || err)
+          // Toast(err.error_message || err)
           reject(err)
         })
       })
