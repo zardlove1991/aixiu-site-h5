@@ -464,16 +464,25 @@ export default {
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
-      if (rule.share_settings) {
-        let share = rule.share_settings
-        let sharePic = share.indexpic
+      // 通用投票没有share_settings, share_setting为json 数据结构不同
+      if (rule.share_setting) {
+        let share = ''
+        let sharePic = ''
+        try {
+          share = JSON.parse(rule.share_setting)
+          sharePic = share.indexpic
+        } catch (error) {
+          console.error(error)
+        }
         if (share.title) {
           shareTitle = share.title
         }
         if (share.brief) {
           shareBrief = share.brief
         }
-        shareLink = share.link
+        if (share.link) {
+          shareLink = share.link
+        }
         if (sharePic) {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
@@ -488,10 +497,17 @@ export default {
             imgUrl = sharePic
           }
         } else if (indexpic) {
-          if (indexpic.host && indexpic.filename) {
+          if (indexpic.constructor === Array && indexpic.length > 0) {
+            let obj = indexpic[0]
+            if (obj.constructor === Object) {
+              imgUrl = 'http:' + obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
             imgUrl = 'http:' + indexpic.host + indexpic.filename
-          } else if (indexpic.url) {
-            imgUrl = indexpic.url
+          } else if (indexpic.constructor === String) {
+            imgUrl = indexpic
           }
         }
       }
