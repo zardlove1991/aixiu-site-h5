@@ -101,7 +101,7 @@
 <script>
 import mixins from '@/mixins/index'
 import { Swipe, SwipeItem, Toast } from 'mint-ui'
-import { formatDate, formatSecByTime, getAppSign, delUrlParams } from '@/utils/utils'
+import { formatDate, formatSecByTime, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
 import CollectionDialog from '@/components/enroll/global/collection-dialog'
@@ -195,6 +195,7 @@ export default {
           if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
             this.themeColorName = pageSetup.color_scheme.name
           }
+          setBrowserTitle(res.title)
           this.initFindAll()
           this.initActiveDate()
           this.initEnrollData(res, true)
