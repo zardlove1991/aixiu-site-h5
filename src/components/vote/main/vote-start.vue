@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
       <template
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
@@ -1241,6 +1241,9 @@ export default {
       &.status-no-end {
         padding-bottom: px2rem(200px);
       }
+      &.raffle-bottom {
+        padding-bottom: px2rem(320px);
+      }
       .vote-swipe-wrap {
         position: relative;
         width: 100%;
@@ -1573,7 +1576,7 @@ export default {
     }
     .lottery_entrance{
       position: absolute;
-      bottom: 7.5rem;
+      bottom: 6.5rem;
       right: px2rem(30px);
       text-align: center;
       img {
