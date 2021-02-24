@@ -504,12 +504,12 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = 'http:' + sharePic.host + sharePic.filename
+            imgUrl = sharePic.host + sharePic.filename
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -517,12 +517,12 @@ export default {
           if (indexpic.constructor === Array && indexpic.length > 0) {
             let obj = indexpic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
-            imgUrl = 'http:' + indexpic.host + indexpic.filename
+            imgUrl = indexpic.host + indexpic.filename
           } else if (indexpic.constructor === String) {
             imgUrl = indexpic
           }
@@ -531,7 +531,7 @@ export default {
       if (!shareLink) {
         shareLink = delUrlParams(['code'])
       } else {
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+        shareLink = this.getShareUrl(shareLink)
       }
       this.shareConfigData = {
         id: detailInfo.id,
@@ -1396,22 +1396,22 @@ export default {
             margin: 0 px2rem(30px);
           }
           &.picture-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
           }
           &.video-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/woks_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/woks_icon@2x.png');
           }
           &.audio-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_audio_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_audio_bg@3x.png');
           }
           &.text-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_text_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_text_bg@3x.png');
           }
           &:nth-child(2):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/vote_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/vote_icon@2x.png');
           }
           &:nth-child(3):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/visited_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/visited_icon@2x.png');
           }
           &.signup-icon:before {
             @include img-retina('~@/assets/vote/signup-icon@2x.png', '~@/assets/vote/signup-icon@3x.png', px2rem(86px), px2rem(120px));
@@ -1520,11 +1520,11 @@ export default {
             background-repeat: no-repeat;
             background-position: center;
             background-size: px2rem(34px);
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
-            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
+            background-image: url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
+            background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
             &.focus {
-              background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
-              background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
+              background-image: url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
+              background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
             }
           }
         }
