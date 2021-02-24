@@ -347,13 +347,13 @@ export default {
         let indexObj = examInfo.indexpic
         if (picObj) {
           if (picObj.constructor === Object && picObj.host && picObj.filename) {
-            imgUrl = 'http:' + picObj.host + picObj.filename
+            imgUrl = picObj.host + picObj.filename
           } else if (picObj.constructor === String) {
             imgUrl = picObj
           }
         } else if (indexObj) {
           if (indexObj.host && indexObj.filename) {
-            imgUrl = 'http:' + indexObj.host + indexObj.filename
+            imgUrl = indexObj.host + indexObj.filename
           } else if (indexObj.url) {
             imgUrl = indexObj.url
           }
@@ -362,7 +362,7 @@ export default {
       if (!link) {
         link = delUrlParams(['code'])
       } else {
-        link = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + link
+        link = this.getShareUrl(link)
       }
       this.initPageShareInfo({
         id: examInfo.id,

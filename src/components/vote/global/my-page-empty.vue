@@ -31,8 +31,8 @@ export default {
       background-repeat: no-repeat;
       background-position: 40% top;
       background-size: px2rem(327px) px2rem(254px);
-      background-image: url('https://xzh5.hoge.cn/new-vote/images/vote_empty_icon@2x.png');
-      background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/vote_empty_icon@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/vote_empty_icon@3x.png') 2x);
+      background-image: url('//xzh5.hoge.cn/new-vote/images/vote_empty_icon@2x.png');
+      background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/vote_empty_icon@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/vote_empty_icon@3x.png') 2x);
     }
     .empty-tip {
       font-size: px2rem(32px);

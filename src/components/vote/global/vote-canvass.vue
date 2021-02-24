@@ -145,10 +145,10 @@ export default {
             params.cover = cover + coverExt
           } else if (this.flag === 'audio' && res.material.audio && res.material.audio.length) {
             params.audioTime = res.material.audio[0].duration
-            params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
+            params.cover = '//xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
           } else if (this.flag === 'text') {
             params.content = res.introduce
-            params.cover = 'http://xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
+            params.cover = '//xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
           }
           // 判断是否长图 如果是就修改为不截断参数
           if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
