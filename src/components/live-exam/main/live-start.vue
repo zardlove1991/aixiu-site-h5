@@ -27,7 +27,7 @@
             <div :class="['row-icon', 'row-naozhong', examInfo.limit.color_scheme && examInfo.limit.color_scheme.name]"></div>
             <div class="row-content-wrap">
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
-              <div class="title">测评时长</div>
+              <div class="title">限时</div>
             </div>
           </div>
           <div class="row">
@@ -35,7 +35,7 @@
             <div :class="['row-icon', 'row-juanzi', examInfo.limit.color_scheme && examInfo.limit.color_scheme.name]"></div>
             <div class="row-content-wrap">
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">试题数量</div>
+              <div class="title">答题</div>
             </div>
           </div>
           <div class="row">

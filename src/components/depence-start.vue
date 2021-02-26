@@ -37,14 +37,14 @@
             <div class="row-icon row-naozhong"></div>
             <div>
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
-              <div class="title">测评时长</div>
+              <div class="title">限时</div>
             </div>
           </div>
           <div class="row">
             <div class="row-icon row-juanzi"></div>
             <div>
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">试题数量</div>
+              <div class="title">答题</div>
             </div>
           </div>
           <!-- <div class="row">
