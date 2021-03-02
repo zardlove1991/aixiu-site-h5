@@ -94,7 +94,15 @@ export const oauth = (cbk) => {
   let pathname = window.location.pathname
   let id = smartcity.getActiveId(pathname)
   if (id) {
-    STORAGE.clear()
+    // STORAGE.clear()
+    STORAGE.remove('scope_limit')
+    STORAGE.remove('statInfo')
+    STORAGE.remove('userinfo')
+    STORAGE.remove('detailInfo')
+    STORAGE.remove('component_appid')
+    STORAGE.remove('appid')
+    STORAGE.remove('location')
+    STORAGE.remove('news_weather')
     if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1 ||
       pathname.indexOf('enrollstart') !== -1 || pathname.indexOf('newstart') !== -1 || pathname.indexOf('drawlist') !== -1) {
       smartcity.authorize((code, sdkInfo) => {

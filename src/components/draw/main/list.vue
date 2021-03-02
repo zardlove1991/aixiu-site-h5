@@ -191,7 +191,7 @@ export default {
       window.location.href = link +
         '?lotteryEnterType=history' +
         '&gid=' + id +
-        '&time=' + new Date().getTime()
+        '&t=' + new Date().getTime()
     }
   }
 }

@@ -4,34 +4,39 @@
     <router-view/>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
-    <div class="no-suppot-wrap" v-if="isBrowser">{{tipMsg}}</div>
+    <errorDialog/>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlat } from '@/utils/utils'
+import errorDialog from './components/error-dialog'
+import { getPlat, getUrlParam } from '@/utils/utils'
 
 export default {
   name: 'App',
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
   },
-  data () {
-    return {
-      isBrowser: false,
-      tipMsg: ''
-    }
-  },
+  components: { errorDialog },
   created () {
-    this.getBrowser()
+    this.goPage()
   },
   methods: {
-    getBrowser () {
+    goPage () {
       let plat = getPlat()
-      if (plat === 'browser') {
-        this.isBrowser = true
-        this.tipMsg = '不支持在浏览器中打开'
+      if (plat === 'browser' || plat === 'dingding' || plat === 'dingdone') {
+        let url = encodeURIComponent(window.location.href)
+        let activeUrl = getUrlParam('active_url')
+        if (activeUrl) {
+          url = activeUrl
+        }
+        this.$router.replace({
+          path: '/browser',
+          query: {
+            active_url: url
+          }
+        })
       }
     }
   }
@@ -51,13 +56,5 @@ export default {
 }
 *{
   box-sizing: border-box;
-}
-.no-suppot-wrap {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  background-color: brown;
-  color: #fff;
-  text-align: center;
 }
 </style>

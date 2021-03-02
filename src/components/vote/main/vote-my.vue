@@ -12,7 +12,7 @@
         <div class="list-item"
           :class="(item.image_ratio || videoMode === '3') ? 'vertical' : ''"
           v-for="(item, idx) in list" :key="idx"
-          @click.stop="jumpPage('votedetail', { worksId: item.works_id })">
+          @click.stop="jumpPage('votedetail', { worksId: item.works_id }, {type: item.works.voting_type, introduce:item.works.introduce})">
           <div class="item-indexpic"
             v-if="flag === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
@@ -150,7 +150,10 @@ export default {
         this.loading = false
       })
     },
-    jumpPage (page, data) {
+    jumpPage (page, data, promiss) {
+      if (promiss && promiss.type === 'commonvote-text' && !promiss.introduce) {
+        return false
+      }
       this.$router.push({
         name: page,
         params: {

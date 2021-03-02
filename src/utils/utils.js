@@ -212,6 +212,22 @@ export const getPlat = () => {
   return 'browser'
 }
 
+/**
+ * 判断当前打开的是手机还是pc浏览器
+ */
+export const isPC = () => {
+  let userAgentInfo = navigator.userAgent
+  let agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod']
+  let flag = true
+  for (let v = 0; v < agents.length; v++) {
+    if (userAgentInfo.indexOf(agents[v]) > 0) {
+      flag = false
+      break
+    }
+  }
+  return flag
+}
+
 export const setClick = (id, title, mark) => {
   let datas = {
     param: {
@@ -362,7 +378,7 @@ export const windowTitle = (title) => {
   if (mobileDevice() === 'iOS') {
     const hackIframe = document.createElement('iframe')
     hackIframe.style.display = 'none'
-    hackIframe.src = '//h5.ixiuzan.cn/p/Tplglobal/images/favicon.ico?random=' + Math.random()
+    hackIframe.src = '//xzh5.hoge.cn/p/Tplglobal/images/favicon.ico?random=' + Math.random()
     document.body.appendChild(hackIframe)
     setTimeout(function () {
       document.body.removeChild(hackIframe)

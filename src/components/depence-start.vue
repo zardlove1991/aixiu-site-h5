@@ -37,14 +37,14 @@
             <div class="row-icon row-naozhong"></div>
             <div>
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
-              <div class="title">测评时长</div>
+              <div class="title">限时</div>
             </div>
           </div>
           <div class="row">
             <div class="row-icon row-juanzi"></div>
             <div>
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">试题数量</div>
+              <div class="title">答题</div>
             </div>
           </div>
           <!-- <div class="row">
@@ -119,6 +119,15 @@
         <button class="password-limit-surebtn" @click="onCommitPassword()">确定</button>
       </div>
     </div>
+    <link-dialog :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
+    <pop-dialog :show="isPopSubmitSuccess" :pop="pop" @confirm="isPopSubmitSuccess = false"></pop-dialog>
+    <luck-draw-dialog
+      :show="isLuckSubmitSuccess"
+      :isLuckDraw="isLuckDraw"
+      :luckDrawTips="luckDrawTips"
+      @cancel="isLuckSubmitSuccess = false"
+      @confirm="pageToLuckDraw()">
+    </luck-draw-dialog>
     <draw-check-dialog
       :show="isShowDrawCheck"
       :checkDraw="checkDraw"
@@ -137,6 +146,9 @@ import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
+import LinkDialog from '@/components/dialog/link-dialog'
+import PopDialog from '@/components/dialog/pop-dialog'
+import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 
 export default {
@@ -161,12 +173,18 @@ export default {
       isShowBreak: false,
       isShowDrawCheck: false,
       checkDraw: [],
-      isNoLimit: false
+      isNoLimit: false,
+      pop: {}, // 弹窗显示内容
+      isLuckDraw: false, // 是否是有资格抽奖
+      luckDrawTips: [], // 抽奖提示内容
+      isLuckSubmitSuccess: false, // 抽奖页显隐
+      isSubmitSuccess: false, // 外链弹窗显隐
+      isPopSubmitSuccess: false // 弹窗显隐
     }
   },
-  components: { MyModel, DrawCheckDialog },
+  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog },
   computed: {
-    ...mapGetters('depence', ['examInfo', 'answerCardInfo']),
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
     examSubmitCount () {
       let examInfo = this.examInfo
       let count = 1
@@ -196,14 +214,64 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
+      let answerRecord = STORAGE.get('answer_record_' + examId)
+      if (answerRecord && answerRecord.length) {
+        this.saveAnswerRecords({ examId, answerList: answerRecord })
+      }
       await this.endExam({ id: examId })
       this.initStartInfo()
       this.isShowBreak = false
+      this.breakDoAction()
     },
     cancelBreakModel () {
       // 继续答题
       this.isShowBreak = false
       this.goExamPage()
+    },
+    breakDoAction () {
+      let examInfo = this.examInfo
+      if (!examInfo || !examInfo.limit) {
+        return
+      }
+      let rules = examInfo.limit.submit_rules
+      if (rules) {
+        let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
+        if (isOpenRaffle && isOpenRaffle !== 0) {
+          // 抽奖
+          this.isLuckSubmitSuccess = true
+          if (this.luckDrawLink) {
+            this.isLuckDraw = true
+            this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+          } else {
+            this.isLuckDraw = false
+            this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+          }
+        } else if (link) {
+          this.isSubmitSuccess = true
+          setTimeout(() => {
+            this.isSubmitSuccess = false
+            window.location.replace(link.url)
+          }, 1000)
+        } else if (result) {
+          let examId = examInfo.id
+          this.$router.replace({
+            path: `/statistic/${examId}`
+          })
+        } else if (pop) {
+          this.isPopSubmitSuccess = true
+          this.pop = pop
+        }
+      }
+    },
+    pageToLuckDraw () {
+      let link = this.luckDrawLink
+      if (link) {
+        this.isLuckSubmitSuccess = false
+        window.location.replace(link)
+        this.setLuckDrawLink('')
+      } else {
+        this.isLuckSubmitSuccess = false
+      }
     },
     blurAction () {
       document.body.scrollTop = 0
@@ -498,9 +566,11 @@ export default {
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
+      saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
-      endExam: 'END_EXAM'
+      endExam: 'END_EXAM',
+      setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
     })
   }
 }

@@ -9,6 +9,19 @@ Vue.use(Vuex)
 const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
+  state: {
+    showErrorDialog: false
+  },
+  mutations: {
+    setDialogVisible (state, flag) {
+      state.showErrorDialog = flag
+    }
+  },
+  actions: {
+    setDialogVisible (context, flag) {
+      context.commit('setDialogVisible', flag)
+    }
+  },
   modules: {
     depence,
     vote

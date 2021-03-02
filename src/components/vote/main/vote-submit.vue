@@ -76,7 +76,7 @@
         </div>
       </div>
       <div class="form-item" v-if="flag !== 'text'">
-        <div class="form-title">描述</div>
+        <div class="form-title">描述<span class="form-tips">(选填)</span></div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
@@ -298,13 +298,11 @@ export default {
         Toast('请输入来源')
         return
       }
-      if (!examineData.introduce || !examineData.introduce.trim()) {
-        if (this.disabledflag === 'text') {
+      if (this.flag === 'text') {
+        if (!examineData.introduce || !examineData.introduce.trim()) {
           Toast('请输入文字内容')
-        } else {
-          Toast('请输入描述')
+          return
         }
-        return
       }
       if (!examineData.contact_name || !examineData.contact_name.trim()) {
         Toast('请输入联系人姓名')

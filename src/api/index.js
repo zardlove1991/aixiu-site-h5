@@ -1,9 +1,11 @@
 import axios from 'axios'
+import store from '@/store/index'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 
+let currentApi = ''
 const instance = axios.create({
   timeout: apiConfig.timeout
 })
@@ -69,15 +71,25 @@ instance.interceptors.response.use((res, xhr) => {
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'
   }
+  if (res.status === 204) {
+    const url = encodeURI(window.location.href)
+    window.location.href = `/nodata.html?origin=${url}`
+  }
   return data.response || data.result || data
 }, (error) => {
-  const status = error.response && error.response.status
+  const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  if (isTimeout || (Number(status) >= 400 && Number(status) < 500)) {
+  if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
+    if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+      window.location.href = `/waitting.html?origin=${url}`
+    } else {
+      store.dispatch('setDialogVisible', true)
+      return
+    }
+  } else if (status >= 500 || status === 422) {
+    // window.location.href = `/error.html?origin=${url}`
     window.location.href = `/waitting.html?origin=${url}`
-  } else if (Number(status) >= 500) {
-    window.location.href = `/error.html?origin=${url}`
   }
   let rej = null
   let res = error.response
@@ -104,10 +116,15 @@ instance.interceptors.response.use((res, xhr) => {
     }
   } else {
     const url = encodeURI(window.location.href)
-    window.location.href = `/waitting.html?origin=${url}`
+    if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+      window.location.href = `/waitting.html?origin=${url}`
+    } else {
+      store.dispatch('setDialogVisible', true)
+      return
+    }
     rej = {
       error_code: 'AJAX_ERROR',
-      error_message: '服务器开小差了，请稍后再试~',
+      error_message: '活动太火爆了',
       status: 500
     }
   }
@@ -115,6 +132,7 @@ instance.interceptors.response.use((res, xhr) => {
 })
 
 const getUrl = (url, config = {}, api = 'exam') => {
+  currentApi = url
   if (!url) {
     console.warn('接口地址不能为空')
     return false

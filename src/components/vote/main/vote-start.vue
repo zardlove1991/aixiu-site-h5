@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
       <template
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
@@ -219,12 +219,6 @@
       @close="isShowRuleDialog = false"
       :introduce="detailInfo.introduce">
     </rule-vote>
-    <active-vote
-      :show="isShowActiveTips"
-      @close="isShowActiveTips = false"
-      :downloadLink="downloadLink"
-      :activeTips="activeTips">
-    </active-vote>
     <active-stop
       :show="isShowEnd"
       @close="isShowEnd = false">
@@ -264,7 +258,6 @@ import TipsDialog from '@/components/vote/global/tips-dialog'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
-import ActiveVote from '@/components/vote/global/vote-active'
 import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
@@ -273,7 +266,7 @@ import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
+import { formatSecByTime, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -293,7 +286,6 @@ export default {
     ShareVote,
     CanvassVote,
     RuleVote,
-    ActiveVote,
     ActiveStop,
     ActivePause,
     ActiveStart,
@@ -319,9 +311,6 @@ export default {
       searchBarFocus: false, // 搜索框是否获取焦点
       isShowRuleDialog: false, // 活动规则弹窗显隐
       isShowSearch: false, // 搜索无结果弹窗
-      isShowActiveTips: false, // 活动提示
-      activeTips: [], // 再xxx内参加活动
-      downloadLink: '', // 下载链接
       isShowWorkVote: false, // 给他投票弹窗
       isCloseDialog: false, // 投票弹框显隐
       worksId: '',
@@ -661,40 +650,6 @@ export default {
       this.showModel = showModel
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
-      }
-      // 来源限制
-      let { source_limit: sourceLimit } = limit
-      if (sourceLimit) {
-        let {
-          user_app_source: appSource,
-          source_limit: limitTxt,
-          app_download_link: downloadLink
-        } = sourceLimit
-        if (limitTxt && appSource && appSource.length > 0) {
-          let plat = getAppSign()
-          let limitArr = limitTxt.split(',')
-          let flag = false
-          for (let item of limitArr) {
-            if (item === 'smartcity' && plat.includes('smartcity')) {
-              flag = true
-              break
-            }
-            if (item === plat) {
-              flag = true
-              break
-            }
-          }
-          if (!flag) {
-            if (!this.isModelShow) {
-              this.isShowActiveTips = true
-            }
-            this.downloadLink = downloadLink
-            this.setIsModelShow(true)
-            this.activeTips = appSource
-            this.isReportAuth = 0
-            this.setIsBtnAuth(0)
-          }
-        }
       }
       // 活动暂停
       if (status === 3) {
@@ -1278,6 +1233,9 @@ export default {
       &.status-no-end {
         padding-bottom: px2rem(200px);
       }
+      &.raffle-bottom {
+        padding-bottom: px2rem(320px);
+      }
       .vote-swipe-wrap {
         position: relative;
         width: 100%;
@@ -1662,7 +1620,7 @@ export default {
     }
     .lottery_entrance{
       position: absolute;
-      bottom: 7.5rem;
+      bottom: 6.5rem;
       right: px2rem(30px);
       text-align: center;
       img {

@@ -14,7 +14,7 @@
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         :class="[(myVoteData.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
-        @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
+        @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id }, {type: myVoteData.voting_type, introduce:myVoteData.introduce})"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <div class="light-mark" v-if="darkMark === '2'"></div>
         <i class="item-rank" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
@@ -47,7 +47,7 @@
           <div class="rank-list-item"
            :class="[(item.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
             v-for="(item, index) in rankList" :key="index"
-            @click.stop="jumpPage('votedetail', { worksId: item.id })">
+            @click.stop="jumpPage('votedetail', { worksId: item.id }, {type: item.voting_type, introduce:item.introduce})">
             <i class="item-rank" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
             <div class="list-item-content">
               <div class="indexpic-wrap"
@@ -223,7 +223,10 @@ export default {
         this.loading = false
       })
     },
-    jumpPage (page, data) {
+    jumpPage (page, data, promiss) {
+      if (promiss && promiss.type === 'commonvote-text' && !promiss.introduce) {
+        return false
+      }
       this.$router.push({
         name: page,
         params: {
