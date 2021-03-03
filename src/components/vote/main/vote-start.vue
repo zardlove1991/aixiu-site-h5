@@ -181,7 +181,7 @@
       <div v-if="loading" class="scroll-tips">加载中...</div>
       -->
     </div>
-    <div class="active-rule-wrap" :class="colorName ? colorName : 'default'" @click="isShowRuleDialog = true">活动规则</div>
+    <div class="active-rule-wrap" :class="colorName ? colorName : ''" @click="isShowRuleDialog = true">活动规则</div>
     <count-down
       v-if="status !== statusCode.endStatus"
       :status="status"
