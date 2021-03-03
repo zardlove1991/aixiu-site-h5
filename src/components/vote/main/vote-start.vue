@@ -1188,6 +1188,7 @@ export default {
       padding: 0 px2rem(15px);
       display: flex;
       align-items: center;
+      justify-content: center;
       &.default {
         @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
       }
@@ -1213,13 +1214,16 @@ export default {
         @include img-retina('~@/assets/vote/heihong@2x.png','~@/assets/vote/heihong@3x.png', 100%, 100%);
       }
       &.baicheng{
+        padding: 0 px2rem(35px);
         @include img-retina('~@/assets/vote/baicheng@2x.png','~@/assets/vote/baicheng@3x.png', 100%, 100%);
       }
       &.bailv{
+        padding: 0 px2rem(35px);
         @include img-retina('~@/assets/vote/bailv@2x.png','~@/assets/vote/bailv@3x.png', 100%, 100%);
       }
       &.baijin{
-        @include img-retina('~@/assets/vote/baijin@2x.png','~@/assets/vote/baijin@3x.png', 100%, 100%);
+        padding: 0 px2rem(35px);
+        @include img-retina('~@/assets/vote/baijin@2x.png','~@/assets/vote/baijin@2x.png', 100%, 100%);
       }
     }
     .commvote-overview {
