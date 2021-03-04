@@ -5,7 +5,7 @@ import 'url-search-params-polyfill'
 import router from '@/router/index'
 import store from '@/store/index'
 import { oauth } from '@/utils/userinfo'
-import { setTheme, setBrowserTitle, setPlatCssInclude } from '@/utils/utils'
+import { setTheme, setBrowserTitle, setPlatCssInclude, getShareUrl } from '@/utils/utils'
 // 引入所有第三库
 import '@/lib/index'
 import VideoPlayer from 'vue-video-player'
@@ -53,7 +53,7 @@ router.afterEach((route, from) => {
   }
   setTheme(id, name, isFirst)
 })
-
+Vue.prototype.getShareUrl = getShareUrl
 /* eslint-disable no-new */
 window.$vue = new Vue({
   el: '#app',

@@ -532,3 +532,13 @@ export const getAppSign = () => {
     return 'other'
   }
 }
+
+export const getShareUrl = (...args) => {
+  const protocol = window.location.protocol
+  let tmpLink = `${protocol}//xzh5.hoge.cn/bridge/index.html?backUrl=`
+  let len = args.length
+  for (let i = 0; i < len; i += 1) {
+    tmpLink += args[i]
+  }
+  return tmpLink
+}

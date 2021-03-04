@@ -1,8 +1,10 @@
 import { getEnvironment } from '@/utils/app'
 const protocol = window.location.protocol
 const env = getEnvironment()
-const suffix = env === 'online' ? '' : `-${env}`
-const v2 = env === 'online' ? '.v2' : ''
+// const suffix = env === 'online' ? '' : `-${env}`
+// const v2 = env === 'online' ? '.v2' : ''
+const suffix = env === 'online' ? '' : env === 'pre' ? '-ax-pre' : `-${env}`
+const v2 = env === 'online' ? '-ax' : ''
 
 export default {
   'submit': `${protocol}//result${suffix}${v2}.aihoge.com/`,
@@ -20,6 +22,6 @@ export default {
   'X-DEVICE-ID': '000',
   'APPID': env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e',
   'COMP_APPID': 'wx566758628b7a3fa2',
-  'REDIRECT-URI': env === 'test' ? 'http://h5-ceshi.aihoge.com/bridge/index.html' : 'http://xzh5.hoge.cn/bridge/index.html',
+  'REDIRECT-URI': env === 'test' ? `${protocol}//h5-ceshi.aihoge.com/bridge/index.html` : `${protocol}//xzh5.hoge.cn/bridge/index.html`,
   'OPEN_NEW_PAGE': ['api/client/examination/{id}', 'open/examination/detail', 'h5/signature', 'signature', 'client/voting/base/{id}', 'client/voting/{id}', 'client/order/{id}', 'client/news/{id}/']
 }

@@ -51,7 +51,6 @@ export default {
           if (examInfo.indexpic && examInfo.indexpic.url) {
             posterUrl = examInfo.indexpic.url
           }
-          // http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8
           this.videoObj = {
             posterUrl,
             videoUrl

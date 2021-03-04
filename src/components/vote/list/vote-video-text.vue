@@ -103,13 +103,13 @@ export default {
             background-position: center;
             background-size: cover;
             &.thumb-1 {
-              background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg1@2x.png');
+              background-image: url('//xzh5.hoge.cn/new-vote/images/work_list_bg1@2x.png');
             }
             &.thumb-2 {
-              background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
+              background-image: url('//xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
             }
             &.thumb-3 {
-              background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg3@2x.png');
+              background-image: url('//xzh5.hoge.cn/new-vote/images/work_list_bg3@2x.png');
             }
           }
           .thumb-poster {
@@ -151,8 +151,8 @@ export default {
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
-            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
+            background-image: url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
+            background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
             transform: translate3d(-50%, -50%, 0);
           }
           .info-thumb {

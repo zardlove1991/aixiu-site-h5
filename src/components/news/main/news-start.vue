@@ -49,12 +49,12 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = 'http:' + sharePic.host + sharePic.filename
+            imgUrl = sharePic.host + sharePic.filename
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -69,10 +69,10 @@ export default {
         if (index !== -1) {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + local.origin + pathname
+        shareLink = this.getShareUrl(local.origin, pathname)
         // shareLink = delUrlParams(['code'])
       } else {
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+        shareLink = this.getShareUrl(shareLink)
       }
       this.initPageShareInfo({
         id,

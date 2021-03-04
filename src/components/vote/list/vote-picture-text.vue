@@ -99,14 +99,14 @@ export default {
       padding: px2rem(25px) px2rem(15px) px2rem(25px) px2rem(30px);
       &:nth-child(odd) {
         .thumb-bg img {
-          background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg1@2x.png');
+          background-image: url('//xzh5.hoge.cn/new-vote/images/work_list_bg1@2x.png');
         }
       }
       &:nth-child(even) {
         // padding-right: 0;
         padding: px2rem(25px) px2rem(30px) px2rem(25px) px2rem(15px);
         .thumb-bg img {
-          background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
+          background-image: url('//xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
         }
       }
       &.my-wrap {
@@ -147,7 +147,7 @@ export default {
           border-radius: px2rem(2px);
           font-size: px2rem(18px);
           color: #fff;
-          background: rgba(0,0,0,0.5) url('http://xzh5.hoge.cn/new-vote/images/commvote_image_icon@3x.png') no-repeat 5px center / 9px 8px;
+          background: rgba(0,0,0,0.5) url('//xzh5.hoge.cn/new-vote/images/commvote_image_icon@3x.png') no-repeat 5px center / 9px 8px;
         }
         .poster-infos-wrap {
           position: absolute;
