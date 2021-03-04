@@ -180,7 +180,7 @@ export default {
         background-repeat: no-repeat;
         background-position: center;
         background-size: px2rem(20px);
-        background-image: url('http://xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
+        background-image: url('//xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
         margin-left: px2rem(30px);
         &.play {
           animation: audioPlay 1s linear infinite;

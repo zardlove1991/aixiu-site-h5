@@ -285,7 +285,7 @@ export default {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      background: url('http://xzh5.hoge.cn/new-vote/images/commvote_detail_bottombg@3x.png') no-repeat center /cover;
+      background: url('//xzh5.hoge.cn/new-vote/images/commvote_detail_bottombg@3x.png') no-repeat center /cover;
       padding: px2rem(30px);
       box-sizing: border-box;
       overflow: hidden;

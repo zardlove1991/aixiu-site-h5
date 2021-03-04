@@ -47,7 +47,7 @@ let smartcity = {
             userId: 'xiuzan',
             sign: getAppSign(),
             userName: '爱秀小秘书',
-            avatarUrl: 'http://aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
+            avatarUrl: '//aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
           }
           try {
             API.getSmartCityUser({

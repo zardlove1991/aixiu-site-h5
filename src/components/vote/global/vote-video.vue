@@ -144,8 +144,8 @@ export default {
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
-        background-image: url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
-        background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
+        background-image: url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
+        background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
       }
     }
     .file-delete-icon {
