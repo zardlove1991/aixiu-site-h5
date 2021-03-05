@@ -199,7 +199,7 @@ export default {
           this.initFindAll()
           this.initActiveDate()
           this.initEnrollData(res, true)
-          this.initLimitSource(res)
+          this.initStatus()
           this.sharePage(res)
           this.getMyEnrollCount()
         }
@@ -413,7 +413,22 @@ export default {
         }
       })
     },
-    initLimitSource (enrollInfo) {
+    initStatus () {
+      // 暂停状态
+      let enrollInfo = this.enrollInfo
+      let status = enrollInfo.status
+      if (status && status === 3) {
+        if (!this.isModelShow) {
+          this.isShowPause = true
+        }
+        this.isBtnAuth = false
+        this.enrollStatus = this.statusCode.endStatus
+        this.setIsModelShow(true)
+      }
+    },
+    initLimitSource () {
+      let enrollInfo = this.enrollInfo
+      let flag = false
       // 来源限制
       let { source_limit: sourceLimit } = enrollInfo.rule
       if (sourceLimit) {
@@ -425,7 +440,6 @@ export default {
         if (limitTxt && appSource && appSource.length > 0) {
           let plat = getAppSign()
           let limitArr = limitTxt.split(',')
-          let flag = false
           for (let item of limitArr) {
             if (item === 'smartcity' && plat.includes('smartcity')) {
               flag = true
@@ -437,27 +451,13 @@ export default {
             }
           }
           if (!flag) {
-            if (!this.isModelShow) {
-              this.isShowLimit = true
-            }
+            this.isShowLimit = true
             this.downloadLink = downloadLink
-            this.setIsModelShow(true)
             this.activeTips = appSource
-            this.isBtnAuth = false
-            this.enrollStatus = this.statusCode.endStatus
           }
         }
       }
-      // 暂停状态
-      let status = enrollInfo.status
-      if (status && status === 3) {
-        if (!this.isModelShow) {
-          this.isShowPause = true
-        }
-        this.isBtnAuth = false
-        this.enrollStatus = this.statusCode.endStatus
-        this.setIsModelShow(true)
-      }
+      return flag
     },
     sharePage (enrollInfo) {
       let { title, introduce, indexpic, rule } = enrollInfo
@@ -651,6 +651,10 @@ export default {
       }
     },
     setEnroll () {
+      let flag = this.initLimitSource()
+      if (!flag) {
+        return
+      }
       let checkSetting = this.checkSetting
       if (!checkSetting.sections_id) {
         Toast('请选择具体的时间范围')
