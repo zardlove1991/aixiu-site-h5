@@ -234,6 +234,11 @@ export default {
       } else {
         shareLink = this.getShareUrl(shareLink)
       }
+      if (/\?/.test(shareLink)) {
+        shareLink += '&userShareCode=' + new Date().getTime()
+      } else {
+        shareLink += '?userShareCode=' + new Date().getTime()
+      }
       this.initPageShareInfo({
         id,
         title: shareTitle,

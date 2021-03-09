@@ -78,9 +78,13 @@ export default {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
         shareLink = this.getShareUrl(local.origin, pathname)
-        // shareLink = delUrlParams(['code'])
       } else {
         shareLink = this.getShareUrl(shareLink)
+      }
+      if (/\?/.test(shareLink)) {
+        shareLink += '&userShareCode=' + new Date().getTime()
+      } else {
+        shareLink += '?userShareCode=' + new Date().getTime()
       }
       this.initPageShareInfo({
         id,
