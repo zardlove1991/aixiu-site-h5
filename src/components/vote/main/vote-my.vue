@@ -13,7 +13,7 @@
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
         v-for="(list, key, index) in mineList" :key="index">
-        <div class="date-tip">
+        <div :class="['date-tip', darkMark === '2' ? 'light' : '']">
           <i class="examfont iconriqi"></i>
           <span class="tip">{{key}}</span>
         </div>
@@ -21,6 +21,7 @@
           :class="['list-item', (item.image_ratio || videoMode === '3') ? 'vertical' : '']"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id }, {type: item.works.voting_type, introduce:item.works.introduce})">
+          <div :class="['list-item-line', darkMark === '2' ? 'light': '']"></div>
           <div class="item-indexpic"
             v-if="showModel === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
@@ -221,7 +222,7 @@ export default {
       margin: px2rem(30px) px2rem(30px) 0 px2rem(30px);
     }
     .mine-list-wrap {
-      padding: px2rem(40px) 0 px2rem(40px) px2rem(30px);
+      padding: px2rem(40px) px2rem(30px);
       .mine-list-item {
         margin-bottom: px2rem(40px);
         &:last-child {
@@ -231,17 +232,33 @@ export default {
           display: flex;
           align-items: center;
           font-size: px2rem(28px);
-          @include font-color('fontColor');
+          color: #fff;
+          &.light {
+            @include font-color('descColor');
+          }
           .iconriqi {
             margin-right: px2rem(25px);
           }
         }
         .list-item {
+          position: relative;
           padding: px2rem(30px) 0;
           padding-right: px2rem(30px);
           display: flex;
           align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          // border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          .list-item-line {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            top: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            &.light {
+              @include border('bottom', 1px, solid, 'descColor');
+              opacity: 0.15;
+            }
+          }
           &.vertical{
             .item-indexpic {
               height: px2rem(252px);
