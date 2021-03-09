@@ -134,7 +134,7 @@ export default {
           // this.currentStep = step
           // this.toggleStep(step)
           // 分享
-          // this.sharePage()
+          this.sharePage()
         })
       } catch (err) {
         this.loading = false
