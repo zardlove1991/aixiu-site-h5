@@ -34,15 +34,29 @@
   display: flex;
   align-items: center;
   .number-tip {
+    position: relative;
     @include font-dpr(11px);
     padding: 0 px2rem(15px) 0 px2rem(10px);
-    border-radius: px2rem(24px) px2rem(4px) px2rem(34px) px2rem(4px);
+    border-radius: px2rem(24px) px2rem(4px) px2rem(32px) px2rem(4px);
     // background-color: #FC7465;
-    @include bg-color('btnColor');
+    // @include bg-color('btnColor');
     color: #fff;
     height: px2rem(40px);
     line-height: px2rem(40px);
     margin-right: px2rem(15px);
+    .info-number-bg {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      @include bg-color('btnColor');
+      border-radius: px2rem(24px) px2rem(4px) px2rem(32px) px2rem(4px);
+      opacity: 0.2;
+    }
+    &.light {
+      @include font-color('descColor')
+    }
   }
   .vote-tip {
     @include font-dpr(14px);

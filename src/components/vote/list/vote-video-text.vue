@@ -69,12 +69,8 @@ export default {
   .video-work-list-wrap {
     padding-top: px2rem(10px);
     .work-list-item {
-      width: 100%;
-      padding: px2rem(30px);
-      &.my-wrap {
-        margin-bottom: px2rem(20px);
-        @include img-retina('~@/assets/vote/video-text-mybg@2x.png','~@/assets/vote/video-text-mybg@3x.png', 100%, 100%);
-      }
+      padding: px2rem(30px) 0;
+      margin: 0 px2rem(30px);
       .work-poster-wrap {
         position: relative;
         width: 100%;
@@ -139,7 +135,7 @@ export default {
             height: px2rem(40px);
             padding: 0 px2rem(17px);
             border-radius: px2rem(4px) 0px px2rem(32px) 0px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
             @include font-dpr(11px);
           }
@@ -173,8 +169,8 @@ export default {
             right: 0.27rem;
           }
           &.my-infos-wrap .info-number {
-            // background-color: #FC7465;
-            @include bg-color('btnColor');
+            background-color: rgba(0, 0, 0, 0.7);
+            // @include bg-color('btnColor');
           }
         }
       }
