@@ -7,18 +7,18 @@
         placeholder="全部">
       </el-input>
       <div :class="['vote-type-base', !isShowClassify ? 'vote-type-down': 'vote-type-up']"></div>
-    </div>
-    <div class="dropdown-wrap" v-show="isShowClassify">
-      <div class="dropdown-item item0">
-        <div class="classify-item"
-          :class="currentId === item.id ? 'active' : ''"
-          @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
-      </div>
-      <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
-        <div>
+      <div class="dropdown-wrap" v-show="isShowClassify">
+        <div class="dropdown-item item0">
           <div class="classify-item"
-            :class="currentId2 === item.id ? 'active2' : ''"
-            @click.stop="toggleCheck2(item)" v-for="(item, index) in tmpObj[currentId]" :key="index">{{item.name}}</div>
+            :class="currentId === item.id ? 'active' : ''"
+            @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
+        </div>
+        <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
+          <div>
+            <div class="classify-item"
+              :class="currentId2 === item.id ? 'active2' : ''"
+              @click.stop="toggleCheck2(item)" v-for="(item, index) in tmpObj[currentId]" :key="index">{{item.name}}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@ export default {
       .el-input__inner {
         height: px2rem(80px);
         line-height: px2rem(80px);
-        border-radius: px2rem(8px);
+        border-radius: px2rem(16px);
         background-color: rgba(255, 255, 255, 0.1);
         border: 0px;
         // color: #fff;
@@ -140,7 +140,7 @@ export default {
       }
     }
     .dropdown-wrap {
-      z-index: 10;
+      z-index: 11;
       position: absolute;
       top: px2rem(90px);
       left: 0;

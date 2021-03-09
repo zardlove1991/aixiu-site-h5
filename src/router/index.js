@@ -202,6 +202,16 @@ const routes = [{
     title: '上传作品'
   }
 }, {
+  path: '/votefullsubmit/:id',
+  name: 'votefullsubmit',
+  component: getOtherComponent('vote-fullscene-submit', 'vote'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '上传作品'
+  }
+}, {
   path: '/voteoneself/:flag/:id',
   name: 'voteoneself',
   component: getOtherComponent('vote-oneself', 'vote'),

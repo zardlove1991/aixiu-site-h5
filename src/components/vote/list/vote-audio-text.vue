@@ -4,14 +4,9 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       v-for="(item, index) in workList" :key="index"
       @click.stop="jumpPage('votedetail', { worksId: item.id })">
-      <div v-if="darkMark === '2'" class="work-item-line"></div>
+      <div :class="['work-item-line', darkMark === '2' ? 'light' : '']"></div>
       <div class="work-header-wrap">
         <div class="work-title">
-          <div v-if="darkMark === '2'" :class="['light-audio-icon', colorName]" ></div>
-          <div v-else class="icon-arrow-wrap">
-            <div class="arrow-top"></div>
-            <div class="arrow-bottom"></div>
-          </div>
           <div class="work-title-txt">{{item.name}}</div>
         </div>
         <div class="work-desc">{{item.source}}</div>
@@ -81,14 +76,16 @@ export default {
     .work-list-item {
       position: relative;
       padding: px2rem(30px);
-      border-bottom: 1px solid rgba(255,255,255, 0.2);
       .work-item-line {
         position: absolute;
         bottom: 0;
         left: px2rem(30px);
         right: px2rem(30px);
-        @include border('bottom', 1px, solid, 'descColor');
-        opacity: 0.2;
+        border-bottom: 1px solid rgba(255,255,255, 0.2);
+        &.light {
+          @include border('bottom', 1px, solid, 'descColor');
+          opacity: 0.2;
+        }
       }
       &.my-wrap {
         border-bottom: 0;
@@ -100,6 +97,9 @@ export default {
       &:last-child {
         border-bottom: 0;
         .work-item-line {
+          border-bottom: 0;
+        }
+        .work-item-line.light {
           border-bottom: 0;
         }
       }
@@ -114,25 +114,8 @@ export default {
             @include font-dpr(16px);
             @include txt-overflow(px2rem(590px));
           }
-          .light-audio-icon {
-            margin-right: px2rem(20px);
-            width: px2rem(30px);
-            height: px2rem(30px);
-            background-size: px2rem(30px) px2rem(30px);
-            background-image: url('~@/assets/vote/baicheng-audio.png');
-            &.baicheng {
-              background-image: url('~@/assets/vote/baicheng-audio.png');
-            }
-            &.bailv {
-              background-image: url('~@/assets/vote/bailv-audio.png');
-            }
-            &.baijin {
-              background-image: url('~@/assets/vote/baijin-audio.png');
-            }
-          }
         }
         .work-desc {
-          margin-left: px2rem(50px);
           @include font-color('fontColor');
           opacity: 0.7;
           @include font-dpr(13px);

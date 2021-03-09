@@ -7,7 +7,6 @@
       <div v-if="darkMark === '2'" class="work-item-line"></div>
       <div class="work-header-wrap">
         <div class="work-title">
-          <div class="icon-square-wrap"></div>
           <div class="work-title-txt">{{item.name}}</div>
         </div>
         <div class="work-desc" v-show="item.source">—— {{item.source}}</div>

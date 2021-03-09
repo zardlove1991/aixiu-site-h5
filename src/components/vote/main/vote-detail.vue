@@ -9,20 +9,20 @@
       </div>
       <!--媒体组件渲染-->
       <div :class="['detail-video-wrap', videoMode === '3' ? 'vertical' : '']"
-        v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
+        v-if="showModel === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
         <vote-video class="base-video"
           v-for="(video, index) in workDetail.material.video" :key="index"
           :data="video">
         </vote-video>
       </div>
-      <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
+      <div v-if="showModel === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
         <vote-audio class="base-audio"
           v-for="(audio, index) in workDetail.material.audio" :key="index"
           :darkMark="darkMark"
           :data="audio">
         </vote-audio>
       </div>
-      <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
+      <div v-if="showModel === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
         <img class="base-image"
           :class="imageRatio?'vertical':''"
           v-for="(image, index) in workDetail.material.image" :key="index"
@@ -51,7 +51,7 @@
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
-    <canvass-vote :flag="flag" :signUnit="signUnit" ref="canvass-vote-detail" />
+    <canvass-vote :flag="showModel" :signUnit="signUnit" ref="canvass-vote-detail" />
 </div>
 </template>
 
@@ -64,6 +64,7 @@ import CanvassVote from '@/components/vote/global/vote-canvass'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
+import { fullSceneMap } from '@/utils/config'
 
 export default {
   components: {
@@ -75,6 +76,7 @@ export default {
   },
   data () {
     return {
+      showModel: this.flag,
       workDetail: {},
       isShowWorkVote: false,
       mark: '',
@@ -93,7 +95,8 @@ export default {
       imageRatio: 0, // 图片模式
       videoMode: '1',
       isCloseDialog: false, // 是否开启投票弹框
-      darkMark: '1' // 1: 深色系 2: 浅色系
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      fullSceneMap
     }
   },
   created () {
@@ -174,6 +177,10 @@ export default {
           newVotes = remainVotes
         }
         res.remain_votes = newVotes
+        let fullSceneType = res.full_scene_type
+        if (fullSceneType && fullSceneType !== '0') {
+          this.showModel = this.fullSceneMap[fullSceneType][1]
+        }
         this.workDetail = res
       })
     },

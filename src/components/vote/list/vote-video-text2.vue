@@ -4,7 +4,8 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage('votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :class="videoMode === '3' ? 'vertical' : 'horizontal'">
+      <div class="work-poster-wrap" :class="videoMode === '3' ? 'vertical' : 'horizontal'"
+        v-if="item.material.video && item.material.video.length">
         <img
           class="thumb-bg"
           :src="(item.material.video.length && item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover) + '?x-oss-process=image/resize,w_400'"

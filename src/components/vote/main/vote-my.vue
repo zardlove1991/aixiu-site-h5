@@ -1,5 +1,13 @@
 <template>
   <div class="commvote-mine">
+    <vote-fullscene-list
+      v-if="fullSceneType && fullSceneType.length"
+      class="vote-my-fullscene"
+      :searchVal="checkFullScene"
+      :darkMark="darkMark"
+      :fullSceneType="fullSceneType"
+      @fullSceneChange="fullSceneChange">
+    </vote-fullscene-list>
     <my-page-empty v-if="mineArr && !mineArr.length" :tip="tip"></my-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
@@ -9,25 +17,23 @@
           <i class="examfont iconriqi"></i>
           <span class="tip">{{key}}</span>
         </div>
-        <div class="list-item"
-          :class="(item.image_ratio || videoMode === '3') ? 'vertical' : ''"
+        <div
+          :class="['list-item', (item.image_ratio || videoMode === '3') ? 'vertical' : '']"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id }, {type: item.works.voting_type, introduce:item.works.introduce})">
           <div class="item-indexpic"
-            v-if="flag === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
+            v-if="showModel === 'picture' && item.works.material && item.works.material.image && item.works.material.image.length"
             :style="{ backgroundImage: 'url(' + item.works.material.image[0].url + '?x-oss-process=image/resize,w_400)'}"></div>
           <div class="item-indexpic video-wrap"
-            v-if="flag === 'video' && item.works.material && item.works.material.video && item.works.material.video.length"
+            v-if="showModel === 'video' && item.works.material && item.works.material.video && item.works.material.video.length"
             :style="{ backgroundImage: `url(${item.works.material.video[0].cover_image ? item.works.material.video[0].cover_image : item.works.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
             <div class="play-icon"></div>
           </div>
+          <div v-if="showModel === 'audio'" :class="['audio-play-icon', darkMark === '2' ? 'light' : '']">
+            <div class="audio-icon"></div>
+          </div>
           <div class="item-content">
             <div class="content-title">
-              <div class="icon-arrow-wrap" v-if="flag === 'audio'">
-                <div class="arrow-top"></div>
-                <div class="arrow-bottom"></div>
-              </div>
-              <div class="icon-square-wrap" v-if="flag === 'text'"></div>
               <div class="content-title-txt">{{item.works.name}}</div>
             </div>
             <p class="content-desc">截止{{item.showdate}}<span class="vote-tip">累计{{firstUnit}}<i class="vote-num">{{item.total}}</i>{{signUnit}}</span></p>
@@ -45,12 +51,15 @@
 <script>
 import MyPageEmpty from '@/components/vote/global/my-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
+import VoteFullsceneList from '@/components/vote/global/vote-fullscene-list'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import { fullSceneMap } from '@/utils/config'
 
 export default {
   data () {
     return {
+      showModel: this.flag,
       mineList: {},
       mineArr: [],
       loading: false,
@@ -63,7 +72,11 @@ export default {
       firstUnit: '投了',
       signUnit: '票',
       tip: '暂无列表记录',
-      videoMode: '1'
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      checkFullScene: '', // 选中的全场景
+      fullSceneType: [], // 全场景的搜索条件
+      fullSceneMap
     }
   },
   props: {
@@ -71,9 +84,10 @@ export default {
     flag: String
   },
   components: {
-    MyPageEmpty, CommonPagebackBtn
+    MyPageEmpty, CommonPagebackBtn, VoteFullsceneList
   },
   created () {
+    this.initDetail()
     this.initMyVoteList()
   },
   computed: {
@@ -87,8 +101,13 @@ export default {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
       if (detailInfo) {
-        if (detailInfo.rule && detailInfo.rule.limit && detailInfo.rule.limit.show_mode) {
-          this.videoMode = detailInfo.rule.limit.show_mode
+        let rule = detailInfo.rule
+        let limit = rule.limit
+        if (limit && limit.show_mode) {
+          this.videoMode = limit.show_mode
+        }
+        if (rule.page_setup && rule.page_setup.font_color) {
+          this.darkMark = rule.page_setup.font_color
         }
         if (detailInfo.text_setting) {
           let sign = detailInfo.text_setting.sign
@@ -105,10 +124,18 @@ export default {
             }
           }
         }
+        if (detailInfo.mark === 'commonvote-fullscene') {
+          let arr = limit.full_scene_type
+          if (arr && arr.length) {
+            let key = arr[0]
+            this.fullSceneType = arr
+            this.checkFullScene = key
+            this.showModel = this.fullSceneMap[key][1]
+          }
+        }
       }
     },
     initMyVoteList () {
-      this.initDetail()
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -116,6 +143,9 @@ export default {
         voting_id: voteId,
         page: page + 1,
         count
+      }
+      if (this.checkFullScene) {
+        params.full_scene_type = this.checkFullScene
       }
       API.getMineVoteList({
         params
@@ -158,10 +188,24 @@ export default {
         name: page,
         params: {
           id: this.id,
-          flag: this.flag
+          flag: this.showModel
         },
         query: data
       })
+    },
+    fullSceneChange (key) {
+      console.log('fullSceneChange', key)
+      this.checkFullScene = key
+      this.showModel = this.fullSceneMap[key][1]
+      this.mineList = {}
+      this.mineArr = []
+      this.pager = {
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
+      }
+      this.initMyVoteList()
     }
   }
 }
@@ -173,8 +217,11 @@ export default {
     // background-color: #221A6E;
     // @include bg-color('bgColor');
     min-height: 100vh;
+    .vote-my-fullscene {
+      margin: px2rem(30px) px2rem(30px) 0 px2rem(30px);
+    }
     .mine-list-wrap {
-      padding: px2rem(50px) 0 px2rem(50px) px2rem(30px);
+      padding: px2rem(40px) 0 px2rem(40px) px2rem(30px);
       .mine-list-item {
         margin-bottom: px2rem(40px);
         &:last-child {
@@ -227,8 +274,10 @@ export default {
               transform: translate3d(-50%, -50%, 0);
             }
           }
+          .audio-play-icon {
+            margin-right: px2rem(20px);
+          }
           .item-content {
-            width: 100%;
             .content-title {
               display: flex;
               align-items: center;

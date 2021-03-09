@@ -8,14 +8,14 @@
         placeholder="请选择">
       </el-input>
       <div :class="['vote-type-base', !isShowFullScene ? 'vote-type-down': 'vote-type-up']"></div>
-    </div>
-    <div class="dropdown-wrap" v-show="isShowFullScene">
-      <div class="dropdown-item item0">
-        <div class="fullscene-item"
-          @click.stop="toggleCheck(key)"
-          v-for="(key, index) in fullSceneType"
-          :class="checkFullScene === key ? 'active' : ''"
-          :key="index">{{fullSceneMap[key][0]}}</div>
+      <div class="dropdown-wrap" v-show="isShowFullScene">
+        <div class="dropdown-item item0">
+          <div class="fullscene-item"
+            @click.stop="toggleCheck(key)"
+            v-for="(key, index) in fullSceneType"
+            :class="checkFullScene === key ? 'active' : ''"
+            :key="index">{{fullSceneMap[key][0]}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -50,6 +50,11 @@ export default {
       fullSceneMap
     }
   },
+  created () {
+    if (this.searchVal) {
+      this.checkFullScene = this.searchVal
+    }
+  },
   methods: {
     blurAction () {
       document.body.scrollTop = 0
@@ -76,7 +81,7 @@ export default {
       .el-input__inner {
         height: px2rem(80px);
         line-height: px2rem(80px);
-        border-radius: px2rem(8px);
+        border-radius: px2rem(16px);
         background-color: rgba(255, 255, 255, 0.1);
         border: 0px;
         // color: #fff;
@@ -106,7 +111,7 @@ export default {
       }
     }
     .dropdown-wrap {
-      z-index: 10;
+      z-index: 11;
       position: absolute;
       top: px2rem(90px);
       left: 0;

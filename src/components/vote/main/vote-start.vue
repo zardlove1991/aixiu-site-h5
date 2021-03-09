@@ -42,7 +42,7 @@
       <div class="overview-content-wrap">
         <!--信息展示-->
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
-          <div :class="['vote-cols-wrap', showModel + '-text']">
+          <div :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.report_count}}</span>
             <span class="vote-desc">作品数</span>
@@ -96,6 +96,15 @@
           <div>作品列表</div>
           <div class="line"></div>
         </div> -->
+        <!-- 全场景筛选 -->
+        <div class="overview-full-scene-wrap" v-if="fullSceneType && fullSceneType.length">
+          <div :class="['full-scene-item', checkFullScene === key ? 'active' : '', darkMark === '2' ? 'light' : '']"
+            v-for="(key, index) in fullSceneType"
+            @click="toggleFullSceneType(key)"
+            :key="index">
+            <div class="bg"></div>{{fullSceneMap[key][0]}}
+          </div>
+        </div>
         <!--搜索条-->
         <div class="overview-search-bar-wrap">
           <vote-classify-list
@@ -267,6 +276,7 @@ import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
 import { formatSecByTime, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
+import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -351,7 +361,10 @@ export default {
       indexRadio: '', // 轮播图比例
       swipeList: [], // 轮播图片数组
       videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
-      darkMark: '1' // 1: 深色系 2: 浅色系
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      checkFullScene: '', // 选中的全场景
+      fullSceneType: [], // 全场景的搜索条件
+      fullSceneMap
     }
   },
   created () {
@@ -418,6 +431,8 @@ export default {
         // 分享
         this.sharePage(res)
         this.setLocation()
+        // 其他限制
+        this.handleVoteData()
         // 作品列表
         this.getVoteWorks()
         // 索引图尺寸比例
@@ -453,8 +468,6 @@ export default {
         } else {
           this.initReportTime()
         }
-        // 其他限制
-        this.handleVoteData()
       }).catch(err => {
         console.log(err)
       })
@@ -625,20 +638,20 @@ export default {
       if (limit.is_open_list === 0) {
         this.isShowRank = false
       }
-      if (myWork && myWork.id) {
-        this.myWorkStatus = myWork.audit_status
-        if (myWork.audit_status === 1) {
-          myWork.is_my = 1
-          this.myWork = myWork
-          this.setMyVote(myWork)
-        }
-      }
       if (setup && setup.color_scheme) {
         this.colorName = setup.color_scheme.name
       }
       // 当前展示类型
       let showModel = ''
-      if (mark.indexOf('video') !== -1) {
+      if (mark.indexOf('fullscene') !== -1) {
+        let arr = limit.full_scene_type
+        if (arr && arr.length) {
+          let key = arr[0]
+          this.fullSceneType = arr
+          this.checkFullScene = key
+          showModel = this.fullSceneMap[key][1]
+        }
+      } else if (mark.indexOf('video') !== -1) {
         showModel = 'video'
       } else if (mark.indexOf('image') !== -1) {
         showModel = 'picture'
@@ -648,6 +661,24 @@ export default {
         showModel = 'text'
       }
       this.showModel = showModel
+      // 我的作品
+      if (myWork && myWork.id) {
+        this.myWorkStatus = myWork.audit_status
+        if (myWork.audit_status === 1) {
+          let key = this.checkFullScene
+          if (key) {
+            if (key === myWork.full_scene_type) {
+              this.myWork = myWork
+            } else {
+              this.myWork = {}
+            }
+          } else {
+            this.myWork = myWork
+          }
+          myWork.is_my = 1
+          this.setMyVote(myWork)
+        }
+      }
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
       }
@@ -994,6 +1025,15 @@ export default {
         if (!name && !classifyVal) {
           this.myWork = this.myVote ? this.myVote : {}
         }
+        let myVote = this.myVote
+        let key = this.checkFullScene
+        if (key) {
+          if (myVote && key === myVote.full_scene_type) {
+            this.myWork = myVote
+          } else {
+            this.myWork = {}
+          }
+        }
       }
       this.pager = {
         total: 0,
@@ -1021,6 +1061,9 @@ export default {
         count,
         k: name,
         type_name: this.searchClassifyVal
+      }
+      if (this.checkFullScene) {
+        params.full_scene_type = this.checkFullScene
       }
       this.$nextTick(() => {
         this.$refs.loadmore.onBottomLoaded()
@@ -1108,6 +1151,11 @@ export default {
           this.shareLottery()
         )
       }
+    },
+    toggleFullSceneType (key) {
+      this.checkFullScene = key
+      this.showModel = this.fullSceneMap[key][1]
+      this.dealSearch('input-search', true)
     },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',
@@ -1397,6 +1445,9 @@ export default {
           &:nth-child(2) {
             margin: 0 px2rem(30px);
           }
+          &.fullscene-text:nth-child(1)::before {
+            background-image: url('~@/assets/vote/fullscene-icon.png');
+          }
           &.picture-text:nth-child(1):before {
             background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
           }
@@ -1441,6 +1492,9 @@ export default {
           &:after {
             @include bg-color('btnColor');
             opacity: 0.15;
+          }
+          &.fullscene-text:nth-child(1)::before {
+            background-image: url('~@/assets/vote/fullscene-light-icon.png');
           }
           &.picture-text:nth-child(1):before {
             background-image: url('~@/assets/vote/picture-icon.png');
@@ -1517,6 +1571,52 @@ export default {
           }
           &:last-child {
             margin-left: px2rem(20px);
+          }
+        }
+      }
+      .overview-full-scene-wrap {
+        margin-bottom: px2rem(30px);
+        width: 100%;
+        height: px2rem(64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .full-scene-item {
+          position: relative;
+          z-index: 9;
+          margin-right: px2rem(20px);
+          width: px2rem(157px);
+          height: px2rem(64px);
+          line-height: px2rem(64px);
+          text-align: center;
+          border-radius: px2rem(32px);
+          @include font-dpr(14px);
+          @include font-color('fontColor');
+          &:last-child {
+            margin-right: 0;
+          }
+          .bg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: px2rem(32px);
+            background: rgba(255, 255, 255, 0.1);
+          }
+          &.active {
+            @include font-color('btnColor');
+            font-weight: 500;
+            .bg {
+              @include bg-color('btnColor');
+              opacity: 0.2;
+            }
+          }
+          &.light {
+            background-color: #fff;
+          }
+          &.light.active {
+            @include font-color('descColor');
           }
         }
       }

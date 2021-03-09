@@ -11,7 +11,7 @@
         </div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
-      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay">
+      <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '', isPlay ? 'play': '']" v-if="!isPreview" @click.stop="setPlay">
         <div class="audio-icon"></div>
       </div>
     </div>
@@ -126,7 +126,7 @@ export default {
     padding: px2rem(25px) px2rem(30px);
     background-color: rgba(255,255,255,0.1);
     box-sizing: border-box;
-    border-radius: px2rem(4px);
+    border-radius: px2rem(16px);
     .audio-name {
       @include font-dpr(14px);
       color: rgba(255,255,255,0.7);
@@ -177,26 +177,7 @@ export default {
         }
       }
       .audio-play-icon {
-        position: relative;
-        width: px2rem(56px);
-        height: px2rem(56px);
-        border-radius: 50%;
-        background-color: rgba(255,255,255,0.3);
         margin-left: px2rem(30px);
-        &.play {
-          animation: audioPlay 1s linear infinite;
-        }
-        .audio-icon {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: px2rem(20px);
-          background-image: url('http://xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
-        }
       }
     }
     .file-delete-icon {
@@ -220,10 +201,6 @@ export default {
       }
       .audio-name, .audio-control-wrap .run-stime, .audio-control-wrap .run-etime {
         @include font-color('descColor');
-      }
-      .audio-play-icon {
-        @include bg-color('btnColor');
-        opacity: 0.4;
       }
     }
   }

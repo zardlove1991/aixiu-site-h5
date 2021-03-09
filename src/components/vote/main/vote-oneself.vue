@@ -19,7 +19,7 @@
       </div>
       <div class="oneself-content">
         <div class="onself-picture-wrap"
-          v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
+          v-if="showModel === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
           <div :class="['onself-picture-item', imageRatio ? 'vertical' : '']"
             v-for="(item, index) in selfData.material.image" :key="index">
             <img :src="item.url"
@@ -29,12 +29,12 @@
           </div>
         </div>
         <div :class="['onself-video-wrap', videoMode === '3' ? 'vertical' : '']"
-          v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
+          v-if="showModel === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
           <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
         <vote-audio
-          v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
-        <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
+          v-if="showModel === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
+        <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
         <div class="header first-header">
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
@@ -49,7 +49,7 @@
           <span v-else>来源：</span>
           <span class="header-txt">{{selfData.source}}</span>
         </div>
-        <div class="header" v-show="flag !== 'text'">
+        <div class="header" v-show="showModel !== 'text'">
           <span>描述：</span>
           <span class="header-txt">{{selfData.introduce}}</span>
         </div>
@@ -82,6 +82,7 @@ import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import SubjectMixin from '@/mixins/subject'
 import STORAGE from '@/utils/storage'
+import { fullSceneMap } from '@/utils/config'
 
 export default {
   mixins: [ SubjectMixin ],
@@ -97,13 +98,15 @@ export default {
   },
   data () {
     return {
+      showModel: this.flag,
       colorName: '', // 配色名称
       selfData: {},
       textSetting: {},
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
       videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
-      darkMark: '1' // 1: 深色系 2: 浅色系
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      fullSceneMap
     }
   },
   methods: {
@@ -145,12 +148,16 @@ export default {
         if (!res) {
           return
         }
+        let fullSceneType = res.full_scene_type
+        if (fullSceneType && fullSceneType !== '0') {
+          this.showModel = this.fullSceneMap[fullSceneType][1]
+        }
         this.selfData = res
       })
     },
     jumpPage (page, data) {
       let params = {
-        flag: this.flag,
+        flag: this.showModel,
         id: this.id
       }
       this.$router.push({

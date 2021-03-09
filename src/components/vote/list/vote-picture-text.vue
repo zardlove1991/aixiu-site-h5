@@ -4,7 +4,8 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage('votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :class="imageRatio? 'vertical' : 'horizontal'">
+      <div class="work-poster-wrap" :class="imageRatio? 'vertical' : 'horizontal'"
+        v-if="item.material.image && item.material.image.length">
         <img
           class="thumb-bg"
           :src="(item.material.image.length && item.material.image[0].url) + '?x-oss-process=image/resize,w_400'"

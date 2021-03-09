@@ -99,6 +99,7 @@ export default {
   @import "@/styles/index.scss";
   .count-down-wrap {
     position: absolute;
+    z-index: 100;
     bottom: px2rem(40px);
     left: px2rem(50px);
     right: px2rem(50px);
