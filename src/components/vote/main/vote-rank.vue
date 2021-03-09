@@ -23,7 +23,7 @@
       </div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        :class="[(myVoteData.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
+        :class="[(myVoteData.image_ratio || videoMode === '3') ? showModel + '-vertical' : '', darkMark === '2' ? 'light' : '']"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id }, {type: myVoteData.voting_type, introduce:myVoteData.introduce})"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <div class="light-mark" v-if="darkMark === '2'"></div>
@@ -59,7 +59,9 @@
         :auto-fill="false">
         <div class="vote-rank-body-wrap">
           <div class="rank-list-item"
-           :class="[(item.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
+            :class="[(item.image_ratio && showModel === 'picture') ? 'picture-vertical' : '',
+            (videoMode === '3' && showModel === 'video') ? 'video-vertical' : '',
+            darkMark === '2' ? 'light' : '']"
             v-for="(item, index) in rankList" :key="index"
             @click.stop="jumpPage('votedetail', { worksId: item.id }, {type: item.voting_type, introduce:item.introduce})">
             <i class="item-rank" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
@@ -460,7 +462,7 @@ export default {
           padding-right: px2rem(30px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        &.vertical {
+        &.picture-vertical, &.video-vertical {
           height: px2rem(298px);
           .indexpic-wrap {
             width: px2rem(180px);
