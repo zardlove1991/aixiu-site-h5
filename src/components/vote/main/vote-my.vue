@@ -18,7 +18,9 @@
           <span class="tip">{{key}}</span>
         </div>
         <div
-          :class="['list-item', (item.image_ratio || videoMode === '3') ? 'vertical' : '']"
+          :class="['list-item',
+          (item.image_ratio && showModel === 'picture') ? 'picture-vertical' : '',
+          (videoMode === '3' && showModel === 'video') ? 'video-vertical' : '']"
           v-for="(item, idx) in list" :key="idx"
           @click.stop="jumpPage('votedetail', { worksId: item.works_id }, {type: item.works.voting_type, introduce:item.works.introduce})">
           <div :class="['list-item-line', darkMark === '2' ? 'light': '']"></div>
@@ -259,7 +261,7 @@ export default {
               opacity: 0.15;
             }
           }
-          &.vertical{
+          &.picture-vertical, &.video-vertical {
             .item-indexpic {
               height: px2rem(252px);
             }
