@@ -20,7 +20,7 @@
       </vote-audio>
       <div class="work-options-wrap">
         <div class="info-number-wrap">
-          <p class="number-tip"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
+          <div :class="['number-tip', darkMark === '2' ? 'light' : '']"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号<div class="info-number-bg"></div></div>
           <p class="vote-tip">{{item.total_votes}}{{signUnit}}</p>
         </div>
         <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick($event, index)"></vote-btn-group>
@@ -75,7 +75,8 @@ export default {
   .audio-work-list-wrap {
     .work-list-item {
       position: relative;
-      padding: px2rem(30px);
+      padding: px2rem(30px) 0;
+      margin: 0 px2rem(30px);
       .work-item-line {
         position: absolute;
         bottom: 0;
@@ -85,13 +86,6 @@ export default {
         &.light {
           @include border('bottom', 1px, solid, 'descColor');
           opacity: 0.2;
-        }
-      }
-      &.my-wrap {
-        border-bottom: 0;
-        @include img-retina('~@/assets/vote/audio-text-mybg@2x.png','~@/assets/vote/audio-text-mybg@3x.png', 100%, 100%);
-        .work-item-line {
-          border-bottom: 0;
         }
       }
       &:last-child {

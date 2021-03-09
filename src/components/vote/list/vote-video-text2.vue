@@ -91,9 +91,6 @@ export default {
           background-image: url('http://xzh5.hoge.cn/new-vote/images/work_list_bg2@2x.png');
         }
       }
-      &.my-wrap {
-        @include img-retina('~@/assets/vote/video-text-mybg@2x.png','~@/assets/vote/video-text-mybg@3x.png', 100%, 100%);
-      }
       .work-poster-wrap {
         position: relative;
         width: 100%;
@@ -130,13 +127,13 @@ export default {
             height: px2rem(40px);
             padding: 0 px2rem(17px);
             border-radius: px2rem(4px) 0px px2rem(32px) 0px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
             @include font-dpr(11px);
           }
           &.my-infos-wrap .info-number {
-            // background-color: #FC7465;
-            @include bg-color('btnColor');
+            background-color: rgba(0, 0, 0, 0.7);
+            // @include bg-color('btnColor');
           }
         }
         .info-icon {

@@ -14,7 +14,7 @@
       <p class="work-content-info">{{item.introduce}}</p>
       <div class="work-options-wrap">
         <div class="info-number-wrap">
-          <p class="number-tip"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号</p>
+          <div :class="['number-tip', darkMark === '2' ? 'light' : '']"><span v-show="item.is_my">我的 · </span>{{item.numbering}}号<div class="info-number-bg"></div></div>
           <p class="vote-tip">{{item.total_votes}}{{signUnit}}</p>
         </div>
         <div class="info-options-wrap">
@@ -71,7 +71,8 @@ export default {
   .text-work-list-wrap {
     .work-list-item{
       position: relative;
-      padding: px2rem(30px);
+      padding: px2rem(30px) 0;
+      margin: 0 px2rem(30px);
       border-bottom: 1px solid rgba(255,255,255, 0.2);
       .work-item-line {
         position: absolute;
@@ -79,14 +80,7 @@ export default {
         left: px2rem(30px);
         right: px2rem(30px);
         @include border('bottom', 1px, solid, 'descColor');
-        opacity: 0.2;
-      }
-      &.my-wrap {
-        border-bottom: 0;
-        @include img-retina('~@/assets/vote/text-mybg@2x.png','~@/assets/vote/text-mybg@3x.png', 100%, 100%);
-        .work-item-line {
-          border-bottom: 0;
-        }
+        opacity: 0.15;
       }
       &:last-child {
         border-bottom: 0;
