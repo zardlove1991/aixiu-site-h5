@@ -30,7 +30,7 @@
 </template>
 
 <script>
-// import mixins from '@/mixins/index'
+import mixins from '@/mixins/index'
 import { Toast } from 'mint-ui'
 // import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { setBrowserTitle } from '@/utils/utils'
@@ -49,7 +49,7 @@ import BasePreview from '@/components/news/global/base-preview'
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 
 export default {
-  // mixins: [mixins],
+  mixins: [mixins],
   props: {
     id: String
   },
