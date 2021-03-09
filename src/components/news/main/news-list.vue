@@ -229,15 +229,19 @@ export default {
         if (index !== -1) {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
+        if (/\?/.test(pathname)) {
+          pathname += '&userShareCode=' + new Date().getTime()
+        } else {
+          pathname += '?userShareCode=' + new Date().getTime()
+        }
         shareLink = this.getShareUrl(local.origin, pathname)
-        // shareLink = delUrlParams(['code'])
       } else {
+        if (/\?/.test(shareLink)) {
+          shareLink += '&userShareCode=' + new Date().getTime()
+        } else {
+          shareLink += '?userShareCode=' + new Date().getTime()
+        }
         shareLink = this.getShareUrl(shareLink)
-      }
-      if (/\?/.test(shareLink)) {
-        shareLink += '&userShareCode=' + new Date().getTime()
-      } else {
-        shareLink += '?userShareCode=' + new Date().getTime()
       }
       this.initPageShareInfo({
         id,
