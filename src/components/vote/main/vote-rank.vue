@@ -1,71 +1,90 @@
 <template>
-  <div class="commvote-rank color-bg_color">
+  <div class="commvote-rank">
     <!--具体列表包裹-->
     <div class="rank-list-wrap">
-      <div class="rank-list-img"></div>
-      <vote-classify-list
-        class="classfiy-rank-wrap"
-        v-if="isOpenClassify"
-        :searchVal.sync="searchVal"
-        :id="id"
-        @success="searchClassify">
-      </vote-classify-list>
+      <div :class="['rank-list-img', darkMark === '2' ? 'light' : '']"></div>
+      <div class="search-wrap">
+        <vote-classify-list
+          class="classfiy-rank-wrap"
+          v-if="isOpenClassify"
+          :searchVal.sync="searchVal"
+          :id="id"
+          :darkMark="darkMark"
+          @success="searchClassify">
+        </vote-classify-list>
+        <vote-fullscene-list
+          v-if="fullSceneType && fullSceneType.length"
+          :class="['fullscene-rank-wrap', isOpenClassify ? 'have-left' : '']"
+          :searchVal="checkFullScene"
+          :darkMark="darkMark"
+          :fullSceneType="fullSceneType"
+          @fullSceneChange="fullSceneChange">
+        </vote-fullscene-list>
+      </div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        :class="myVoteData.image_ratio?'vertical':''"
+        :class="[(myVoteData.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id }, {type: myVoteData.voting_type, introduce:myVoteData.introduce})"
         v-show="isShowMy && myVoteData && myVoteData.name">
-        <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
+        <div class="light-mark" v-if="darkMark === '2'"></div>
+        <div class="black-mark" v-else></div>
+        <i class="item-rank" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
+        <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '']" v-if="showModel === 'audio'">
+          <div class="audio-icon"></div>
+        </div>
         <div class="list-item-content">
           <div class="indexpic-wrap"
-            v-if="flag === 'picture' && myVoteData.material && myVoteData.material.image && myVoteData.material.image.length"
+            v-if="showModel === 'picture' && myVoteData.material && myVoteData.material.image && myVoteData.material.image.length"
             :style="{ backgroundImage: 'url(' + myVoteData.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
           </div>
-          <div class="indexpic-wrap"
-            v-if="flag === 'video' && myVoteData.material && myVoteData.material.video && myVoteData.material.video.length"
+          <div class="indexpic-wrap video-wrap"
+            v-if="showModel === 'video' && myVoteData.material && myVoteData.material.video && myVoteData.material.video.length"
             :style="{ backgroundImage: `url(${myVoteData.material.video[0].cover_image ? myVoteData.material.video[0].cover_image : myVoteData.material.video[0].cover}?x-oss-process=image/resize,w_400)`}">
             <div class="rank-num">我的 · {{myVoteData.numbering}}号</div>
             <div class="play-icon"></div>
           </div>
-          <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'my-text-title-wrap': '']">
-            <div class="title color-theme_color">{{myVoteData.name}}</div>
-            <div class="source color-theme_color">
-              <span v-show="flag === 'text' || flag === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
+          <div :class="['title-wrap', (showModel === 'text' || showModel === 'audio') ? 'text-title-wrap': '']">
+            <div class="title">{{myVoteData.name}}</div>
+            <div class="source">
+              <span v-show="showModel === 'text' || showModel === 'audio'">我的 · {{myVoteData.numbering}}号 · </span>{{myVoteData.source}}
             </div>
           </div>
-          <p class="item-votes color-theme_color">{{myVoteData.total_votes}}{{signUnit}}</p>
+          <p class="item-votes">{{myVoteData.total_votes}}{{signUnit}}</p>
         </div>
       </div>
       <mt-loadmore ref="vote-rank-loadmore"
         :bottom-method="getRankList"
         :bottom-all-loaded="noMore"
         :auto-fill="false">
-        <div class="wrap">
+        <div class="vote-rank-body-wrap">
           <div class="rank-list-item"
-           :class="item.image_ratio?'vertical':''"
+           :class="[(item.image_ratio || videoMode === '3') ? 'vertical' : '', darkMark === '2' ? 'light' : '']"
             v-for="(item, index) in rankList" :key="index"
             @click.stop="jumpPage('votedetail', { worksId: item.id }, {type: item.voting_type, introduce:item.introduce})">
-            <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
+            <i class="item-rank" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
+            <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '']" v-if="showModel === 'audio'">
+              <div class="audio-icon"></div>
+            </div>
             <div class="list-item-content">
               <div class="indexpic-wrap"
-                v-if="flag === 'picture' && item.material && item.material.image && item.material.image.length"
+                v-if="showModel === 'picture' && item.material && item.material.image && item.material.image.length"
                 :style="{ backgroundImage: 'url(' + item.material.image[0].url + '?x-oss-process=image/resize,w_400)'}">
                 <div class="rank-num">{{item.numbering}}号</div>
               </div>
-              <div class="indexpic-wrap"
-                v-if="flag === 'video' && item.material && item.material.video && item.material.video.length"
+              <div class="indexpic-wrap video-wrap"
+                v-if="showModel === 'video' && item.material && item.material.video && item.material.video.length"
                 :style="{ backgroundImage: `url(${item.material.video[0].cover_image ? item.material.video[0].cover_image : item.material.video[0].cover}?x-oss-process=image/resize,w_400)` }">
                 <div class="rank-num">{{item.numbering}}号</div>
                 <div class="play-icon"></div>
               </div>
-              <div :class="['title-wrap', (flag === 'text' || flag === 'audio') ? 'text-title-wrap': '']">
-                <div class="title color-theme_color">{{item.name}}</div>
-                <div class="source color-theme_color">
-                  <span v-show="flag === 'text' || flag === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
+              <div :class="['title-wrap', (showModel === 'text' || showModel === 'audio') ? 'text-title-wrap': '']">
+                <div class="title">{{item.name}}</div>
+                <div class="source">
+                  <span v-show="showModel === 'text' || showModel === 'audio'">{{item.numbering}}号 · </span>{{item.source}}
                 </div>
               </div>
-              <p class="item-votes color-theme_color">{{item.total_votes}}{{signUnit}}</p>
+              <p class="item-votes">{{item.total_votes}}{{signUnit}}</p>
             </div>
           </div>
         </div>
@@ -92,13 +111,16 @@
 import CommonPageEmpty from '@/components/vote/global/common-page-empty'
 import CommonPagebackBtn from '@/components/vote/global/common-pageback-btn'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
+import VoteFullsceneList from '@/components/vote/global/vote-fullscene-list'
 import { Spinner, Loadmore } from 'mint-ui'
+import { fullSceneMap } from '@/utils/config'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
 export default {
   data () {
     return {
+      showModel: this.flag,
       rankList: [],
       myVoteIndex: -1,
       myVoteData: {},
@@ -113,7 +135,12 @@ export default {
       isOpenClassify: false,
       isShowClassify: false,
       searchVal: '',
-      isShowMy: true
+      isShowMy: true,
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      checkFullScene: '', // 选中的全场景
+      fullSceneType: [], // 全场景的搜索条件
+      fullSceneMap
     }
   },
   props: {
@@ -121,7 +148,7 @@ export default {
     flag: String
   },
   components: {
-    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList, Spinner, Loadmore
+    CommonPageEmpty, CommonPagebackBtn, VoteClassifyList, Spinner, Loadmore, VoteFullsceneList
   },
   created () {
     this.initDetail()
@@ -136,16 +163,38 @@ export default {
   methods: {
     initDetail () {
       let detailInfo = STORAGE.get('detailInfo')
-      if (detailInfo && detailInfo.text_setting) {
-        let tmp = detailInfo.text_setting.sign.split('')
-        if (tmp.length >= 2) {
-          let signUnit = tmp[1]
-          if (signUnit === '力') {
-            this.signUnit = '助力值'
-          } else if (signUnit === '敬') {
-            this.signUnit = '致敬数'
-          } else {
-            this.signUnit = signUnit
+      if (detailInfo) {
+        if (detailInfo.text_setting) {
+          let tmp = detailInfo.text_setting.sign.split('')
+          if (tmp.length >= 2) {
+            let signUnit = tmp[1]
+            if (signUnit === '力') {
+              this.signUnit = '助力值'
+            } else if (signUnit === '敬') {
+              this.signUnit = '致敬数'
+            } else {
+              this.signUnit = signUnit
+            }
+          }
+          let rule = detailInfo.rule
+          if (rule) {
+            if (rule.limit && rule.limit.show_mode) {
+              this.videoMode = rule.limit.show_mode
+            }
+            if (rule.page_setup && rule.page_setup.font_color) {
+              this.darkMark = rule.page_setup.font_color
+            }
+          }
+        }
+        let rule = detailInfo.rule
+        let limit = rule.limit
+        if (detailInfo.mark === 'commonvote-fullscene') {
+          let arr = limit.full_scene_type
+          if (arr && arr.length) {
+            let key = arr[0]
+            this.fullSceneType = arr
+            this.checkFullScene = key
+            this.showModel = this.fullSceneMap[key][1]
           }
         }
       }
@@ -157,13 +206,20 @@ export default {
       if (!detailInfo) {
         return
       }
-      if (detailInfo.my_work) {
-        let myWork = detailInfo.my_work
+      let myWork = detailInfo.my_work
+      if (myWork) {
         if (myWork.audit_status && myWork.audit_status === 1) {
           // 审核通过
           this.myVoteData = myWork
           if (myWork.index > 0) {
             this.myVoteIndex = myWork.index - 1
+          }
+          if (this.checkFullScene) {
+            if (myWork.full_scene_type && myWork.full_scene_type === this.checkFullScene) {
+              this.isShowMy = true
+            } else {
+              this.isShowMy = false
+            }
           }
         }
       }
@@ -182,6 +238,9 @@ export default {
         count,
         rank: 1,
         type_name: this.searchVal
+      }
+      if (this.checkFullScene) {
+        params.full_scene_type = this.checkFullScene
       }
       this.$nextTick(() => {
         this.$refs['vote-rank-loadmore'].onBottomLoaded()
@@ -224,7 +283,17 @@ export default {
     searchClassify (val) {
       if (val !== this.searchVal) {
         if (val === '') {
-          this.isShowMy = true
+          // 全场景
+          if (this.checkFullScene) {
+            let myWork = this.myVoteData
+            if (myWork.full_scene_type && myWork.full_scene_type === this.checkFullScene) {
+              this.isShowMy = true
+            } else {
+              this.isShowMy = false
+            }
+          } else {
+            this.isShowMy = true
+          }
         } else {
           this.isShowMy = false
         }
@@ -238,6 +307,23 @@ export default {
         }
         this.getRankList()
       }
+    },
+    fullSceneChange (key) {
+      this.checkFullScene = key
+      this.showModel = this.fullSceneMap[key][1]
+      this.rankList = []
+      this.pager = {
+        total: 0,
+        page: 0,
+        count: 10,
+        totalPages: 0
+      }
+      if (this.myVoteData.full_scene_type && this.myVoteData.full_scene_type === key) {
+        this.isShowMy = true
+      } else {
+        this.isShowMy = false
+      }
+      this.getRankList()
     }
   }
 }
@@ -251,8 +337,6 @@ export default {
     height: 100vh;
     .rank-list-wrap {
       position: relative;
-      padding-left: px2rem(30px);
-      padding-right: px2rem(30px);
       padding-top: px2rem(220px);
       height: 100vh;
       box-sizing: 100%;
@@ -264,11 +348,25 @@ export default {
         width: 100%;
         height: px2rem(220px);
         background-size: 100%;
-        background: url('//xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
+        background: url('http://xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
+        &.light {
+          background: url('~@/assets/vote/rank-bg.png') no-repeat left -0.13rem / 100%;
+        }
       }
-      .classfiy-rank-wrap {
+      .search-wrap {
+        display: flex;
         position: relative;
-        margin: px2rem(20px) 0;
+        align-items: center;
+        margin: px2rem(20px) px2rem(30px);
+        .classfiy-rank-wrap {
+          flex: 1;
+        }
+        .fullscene-rank-wrap {
+          flex: 1;
+          &.have-left {
+            margin-left: px2rem(20px);
+          }
+        }
       }
       .mint-loadmore-top {
         margin-top: 0;
@@ -291,35 +389,30 @@ export default {
         text-align: center;
         margin-top: px2rem(30px);
       }
+      .vote-rank-body-wrap {
+        padding-left: px2rem(30px);
+        padding-right: px2rem(30px);
+      }
       .rank-list-item {
         display: flex;
         align-items: center;
         height: px2rem(158px);
         &.rank-my-item {
+          position: relative;
+          margin: px2rem(30px) 0 px2rem(30px) 0;
           padding-left: px2rem(30px);
-          margin: px2rem(30px) px2rem(30px) px2rem(30px) 0;
-          // background: linear-gradient(-90deg, #604AC4 0%, #4543BA 100%);
-          @include bg-linear-color('compColor');
           border-radius: px2rem(4px);
           .list-item-content {
             border-bottom: 0;
-            .indexpic-wrap {
-              position: relative;
-              width: px2rem(130px);
-              height: px2rem(100px);
-              .rank-num {
-                max-width: px2rem(120px);
-                // background-color: #FC7465;
-                @include bg-color('btnColor');
-              }
-            }
           }
-          &.vertical{
-            .list-item-content {
-              .indexpic-wrap {
-                height: px2rem(182px);
-              }
-            }
+          .black-mark {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            @include bg-color('compColor');
+            opacity: 0.3;
           }
         }
         &:last-child {
@@ -329,6 +422,7 @@ export default {
           }
         }
         .item-rank {
+          z-index: 10;
           flex: 0 0 px2rem(47px);
           width: px2rem(47px);
           font-size: px2rem(34px);
@@ -339,22 +433,26 @@ export default {
           line-height: 1;
           margin-right: px2rem(23px);
           &.rank-0, &.rank-1, &.rank-2 {
-            height: px2rem(64px);
+            height: px2rem(50px);
             background-repeat: no-repeat;
             background-position: left center;
-            background-size: px2rem(47px) px2rem(64px);
+            background-size: px2rem(42px) px2rem(50px);
           }
           &.rank-0 {
-            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_1@3x.png');
+            background-image: url('~@/assets/vote/commvote_rank_1.png');
           }
           &.rank-1{
-            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_2@3x.png');
+            background-image: url('~@/assets/vote/commvote_rank_2.png');
           }
           &.rank-2{
-            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_3@3x.png');
+            background-image: url('~@/assets/vote/commvote_rank_3.png');
           }
         }
+        .audio-play-icon {
+          margin-right: px2rem(20px);
+        }
         .list-item-content {
+          z-index: 10;
           flex:1;
           display: flex;
           align-items: center;
@@ -362,11 +460,15 @@ export default {
           padding-right: px2rem(30px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        &.vertical{
+        &.vertical {
           height: px2rem(298px);
           .indexpic-wrap {
             width: px2rem(180px);
             height: px2rem(252px);
+          }
+          .indexpic-wrap.video-wrap {
+            width: px2rem(180px);
+            height: px2rem(270px);
           }
         }
         .indexpic-wrap {
@@ -407,18 +509,15 @@ export default {
             transform: translate3d(-50%, -50%, 0);
           }
         }
-        .title-wrap{
+        .title-wrap {
           flex:1;
           max-width: px2rem(300px);
           &.text-title-wrap {
             max-width: px2rem(490px);
           }
-          &.my-text-title-wrap {
-            max-width: px2rem(440px);
-          }
           .title {
             font-size: px2rem(30px);
-            color: #fff;
+            @include font-color('fontColor');
             line-height: 1;
             margin-bottom: px2rem(15px);
             overflow: hidden;
@@ -441,6 +540,23 @@ export default {
           line-height: 1;
           min-width: px2rem(70px);
           text-align: right;
+        }
+        &.light {
+          &.rank-my-item .light-mark {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            @include bg-color('btnColor');
+            opacity: 0.15;
+          }
+          .title-wrap .source {
+            color: rgba(0, 0, 0, 0.4);
+          }
+          .item-rank, .item-votes {
+            @include font-color('descColor');
+          }
         }
       }
     }

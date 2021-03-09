@@ -1,57 +1,32 @@
 @import "@/styles/index.scss";
 
-/** 音频图片 */
-.icon-arrow-wrap {
-  display: inline-block;
+.audio-play-icon {
   position: relative;
-  width: px2rem(30px);
-  height: px2rem(30px);
-  margin-right: px2rem(20px);
-  .arrow-bottom {
+  width: px2rem(56px);
+  height: px2rem(56px);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  .audio-icon {
     position: absolute;
-    right: 10%;
     top: 0;
-    width: 0;
-    height: 0;
-    border: px2rem(15px) solid transparent;
-    border-right: none;
-    border-left-width: px2rem(18px);
-    border-left-style: solid;
-    // border-left-color: #FC7465;
-    border-left-color: $btnColor;
-  }
-  .arrow-top {
-    position: absolute;
     left: 0;
-    top: 0;
-    width: px2rem(30px);
-    height: px2rem(30px);
-    background: url(//xzh5.hoge.cn/new-vote/images/audio_tip_icon@3x.png) no-repeat center / contain;
-    z-index: 1;
-    transform: translateX(-23%);
+    right: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: px2rem(23px) px2rem(24px);
+    background-image: url('~@/assets/vote/audio-play-icon.png');
   }
-}
-
-/** 文本方形图标 */
-.icon-square-wrap {
-  display: inline-block;
-  position: relative;
-  width: px2rem(23px);
-  height: px2rem(23px);
-  // background-color: #F06F64;
-  @include bg-color('btnColor');
-  margin-right: px2rem(20px);
-  margin-left: px2rem(10px);
-  &::after {
-    position: absolute;
-    top:0;
-    left:0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255,255,255,0);
-    border: 1px solid #fff;
-    content: '';
-    transform: translate(-30%, -30%);
+  &.play {
+    animation: audioPlay 1s linear infinite;
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  &.play.light {
+    opacity: 0.7;
+  }
+  &.light {
+    @include bg-color('btnColor');
+    opacity: 0.4;
   }
 }
 
@@ -71,6 +46,6 @@
   }
   .vote-tip {
     @include font-dpr(14px);
-    color: #fff;
+    @include font-color('fontColor');
   }
 }

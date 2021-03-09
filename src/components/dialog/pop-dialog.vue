@@ -100,7 +100,7 @@ export default {
         color: #fff;
         border: 0;
         &.video-pop-btn {
-          @include bg-linear-color('themeColor')
+          @include bg-color('themeColor')
         }
       }
     }

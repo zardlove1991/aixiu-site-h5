@@ -20,8 +20,8 @@
           </div>
         </div>
       </div>
-      <div class="work-title color-theme_color">{{item.name}}</div>
-      <div class="work-desc color-theme_color">{{item.source}}</div>
+      <div class="work-title">{{item.name}}</div>
+      <div class="work-desc">{{item.source}}</div>
     </div>
   </div>
 </template>
@@ -78,7 +78,8 @@ export default {
       .work-poster-wrap {
         position: relative;
         width: 100%;
-        height: px2rem(388px);
+        // height: px2rem(388px);
+        height: calc((100vw - 1.875rem) * 9 / 16);
         border-radius: 4px;
         background-repeat: no-repeat;
         background-position: center;
@@ -120,7 +121,7 @@ export default {
             height: 100%;
             border-radius: px2rem(8px);
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: cover;
             background-position: center;
           }
         }
@@ -180,7 +181,8 @@ export default {
       .work-title {
         @include font-dpr(16px);
         font-weight: bold;
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         line-height: 1.5;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -189,7 +191,8 @@ export default {
       }
       .work-desc {
         @include font-dpr(14px);
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         opacity: 0.7;
         line-height: 1;
         text-overflow: ellipsis;

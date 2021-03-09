@@ -1,5 +1,6 @@
 <template>
-  <div class="commvote-base-audio-wrap">
+  <div :class="['commvote-base-audio-wrap', darkMark === '2' ? 'light' : '']">
+    <div class="audio-light-bg" v-if="darkMark === '2'"></div>
     <p class="audio-name">{{data.filename}}</p>
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
@@ -10,7 +11,9 @@
         </div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
-      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay"></div>
+      <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '', isPlay ? 'play': '']" v-if="!isPreview" @click.stop="setPlay">
+        <div class="audio-icon"></div>
+      </div>
     </div>
     <!--音频元素-->
     <audio ref="audio" preload='auto' @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
@@ -23,6 +26,7 @@ import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
+    darkMark: String,
     data: {
       type: Object,
       default: () => {
@@ -122,7 +126,7 @@ export default {
     padding: px2rem(25px) px2rem(30px);
     background-color: rgba(255,255,255,0.1);
     box-sizing: border-box;
-    border-radius: px2rem(4px);
+    border-radius: px2rem(16px);
     .audio-name {
       @include font-dpr(14px);
       color: rgba(255,255,255,0.7);
@@ -173,18 +177,7 @@ export default {
         }
       }
       .audio-play-icon {
-        width: px2rem(56px);
-        height: px2rem(56px);
-        border-radius: 50%;
-        background-color: rgba(255,255,255,0.3);
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: px2rem(20px);
-        background-image: url('//xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
         margin-left: px2rem(30px);
-        &.play {
-          animation: audioPlay 1s linear infinite;
-        }
       }
     }
     .file-delete-icon {
@@ -195,6 +188,20 @@ export default {
       width: px2rem(40px);
       height: px2rem(40px);
       @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
+    }
+    &.light {
+      .audio-light-bg {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        @include bg-color('btnColor');
+        opacity: 0.15;
+      }
+      .audio-name, .audio-control-wrap .run-stime, .audio-control-wrap .run-etime {
+        @include font-color('descColor');
+      }
     }
   }
 </style>

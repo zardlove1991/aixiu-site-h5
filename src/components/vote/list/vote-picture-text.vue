@@ -4,7 +4,8 @@
       :class="['work-list-item', item.is_my ? 'my-wrap' : '']"
       @click.stop="jumpPage('votedetail', { worksId: item.id })"
       :key="index">
-      <div class="work-poster-wrap" :class="imageRatio? 'vertical' : 'horizontal'">
+      <div class="work-poster-wrap" :class="imageRatio? 'vertical' : 'horizontal'"
+        v-if="item.material.image && item.material.image.length">
         <img
           class="thumb-bg"
           :src="(item.material.image.length && item.material.image[0].url) + '?x-oss-process=image/resize,w_400'"
@@ -16,8 +17,8 @@
           </div>
         </div>
       </div>
-      <div class="work-title color-theme_color">{{item.name}}</div>
-      <div class="work-desc color-theme_color">{{item.source}}</div>
+      <div class="work-title">{{item.name}}</div>
+      <div class="work-desc">{{item.source}}</div>
       <div class="vote-btn-group">
         <vote-btn-group :remainVotes="remainVotes" :data="item" :index="index" @btn-click="btnClick($event, index)"></vote-btn-group>
       </div>
@@ -176,7 +177,7 @@ export default {
       .work-title {
         height: px2rem(50px);
         @include font-dpr(16px);
-        color: #fff;
+        @include font-color('fontColor');
         line-height: px2rem(50px);
         margin-top: px2rem(15px);
         margin-bottom: px2rem(8px);
@@ -187,7 +188,7 @@ export default {
       .work-desc {
         margin-bottom: px2rem(25px);
         @include font-dpr(14px);
-        color: #fff;
+        @include font-color('fontColor');
         opacity: 0.7;
         line-height: 1;
         overflow: hidden;

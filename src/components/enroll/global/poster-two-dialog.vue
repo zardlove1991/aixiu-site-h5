@@ -93,7 +93,7 @@ export default {
       border-radius: px2rem(40px);
       box-sizing: border-box;
       pointer-events: auto;
-      @include bg-linear-color('compColor');
+      @include bg-color('compColor');
       // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
       background-repeat: no-repeat;
       background-position: bottom;
