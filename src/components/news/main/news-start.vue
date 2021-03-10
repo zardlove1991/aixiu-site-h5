@@ -49,12 +49,20 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = obj.host + obj.filename
+              if (/http/.test(obj.host)) {
+                imgUrl = obj.host + obj.filename
+              } else {
+                imgUrl = location.protocol + obj.host + obj.filename
+              }
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = sharePic.host + sharePic.filename
+            if (/http/.test(sharePic.host)) {
+              imgUrl = sharePic.host + sharePic.filename
+            } else {
+              imgUrl = location.protocol + sharePic.host + sharePic.filename
+            }
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -69,9 +77,18 @@ export default {
         if (index !== -1) {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
+        if (/\?/.test(pathname)) {
+          pathname += '&userShareCode=' + new Date().getTime()
+        } else {
+          pathname += '?userShareCode=' + new Date().getTime()
+        }
         shareLink = this.getShareUrl(local.origin, pathname)
-        // shareLink = delUrlParams(['code'])
       } else {
+        if (/\?/.test(shareLink)) {
+          shareLink += '&userShareCode=' + new Date().getTime()
+        } else {
+          shareLink += '?userShareCode=' + new Date().getTime()
+        }
         shareLink = this.getShareUrl(shareLink)
       }
       this.initPageShareInfo({
