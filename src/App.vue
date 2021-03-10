@@ -23,14 +23,6 @@ export default {
   components: { errorDialog },
   created () {
     this.goPage()
-    // 注册微信分享信息
-    this.initPageShareInfo({
-      title: document.getElementsByTagName('title')[0].innerHTML,
-      desc: '爱秀，移动场景自营销管家工具，H5运营需求一站解决，表单工具、长H5、抽奖红包等免费制作',
-      indexpic: location.protocol + '//xzimg.hoge.cn/xiuzan/1599470131011/二维码2.png',
-      link: location.href,
-      mark: 'default-share'
-    })
   },
   methods: {
     goPage () {
@@ -48,6 +40,22 @@ export default {
           }
         })
       }
+    },
+    setShareInfo () {
+      // 入口处初始化微信分享信息
+      // 全部页面可进行分享操作，具体数据在对应页面中自行处理
+      this.initPageShareInfo({
+        title: document.getElementsByTagName('title')[0].innerHTML,
+        desc: '',
+        indexpic: location.protocol + '//xzimg.hoge.cn/xiuzan/1599470131011/二维码2.png',
+        link: location.href,
+        mark: 'default-share'
+      })
+    }
+  },
+  watch: {
+    '$route': function () {
+      this.setShareInfo()
     }
   }
 }
