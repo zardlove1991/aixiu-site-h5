@@ -522,6 +522,9 @@ export default {
       } else {
         shareLink = this.getShareUrl(shareLink)
       }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
       this.shareConfigData = {
         id: detailInfo.id,
         title: shareTitle,

@@ -517,6 +517,9 @@ export default {
       } else {
         shareLink = this.getShareUrl(shareLink)
       }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
       this.initPageShareInfo({
         id: enrollInfo.id,
         title: shareTitle,
