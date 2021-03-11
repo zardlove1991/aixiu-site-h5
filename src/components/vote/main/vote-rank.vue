@@ -23,7 +23,9 @@
       </div>
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
-        :class="[(myVoteData.image_ratio || videoMode === '3') ? showModel + '-vertical' : '', darkMark === '2' ? 'light' : '']"
+        :class="[(myVoteData.image_ratio && showModel === 'picture') ? 'picture-vertical' : '',
+          (videoMode === '3' && showModel === 'video') ? 'video-vertical' : '',
+          darkMark === '2' ? 'light' : '']"
         @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id }, {type: myVoteData.voting_type, introduce:myVoteData.introduce})"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <div class="light-mark" v-if="darkMark === '2'"></div>
