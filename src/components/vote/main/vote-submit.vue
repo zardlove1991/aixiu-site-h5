@@ -7,7 +7,7 @@
           <vote-fullscene-list
             :searchVal="checkFullScene"
             :darkMark="darkMark"
-            :disabled="disabled"
+            :isLoading="loading"
             :fullSceneType="fullSceneType"
             @fullSceneChange="fullSceneChange">
           </vote-fullscene-list>
