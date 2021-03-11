@@ -22,7 +22,7 @@
           <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div>
         </div>
       </template>
-      <div :class="['vote-swipe-wrap', indexRadio]">
+      <div :class="['vote-swipe-wrap', indexRadio]" v-if="swipeList && swipeList.length">
         <mt-swipe
           class="vote-mt-swipe"
           :auto="4000"
@@ -32,8 +32,8 @@
           </mt-swipe-item>
         </mt-swipe>
       </div>
-      <div class="overview-title" v-if="detailInfo.rule && detailInfo.rule.limit.is_display_title === 0"></div>
-      <div class="overview-title" v-else>{{detailInfo.title ? detailInfo.title : ''}}</div>
+      <div :class="['overview-title', { 'no-pic': !swipeList || swipeList.length <= 0 }]" v-if="detailInfo.rule && detailInfo.rule.limit.is_display_title === 0"></div>
+      <div :class="['overview-title', { 'no-pic': !swipeList || swipeList.length <= 0 }]" v-else>{{detailInfo.title ? detailInfo.title : ''}}</div>
       <!--当前机构描述-->
       <div :class="['overview-organizers', darkMark === '2' ? 'light-org' : ''] " v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
@@ -1348,6 +1348,9 @@ export default {
         @include font-color('fontColor');
         @include font-dpr(22px);
         @include line-overflow(2);
+        &.no-pic {
+          margin-top: px2rem(220px);
+        }
       }
       .overview-organizers {
         width: 100%;
