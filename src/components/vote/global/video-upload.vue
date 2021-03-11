@@ -147,6 +147,7 @@ export default {
           this.fileList.splice(i, 1)
         }
       }
+      this.$emit('changeFile')
     },
     // 上传成功
     onSuccess () {
