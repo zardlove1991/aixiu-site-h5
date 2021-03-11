@@ -425,6 +425,11 @@ export default {
     fullSceneChange (key) {
       if (key) {
         this.fileList = []
+        this.material = {
+          image: [],
+          video: [],
+          audio: []
+        }
         this.videoCoverList = []
         this.checkFullScene = key
         this.showModel = this.fullSceneMap[key][1]
