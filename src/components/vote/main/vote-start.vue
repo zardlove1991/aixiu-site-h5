@@ -1042,7 +1042,7 @@ export default {
         totalPages: 0
       }
       // this.workList = []
-      this.getVoteWorks(name, isClassifySearch, 'clear')
+      this.getVoteWorks(name, isClassifySearch, 'clear', false)
     },
     updateCard () {
       if (this.activeIndex !== null && this.activeIndex !== undefined) {
@@ -1052,7 +1052,7 @@ export default {
         }
       }
     },
-    getVoteWorks (name = '', isClassifySearch = false, type) {
+    getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -1065,9 +1065,11 @@ export default {
       if (this.checkFullScene) {
         params.full_scene_type = this.checkFullScene
       }
-      this.$nextTick(() => {
-        this.$refs.loadmore.onBottomLoaded()
-      })
+      if (isBottom) {
+        this.$nextTick(() => {
+          this.$refs.loadmore.onBottomLoaded()
+        })
+      }
       API.getVoteWorks({
         query: { id: voteId },
         params: params
@@ -1153,9 +1155,11 @@ export default {
       }
     },
     toggleFullSceneType (key) {
-      this.checkFullScene = key
-      this.showModel = this.fullSceneMap[key][1]
-      this.dealSearch('input-search', true)
+      if (key !== this.checkFullScene) {
+        this.checkFullScene = key
+        this.showModel = this.fullSceneMap[key][1]
+        this.dealSearch('input-search', true)
+      }
     },
     ...mapActions('vote', {
       setIsModelShow: 'SET_IS_MODEL_SHOW',

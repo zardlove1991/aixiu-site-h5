@@ -4,6 +4,7 @@
       <el-input
         :value="fullSceneMap[checkFullScene][0]"
         :readonly="true"
+        :disabled="isLoading"
         @blur="blurAction()"
         placeholder="请选择">
       </el-input>
@@ -28,7 +29,10 @@ export default {
   props: {
     searchVal: String,
     darkMark: String,
-    disabled: Boolean,
+    isLoading: {
+      type: Boolean,
+      default: false
+    },
     fullSceneType: {
       type: Array,
       default: () => {
