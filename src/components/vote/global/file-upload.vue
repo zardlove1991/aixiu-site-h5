@@ -151,6 +151,9 @@ export default {
       }
       this.$emit('changeFile')
     },
+    clearFile () {
+      this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+    },
     // 文件超出个数
     handleExceed () {
       Toast(`最多只能选择${this.settings[this.flag].limit}个文件`)

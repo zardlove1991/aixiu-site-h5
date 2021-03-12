@@ -28,6 +28,7 @@
         <div class="form-tips-div" v-else>建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
         <div class="form-content">
           <file-upload :loading.sync="videoCoverLoading"
+            ref="video-file-upload"
             flag="videoCover"
             :imageRatio="videoMode === '3' ? 1 : 0"
             :fileList="videoCoverList"
@@ -41,6 +42,7 @@
         <div class="form-tips-div" v-else>建议比例：1:1；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-content">
           <file-upload
+            ref="picture-file-upload"
             :imageRatio="imageRatio"
             :loading.sync="loading"
             :flag="showModel"
@@ -433,6 +435,13 @@ export default {
         this.videoCoverList = []
         this.checkFullScene = key
         this.showModel = this.fullSceneMap[key][1]
+        this.$nextTick(() => {
+          let obj1 = this.$refs['video-file-upload']
+          let obj2 = this.$refs['picture-file-upload']
+          console.log(obj1, obj2)
+          obj1 && obj1.clearFile()
+          obj2 && obj2.clearFile()
+        })
       }
     }
   }

@@ -41,6 +41,11 @@ export default {
     }
   },
   watch: {
+    isLoading (val) {
+      if (val) {
+        this.isShowFullScene = false
+      }
+    },
     searchVal (val) {
       if (val) {
         this.checkFullScene = val
@@ -61,7 +66,6 @@ export default {
   },
   methods: {
     blurAction () {
-      this.isShowFullScene = false
       document.body.scrollTop = 0
     },
     showFullsceneAction () {
