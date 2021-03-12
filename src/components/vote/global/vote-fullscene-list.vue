@@ -8,8 +8,8 @@
         @blur="blurAction()"
         placeholder="请选择">
       </el-input>
-      <div :class="['vote-type-base', (!isShowFullScene && isLoading) ? 'vote-type-down': 'vote-type-up']"></div>
-      <div class="dropdown-wrap" v-show="isShowFullScene && !isLoading">
+      <div :class="['vote-type-base', !isShowFullScene ? 'vote-type-down': 'vote-type-up']"></div>
+      <div class="dropdown-wrap" v-show="isShowFullScene">
         <div class="dropdown-item item0">
           <div class="fullscene-item"
             @click.stop="toggleCheck(key)"
@@ -41,6 +41,11 @@ export default {
     }
   },
   watch: {
+    isLoading (val) {
+      if (val) {
+        this.isShowFullScene = false
+      }
+    },
     searchVal (val) {
       if (val) {
         this.checkFullScene = val
