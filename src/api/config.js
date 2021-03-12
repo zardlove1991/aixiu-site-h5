@@ -22,6 +22,6 @@ export default {
   // 'REDIRECT-URI': env === 'test' ? 'http://h5-ceshi.aihoge.com/bridge/index.html' : 'http://h5.ixiuzan.cn/bridge/index.html'
   'APPID': config.CUSTOM_APPID,
   'COMP_APPID': config.CUSTOM_COMP_APPID,
-  'REDIRECT-URI': `${protocol}config.CUSTOM_REDIRECT_URI`,
+  'REDIRECT-URI': `${protocol}${config.CUSTOM_REDIRECT_URI}`,
   'OPEN_NEW_PAGE': ['api/client/examination/{id}', 'open/examination/detail', 'h5/signature', 'signature', 'client/voting/base/{id}', 'client/voting/{id}', 'client/order/{id}', 'client/news/{id}/']
 }
