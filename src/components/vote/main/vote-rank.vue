@@ -2,7 +2,7 @@
   <div class="commvote-rank">
     <!--具体列表包裹-->
     <div class="rank-list-wrap">
-      <div :class="['rank-list-img', darkMark === '2' ? 'light' : '']"></div>
+      <div :class="['rank-list-img', darkMark === '2' ? 'light' : '', colorName ? colorName + '-rank-bg' : '']"></div>
       <div class="search-wrap">
         <vote-classify-list
           class="classfiy-rank-wrap"
@@ -100,14 +100,14 @@
           <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
-      <common-page-empty v-show="rankList && !rankList.length" tip="暂无排行列表信息"></common-page-empty>
+      <common-page-empty v-show="rankList && !rankList.length" tip="暂无排行列表信息" :darkMark="darkMark"></common-page-empty>
       <!--
       <div v-if="!noMore" class="scroll-tips" @click="initRankList()">点击我，加载更多</div>
       <div v-if="loading" class="scroll-tips">加载中...</div>
       -->
     </div>
     <!--当前返回组件-->
-    <common-pageback-btn :id="id"></common-pageback-btn>
+    <common-pageback-btn :id="id" :darkMark="darkMark"></common-pageback-btn>
   </div>
 </template>
 
@@ -142,6 +142,7 @@ export default {
       isShowMy: true,
       videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
       darkMark: '1', // 1: 深色系 2: 浅色系
+      colorName: '',
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
       fullSceneMap
@@ -192,6 +193,10 @@ export default {
         }
         let rule = detailInfo.rule
         let limit = rule.limit
+        let setup = rule.page_setup
+        if (setup && setup.color_scheme) {
+          this.colorName = setup.color_scheme.name
+        }
         if (detailInfo.mark === 'commonvote-fullscene') {
           let arr = limit.full_scene_type
           if (arr && arr.length) {
@@ -353,8 +358,14 @@ export default {
         height: px2rem(220px);
         background-size: 100%;
         background: url('http://xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
-        &.light {
-          background: url('~@/assets/vote/rank-bg.png') no-repeat left -0.13rem / 100%;
+        &.light.baicheng-rank-bg {
+          background: url('~@/assets/vote/baicheng-rank-bg.png') no-repeat left -0.13rem / 100%;
+        }
+        &.light.baijin-rank-bg {
+          background: url('~@/assets/vote/baijin-rank-bg.png') no-repeat left -0.13rem / 100%;
+        }
+        &.light.bailv-rank-bg {
+          background: url('~@/assets/vote/bailv-rank-bg.png') no-repeat left -0.13rem / 100%;
         }
       }
       .search-wrap {
@@ -403,8 +414,8 @@ export default {
         height: px2rem(158px);
         &.rank-my-item {
           position: relative;
-          margin: px2rem(30px) 0 px2rem(30px) 0;
-          padding-left: px2rem(30px);
+          margin: px2rem(30px) 0;
+          padding: 0 px2rem(30px);
           border-radius: px2rem(4px);
           .list-item-content {
             border-bottom: 0;
@@ -456,6 +467,7 @@ export default {
           margin-right: px2rem(20px);
         }
         .list-item-content {
+          position: relative;
           z-index: 10;
           flex:1;
           display: flex;
@@ -539,10 +551,13 @@ export default {
           }
         }
         .item-votes {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
           font-size: px2rem(24px);
           color: #fff;
           line-height: 1;
-          min-width: px2rem(70px);
           text-align: right;
         }
         &.light {

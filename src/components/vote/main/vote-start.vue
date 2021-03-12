@@ -1252,37 +1252,34 @@ export default {
       &.default {
         @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
       }
-      &.block{
+      &.block {
         @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
       }
-      &.zihong{
+      &.zihong {
         @include img-retina('~@/assets/vote/active-rule-default@2x.png','~@/assets/vote/active-rule-default@3x.png', 100%, 100%);
       }
-      &.zangqing{
+      &.zangqing {
         @include img-retina('~@/assets/vote/zangqing@2x.png','~@/assets/vote/zanqging@3x.png', 100%, 100%);
       }
-      &.heijin{
+      &.heijin {
         @include img-retina('~@/assets/vote/heijin@2x.png','~@/assets/vote/heijin@3x.png', 100%, 100%);
       }
-      &.zanglan{
+      &.zanglan {
         @include img-retina('~@/assets/vote/zanglan@2x.png','~@/assets/vote/zanglan@3x.png', 100%, 100%);
       }
-      &.heilv{
+      &.heilv {
         @include img-retina('~@/assets/vote/heilv@2x.png','~@/assets/vote/heilv@3x.png', 100%, 100%);
       }
-      &.heihong{
+      &.heihong {
         @include img-retina('~@/assets/vote/heihong@2x.png','~@/assets/vote/heihong@3x.png', 100%, 100%);
       }
-      &.baicheng{
-        padding: 0 px2rem(35px);
-        @include img-retina('~@/assets/vote/baicheng@2x.png','~@/assets/vote/baicheng@3x.png', 100%, 100%);
+      &.baicheng {
+        @include img-retina('~@/assets/vote/baicheng@2x.png','~@/assets/vote/baicheng@2x.png', 100%, 100%);
       }
-      &.bailv{
-        padding: 0 px2rem(35px);
-        @include img-retina('~@/assets/vote/bailv@2x.png','~@/assets/vote/bailv@3x.png', 100%, 100%);
+      &.bailv {
+        @include img-retina('~@/assets/vote/bailv@2x.png','~@/assets/vote/bailv@2x.png', 100%, 100%);
       }
-      &.baijin{
-        padding: 0 px2rem(35px);
+      &.baijin {
         @include img-retina('~@/assets/vote/baijin@2x.png','~@/assets/vote/baijin@2x.png', 100%, 100%);
       }
     }
@@ -1361,8 +1358,8 @@ export default {
           position: relative;
           display: inline-block;
           font-size: px2rem(30px);
-          // color: rgba(255, 255, 255, 0.7);
-          @include font-color('fontColor');
+          color: rgba(255, 255, 255, 0.7);
+          // @include font-color('fontColor');
           padding-right: 8px;
           margin-right: 6px;
           vertical-align: top;
@@ -1373,8 +1370,8 @@ export default {
             top: 50%;
             transform: translateY(-50%);
             width: 1px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.2);
+            height: px2rem(28px);
+            background-color: rgba(255, 255, 255, 0.3);
             content: "";
           }
           &:last-child {
@@ -1385,8 +1382,11 @@ export default {
             display: none;
           }
         }
-        &.light-org .name::after {
-          background-color: rgba(0, 0, 0, 0.2);
+        &.light-org .name {
+          color: rgba(0, 0, 0, 0.4);
+          &::after {
+            background-color: rgba(0, 0, 0, 0.2);
+          }
         }
       }
       .overview-content-wrap {
@@ -1500,6 +1500,7 @@ export default {
             line-height: 1;
             position: relative;
             z-index: 2;
+            opacity: 0.7;
           }
         }
         &.light .vote-cols-wrap {

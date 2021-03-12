@@ -8,7 +8,7 @@
       :fullSceneType="fullSceneType"
       @fullSceneChange="fullSceneChange">
     </vote-fullscene-list>
-    <my-page-empty v-if="mineArr && !mineArr.length" :tip="tip"></my-page-empty>
+    <my-page-empty v-if="mineArr && !mineArr.length" :tip="tip" :darkMark="darkMark"></my-page-empty>
     <!--列表渲染-->
     <div v-else class="mine-list-wrap">
       <div class="mine-list-item"
@@ -47,7 +47,7 @@
       <div v-if="loading" class="scroll-tips">加载中...</div>
     </div>
     <!--当前返回组件-->
-    <common-pageback-btn :id="id"></common-pageback-btn>
+    <common-pageback-btn :id="id" :darkMark="darkMark"></common-pageback-btn>
 </div>
 </template>
 

@@ -80,12 +80,12 @@ export default {
       .work-item-line {
         position: absolute;
         bottom: 0;
-        left: px2rem(30px);
-        right: px2rem(30px);
+        left: 0;
+        right: 0;
         border-bottom: 1px solid rgba(255,255,255, 0.2);
         &.light {
           @include border('bottom', 1px, solid, 'descColor');
-          opacity: 0.2;
+          opacity: 0.15;
         }
       }
       &:last-child {

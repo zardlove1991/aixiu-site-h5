@@ -5,10 +5,11 @@
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
       <div class="process-wrap">
-        <div class="process" >
+        <div class="process">
           <div class="audio-bar" v-show="duration !== '00:00'"></div>
           <div class="audio-bar-spot" v-show="duration !== '00:00'"></div>
         </div>
+        <div class="process-opacity"></div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
       <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '', isPlay ? 'play': '']" v-if="!isPreview" @click.stop="setPlay">
@@ -144,17 +145,17 @@ export default {
         color: rgba(255,255,255,0.7);
       }
       .process-wrap {
+        position: relative;
         flex: 1;
         height: 2px;
-        border-radius: px2rem(4px);
         margin: 0 px2rem(20px);
-        background-color: rgba(255,255,255,0.5);
-        .process {
-          position: relative;
-          width: 100%;
-          height: 2px;
+        .process, .process-opacity {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
           border-radius: px2rem(4px);
-          background-color: rgba(255,255,255,0.5);
           .audio-bar {
             position: absolute;
             top: 0;
@@ -162,6 +163,7 @@ export default {
             width: px2rem(16px);
             height: 2px;
             border-radius: px2rem(4px);
+            opacity: 1 !important;
             @include bg-color('btnColor');
           }
           .audio-bar-spot {
@@ -174,6 +176,10 @@ export default {
             border-radius: 50%;
             @include bg-color('btnColor');
           }
+        }
+        .process-opacity {
+          @include bg-color('descColor');
+          opacity: 0.2;
         }
       }
       .audio-play-icon {
@@ -198,6 +204,7 @@ export default {
         top: 0;
         @include bg-color('btnColor');
         opacity: 0.15;
+        border-radius: px2rem(16px);
       }
       .audio-name, .audio-control-wrap .run-stime, .audio-control-wrap .run-etime {
         @include font-color('descColor');

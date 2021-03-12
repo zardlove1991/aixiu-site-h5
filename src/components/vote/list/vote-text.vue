@@ -77,8 +77,8 @@ export default {
       .work-item-line {
         position: absolute;
         bottom: 0;
-        left: px2rem(30px);
-        right: px2rem(30px);
+        left: 0;
+        right: 0;
         @include border('bottom', 1px, solid, 'descColor');
         opacity: 0.15;
       }
@@ -97,15 +97,14 @@ export default {
           .work-title-txt {
             @include font-color('fontColor');
             @include font-dpr(16px);
-            @include txt-overflow(px2rem(590px));
+            @include txt-overflow(100%);
           }
         }
         .work-desc {
-          margin-left: px2rem(50px);
           @include font-color('fontColor');
           opacity: 0.7;
           @include font-dpr(13px);
-          @include txt-overflow(px2rem(590px));
+          @include txt-overflow(100%);
         }
       }
       .work-content-info {
