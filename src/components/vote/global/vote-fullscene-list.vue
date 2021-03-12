@@ -42,7 +42,6 @@ export default {
   },
   watch: {
     isLoading (val) {
-      console.log('isLoading', val)
       if (val) {
         this.isShowFullScene = false
       }
