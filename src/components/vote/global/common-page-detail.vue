@@ -10,7 +10,7 @@
     </div>
     <div class="detail-info-wrap">
       <div class="info-numbers-wrap">
-        <p class="number color-button_color">{{info.numbering}}</p>
+        <p class="number">{{info.numbering}}</p>
         <div class="vote-info">
           <span class="rank">第{{info.index}}名</span>
           <i class="line"></i>
@@ -246,7 +246,7 @@ export default {
           line-height: px2rem(44px);
           // background-color: #FC7465;
           @include bg-color('btnColor');
-          border-radius:  px2rem(24px) px2rem(4px) px2rem(32px) px2rem(4px);
+          border-radius:  px2rem(24px) px2rem(4px) px2rem(24px) px2rem(4px);
           font-size: px2rem(24px);
           color: #fff;
           margin-right: px2rem(30px);

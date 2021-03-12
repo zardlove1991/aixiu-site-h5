@@ -132,8 +132,9 @@ export default {
             position: absolute;
             top: 0;
             left: 0;
-            height: px2rem(40px);
-            padding: 0 px2rem(17px);
+            height: px2rem(45px);
+            line-height: px2rem(45px);
+            padding: 0 px2rem(25px);
             border-radius: px2rem(4px) 0px px2rem(32px) 0px;
             background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
@@ -165,8 +166,8 @@ export default {
             display: flex;
             align-items: center;
             position: absolute;
-            bottom: 0.27rem;
-            right: 0.27rem;
+            bottom: px2rem(20px);
+            right: px2rem(20px);
           }
           &.my-infos-wrap .info-number {
             background-color: rgba(0, 0, 0, 0.7);
@@ -183,7 +184,7 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        margin: 0.26rem 0;
+        margin: px2rem(16px) 0 px2rem(8px) 0;
       }
       .work-desc {
         @include font-dpr(14px);
