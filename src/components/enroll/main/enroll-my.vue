@@ -22,7 +22,7 @@
               <div class="myenroll-num">预约场次：{{item.num}}</div>
               <div class="myenroll-right-icon"></div>
               <div class="myenroll-bg"></div>
-              <div :class="['myenroll-status', item.color_name ? item.color_name : '']"></div>
+              <div :class="['myenroll-status', item.color_name ? item.color_name : '']">{{statusMap[item.status + '']}}</div>
             </div>
           </div>
         </div>
@@ -79,7 +79,12 @@ export default {
         totalPages: 0
       },
       enrollList: [],
-      isBgImg: false
+      isBgImg: false,
+      statusMap: {
+        '0': '待领取',
+        '1': '已领取',
+        '2': '已过期'
+      }
     }
   },
   components: {
@@ -108,9 +113,19 @@ export default {
             this.isBgImg = true
           }
         }
-        if (rule && rule.poster && rule.poster.id) {
-          this.posterSetting = rule.poster
-          this.posterType = rule.poster.id
+        if (rule) {
+          if (rule.poster && rule.poster.id) {
+            this.posterSetting = rule.poster
+            this.posterType = rule.poster.id
+          }
+          if (rule.source_limit && rule.source_limit.order_tips_text) {
+            let txt = rule.source_limit.order_tips_text
+            this.statusMap = {
+              '0': '待' + txt,
+              '1': '已' + txt,
+              '2': '已过期'
+            }
+          }
         }
       }
       this.getMineEnrollList()
@@ -323,6 +338,11 @@ export default {
             right: 0;
             width: px2rem(128px);
             height: px2rem(44px);
+            line-height: px2rem(44px);
+            padding-right: px2rem(15px);
+            color: #fff;
+            text-align: right;
+            @include font-dpr(12px);
             &.await1 {
               @include img-retina('~@/assets/enroll/myenroll/await-icon1@2x.png', '~@/assets/enroll/myenroll/await-icon1@3x.png', 100%, auto);
             }
@@ -336,6 +356,7 @@ export default {
               @include img-retina('~@/assets/enroll/myenroll/receive-icon2@2x.png', '~@/assets/enroll/myenroll/receive-icon2@3x.png', 100%, auto);
             }
             &.expire {
+              color: #333;
               @include img-retina('~@/assets/enroll/myenroll/expire-icon@2x.png', '~@/assets/enroll/myenroll/expire-icon@3x.png', 100%, auto);
             }
           }

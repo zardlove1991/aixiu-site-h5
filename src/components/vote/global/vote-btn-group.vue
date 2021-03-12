@@ -6,12 +6,20 @@
       :disabled="!remainVotes || isBtnAuth !== 1"
       @click.stop="btnClick(data, index, 'vote')">{{getVoteTxt}}
     </button>
+    <active-vote
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false"
+      :downloadLink="downloadLink"
+      :activeTips="activeTips">
+    </active-vote>
   </div>
 </template>
 
 <script>
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
+import ActiveVote from '@/components/vote/global/vote-active'
+import { getAppSign } from '@/utils/utils'
 
 export default {
   props: {
@@ -27,6 +35,16 @@ export default {
     },
     index: {
       type: Number
+    }
+  },
+  components: {
+    ActiveVote
+  },
+  data () {
+    return {
+      isShowActiveTips: false,
+      activeTips: [],
+      downloadLink: ''
     }
   },
   computed: {
@@ -82,9 +100,56 @@ export default {
   },
   methods: {
     btnClick (data, index, slug) {
-      this.$emit('btn-click', {
-        data, slug
-      })
+      if (slug === 'vote') {
+        let res = this.sourceLimit()
+        if (!res) {
+          this.$emit('btn-click', {
+            data, slug
+          })
+        }
+      } else {
+        this.$emit('btn-click', {
+          data, slug
+        })
+      }
+    },
+    sourceLimit () {
+      // 来源限制
+      let res = false
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return res
+      }
+      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      if (sourceLimit) {
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getAppSign()
+          let limitArr = limitTxt.split(',')
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
+            res = true
+            this.isShowActiveTips = true
+            this.downloadLink = downloadLink
+            this.activeTips = appSource
+          }
+        }
+      }
+      return res
     }
   }
 }

@@ -62,7 +62,7 @@
   <body>
     <div class="watting-wrap" id="watting-wrap">
       <div class="preview-img"></div>
-      <div class="sub-title">玩命加载中...</div>
+      <div class="sub-title">努力加载中...</div>
       <div class="loadBar">
         <span class="progress-bar"></span>
       </div>
@@ -75,6 +75,32 @@
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/smartCity_sdk.js" charset="utf-8"></script>
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/aliyun/aliyun-oss-sdk-5.3.1.min.js"></script>
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/aliyun/aliyun-upload-sdk-1.5.0.min.js"></script>
+    <script>
+      var ua = navigator.userAgent.toLowerCase()
+      if (/m2oapp/.test(ua) || /m2osmartcity/.test(ua)) {
+        var currentTime = new Date().getTime()
+        var currentUrl = window.location.href.toString();
+        var times = getUrlParam('refresh_times')
+        var re = /(refresh_times=)([^&]*)/gi
+        if (!times || currentTime - times > 1000 * 60 * 60) { // 1小时间隔
+          const url = currentUrl.indexOf('?') > -1 ? currentUrl +  '&refresh_times='+currentTime : currentUrl +  '?refresh_times='+currentTime
+          var newUrl = !times ? url : currentUrl.replace(re, 'refresh_times='+currentTime)
+          window.location.href = newUrl
+        }
+      }
+      function getUrlParam (key) {
+        if (typeof key === 'undefined') {
+          var param = {}
+          location.search.replace(/([^=?&]*)=([^&]*)/g, (item, key, value) => {
+            param[decodeURIComponent(key)] = decodeURIComponent(value)
+          })
+          return param
+        }
+        var pattern = new RegExp('(^|&)' + key + '=([^&]*)(&|$)')
+        var match = window.location.search.substr(1).match(pattern)
+        return match !== null ? decodeURIComponent(match[2]) : null
+      }
+    </script>
   </body>
 </html>
 
