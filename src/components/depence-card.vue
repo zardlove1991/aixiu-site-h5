@@ -164,6 +164,9 @@ export default {
         if (indexpic.constructor === Object) {
           url = indexpic.url
         }
+        if (url && !/^http/.test(url)) {
+          url = location.protocol + url
+        }
         this.initPageShareInfo({
           title: examInfo.title,
           desc: examInfo.brief,

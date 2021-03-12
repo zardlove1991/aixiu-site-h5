@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '']">
+    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
       <template
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
@@ -201,12 +201,6 @@
       @close="isShowRuleDialog = false"
       :introduce="detailInfo.introduce">
     </rule-vote>
-    <active-vote
-      :show="isShowActiveTips"
-      @close="isShowActiveTips = false"
-      :downloadLink="downloadLink"
-      :activeTips="activeTips">
-    </active-vote>
     <active-stop
       :show="isShowEnd"
       @close="isShowEnd = false">
@@ -245,7 +239,6 @@ import TipsDialog from '@/components/vote/global/tips-dialog'
 import ShareVote from '@/components/vote/global/vote-share'
 import CanvassVote from '@/components/vote/global/vote-canvass'
 import RuleVote from '@/components/vote/global/vote-rule'
-import ActiveVote from '@/components/vote/global/vote-active'
 import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
@@ -254,7 +247,7 @@ import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
+import { formatSecByTime, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -273,7 +266,6 @@ export default {
     ShareVote,
     CanvassVote,
     RuleVote,
-    ActiveVote,
     ActiveStop,
     ActivePause,
     ActiveStart,
@@ -299,9 +291,6 @@ export default {
       searchBarFocus: false, // 搜索框是否获取焦点
       isShowRuleDialog: false, // 活动规则弹窗显隐
       isShowSearch: false, // 搜索无结果弹窗
-      isShowActiveTips: false, // 活动提示
-      activeTips: [], // 再xxx内参加活动
-      downloadLink: '', // 下载链接
       isShowWorkVote: false, // 给他投票弹窗
       isCloseDialog: false, // 投票弹框显隐
       worksId: '',
@@ -504,12 +493,12 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = 'http:' + sharePic.host + sharePic.filename
+            imgUrl = sharePic.host + sharePic.filename
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -517,12 +506,12 @@ export default {
           if (indexpic.constructor === Array && indexpic.length > 0) {
             let obj = indexpic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
-            imgUrl = 'http:' + indexpic.host + indexpic.filename
+            imgUrl = indexpic.host + indexpic.filename
           } else if (indexpic.constructor === String) {
             imgUrl = indexpic
           }
@@ -531,7 +520,10 @@ export default {
       if (!shareLink) {
         shareLink = delUrlParams(['code'])
       } else {
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+        shareLink = this.getShareUrl(shareLink)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
       }
       this.shareConfigData = {
         id: detailInfo.id,
@@ -633,40 +625,6 @@ export default {
       this.showModel = showModel
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
-      }
-      // 来源限制
-      let { source_limit: sourceLimit } = limit
-      if (sourceLimit) {
-        let {
-          user_app_source: appSource,
-          source_limit: limitTxt,
-          app_download_link: downloadLink
-        } = sourceLimit
-        if (limitTxt && appSource && appSource.length > 0) {
-          let plat = getAppSign()
-          let limitArr = limitTxt.split(',')
-          let flag = false
-          for (let item of limitArr) {
-            if (item === 'smartcity' && plat.includes('smartcity')) {
-              flag = true
-              break
-            }
-            if (item === plat) {
-              flag = true
-              break
-            }
-          }
-          if (!flag) {
-            if (!this.isModelShow) {
-              this.isShowActiveTips = true
-            }
-            this.downloadLink = downloadLink
-            this.setIsModelShow(true)
-            this.activeTips = appSource
-            this.isReportAuth = 0
-            this.setIsBtnAuth(0)
-          }
-        }
       }
       // 活动暂停
       if (status === 3) {
@@ -1241,6 +1199,9 @@ export default {
       &.status-no-end {
         padding-bottom: px2rem(200px);
       }
+      &.raffle-bottom {
+        padding-bottom: px2rem(320px);
+      }
       .vote-swipe-wrap {
         position: relative;
         width: 100%;
@@ -1393,22 +1354,22 @@ export default {
             margin: 0 px2rem(30px);
           }
           &.picture-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_img_bg@3x.png');
           }
           &.video-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/woks_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/woks_icon@2x.png');
           }
           &.audio-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_audio_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_audio_bg@3x.png');
           }
           &.text-text:nth-child(1):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/cols_text_bg@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/cols_text_bg@3x.png');
           }
           &:nth-child(2):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/vote_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/vote_icon@2x.png');
           }
           &:nth-child(3):before {
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/visited_icon@2x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/visited_icon@2x.png');
           }
           &.signup-icon:before {
             @include img-retina('~@/assets/vote/signup-icon@2x.png', '~@/assets/vote/signup-icon@3x.png', px2rem(86px), px2rem(120px));
@@ -1517,11 +1478,11 @@ export default {
             background-repeat: no-repeat;
             background-position: center;
             background-size: px2rem(34px);
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
-            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
+            background-image: url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png');
+            background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/search_icon_normal@3x.png') 2x);
             &.focus {
-              background-image: url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
-              background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
+              background-image: url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png');
+              background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/search_icon_hover@3x.png') 2x);
             }
           }
         }
@@ -1573,7 +1534,7 @@ export default {
     }
     .lottery_entrance{
       position: absolute;
-      bottom: 7.5rem;
+      bottom: 6.5rem;
       right: px2rem(30px);
       text-align: center;
       img {

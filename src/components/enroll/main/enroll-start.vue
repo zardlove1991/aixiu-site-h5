@@ -101,7 +101,7 @@
 <script>
 import mixins from '@/mixins/index'
 import { Swipe, SwipeItem, Toast } from 'mint-ui'
-import { formatDate, formatSecByTime, getAppSign, delUrlParams } from '@/utils/utils'
+import { formatDate, formatSecByTime, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import API from '@/api/module/examination'
 import InfoDialog from '@/components/enroll/global/info-dialog'
 import CollectionDialog from '@/components/enroll/global/collection-dialog'
@@ -195,10 +195,11 @@ export default {
           if (pageSetup.color_scheme && pageSetup.color_scheme.name) {
             this.themeColorName = pageSetup.color_scheme.name
           }
+          setBrowserTitle(res.title)
           this.initFindAll()
           this.initActiveDate()
           this.initEnrollData(res, true)
-          this.initLimitSource(res)
+          this.initStatus()
           this.sharePage(res)
           this.getMyEnrollCount()
         }
@@ -412,7 +413,22 @@ export default {
         }
       })
     },
-    initLimitSource (enrollInfo) {
+    initStatus () {
+      // 暂停状态
+      let enrollInfo = this.enrollInfo
+      let status = enrollInfo.status
+      if (status && status === 3) {
+        if (!this.isModelShow) {
+          this.isShowPause = true
+        }
+        this.isBtnAuth = false
+        this.enrollStatus = this.statusCode.endStatus
+        this.setIsModelShow(true)
+      }
+    },
+    initLimitSource () {
+      let enrollInfo = this.enrollInfo
+      let flag = false
       // 来源限制
       let { source_limit: sourceLimit } = enrollInfo.rule
       if (sourceLimit) {
@@ -424,7 +440,6 @@ export default {
         if (limitTxt && appSource && appSource.length > 0) {
           let plat = getAppSign()
           let limitArr = limitTxt.split(',')
-          let flag = false
           for (let item of limitArr) {
             if (item === 'smartcity' && plat.includes('smartcity')) {
               flag = true
@@ -436,27 +451,13 @@ export default {
             }
           }
           if (!flag) {
-            if (!this.isModelShow) {
-              this.isShowLimit = true
-            }
+            this.isShowLimit = true
             this.downloadLink = downloadLink
-            this.setIsModelShow(true)
             this.activeTips = appSource
-            this.isBtnAuth = false
-            this.enrollStatus = this.statusCode.endStatus
           }
         }
       }
-      // 暂停状态
-      let status = enrollInfo.status
-      if (status && status === 3) {
-        if (!this.isModelShow) {
-          this.isShowPause = true
-        }
-        this.isBtnAuth = false
-        this.enrollStatus = this.statusCode.endStatus
-        this.setIsModelShow(true)
-      }
+      return flag
     },
     sharePage (enrollInfo) {
       let { title, introduce, indexpic, rule } = enrollInfo
@@ -464,41 +465,60 @@ export default {
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
-      if (rule.share_settings) {
-        let share = rule.share_settings
-        let sharePic = share.indexpic
+      // 通用投票没有share_settings, share_setting为json 数据结构不同
+      if (rule.share_setting) {
+        let share = ''
+        let sharePic = ''
+        try {
+          share = JSON.parse(rule.share_setting)
+          sharePic = share.indexpic
+        } catch (error) {
+          console.error(error)
+        }
         if (share.title) {
           shareTitle = share.title
         }
         if (share.brief) {
           shareBrief = share.brief
         }
-        shareLink = share.link
+        if (share.link) {
+          shareLink = share.link
+        }
         if (sharePic) {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = 'http:' + sharePic.host + sharePic.filename
+            imgUrl = sharePic.host + sharePic.filename
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
         } else if (indexpic) {
-          if (indexpic.host && indexpic.filename) {
-            imgUrl = 'http:' + indexpic.host + indexpic.filename
-          } else if (indexpic.url) {
-            imgUrl = indexpic.url
+          if (indexpic.constructor === Array && indexpic.length > 0) {
+            let obj = indexpic[0]
+            if (obj.constructor === Object) {
+              imgUrl = obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
+            imgUrl = indexpic.host + indexpic.filename
+          } else if (indexpic.constructor === String) {
+            imgUrl = indexpic
           }
         }
       }
       if (!shareLink) {
         shareLink = delUrlParams(['code'])
       } else {
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+        shareLink = this.getShareUrl(shareLink)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
       }
       this.initPageShareInfo({
         id: enrollInfo.id,
@@ -634,6 +654,10 @@ export default {
       }
     },
     setEnroll () {
+      let flag = this.initLimitSource()
+      if (!flag) {
+        return
+      }
       let checkSetting = this.checkSetting
       if (!checkSetting.sections_id) {
         Toast('请选择具体的时间范围')

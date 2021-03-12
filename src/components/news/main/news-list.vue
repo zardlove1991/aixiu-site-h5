@@ -30,7 +30,7 @@
 </template>
 
 <script>
-// import mixins from '@/mixins/index'
+import mixins from '@/mixins/index'
 import { Toast } from 'mint-ui'
 // import { setBrowserTitle, delUrlParams } from '@/utils/utils'
 import { setBrowserTitle } from '@/utils/utils'
@@ -49,7 +49,7 @@ import BasePreview from '@/components/news/global/base-preview'
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 
 export default {
-  // mixins: [mixins],
+  mixins: [mixins],
   props: {
     id: String
   },
@@ -134,7 +134,7 @@ export default {
           // this.currentStep = step
           // this.toggleStep(step)
           // 分享
-          // this.sharePage()
+          this.sharePage()
         })
       } catch (err) {
         this.loading = false
@@ -201,12 +201,12 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = 'http:' + obj.host + obj.filename
+              imgUrl = obj.host + obj.filename
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = 'http:' + sharePic.host + sharePic.filename
+            imgUrl = sharePic.host + sharePic.filename
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -221,10 +221,22 @@ export default {
         if (index !== -1) {
           pathname = pathname.replace(/newslist/, 'newstart')
         }
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + local.origin + pathname
-        // shareLink = delUrlParams(['code'])
+        if (/\?/.test(pathname)) {
+          pathname += '&userShareCode=' + new Date().getTime()
+        } else {
+          pathname += '?userShareCode=' + new Date().getTime()
+        }
+        shareLink = this.getShareUrl(local.origin, pathname)
       } else {
-        shareLink = 'http://xzh5.hoge.cn/bridge/index.html?backUrl=' + shareLink
+        if (/\?/.test(shareLink)) {
+          shareLink += '&userShareCode=' + new Date().getTime()
+        } else {
+          shareLink += '?userShareCode=' + new Date().getTime()
+        }
+        shareLink = this.getShareUrl(shareLink)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
       }
       this.initPageShareInfo({
         id,

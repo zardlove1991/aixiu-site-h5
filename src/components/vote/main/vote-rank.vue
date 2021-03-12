@@ -13,7 +13,7 @@
       <!-- 我的投票 -->
       <div class="rank-list-item rank-my-item"
         :class="myVoteData.image_ratio?'vertical':''"
-        @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id })"
+        @click.stop="jumpPage('voteoneself', { worksId: myVoteData.id }, {type: myVoteData.voting_type, introduce:myVoteData.introduce})"
         v-show="isShowMy && myVoteData && myVoteData.name">
         <i class="item-rank color-theme_color" v-if="myVoteIndex >= 0" :class="['rank-' + myVoteIndex]">{{myVoteIndex > 2 ? myVoteIndex + 1 : ' '}}</i>
         <div class="list-item-content">
@@ -45,7 +45,7 @@
           <div class="rank-list-item"
            :class="item.image_ratio?'vertical':''"
             v-for="(item, index) in rankList" :key="index"
-            @click.stop="jumpPage('votedetail', { worksId: item.id })">
+            @click.stop="jumpPage('votedetail', { worksId: item.id }, {type: item.voting_type, introduce:item.introduce})">
             <i class="item-rank color-theme_color" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
             <div class="list-item-content">
               <div class="indexpic-wrap"
@@ -208,7 +208,10 @@ export default {
         this.loading = false
       })
     },
-    jumpPage (page, data) {
+    jumpPage (page, data, promiss) {
+      if (promiss && promiss.type === 'commonvote-text' && !promiss.introduce) {
+        return false
+      }
       this.$router.push({
         name: page,
         params: {
@@ -261,7 +264,7 @@ export default {
         width: 100%;
         height: px2rem(220px);
         background-size: 100%;
-        background: url('http://xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
+        background: url('//xzh5.hoge.cn/new-vote/images/commvote_video_rank_bg@3x.png') no-repeat left -0.13rem / 100%;
       }
       .classfiy-rank-wrap {
         position: relative;
@@ -342,13 +345,13 @@ export default {
             background-size: px2rem(47px) px2rem(64px);
           }
           &.rank-0 {
-            background-image: url('http://xzh5.hoge.cn/new-vote/images/commvote_rank_1@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_1@3x.png');
           }
           &.rank-1{
-            background-image: url('http://xzh5.hoge.cn/new-vote/images/commvote_rank_2@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_2@3x.png');
           }
           &.rank-2{
-            background-image: url('http://xzh5.hoge.cn/new-vote/images/commvote_rank_3@3x.png');
+            background-image: url('//xzh5.hoge.cn/new-vote/images/commvote_rank_3@3x.png');
           }
         }
         .list-item-content {
@@ -399,8 +402,8 @@ export default {
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
-            background-image: url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
-            background-image: image-set(url('https://xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('https://xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
+            background-image: url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png');
+            background-image: image-set(url('//xzh5.hoge.cn/new-vote/images/play_icon@2x.png') 1x, url('//xzh5.hoge.cn/new-vote/images/play_icon@3x.png') 2x);
             transform: translate3d(-50%, -50%, 0);
           }
         }
