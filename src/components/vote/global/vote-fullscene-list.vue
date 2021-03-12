@@ -65,7 +65,7 @@ export default {
       document.body.scrollTop = 0
     },
     showFullsceneAction () {
-      if (isLoading) {
+      if (this.isLoading) {
         this.isShowFullScene = false
         return
       }
