@@ -362,6 +362,9 @@ export default {
       } else {
         link = this.getShareUrl(link)
       }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
       this.initPageShareInfo({
         id: examInfo.id,
         title,
