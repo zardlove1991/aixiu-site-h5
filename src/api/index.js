@@ -4,6 +4,7 @@ import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
+import wechat from '@/sdk/wechat'
 
 let currentApi = ''
 const instance = axios.create({
@@ -48,6 +49,9 @@ function dealError ({code, msg}) {
         redirect: query.redirect
       }
     })
+  } else if (code === 'EXPIRE_SIGNATURE') {
+    // 签名过期 直接去中转页面
+    wechat.goRedirect()
   }
 }
 

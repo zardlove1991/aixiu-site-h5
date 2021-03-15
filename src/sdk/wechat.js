@@ -137,3 +137,5 @@ export const oauth = (cbk) => {
     }
   }
 }
+
+export default wechat
