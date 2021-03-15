@@ -7,7 +7,7 @@
           <vote-fullscene-list
             :searchVal="checkFullScene"
             :darkMark="darkMark"
-            :isLoading="loading"
+            :isLoading="(loading || videoCoverLoading)"
             :fullSceneType="fullSceneType"
             @fullSceneChange="fullSceneChange">
           </vote-fullscene-list>
