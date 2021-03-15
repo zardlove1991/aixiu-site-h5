@@ -36,6 +36,7 @@ let wechat = {
       if (componentAppid) {
         url = url + '&component_appid=' + componentAppid
       }
+      // console.log('跳转地址：', url)
       window.location.href = url
     })
   },
@@ -92,6 +93,7 @@ let wechat = {
     }
     return id
   },
+  // 默认第一次进来 清除部分缓存 进行重定向
   async goRedirect () {
     let pathname = window.location.pathname
     let id = this.getActiveId(pathname)
@@ -128,7 +130,10 @@ export const oauth = (cbk) => {
     // 重定向回来的地址，带有code值
     wechat.h5Signature(code, cbk)
   } else {
-    // 跳转地址
-    wechat.goRedirect()
+    if (userinfo) {
+      cbk(userinfo)
+    } else {
+      wechat.goRedirect()
+    }
   }
 }

@@ -12,10 +12,10 @@
 import { mapGetters } from 'vuex'
 import errorDialog from './components/error-dialog'
 import { getPlat, getUrlParam } from '@/utils/utils'
-import mixins from '@/mixins/index'
+// import mixins from '@/mixins/index'
 
 export default {
-  mixins: [mixins],
+  // mixins: [mixins],
   name: 'App',
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
@@ -44,13 +44,13 @@ export default {
     setShareInfo () {
       // 入口处初始化微信分享信息
       // 全部页面可进行分享操作，具体数据在对应页面中自行处理
-      this.initPageShareInfo({
-        title: document.getElementsByTagName('title')[0].innerHTML,
-        desc: '',
-        indexpic: location.protocol + '//xzimg.hoge.cn/xiuzan/1599470131011/二维码2.png',
-        link: location.href,
-        mark: 'default-share'
-      })
+      // this.initPageShareInfo({
+      //   title: document.getElementsByTagName('title')[0].innerHTML,
+      //   desc: '',
+      //   indexpic: location.protocol + '//xzimg.hoge.cn/xiuzan/1599470131011/二维码2.png',
+      //   link: location.href,
+      //   mark: 'default-share'
+      // })
     }
   },
   watch: {
