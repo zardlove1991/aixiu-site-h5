@@ -67,9 +67,9 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .video-work-list-wrap {
-    padding-top: px2rem(10px);
+    // padding-top: px2rem(10px);
     .work-list-item {
-      padding: px2rem(30px) 0;
+      padding: px2rem(25px) 0;
       margin: 0 px2rem(30px);
       .work-poster-wrap {
         position: relative;
