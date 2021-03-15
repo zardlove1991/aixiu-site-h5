@@ -75,7 +75,7 @@ export default {
   .audio-work-list-wrap {
     .work-list-item {
       position: relative;
-      padding: px2rem(30px) 0;
+      padding: px2rem(25px) 0;
       margin: 0 px2rem(30px);
       .work-item-line {
         position: absolute;

@@ -71,7 +71,7 @@ export default {
   .text-work-list-wrap {
     .work-list-item{
       position: relative;
-      padding: px2rem(30px) 0;
+      padding: px2rem(25px) 0;
       margin: 0 px2rem(30px);
       border-bottom: 1px solid rgba(255,255,255, 0.2);
       .work-item-line {
