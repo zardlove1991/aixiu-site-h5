@@ -104,7 +104,7 @@ export default {
     overflow-y: auto;
     // background-color: #ffffff;
     padding: 0 px2rem(30px);
-    @include bg-linear-color('bgColor');
+    @include bg-color('bgColor');
     .video1-index {
       margin-top: px2rem(30px);
       margin-bottom: px2rem(40px);

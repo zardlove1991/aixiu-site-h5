@@ -1,8 +1,8 @@
 <template>
-  <div class="oneself-submit-wrap">
+  <div :class="['oneself-submit-wrap', darkMark === '2' ? 'light' : '']">
     <div class="works-no">作品编号：<span class="no-tet">{{selfData.numbering ? selfData.numbering : '暂无'}}</span></div>
     <div class="examine-wrap">
-      <div :class="'examine-icon-' + selfData.audit_status"></div>
+      <div :class="['examine-icon-' + selfData.audit_status, colorName]"></div>
       <div class="status-tips-wait" v-if="selfData.audit_status === 3">作品正在审核中，请耐心等候哦～</div>
       <div class="status-tips-success" v-if="selfData.audit_status === 1">
         <p class="success-tips1">恭喜，审核已通过</p>
@@ -19,7 +19,7 @@
       </div>
       <div class="oneself-content">
         <div class="onself-picture-wrap"
-          v-if="flag === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
+          v-if="showModel === 'picture' && selfData.material && selfData.material.image && selfData.material.image.length">
           <div :class="['onself-picture-item', imageRatio ? 'vertical' : '']"
             v-for="(item, index) in selfData.material.image" :key="index">
             <img :src="item.url"
@@ -28,13 +28,13 @@
               preview-nav-enable="false" />
           </div>
         </div>
-        <div class="onself-video-wrap"
-          v-if="flag === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
+        <div :class="['onself-video-wrap', videoMode === '3' ? 'vertical' : '']"
+          v-if="showModel === 'video' && selfData.material && selfData.material.video && selfData.material.video.length">
           <vote-video :isSmall="true" :data="selfData.material.video[0]"></vote-video>
         </div>
         <vote-audio
-          v-if="flag === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]"></vote-audio>
-        <div v-show="flag === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
+          v-if="showModel === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
+        <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
         <div class="header first-header">
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
@@ -49,7 +49,7 @@
           <span v-else>来源：</span>
           <span class="header-txt">{{selfData.source}}</span>
         </div>
-        <div class="header" v-show="flag !== 'text'">
+        <div class="header" v-show="showModel !== 'text'">
           <span>描述：</span>
           <span class="header-txt">{{selfData.introduce}}</span>
         </div>
@@ -82,6 +82,7 @@ import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import SubjectMixin from '@/mixins/subject'
 import STORAGE from '@/utils/storage'
+import { fullSceneMap } from '@/utils/config'
 
 export default {
   mixins: [ SubjectMixin ],
@@ -97,10 +98,15 @@ export default {
   },
   data () {
     return {
+      showModel: this.flag,
+      colorName: '', // 配色名称
       selfData: {},
       textSetting: {},
       isOpenClassify: false,
-      imageRatio: 0 // 图片模式
+      imageRatio: 0, // 图片模式
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      fullSceneMap
     }
   },
   methods: {
@@ -114,12 +120,21 @@ export default {
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           this.isOpenClassify = true
         }
+        if (limit.show_mode) {
+          this.videoMode = limit.show_mode
+        }
         // 判断图片模式
         let pageSetup = detailInfo.rule.page_setup
         if (pageSetup.image_ratio) {
           this.imageRatio = 1
         } else {
           this.imageRatio = 0
+        }
+        if (pageSetup.font_color) {
+          this.darkMark = pageSetup.font_color
+        }
+        if (pageSetup.color_scheme) {
+          this.colorName = pageSetup.color_scheme.name
         }
       }
     },
@@ -133,12 +148,16 @@ export default {
         if (!res) {
           return
         }
+        let fullSceneType = res.full_scene_type
+        if (fullSceneType && fullSceneType !== '0') {
+          this.showModel = this.fullSceneMap[fullSceneType][1]
+        }
         this.selfData = res
       })
     },
     jumpPage (page, data) {
       let params = {
-        flag: this.flag,
+        flag: this.showModel,
         id: this.id
       }
       this.$router.push({
@@ -162,7 +181,7 @@ export default {
       @include font-dpr(14px);
       color: rgba(255, 255, 255, 0.5);
       .no-tet {
-        color: #fff;
+        @include font-color('fontColor');
       }
     }
     .examine-wrap {
@@ -190,14 +209,14 @@ export default {
       }
       .status-tips-wait {
         @include font-dpr(15px);
-        color: #FFFFFF;
+        @include font-color('fontColor');
       }
       .status-tips-success {
         text-align: center;
         line-height: px2rem(50px);
         .success-tips1 {
           @include font-dpr(15px);
-          color: #FFFFFF;
+          @include font-color('fontColor');
           font-weight: 500;
         }
         .success-tips2 {
@@ -210,7 +229,7 @@ export default {
         line-height: px2rem(60px);
         @include font-dpr(15px);
         .fail-tips1 {
-          color: #FFFFFF;
+          @include font-color('fontColor');
           font-weight: 500;
         }
         .fail-tips2 {
@@ -260,11 +279,14 @@ export default {
         }
         .onself-video-wrap {
           width: px2rem(470px);
-          height: px2rem(260px);
+          height: px2rem(264px);
+          &.vertical {
+            height: px2rem(705px);
+          }
         }
         .onself-text-wrap {
           @include font-dpr(15px);
-          color: #fff;
+          @include font-color('fontColor');
         }
         .header {
           margin-bottom: px2rem(20px);
@@ -279,7 +301,7 @@ export default {
           }
           .header-txt {
             flex: 1;
-            color: #fff;
+            @include font-color('fontColor');
           }
         }
       }
@@ -295,6 +317,35 @@ export default {
       .menu-text {
         @include font-dpr(14px);
         color: #fff;
+      }
+    }
+    &.light {
+      .works-no {
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .examine-wrap {
+        .examine-icon-3.baicheng {
+          @include img-retina("~@/assets/vote/baicheng-load@2x.png","~@/assets/vote/baicheng-load@3x.png", 100%, 100%);
+        }
+        .examine-icon-3.bailv {
+          @include img-retina("~@/assets/vote/bailv-load@2x.png","~@/assets/vote/bailv-load@3x.png", 100%, 100%);
+        }
+        .examine-icon-3.baijin {
+          @include img-retina("~@/assets/vote/baijin-load@2x.png","~@/assets/vote/baijin-load@3x.png", 100%, 100%);
+        }
+        .status-tips-success .success-tips2 {
+          color: rgba(0, 0, 0, 0.4);
+        }
+        .examine-title-wrap {
+          @include font-color('descColor');
+          opacity: 0.4;
+          .line {
+            @include border('bottom', 1px, dashed, 'descColor')
+          }
+        }
+        .oneself-content .header {
+          color: rgba(0, 0, 0, 0.4);
+        }
       }
     }
   }

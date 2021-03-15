@@ -427,7 +427,7 @@ export default {
             box-shadow: 0 5px 13px 0 rgba(216,216,216,0.48);
           }
           &.active {
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
           }
         }
         .close-btn {

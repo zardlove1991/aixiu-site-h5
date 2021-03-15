@@ -115,7 +115,8 @@ export default {
       pop: {}, // 弹窗显示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isLuckDraw: false, // 是否是有资格抽奖
-      luckDrawTips: [] // 抽奖提示内容
+      luckDrawTips: [], // 抽奖提示内容
+      timer: null
     }
   },
   components: {
@@ -149,11 +150,21 @@ export default {
       if (newVal) this._moveProgressBtn()
     }
   },
+  beforeDestroy () {
+    // 清除定时器
+    this.clearSetInterval()
+  },
   mounted () {
     this.initCountTime()
     this._moveProgressBtn()
   },
   methods: {
+    clearSetInterval () {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
     initCountTime () {
       let limitTime = this.examInfo.limit_time
       this.duration = this.list[0].remain_time
@@ -288,7 +299,7 @@ export default {
     position: fixed;
     right:0;
     bottom:50px;
-    @include bg-linear-color('themeColor');
+    @include bg-color('themeColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
     padding-left:px2em(13px);
     padding-right:px2rem(10px);
@@ -376,7 +387,7 @@ export default {
         .line {
           width: px2rem(2px);
           height: px2rem(24px);
-          @include bg-linear-color('themeColor');
+          @include bg-color('themeColor');
         }
         .submit-btn {
           padding-left: px2rem(26px);
@@ -408,7 +419,7 @@ export default {
         height: px2rem(8px);
         border-radius: px2rem(4px);
         // background-color:#25C17C;
-        @include bg-linear-color('themeColor');
+        @include bg-color('themeColor');
         z-index: 1;
       }
     }
@@ -447,7 +458,7 @@ export default {
       text-align: center;
       color:#fff;
       // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-      @include bg-linear-color('themeColor');
+      @include bg-color('themeColor');
       @include font-dpr(16px);
       margin:0 auto;
       margin-top: px2rem(50px);
