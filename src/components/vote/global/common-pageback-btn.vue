@@ -34,6 +34,7 @@ export default {
     display: flex;
     align-items: center;
     position: fixed;
+    z-index: 100;
     left: px2rem(30px);
     bottom: px2rem(60px);
     height: px2rem(68px);

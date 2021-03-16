@@ -1,31 +1,31 @@
 <template>
-  <div class="count-down-wrap color-decorated">
+  <div :class="['count-down-wrap', darkMark === '2' ? 'light' : '']">
     <!--时间结构-->
     <div class="left-time-wrap">
       <span class="title-tip">距离<span class="title-tip-2">{{statusMsg[status] ? statusMsg[status] : '活动结束'}}</span>还有</span>
       <div class="time-count-wrap">
-        <p class="day-tip color-button_color">
-          <span class="time-num color-button_text">{{voteDate[0]}}</span>
+        <p class="day-tip">
+          <span class="time-num">{{voteDate[0]}}</span>
         </p>
-        <span class="time-tip color-link_text">天</span>
-        <p class="hour-tip color-button_color">
-          <span class="time-num color-button_text">{{voteDate[1]}}</span>
+        <span class="time-tip">天</span>
+        <p class="hour-tip">
+          <span class="time-num">{{voteDate[1]}}</span>
         </p>
-        <span class="time-tip color-link_text">时</span>
-        <p class="minutes-tip color-button_color">
-          <span class="time-num color-button_text">{{voteDate[2]}}</span>
+        <span class="time-tip">时</span>
+        <p class="minutes-tip">
+          <span class="time-num">{{voteDate[2]}}</span>
         </p>
-        <span class="time-tip color-link_text">分</span>
-        <p class="second-tip color-button_color">
-          <span class="time-num color-button_text">{{voteDate[3]}}</span>
+        <span class="time-tip">分</span>
+        <p class="second-tip">
+          <span class="time-num">{{voteDate[3]}}</span>
         </p>
-        <span class="time-tip color-link_text">秒</span>
+        <span class="time-tip">秒</span>
       </div>
     </div>
     <!--可投票数字提醒-->
     <div class="right-vote-tip" v-show="status === 2 || status === 5">
-      <span class="vote-title-tip color-link_text">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
-      <span class="vote-tip-num color-link_text">{{ remainVotes ? remainVotes : 0 }}</span>
+      <span class="vote-title-tip">{{textSetting.available ? textSetting.available : '可投票数'}}</span>
+      <span class="vote-tip-num">{{ remainVotes ? remainVotes : 0 }}</span>
     </div>
   </div>
 </template>
@@ -33,6 +33,7 @@
 <script>
 export default {
   props: {
+    darkMark: String,
     voteDate: {
       type: Array,
       default: () => {
@@ -98,11 +99,12 @@ export default {
   @import "@/styles/index.scss";
   .count-down-wrap {
     position: absolute;
+    z-index: 100;
     bottom: px2rem(40px);
     left: px2rem(50px);
     right: px2rem(50px);
     height: px2rem(140px);
-    @include bg-linear-color('compColor');
+    @include bg-color('compColor');
     box-shadow: 0 2px 5px 5px rgba(0,0,0,0.10);
     box-sizing: border-box;
     border-radius: px2rem(8px);
@@ -166,6 +168,17 @@ export default {
       .vote-tip-num {
         @include font-dpr(18px);
         color: #fff;
+      }
+    }
+    &.light {
+      @include bg-color('btnColor');
+      .left-time-wrap .time-count-wrap {
+        .day-tip, .hour-tip, .minutes-tip, .second-tip {
+          @include bg-color('compColor');
+          .time-num {
+            @include font-color('descColor');
+          }
+        }
       }
     }
   }

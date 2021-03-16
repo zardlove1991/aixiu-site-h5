@@ -488,12 +488,20 @@ export default {
           if (sharePic.constructor === Array && sharePic.length > 0) {
             let obj = sharePic[0]
             if (obj.constructor === Object) {
-              imgUrl = obj.host + obj.filename
+              if (/http/.test(obj.host)) {
+                imgUrl = obj.host + obj.filename
+              } else {
+                imgUrl = location.protocol + obj.host + obj.filename
+              }
             } else if (obj.constructor === String) {
               imgUrl = obj
             }
           } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
-            imgUrl = sharePic.host + sharePic.filename
+            if (/http/.test(sharePic.host)) {
+              imgUrl = sharePic.host + sharePic.filename
+            } else {
+              imgUrl = location.protocol + sharePic.host + sharePic.filename
+            }
           } else if (sharePic.constructor === String) {
             imgUrl = sharePic
           }
@@ -927,7 +935,7 @@ export default {
             background: #EBEBEB;
             opacity: 1;
             &.is-active {
-              @include bg-linear-color('compColor');
+              @include bg-color('compColor');
               // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
             }
           }
@@ -1084,7 +1092,7 @@ export default {
               @include bg-alpha-color('bgColor', 0.2);
             }
             &.active {
-              @include bg-linear-color('compColor');
+              @include bg-color('compColor');
               // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
               color: #fff;
               .date-item1 {
@@ -1132,7 +1140,7 @@ export default {
             box-shadow: 0 5px 13px 0 rgba(216,216,216,0.48);
           }
           &.active {
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
           }
         }
         .tool-tip {

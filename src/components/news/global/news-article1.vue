@@ -143,7 +143,7 @@ export default {
     overflow-y: auto;
     // background-color: #ffffff;
     padding: 0 px2rem(30px);
-    @include bg-linear-color('bgColor');
+    @include bg-color('bgColor');
     .article1-index {
       position: relative;
       margin-top: px2rem(30px);

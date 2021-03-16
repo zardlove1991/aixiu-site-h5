@@ -172,7 +172,7 @@ export default {
       }
       // 区域限制
       let { rule } = detailInfo
-      let { area_limit: areaLimit, user_limit_times: limitTime } = rule
+      let { area_limit: areaLimit, unlock_duration: limitTime } = rule
       if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
         this.limitArea = areaLimit.area
         // 区域限制，传入经纬度
@@ -188,11 +188,11 @@ export default {
         let errCode = res.error_code
         if (errCode) {
           // console.log('xxxxxx', errCode)
-          if (errCode === 'WORKS_LOCKED') {
+          if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
             this.isShowMax = true
-            this.voteTime = limitTime
+            this.voteTime = parseInt(limitTime / 60)
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
