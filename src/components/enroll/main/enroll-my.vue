@@ -258,7 +258,7 @@ export default {
           width: px2rem(16px);
           height: px2rem(16px);
           border-radius: 50%;
-          @include bg-linear-color('compColor');
+          @include bg-color('compColor');
           // background-image: linear-gradient(45deg, #324AFE 0%, #7081FF 100%);
         }
         .line {
@@ -363,7 +363,7 @@ export default {
         }
       }
       &.base .myenroll-info {
-        @include bg-linear-color('compColor');
+        @include bg-color('compColor');
       }
       &.disabled .myenroll-info {
         background-image: linear-gradient(-90deg, #D4D4D4 0%, #C5C5C5 100%);

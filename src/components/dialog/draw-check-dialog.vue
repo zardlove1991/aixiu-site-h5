@@ -499,7 +499,7 @@ export default {
           @include font-dpr(14px);
           color: #fff;
           &.submit-btn-wrap-video {
-            @include bg-linear-color('themeColor')
+            @include bg-color('themeColor')
           }
         }
       }
