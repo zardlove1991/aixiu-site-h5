@@ -58,8 +58,8 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  let curErrorCode = data.error || data.error_code
-  let curErrorMsg = data.message || data.error_message
+  let curErrorCode = data.error || data.error_code || data.ErrorCode
+  let curErrorMsg = data.message || data.error_message || data.ErrorText
   dealError({ code: curErrorCode, msg: curErrorMsg })
   // 判断是否当前是否过期
   if (data.error_code > 0) {
