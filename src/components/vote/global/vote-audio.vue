@@ -1,16 +1,20 @@
 <template>
-  <div class="commvote-base-audio-wrap">
+  <div :class="['commvote-base-audio-wrap', darkMark === '2' ? 'light' : '']">
+    <div class="audio-light-bg" v-if="darkMark === '2'"></div>
     <p class="audio-name">{{data.filename}}</p>
     <div class="audio-control-wrap">
       <span class="run-stime">{{duration}}</span>
       <div class="process-wrap">
-        <div class="process" >
+        <div class="process">
           <div class="audio-bar" v-show="duration !== '00:00'"></div>
           <div class="audio-bar-spot" v-show="duration !== '00:00'"></div>
         </div>
+        <div class="process-opacity"></div>
       </div>
       <span class="run-etime">{{totalDuration}}</span>
-      <div class="audio-play-icon" v-if="!isPreview" :class="{ play: isPlay }" @click.stop="setPlay"></div>
+      <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '', isPlay ? 'play': '']" v-if="!isPreview" @click.stop="setPlay">
+        <div class="audio-icon"></div>
+      </div>
     </div>
     <!--音频元素-->
     <audio ref="audio" preload='auto' @timeupdate="timeUpdate">该浏览器不支持audio属性</audio>
@@ -23,6 +27,7 @@ import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
+    darkMark: String,
     data: {
       type: Object,
       default: () => {
@@ -122,7 +127,7 @@ export default {
     padding: px2rem(25px) px2rem(30px);
     background-color: rgba(255,255,255,0.1);
     box-sizing: border-box;
-    border-radius: px2rem(4px);
+    border-radius: px2rem(16px);
     .audio-name {
       @include font-dpr(14px);
       color: rgba(255,255,255,0.7);
@@ -140,17 +145,17 @@ export default {
         color: rgba(255,255,255,0.7);
       }
       .process-wrap {
+        position: relative;
         flex: 1;
         height: 2px;
-        border-radius: px2rem(4px);
         margin: 0 px2rem(20px);
-        background-color: rgba(255,255,255,0.5);
-        .process {
-          position: relative;
-          width: 100%;
-          height: 2px;
+        .process, .process-opacity {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
           border-radius: px2rem(4px);
-          background-color: rgba(255,255,255,0.5);
           .audio-bar {
             position: absolute;
             top: 0;
@@ -158,6 +163,7 @@ export default {
             width: px2rem(16px);
             height: 2px;
             border-radius: px2rem(4px);
+            opacity: 1 !important;
             @include bg-color('btnColor');
           }
           .audio-bar-spot {
@@ -171,20 +177,13 @@ export default {
             @include bg-color('btnColor');
           }
         }
+        .process-opacity {
+          @include bg-color('descColor');
+          opacity: 0.2;
+        }
       }
       .audio-play-icon {
-        width: px2rem(56px);
-        height: px2rem(56px);
-        border-radius: 50%;
-        background-color: rgba(255,255,255,0.3);
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: px2rem(20px);
-        background-image: url('//xzh5.hoge.cn/new-vote/images/audio_bg_3@3x.png');
         margin-left: px2rem(30px);
-        &.play {
-          animation: audioPlay 1s linear infinite;
-        }
       }
     }
     .file-delete-icon {
@@ -195,6 +194,21 @@ export default {
       width: px2rem(40px);
       height: px2rem(40px);
       @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
+    }
+    &.light {
+      .audio-light-bg {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        @include bg-color('btnColor');
+        opacity: 0.15;
+        border-radius: px2rem(16px);
+      }
+      .audio-name, .audio-control-wrap .run-stime, .audio-control-wrap .run-etime {
+        @include font-color('descColor');
+      }
     }
   }
 </style>

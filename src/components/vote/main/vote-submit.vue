@@ -1,39 +1,63 @@
 <template>
-  <div class="form-submit-wrap">
+  <div :class="['form-submit-wrap', darkMark === '2' ? 'light' : '']">
     <form>
-      <div v-if="flag === 'video'" class="form-item">
-        <div class="form-title">上传视频</div>
-        <div class="form-tips-div">视频格式为MP4，时长不能超过60s</div>
-        <div class="form-content">
-          <video-upload :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+      <div v-if="fullSceneType && fullSceneType.length" class="form-item">
+        <div class="form-title">作品类型</div>
+        <div class="form-content classify-wrap">
+          <vote-fullscene-list
+            :searchVal="checkFullScene"
+            :darkMark="darkMark"
+            :isLoading="(loading || videoCoverLoading)"
+            :fullSceneType="fullSceneType"
+            @fullSceneChange="fullSceneChange">
+          </vote-fullscene-list>
         </div>
       </div>
-      <div v-if="flag === 'video'" class="form-item">
+      <div v-if="showModel === 'video'" class="form-item">
+        <div class="form-title">上传视频</div>
+        <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，时长不能超过60s；建议尺寸3:4.5</div>
+        <div class="form-tips-div" v-else>视频格式为MP4，时长不能超过60s；建议尺寸16:9</div>
+        <div class="form-content">
+          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+        </div>
+      </div>
+      <div v-if="showModel === 'video'" class="form-item">
         <div class="form-title">视频封面<span class="form-tips">(选填)</span></div>
-        <div class="form-tips-div">建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
+        <div class="form-tips-div"></div>
+        <div class="form-tips-div" v-if="videoMode === '3'">建议比例3:4.5，支持PNG、JPG、GIF格式，小于5M</div>
+        <div class="form-tips-div" v-else>建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
         <div class="form-content">
           <file-upload :loading.sync="videoCoverLoading"
+            ref="video-file-upload"
             flag="videoCover"
+            :imageRatio="videoMode === '3' ? 1 : 0"
             :fileList="videoCoverList"
             @changeFile="changeVideoCoverFile">
           </file-upload>
         </div>
       </div>
-      <div v-if="flag === 'picture'" class="form-item">
+      <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
         <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸）；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-tips-div" v-else>建议比例：1:1；图片最多上传9张；支持PNG、JPG、GIF格式；小于5M</div>
         <div class="form-content">
-          <file-upload :imageRatio="imageRatio" :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
+          <file-upload
+            ref="picture-file-upload"
+            :imageRatio="imageRatio"
+            :loading.sync="loading"
+            :flag="showModel"
+            :fileList="fileList"
+            @changeFile="changeFile">
+          </file-upload>
         </div>
       </div>
-      <div v-if="flag === 'audio'" class="form-item">
+      <div v-if="showModel === 'audio'" class="form-item">
         <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3)</span></div>
         <div class="form-content">
-          <file-upload :loading.sync="loading" :flag="flag" :fileList="fileList" @changeFile="changeFile"></file-upload>
+          <file-upload :loading.sync="loading" :flag="showModel" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
-      <div v-if="flag === 'text'" class="form-item">
+      <div v-if="showModel === 'text'" class="form-item">
         <div class="form-title">文字内容</div>
         <div class="form-content">
           <el-input type="textarea" v-model="examineData.introduce" @blur="blurAction()"></el-input>
@@ -65,7 +89,7 @@
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
-      <div class="form-item" v-if="flag !== 'text'">
+      <div class="form-item" v-if="showModel !== 'text'">
         <div class="form-title">描述<span class="form-tips">(选填)</span></div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
@@ -100,8 +124,10 @@
 import FileUpload from '@/components/vote/global/file-upload'
 import VideoUpload from '@/components/vote/global/video-upload'
 import ClassifyDialog from '@/components/vote/global/vote-classify-dialog'
+import VoteFullsceneList from '@/components/vote/global/vote-fullscene-list'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import { fullSceneMap } from '@/utils/config'
 import { Toast } from 'mint-ui'
 
 export default {
@@ -109,7 +135,7 @@ export default {
     this.initForm()
   },
   components: {
-    FileUpload, VideoUpload, ClassifyDialog
+    FileUpload, VideoUpload, ClassifyDialog, VoteFullsceneList
   },
   props: {
     id: String,
@@ -117,6 +143,7 @@ export default {
   },
   data () {
     return {
+      showModel: this.flag,
       disabled: false,
       examineData: {
         name: '',
@@ -142,7 +169,12 @@ export default {
       videoCoverLoading: false,
       videoCoverList: [],
       videoCover: '',
-      imageRatio: 0 // 图片模式
+      imageRatio: 0, // 图片模式
+      videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      checkFullScene: '', // 选中的全场景
+      fullSceneType: [], // 全场景的搜索条件
+      fullSceneMap
     }
   },
   methods: {
@@ -151,17 +183,42 @@ export default {
       let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
-        let limit = detailInfo.rule.limit
+        let rule = detailInfo.rule
+        let limit = rule.limit
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           isOpenClassify = true
           this.isOpenClassify = true
         }
-        // 判断图片模式
-        let pageSetup = detailInfo.rule.page_setup
-        if (pageSetup.image_ratio) {
-          this.imageRatio = 1
-        } else {
-          this.imageRatio = 0
+        if (limit.show_mode) {
+          this.videoMode = limit.show_mode
+        }
+        let pageSetup = rule.page_setup
+        if (pageSetup) {
+          // 判断图片模式
+          if (pageSetup.image_ratio) {
+            this.imageRatio = 1
+          } else {
+            this.imageRatio = 0
+          }
+          if (pageSetup.font_color) {
+            this.darkMark = pageSetup.font_color
+          }
+        }
+        if (detailInfo.mark === 'commonvote-fullscene') {
+          let arr = limit.full_scene_type
+          if (arr && arr.length) {
+            let newArr = arr.filter(item => {
+              if (item !== '4') {
+                return true
+              }
+            })
+            if (newArr.length) {
+              let key = newArr[0]
+              this.fullSceneType = newArr
+              this.checkFullScene = key
+              this.showModel = this.fullSceneMap[key][1]
+            }
+          }
         }
       }
       let { worksId } = this.$route.query
@@ -176,7 +233,7 @@ export default {
             return
           }
           this.worksId = worksId
-          let flag = this.flag
+          let flag = this.showModel
           if (res.material) {
             if (flag === 'picture') {
               this.fileList = res.material.image
@@ -207,6 +264,10 @@ export default {
             contact_phone: res.contact_phone,
             type_id: res.type_id,
             type_name: res.type_name
+          }
+          if (res.full_scene_type) {
+            this.checkFullScene = res.full_scene_type
+            this.showModel = this.fullSceneMap[res.full_scene_type][1]
           }
           this.getVoteTypeFid(res.type_id, res.type_name)
         })
@@ -277,7 +338,7 @@ export default {
         Toast('请输入来源')
         return
       }
-      if (this.flag === 'text') {
+      if (this.showModel === 'text') {
         if (!examineData.introduce || !examineData.introduce.trim()) {
           Toast('请输入文字内容')
           return
@@ -304,6 +365,9 @@ export default {
         },
         ...examineData
       }
+      if (this.checkFullScene) {
+        data.full_scene_type = this.checkFullScene
+      }
       if (this.worksId) {
         data.id = this.worksId
       }
@@ -328,16 +392,16 @@ export default {
       if (!fileList || fileList.length <= 0) {
         this.material = {...this.material}
       }
-      if (this.flag === 'video') {
+      if (this.showModel === 'video') {
         if (this.videoCover) {
           fileList.forEach(item => {
             item.cover_image = this.videoCover
           })
         }
         this.material = {...this.material, video: [...this.fileList]}
-      } else if (this.flag === 'picture') {
+      } else if (this.showModel === 'picture') {
         this.material = {...this.material, image: [...this.fileList]}
-      } else if (this.flag === 'audio') {
+      } else if (this.showModel === 'audio') {
         this.material = {...this.material, audio: [...this.fileList]}
       }
     },
@@ -359,6 +423,26 @@ export default {
         }
         this.videoCover = coverImage
       }
+    },
+    fullSceneChange (key) {
+      if (key) {
+        this.fileList = []
+        this.material = {
+          image: [],
+          video: [],
+          audio: []
+        }
+        this.videoCoverList = []
+        this.checkFullScene = key
+        this.showModel = this.fullSceneMap[key][1]
+        this.$nextTick(() => {
+          let obj1 = this.$refs['video-file-upload']
+          let obj2 = this.$refs['picture-file-upload']
+          console.log(obj1, obj2)
+          obj1 && obj1.clearFile()
+          obj2 && obj2.clearFile()
+        })
+      }
     }
   }
 }
@@ -376,7 +460,8 @@ export default {
       .form-title {
         display: flex;
         align-items: center;
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         @include font-dpr(16px);
       }
       .form-tips {
@@ -406,10 +491,11 @@ export default {
         .el-input__inner, .el-textarea__inner {
           -webkit-appearance: none;
           background-color: rgba(255, 255, 255, 0.2);
-          border-radius: px2rem(8px);
+          border-radius: px2rem(16px);
           padding: 0 px2rem(30px);
           @include font-dpr(16px);
-          color: #fff;
+          // color: #fff;
+          @include font-color('fontColor');
           border: 0;
         }
         .el-input .el-input__inner {
@@ -444,6 +530,27 @@ export default {
       .menu-text {
         @include font-dpr(14px);
         color: #fff;
+      }
+    }
+    &.light {
+      .form-item {
+        .form-tips, .form-tips-div  {
+          color: rgba(0, 0, 0, 0.4);
+        }
+        .form-content {
+          .el-input__inner, .el-textarea__inner {
+            background-color: #fff;
+          }
+        }
+        .el-textarea .el-input__count {
+          color: rgba(0, 0, 0, 0.4);
+        }
+      }
+      .el-upload--picture-card i {
+        color: rgba(0, 0, 0, 0.1);
+      }
+      .el-upload {
+        background-color: #fff;
       }
     }
   }

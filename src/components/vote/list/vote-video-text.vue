@@ -20,8 +20,8 @@
           </div>
         </div>
       </div>
-      <div class="work-title color-theme_color">{{item.name}}</div>
-      <div class="work-desc color-theme_color">{{item.source}}</div>
+      <div class="work-title">{{item.name}}</div>
+      <div class="work-desc">{{item.source}}</div>
     </div>
   </div>
 </template>
@@ -67,18 +67,15 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .video-work-list-wrap {
-    padding-top: px2rem(10px);
+    // padding-top: px2rem(10px);
     .work-list-item {
-      width: 100%;
-      padding: px2rem(30px);
-      &.my-wrap {
-        margin-bottom: px2rem(20px);
-        @include img-retina('~@/assets/vote/video-text-mybg@2x.png','~@/assets/vote/video-text-mybg@3x.png', 100%, 100%);
-      }
+      padding: px2rem(25px) 0;
+      margin: 0 px2rem(30px);
       .work-poster-wrap {
         position: relative;
         width: 100%;
-        height: px2rem(388px);
+        // height: px2rem(388px);
+        height: calc((100vw - 1.875rem) * 9 / 16);
         border-radius: 4px;
         background-repeat: no-repeat;
         background-position: center;
@@ -120,7 +117,7 @@ export default {
             height: 100%;
             border-radius: px2rem(8px);
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: cover;
             background-position: center;
           }
         }
@@ -135,10 +132,11 @@ export default {
             position: absolute;
             top: 0;
             left: 0;
-            height: px2rem(40px);
-            padding: 0 px2rem(17px);
+            height: px2rem(45px);
+            line-height: px2rem(45px);
+            padding: 0 px2rem(25px);
             border-radius: px2rem(4px) 0px px2rem(32px) 0px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
             @include font-dpr(11px);
           }
@@ -168,28 +166,30 @@ export default {
             display: flex;
             align-items: center;
             position: absolute;
-            bottom: 0.27rem;
-            right: 0.27rem;
+            bottom: px2rem(20px);
+            right: px2rem(20px);
           }
           &.my-infos-wrap .info-number {
-            // background-color: #FC7465;
-            @include bg-color('btnColor');
+            background-color: rgba(0, 0, 0, 0.7);
+            // @include bg-color('btnColor');
           }
         }
       }
       .work-title {
         @include font-dpr(16px);
         font-weight: bold;
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         line-height: 1.5;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        margin: 0.26rem 0;
+        margin: px2rem(16px) 0 px2rem(8px) 0;
       }
       .work-desc {
         @include font-dpr(14px);
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         opacity: 0.7;
         line-height: 1;
         text-overflow: ellipsis;

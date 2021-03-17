@@ -4,6 +4,7 @@ import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
+import wechat from '@/sdk/wechat'
 
 let currentApi = ''
 const instance = axios.create({
@@ -48,14 +49,17 @@ function dealError ({code, msg}) {
         redirect: query.redirect
       }
     })
+  } else if (code === 'EXPIRE_SIGNATURE') {
+    // 签名过期 直接去中转页面
+    wechat.goRedirect()
   }
 }
 
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
-  let curErrorCode = data.error || data.error_code
-  let curErrorMsg = data.message || data.error_message
+  let curErrorCode = data.error || data.error_code || data.ErrorCode
+  let curErrorMsg = data.message || data.error_message || data.ErrorText
   dealError({ code: curErrorCode, msg: curErrorMsg })
   // 判断是否当前是否过期
   if (data.error_code > 0) {

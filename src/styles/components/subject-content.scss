@@ -69,7 +69,7 @@
           border: 0;
           @include bg-color('btnColor');
           &.videoActive {
-            @include bg-linear-color('themeColor');
+            @include bg-color('themeColor');
           }
           &:after{
             content: '';
@@ -107,7 +107,7 @@
           position:relative;
           text-align: center;
           &.videoActive {
-            @include bg-linear-color('themeColor');
+            @include bg-color('themeColor');
           }
           &:after{
             content:'';

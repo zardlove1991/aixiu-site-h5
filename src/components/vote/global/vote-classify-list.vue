@@ -1,5 +1,5 @@
 <template>
-  <div class="classify-list-wrap">
+  <div class="classify-list-wrap" :class="darkMark === '2' ? 'light' : ''">
     <div class="input-wrap" @click.stop="showClassifyAction()">
       <el-input v-model="tempSearchVal"
         :readonly="true"
@@ -7,22 +7,19 @@
         placeholder="全部">
       </el-input>
       <div :class="['vote-type-base', !isShowClassify ? 'vote-type-down': 'vote-type-up']"></div>
-    </div>
-    <div class="dropdown-wrap" v-show="isShowClassify">
-      <div class="dropdown-item item0">
-        <div class="classify-item"
-          :class="currentId === item.id ? 'active' : ''"
-          @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
-      </div>
-      <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
-        <div>
+      <div class="dropdown-wrap" v-show="isShowClassify">
+        <div class="dropdown-item item0">
           <div class="classify-item"
-            :class="currentId2 === item.id ? 'active2' : ''"
-            @click.stop="toggleCheck2(item)" v-for="(item, index) in tmpObj[currentId]" :key="index">{{item.name}}</div>
+            :class="currentId === item.id ? 'active' : ''"
+            @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
         </div>
-        <!-- <div v-else>
-          <div class="classify-item no-data">暂无数据</div>
-        </div> -->
+        <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
+          <div>
+            <div class="classify-item"
+              :class="currentId2 === item.id ? 'active2' : ''"
+              @click.stop="toggleCheck2(item)" v-for="(item, index) in tmpObj[currentId]" :key="index">{{item.name}}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -34,7 +31,8 @@ import API from '@/api/module/examination'
 export default {
   props: {
     id: String,
-    searchVal: String
+    searchVal: String,
+    darkMark: String
   },
   data () {
     return {
@@ -62,7 +60,7 @@ export default {
         let data = res.data
         if (data && data.length) {
           this.classifyData = [{ id: '', name: '全部' }, ...data]
-          this.currentId = data[0].id
+          this.currentId = this.classifyData.id
           this.initClassifyData(data)
         }
       })
@@ -113,15 +111,17 @@ export default {
       .el-input__inner {
         height: px2rem(80px);
         line-height: px2rem(80px);
-        border-radius: px2rem(8px);
+        border-radius: px2rem(16px);
         background-color: rgba(255, 255, 255, 0.1);
         border: 0px;
-        color: #fff;
+        // color: #fff;
+        @include font-color('fontColor');
         @include font-dpr(14px);
         @include line-overflow(1);
         padding-right: px2rem(60px);
         &::placeholder {
-          color: #fff;
+          // color: #fff;
+          @include font-color('fontColor');
         }
       }
       .vote-type-base {
@@ -140,7 +140,7 @@ export default {
       }
     }
     .dropdown-wrap {
-      z-index: 10;
+      z-index: 11;
       position: absolute;
       top: px2rem(90px);
       left: 0;
@@ -153,10 +153,10 @@ export default {
         @include font-dpr(14px);
         &.item0 {
           @include bg-color('descColor');
-          color: #fff;
+          @include font-color('fontColor');
         }
         &.item1 {
-          @include bg-linear-color('compColor');
+          @include bg-color('compColor');
           color: rgba(255, 255, 255, 0.5);
         }
         .classify-item {
@@ -165,13 +165,36 @@ export default {
           height: px2rem(80px);
           line-height: px2rem(80px);
           &.active {
-            @include bg-linear-color('compColor');
+            @include bg-color('compColor');
           }
           &.active2 {
-            color: #fff;
+            @include font-color('fontColor');
           }
-          &.no-data {
-            color: #999;
+        }
+      }
+    }
+    &.light {
+      .input-wrap {
+        .el-input__inner {
+          background-color: #fff;
+        }
+        .vote-type-base.vote-type-down {
+          @include img-retina("~@/assets/vote/vote-type-down-light.png","~@/assets/vote/vote-type-down-light.png", 100%, 100%);
+        }
+        .vote-type-base.vote-type-up {
+          @include img-retina("~@/assets/vote/vote-type-up-light@2x.png","~@/assets/vote/vote-type-up-light@3x.png", 100%, 100%);
+        }
+      }
+      .dropdown-wrap {
+        .item0 {
+          @include bg-color('compColor');
+        }
+        .item1 {
+          @include font-color('fontColor');
+        }
+        .dropdown-item .classify-item {
+          &.active, &.active2 {
+            @include font-color('descColor');
           }
         }
       }

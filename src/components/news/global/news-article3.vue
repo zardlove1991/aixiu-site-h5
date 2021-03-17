@@ -115,7 +115,7 @@ export default {
     height: 100vh;
     overflow-y: auto;
     // background-color: #ffffff;
-    @include bg-linear-color('bgColor');
+    @include bg-color('bgColor');
     .article3-index {
       .article3-img {
         width: 100%;

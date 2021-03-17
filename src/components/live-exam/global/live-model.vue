@@ -120,7 +120,7 @@ export default {
       }
       .cancel {
         color: #fff;
-        @include bg-linear-color('themeColor');
+        @include bg-color('themeColor');
         // @include font-color('themeColor');
       }
     }
