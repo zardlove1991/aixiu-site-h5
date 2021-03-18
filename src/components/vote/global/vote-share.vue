@@ -187,7 +187,7 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          // console.log('xxxxxx', errCode)
+          // console.log('errCode', errCode)
           if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
@@ -201,6 +201,10 @@ export default {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
+            this.voteDisable = false
+            return
+          } else if (errCode === 'NO_REMAIN_VOTES') {
+            Toast('对当前作品的投票次数已用完')
             this.voteDisable = false
             return
           } else {
