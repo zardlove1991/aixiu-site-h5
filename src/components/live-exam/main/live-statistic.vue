@@ -3,9 +3,9 @@
     <div class="header-tip flex-v-center flex-between">
       <span class="icon-wrap flex-v-center">
         <i class="tips-icon"></i>
-        <span class="tips-title">测评 已提交</span>
+        <span class="tips-title">已交卷</span>
       </span>
-      <div @click="backUrl" class="back-btn">返回试题页</div>
+      <div @click="backUrl" class="back-btn">返回活动页</div>
     </div>
     <div class="header-bg">
       <div class="exam-statInfo">

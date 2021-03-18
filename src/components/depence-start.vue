@@ -6,9 +6,9 @@
       v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
       <div class="end-tips">
         <i class="tips-icon"></i>
-        <span class="tips-msg">测评已提交</span>
+        <span class="tips-msg">已提交</span>
       </div>
-      <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
+      <div class="to-score" @click.stop="toStatistic">查看结果</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
@@ -37,14 +37,14 @@
             <div class="row-icon row-naozhong"></div>
             <div>
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
-              <div class="title">限时</div>
+              <div class="title">时长</div>
             </div>
           </div>
           <div class="row">
             <div class="row-icon row-juanzi"></div>
             <div>
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">答题</div>
+              <div class="title">试题</div>
             </div>
           </div>
           <!-- <div class="row">
@@ -645,7 +645,7 @@ export default {
       height:px2rem(54px);
       line-height:px2rem(54px);
       text-align:center;
-      width:px2rem(200px);
+      width:px2rem(180px);
       border:1px solid #FF6A45;
       border-radius: 27px;
     }
