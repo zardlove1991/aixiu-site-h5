@@ -187,7 +187,7 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          // console.log('xxxxxx', errCode)
+          console.log('errCode', errCode)
           if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
