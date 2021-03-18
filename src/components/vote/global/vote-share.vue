@@ -203,6 +203,10 @@ export default {
             this.$emit('close')
             this.voteDisable = false
             return
+          } else if (errCode === 'NO_REMAIN_VOTES') {
+            Toast('对当前作品的投票次数已用完')
+            this.voteDisable = false
+            return
           } else {
             Toast(res.error_message)
             this.voteDisable = false
