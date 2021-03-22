@@ -31,6 +31,10 @@
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
+        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info2" v-html="examInfo.brief"></div>
+        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
+        </div>
         <div class="body-wrap">
           <!--信息展示-->
           <div class="row">
@@ -179,7 +183,9 @@ export default {
       luckDrawTips: [], // 抽奖提示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isSubmitSuccess: false, // 外链弹窗显隐
-      isPopSubmitSuccess: false // 弹窗显隐
+      isPopSubmitSuccess: false, // 弹窗显隐
+      isShowInfo: false,
+      isShowFindAll: false
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog },
@@ -214,6 +220,14 @@ export default {
     this.initStartInfo()
   },
   methods: {
+    initFindAll () {
+      this.$nextTick(() => {
+        var oDiv = document.getElementById('exam-rule-info2')
+        if (oDiv.scrollHeight > oDiv.clientHeight) {
+          this.isShowFindAll = true
+        }
+      })
+    },
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
@@ -301,6 +315,8 @@ export default {
       let examId = this.id
       try {
         await this.getExamDetail({id: examId})
+        // 是否展示查看更多
+        this.initFindAll()
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 分享
@@ -606,7 +622,7 @@ export default {
   .exam-time{
     @include font-dpr(15px);
     color:#fff;
-    margin-bottom:px2rem(87px);
+    margin-bottom:px2rem(20px);
     display:flex;
     align-items:center;
   }
@@ -615,6 +631,30 @@ export default {
     height:px2rem(34px);
     margin-right:px2rem(20px);
     @include img-retina('~@/assets/common/timeInfo@2x.png','~@/assets/common/timeInfo@3x.png', 100%, 100%);
+  }
+  .exam-rule {
+    width: 100%;
+    @include font-dpr(15px);
+    color: #fff;
+    line-height: px2rem(40px);
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    &.exam-overflow {
+      @include line-overflow(2);
+    }
+  }
+  .find-all-rule {
+    margin-top: px2rem(20px);
+    @include font-dpr(15px);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .icon-base {
+      display: inline-block;
+      @include font-dpr(12px);
+      margin-left: px2rem(15px);
+    }
   }
   .header-top{
     background-color:#FFF1ED;
@@ -719,6 +759,7 @@ export default {
         width: 100%;
         overflow: hidden;
         display:flex;
+        margin-top: px2rem(30px);
         .row{
           flex: 1;
           display: flex;
