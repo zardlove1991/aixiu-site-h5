@@ -36,7 +36,6 @@ export default {
   },
   created () {
     // this.$wx = wx// 初始化通用weixin变量
-    console.log('%c初始化微信', 'color:red;', new Date().getTime())
     this.initWeixinInfo() // 初始化微信配置信息
     // this.initReirectParams() // 判断是否有全局参数
   },
@@ -56,6 +55,7 @@ export default {
         sign: 'wechat',
         appid
       }).then(res => {
+        console.log(res)
         let { appId, timestamp, nonceStr, signature } = res
         wx.config({
           appId,

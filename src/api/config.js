@@ -4,7 +4,7 @@ const env = getEnvironment()
 // const suffix = env === 'online' ? '' : `-${env}`
 // const v2 = env === 'online' ? '.v2' : ''
 const suffix = env === 'online' ? '' : env === 'pre' ? '-ax-pre' : `-${env}`
-const v2 = env === 'online' ? '.v2' : ''
+const v2 = env === 'online' ? '-ax' : ''
 
 export default {
   'submit': `${protocol}//result${suffix}${v2}.aihoge.com/`,

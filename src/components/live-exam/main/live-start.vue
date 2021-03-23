@@ -19,7 +19,9 @@
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info" v-html="examInfo.brief"></div>
-        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
+        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
+        </div>
         <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
           <div class="row">
@@ -56,7 +58,7 @@
           <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
           <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
         </div>
-        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
+        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
       </div>
     </div>
     <my-model
@@ -179,23 +181,26 @@ export default {
   components: { MyModel, DrawCheckDialog, LiveVideo, LinkDialog, PopDialog, LuckDrawDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
+    examSubmitCount2 () {
+      let examInfo = this.examInfo
+      let count = 1
+      if (examInfo && examInfo.limit) {
+        let userIdLimit = examInfo.limit.userid_limit_num
+        if (userIdLimit) {
+          userIdLimit = parseInt(userIdLimit)
+          count = userIdLimit
+        }
+      }
+      return count
+    },
     examSubmitCount () {
       let examInfo = this.examInfo
       let count = 1
       if (examInfo && examInfo.limit) {
-        let {
-          day_userid_limit_num: dayUserIdLimit,
-          ip_limit_num: ipLimit,
-          userid_limit_num: userIdLimit
-        } = examInfo.limit
-        if (dayUserIdLimit && dayUserIdLimit > count) {
+        let dayUserIdLimit = examInfo.limit.day_userid_limit_num
+        if (dayUserIdLimit) {
+          dayUserIdLimit = parseInt(dayUserIdLimit)
           count = dayUserIdLimit
-        }
-        if (ipLimit && ipLimit > count) {
-          count = ipLimit
-        }
-        if (userIdLimit && userIdLimit > count) {
-          count = userIdLimit
         }
       }
       return count
@@ -637,6 +642,14 @@ export default {
         margin-top: px2rem(20px);
         @include font-dpr(15px);
         @include font-color('highColor');
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .icon-base {
+          display: inline-block;
+          @include font-dpr(12px);
+          margin-left: px2rem(15px);
+        }
       }
       .header-desc {
         margin:px2rem(26px) 0;
