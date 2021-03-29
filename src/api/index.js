@@ -49,7 +49,7 @@ function dealError ({code, msg}) {
         redirect: query.redirect
       }
     })
-  } else if (code === 'EXPIRE_SIGNATURE') {
+  } else if (code === 'EXPIRE_SIGNATURE' || code === 'NO_LOGIN') {
     // 签名过期 直接去中转页面
     wechat.goRedirect()
   }
