@@ -133,21 +133,24 @@ export default {
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
       // console.log(matchArr, 'textboxReg')
-      matchArr.forEach((val, index) => {
-        let template = ''
-        // 处理不同填空的形式的渲染
-        if (renderStyle === 'underline') {
-          if (index === 0) {
+      if (matchArr && matchArr.length) {
+        matchArr.forEach((val, index) => {
+          let template = ''
+          // 处理不同填空的形式的渲染
+          if (renderStyle === 'underline') {
+            // if (index === 0) {
+            //   template = this._getUnderlineTemplate({ index })
+            // } else {
+            //   template = ''
+            // }
             template = this._getUnderlineTemplate({ index })
-          } else {
-            template = ''
+          } else if (renderStyle === 'textbox') {
+            template = this._getTextboxTemplate({ index })
           }
-        } else if (renderStyle === 'textbox') {
-          template = this._getTextboxTemplate({ index })
-        }
-        // 获得模板替换
-        originTitle = originTitle.replace(val, template)
-      })
+          // 获得模板替换
+          originTitle = originTitle.replace(val, template)
+        })
+      }
       // 最终赋值
       // console.log(originTitle)
       this.newTitle = this._dealHtmlLine(originTitle)
@@ -186,7 +189,9 @@ export default {
         // 改变下当前富文本容器的布局
         let newTitleEl = this.$refs['newTitleHtml']
         let richContentEl = newTitleEl.children[0]
-        richContentEl.style.cssText = 'display:inline;'
+        if (richContentEl) {
+          richContentEl.style.cssText = 'display:inline;'
+        }
       })
     },
     dealInput (e) {
