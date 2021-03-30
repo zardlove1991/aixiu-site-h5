@@ -9,6 +9,11 @@ export default {
     redirect: String,
     delta: String
   },
+  data () {
+    return {
+      isWxError: false
+    }
+  },
   /* 为了处理在小程序内部嵌入H5 wxjssdk授权webview中的url地址不会改变的问题 */
   beforeRouteEnter (to, from, next) {
     if (!isWeixnBrowser()) { // 不是微信浏览器无需重载
@@ -50,20 +55,51 @@ export default {
       // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
       // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
       let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
-      this.getWeixinInfo({
-        url,
-        sign: 'wechat',
-        appid
-      }).then(res => {
-        console.log(res)
-        let { appId, timestamp, nonceStr, signature } = res
-        wx.config({
-          appId,
-          timestamp,
-          nonceStr,
-          signature
+      let res = STORAGE.get('signature')
+      if (!res) {
+        res = await this.getWeixinInfo({
+          url,
+          sign: 'wechat',
+          appid
         })
+        if (res) {
+          STORAGE.set('signature', res)
+        }
+      }
+      let { appId, timestamp, nonceStr, signature } = res
+      wx.config({
+        appId,
+        timestamp,
+        nonceStr,
+        signature
       })
+      wx.error().catch(err => {
+        console.log('微信桥接出错', err)
+        if (!this.isWxError) {
+          this.isWxError = true
+          console.log('重新获取微信签名')
+          STORAGE.remove('signature')
+          this.initWeixinInfo()
+        }
+      })
+
+      // this.getWeixinInfo({
+      //   url,
+      //   sign: 'wechat',
+      //   appid
+      // }).then(res => {
+      //   console.log(res)
+      //   let { appId, timestamp, nonceStr, signature } = res
+      //   wx.config({
+      //     appId,
+      //     timestamp,
+      //     nonceStr,
+      //     signature
+      //   })
+      //   wx.error(function (res) {
+      //     console.error('微信错误：', res)
+      //   })
+      // })
     },
     getLocation () {
       return new Promise((resolve, reject) => {
