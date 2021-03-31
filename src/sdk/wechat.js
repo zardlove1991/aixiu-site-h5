@@ -107,6 +107,7 @@ let wechat = {
       STORAGE.remove('appid')
       STORAGE.remove('location')
       STORAGE.remove('news_weather')
+      STORAGE.remove('signature')
       if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1) {
         // 投票 抽奖列表
         this.getVoteAuthScope(id)
