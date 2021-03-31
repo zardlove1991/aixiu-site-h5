@@ -19,7 +19,9 @@
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info" v-html="examInfo.brief"></div>
-        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
+        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
+        </div>
         <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
           <div class="row">
@@ -640,6 +642,14 @@ export default {
         margin-top: px2rem(20px);
         @include font-dpr(15px);
         @include font-color('highColor');
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .icon-base {
+          display: inline-block;
+          @include font-dpr(12px);
+          margin-left: px2rem(15px);
+        }
       }
       .header-desc {
         margin:px2rem(26px) 0;
