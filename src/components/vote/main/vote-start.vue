@@ -241,6 +241,12 @@
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
+    <active-vote
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false"
+      :downloadLink="downloadLink"
+      :activeTips="activeTips">
+    </active-vote>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
@@ -270,12 +276,13 @@ import RuleVote from '@/components/vote/global/vote-rule'
 import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
+import ActiveVote from '@/components/vote/global/vote-active'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
+import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
@@ -299,6 +306,7 @@ export default {
     ActiveStop,
     ActivePause,
     ActiveStart,
+    ActiveVote,
     VoteClassifyList,
     Spinner,
     Loadmore,
@@ -364,7 +372,10 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap
+      fullSceneMap,
+      isShowActiveTips: false,
+      activeTips: [],
+      downloadLink: ''
     }
   },
   created () {
@@ -1114,6 +1125,12 @@ export default {
       })
     },
     jumpPage (page, data) {
+      if (page === 'votesubmit') {
+        this.sourceLimit()
+        if (this.isShowActiveTips) {
+          return
+        }
+      }
       let params = {
         flag: this.showModel,
         id: this.id
@@ -1123,6 +1140,44 @@ export default {
         params,
         query: data
       })
+    },
+    sourceLimit () {
+      // 来源限制
+      let res = false
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return res
+      }
+      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      if (sourceLimit) {
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getAppSign()
+          let limitArr = limitTxt.split(',')
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
+            res = true
+            this.isShowActiveTips = true
+            this.downloadLink = downloadLink
+            this.activeTips = appSource
+          }
+        }
+      }
+      return res
     },
     triggerWork (obj, index) {
       if (index !== null && index !== undefined) {
