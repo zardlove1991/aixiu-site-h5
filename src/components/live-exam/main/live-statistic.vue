@@ -31,12 +31,13 @@
       </div>
     </div>
     <div class="content">
-      <div class="operate-wrap flex-v-center">
+      <!-- 隐藏统计信息 -->
+      <!-- <div class="operate-wrap flex-v-center">
         <span class="btn btn-left examfont iconshuju flex-v-center" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
         <span class="btn btn-right examfont iconbingzhuangtu flex-v-center" :class="{'is-active': showType === 'pie'}"
         @click="showType = 'pie'">饼状图</span>
-      </div>
+      </div> -->
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
@@ -48,9 +49,10 @@
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
             </div>
           </div>
-          <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
+          <!-- 隐藏统计信息 -->
+          <!-- <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
-          </div>
+          </div> -->
           <ul v-if="item.options && item.options.length">
             <li class="choice-item" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
@@ -66,22 +68,22 @@
                     </div>
                     <span class="content-name">{{val.name}}</span>
                   </div>
-                  <span class="option-pie-percent" v-show="showType === 'pie'">
+                  <!-- 隐藏统计信息 -->
+                  <!-- <span class="option-pie-percent" v-show="showType === 'pie'">
                     <i class="icon-percent" :style="{background: colorData[index]}"></i>
                     <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
-                  </span>
+                  </span> -->
               </div>
-              <!-- 柱状图 进度条-->
-              <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
+              <!-- 隐藏统计信息  柱状图:进度条 -->
+              <!-- <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
                 <div class="line-wrap">
                   <span class="starck-bar"
                     :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
                 </div>
                 <span class="option-percent">
-                  <!-- <i class="icon-percent" :style="{background: colorData[index]}"></i> -->
                   <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
                 </span>
-              </div>
+              </div> -->
             </li>
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
@@ -695,7 +697,7 @@ $font-weight: 400;
     }
     .content {
       padding: 15px;
-      margin-top:px2rem(80px);
+      // margin-top:px2rem(80px);
       .operate-wrap{
           .btn{
             display: inline-block;
