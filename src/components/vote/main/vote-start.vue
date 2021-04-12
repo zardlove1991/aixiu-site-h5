@@ -445,7 +445,7 @@ export default {
         // 其他限制
         this.handleVoteData()
         // 作品列表
-        this.getVoteWorks()
+        this.getVoteWorks('', false, '', true, true)
         // 索引图尺寸比例
         if (rule.limit.indexpic_ratio) {
           let ratio = rule.limit.indexpic_ratio
@@ -776,7 +776,7 @@ export default {
         } else {
           this.setIsBtnAuth(0)
           // 获取剩余票数
-          this.getRemainVotes(id)
+          // this.getRemainVotes(id)
           // 检查是否报名
           this.checkUserReport(id)
         }
@@ -902,7 +902,7 @@ export default {
       }
       let nowTime = new Date().getTime()
       let { noStatus, voteStatus, endStatus } = this.statusCode
-      let { id, start_time: startTime, end_time: endTime } = detailInfo
+      let { start_time: startTime, end_time: endTime } = detailInfo
       let startTimeMS = startTime * 1000
       let endTimeMS = endTime * 1000
       let flag = startTimeMS > nowTime
@@ -927,7 +927,7 @@ export default {
         this.setIsModelShow(true)
         this.setIsBtnAuth(0)
       } else {
-        this.getRemainVotes(id)
+        // this.getRemainVotes(id)
         this.setIsBtnAuth(1)
       }
       this.startCountTime(time, (timeArr) => {
@@ -1074,7 +1074,7 @@ export default {
         }
       }
     },
-    getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true) {
+    getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -1120,7 +1120,9 @@ export default {
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
         this.getRemainVotes(voteId)
-        this.getVodeDetail(voteId)
+        if (!isFirst) {
+          this.getVodeDetail(voteId)
+        }
         this.loading = false
       })
     },
