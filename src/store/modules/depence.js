@@ -154,7 +154,7 @@ const mutations = {
     if (payload.limit.background && payload.limit.background.indexpic) {
       const img = payload.limit.background.indexpic
       if (img.constructor === Object) {
-        payload.limit.background.indexpic.url = `${img.indexpic.host}${img.indexpic.filename}`
+        payload.limit.background.indexpic.url = `${img.host}${img.filename}`
       } else if (img.constructor === String) {
         payload.limit.background.indexpic = {}
         payload.limit.background.indexpic.url = img
