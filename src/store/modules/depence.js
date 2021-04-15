@@ -493,6 +493,7 @@ const actions = {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
         STORAGE.remove('answer_record_' + id)
+        state.answerList = []
         commit('SET_BLANK_ANSWER_INFO', {})
         commit('SET_CURRENT_SUBJECT_INDEX', 0)
         // 结束
@@ -535,7 +536,9 @@ const actions = {
         // 结束
         Indicator.close()
         if (saveInfo[0].success === 1) {
+          // 清空
           STORAGE.remove('answer_record_' + id)
+          state.answerList = []
           resolve()
         } else {
           throw new Error('error')
