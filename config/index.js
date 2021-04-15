@@ -53,7 +53,7 @@ module.exports = {
     // assetsRoot: path.resolve(__dirname, '../../xz_dist_pre/exam-h5'),
     assetsRoot: path.resolve(__dirname, '../../xz_dist/exam-h5'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: process.env.BUILD_TARGET === 'pre' ? '/xzh5/pre/' : '/xzh5',
+    assetsPublicPath: process.env.BUILD_TARGET === 'pre' ? '/xzh5/pre/' : '/xzh5/',
 
     /**
      * Source Maps
