@@ -6,6 +6,18 @@ import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 import wechat from '@/sdk/wechat'
 
+let smartCityConfig = {}
+let userAgent = navigator.userAgent.toLowerCase()
+const flag = /m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)
+if (flag) {
+  window.SmartCity.getUserInfo(res => {
+    if (res && res.userInfo) {
+      smartCityConfig.access_token = res.userInfo.userTokenKey
+      smartCityConfig.member_id = res.userInfo.userid
+    }
+  })
+}
+
 let currentApi = ''
 const instance = axios.create({
   timeout: apiConfig.timeout
@@ -16,6 +28,9 @@ instance.interceptors.request.use((config) => {
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
   config.params = config.params || {}
+  if (smartCityConfig && smartCityConfig.access_token) {
+    config.headers['X-PLUS-MEMBER'] = `access_token=${smartCityConfig.access_token}&member_id=${smartCityConfig.member_id}`
+  }
   // if (config.url.indexOf('setSubmit') > -1) {
   //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
   // }
