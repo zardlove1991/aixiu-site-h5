@@ -54,7 +54,7 @@ export default {
       // encodeURIComponent(location.href.split('#')[0])
       // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
       // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
-      let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
+      let appid = env === 'test' ? 'wx025937621152c396' : 'wx867227e69004473c'
       let res = STORAGE.get('signature')
       if (!res) {
         res = await this.getWeixinInfo({
