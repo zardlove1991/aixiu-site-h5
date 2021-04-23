@@ -616,6 +616,8 @@ $font-weight: 400;
           border: 1.2px solid $primary-color;
           border-radius: 15px;
           font-size: 14px;
+          position: relative;
+          z-index: 1;
       }
       .bg {
         position: absolute;
