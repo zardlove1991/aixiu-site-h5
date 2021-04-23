@@ -19,6 +19,6 @@ export default {
   'X-DEVICE-ID': '000',
   'APPID': env === 'test' ? 'wx025937621152c396' : 'wx867227e69004473c',
   'COMP_APPID': 'wx566758628b7a3fa2',
-  'REDIRECT-URI': env === 'test' ? `${protocol}//h5-ceshi.kxm.xmtv.cn/bridge/index.html` : `${protocol}//xzh5.hoge.cn/bridge/index.html`,
+  'REDIRECT-URI': env === 'test' ? `${protocol}//h5-ceshi.kxm.xmtv.cn/bridge/index.html` : `${protocol}//nizao.kxm.xmtv.cn/dependent-works/xiamen/bridge/index.html`,
   'OPEN_NEW_PAGE': ['api/client/examination/{id}', 'open/examination/detail', 'h5/signature', 'signature', 'client/voting/base/{id}', 'client/voting/{id}', 'client/order/{id}', 'client/news/{id}/']
 }
