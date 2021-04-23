@@ -22,7 +22,7 @@
             <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
             <div class="my-text integral-num">
               获得
-              <span class="static-weight">{{optionData.correct_num ? optionData.correct_num : 0}}</span>
+              <span class="static-weight">{{optionData.integral ? optionData.integral.integral : 0}}</span>
               积分
             </div>
             <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
@@ -196,8 +196,8 @@ export default {
       raffleUrl: '',
       shareLoading: false,
       isShowShare: false,
-      shareUrl: '', // 分享海报地址
-      isLimited: false
+      shareUrl: '' // 分享海报地址
+      // isLimited: false
     }
   },
   computed: {
@@ -263,6 +263,13 @@ export default {
         }
         return title
       }
+    },
+    isLimited () {
+      let flag = false
+      if (this.optionData.integral) {
+        flag = this.optionData.integral.type === 'upper'
+      }
+      return flag
     }
   },
   methods: {
@@ -617,6 +624,8 @@ $font-weight: 400;
         border: 1.2px solid $primary-color;
         border-radius: 15px;
         font-size: 14px;
+        position: relative;
+        z-index: 1;
       }
       .bg {
         position: absolute;
