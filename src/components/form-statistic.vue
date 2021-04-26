@@ -485,7 +485,7 @@ export default {
       })
     },
     shareScore () {
-      if (!this.shareLoading) return
+      if (this.shareLoading) return
       let optionData = this.optionData
       // console.log('shareScore', this.optionData)
       if (!optionData || !optionData.title) {
