@@ -31,6 +31,10 @@
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
+        <div class="exam-time" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral && examInfo.limit.integral_setting.is_open_add">
+          <div class="icon-integral"></div>
+          参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
+        </div>
         <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info2" v-html="examInfo.brief"></div>
         <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
           <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
@@ -626,11 +630,14 @@ export default {
     display:flex;
     align-items:center;
   }
-  .icon-time{
+  .icon-time, .icon-integral{
     width:px2rem(34px);
     height:px2rem(34px);
     margin-right:px2rem(20px);
     @include img-retina('~@/assets/common/timeInfo@2x.png','~@/assets/common/timeInfo@3x.png', 100%, 100%);
+  }
+  .icon-integral {
+    @include img-retina('~@/assets/common/integral_icon@2x.png','~@/assets/common/integral_icon@2x.png', 100%, 100%);
   }
   .exam-rule {
     width: 100%;
