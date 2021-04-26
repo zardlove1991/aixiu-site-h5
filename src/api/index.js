@@ -8,7 +8,23 @@ import wechat from '@/sdk/wechat'
 
 let smartCityConfig = {}
 let userAgent = navigator.userAgent.toLowerCase()
-const flag = /m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)
+let plat = ''
+if (/micromessenger/.test(userAgent)) {
+  plat = 'wechat'
+} else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
+  let arr = userAgent.split(' ')
+  plat = 'smartcity'
+  arr.map(item => {
+    if (/smartcity/.test(item)) {
+      plat = item
+    }
+  })
+} else if (/dingdone/.test(userAgent) || /kdtunion/.test(userAgent)) {
+  plat = 'dingdone'
+} else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
+  plat = 'dingding'
+}
+const flag = plat.indexOf('m2osmartcity') > -1
 if (flag) {
   window.SmartCity.getUserInfo(res => {
     if (res && res.userInfo) {
@@ -27,6 +43,7 @@ instance.interceptors.request.use((config) => {
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
+  config.headers['X-DEVICE-SIGN'] = plat
   config.params = config.params || {}
   if (smartCityConfig && smartCityConfig.access_token) {
     config.headers['X-PLUS-MEMBER'] = `access_token=${smartCityConfig.access_token}&member_id=${smartCityConfig.member_id}`
