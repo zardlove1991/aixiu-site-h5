@@ -12,6 +12,8 @@ let smartcity = {
         sdkInfo.avatarUrl = res.userInfo.picurl
         sdkInfo.telephone = res.userInfo.telephone
         sdkInfo.accessToken = res.userInfo.userTokenKey
+        sdkInfo.unit_id = res.userInfo.unit_id || ''
+        sdkInfo.unit_name = res.userInfo.unit_name || ''
         cbk && cbk(1, sdkInfo)
       } else {
         window.SmartCity.goLogin()
