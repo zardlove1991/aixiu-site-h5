@@ -14,6 +14,8 @@ let smartcity = {
         sdkInfo.accessToken = res.userInfo.userTokenKey
         if (res.userInfo.unit_id) {
           sdkInfo.unit_id = res.userInfo.unit_id
+        }
+        if (res.userInfo.unit_name) {
           sdkInfo.unit_name = res.userInfo.unit_name
         }
         cbk && cbk(1, sdkInfo)
