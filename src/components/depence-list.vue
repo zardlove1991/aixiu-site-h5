@@ -23,16 +23,12 @@
           :key="item.id">
         </subject-content>
       </div>
-    </div>
-    <div class="fixed-btn-wrap">
       <!--底部跳转按钮-->
-      <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
-        <!--上一题按钮-->
+      <div class="btn-wrap">
         <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
           :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
           @click.stop="changeSubjectIndex('sub')">
           上一题
-          <!-- <div class="prev-text">上一题</div> -->
         </div>
         <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
@@ -46,26 +42,14 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <!--填空题和排序题的确认按钮操作-->
-        <!-- <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
-          <div class="btn-confrim-shadow"></div>
-          <div class="btn-confrim-content">
-            <div class="btn-confrim-option"
-              :class="{ 'disabled': !isDidCurSubject }"
-              @click.stop="dealConfrimOption">确认</div>
-          </div>
-        </div> -->
-        <!--下一题按钮-->
         <div class="next-wrap"
           v-show="!isShowSubmitBtn"
           :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
           @click.stop="changeSubjectIndex('add')">
            下一题
-          <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
-          <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
     </div>
