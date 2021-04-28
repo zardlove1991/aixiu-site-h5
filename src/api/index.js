@@ -6,6 +6,34 @@ import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 import wechat from '@/sdk/wechat'
 
+let smartCityConfig = {}
+let userAgent = navigator.userAgent.toLowerCase()
+let plat = ''
+if (/micromessenger/.test(userAgent)) {
+  plat = 'wechat'
+} else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
+  let arr = userAgent.split(' ')
+  plat = 'smartcity'
+  arr.map(item => {
+    if (/smartcity/.test(item)) {
+      plat = item
+    }
+  })
+} else if (/dingdone/.test(userAgent) || /kdtunion/.test(userAgent)) {
+  plat = 'dingdone'
+} else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
+  plat = 'dingding'
+}
+const flag = plat.indexOf('m2osmartcity') > -1
+if (flag) {
+  window.SmartCity.getUserInfo(res => {
+    if (res && res.userInfo) {
+      smartCityConfig.access_token = res.userInfo.userTokenKey
+      smartCityConfig.member_id = res.userInfo.userid
+    }
+  })
+}
+
 let currentApi = ''
 const instance = axios.create({
   timeout: apiConfig.timeout
@@ -15,7 +43,11 @@ instance.interceptors.request.use((config) => {
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
+  config.headers['X-DEVICE-SIGN'] = plat
   config.params = config.params || {}
+  if (smartCityConfig && smartCityConfig.access_token) {
+    config.headers['X-PLUS-MEMBER'] = `access_token=${smartCityConfig.access_token}&member_id=${smartCityConfig.member_id}`
+  }
   // if (config.url.indexOf('setSubmit') > -1) {
   //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
   // }
@@ -84,7 +116,7 @@ instance.interceptors.response.use((res, xhr) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  if (isTimeout || status === 503 || status === 429 || status === 499 ) {
+  if (isTimeout || status === 503 || status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
       window.location.href = `/waitting.html?origin=${url}`
     } else {
