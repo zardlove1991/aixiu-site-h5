@@ -16,7 +16,7 @@ export default {
   'public': `${protocol}//public${suffix}${v2}.aihoge.com/`,
   'c4': `${protocol}//c4api${suffix}${v2}.aihoge.com/`,
   'news': `${protocol}//news${suffix}${v2}.aihoge.com/`,
-  'timeout': 10000,
+  'timeout': 20000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
   'X-DEVICE-ID': '000',
