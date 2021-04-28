@@ -1,6 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getAppSign } from '@/utils/utils'
+const smartCitySign = {'m2osmartcity_367': 1, 'm2osmartcity_381': 1}
 
 let smartcity = {
   authorize: (cbk) => {
@@ -8,7 +9,14 @@ let smartcity = {
       let sdkInfo = {}
       if (res && res.userInfo) {
         sdkInfo.userName = res.userInfo.username
-        sdkInfo.userId = res.userInfo.m2ouid.split('.').pop() + '_' + res.userInfo.userid
+        const sign = getAppSign()
+        console.log('特殊处理：', sign)
+        if (smartCitySign[sign]) {
+          sdkInfo.userId = `${sign}_${res.userInfo.userid}`
+        } else {
+          sdkInfo.userId = `${res.userInfo.m2ouid.split('.').pop()}_${res.userInfo.userid}`
+        }
+        // sdkInfo.userId = res.userInfo.m2ouid.split('.').pop() + '_' + res.userInfo.userid
         sdkInfo.avatarUrl = res.userInfo.picurl
         sdkInfo.telephone = res.userInfo.telephone
         sdkInfo.accessToken = res.userInfo.userTokenKey
