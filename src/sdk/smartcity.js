@@ -1,6 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getAppSign } from '@/utils/utils'
+const protocol = window.location.protocol
 
 let smartcity = {
   authorize: (cbk) => {
@@ -47,7 +48,7 @@ let smartcity = {
             userId: 'xiuzan',
             sign: getAppSign(),
             userName: '爱秀小秘书',
-            avatarUrl: '//aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
+            avatarUrl: protocol + '//aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
           }
           try {
             API.getSmartCityUser({
