@@ -152,8 +152,14 @@ const mutations = {
       }
     }
     if (payload.limit.background && payload.limit.background.indexpic) {
-      payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
-      window.document.getElementById('app').style.backgroundImage = 'url(' + payload.limit.background.indexpic.url + ')'
+      const img = payload.limit.background.indexpic
+      if (img.constructor === Object) {
+        payload.limit.background.indexpic.url = `${img.host}${img.filename}`
+      } else if (img.constructor === String) {
+        payload.limit.background.indexpic = {}
+        payload.limit.background.indexpic.url = img
+      }
+      window.document.getElementById('app').style.backgroundImage = `url(${payload.limit.background.indexpic.url})`
       if (payload.limit.background.mode && payload.limit.background.mode === 1) {
         // 固定
         window.document.getElementById('app').style.backgroundSize = '100%'
