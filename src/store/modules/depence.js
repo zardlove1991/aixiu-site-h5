@@ -472,7 +472,12 @@ const actions = {
   },
   END_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
-      let id = state.examId || payload.id
+      let id = state.examId
+      let examList = state.answerList
+      if (!id) {
+        id = payload.id
+        examList = payload.answerList
+      }
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
       let mark = 'examination'
@@ -495,6 +500,22 @@ const actions = {
         console.log(res)
       })
       Indicator.open({ spinnerType: 'fading-circle' })
+      if (examList && examList.length) {
+        let data = { params: [] }
+        data.params = examList
+        API.saveSubjectRecords({ query: { id }, data }).then(res => {
+          // 结束
+          Indicator.close()
+          if (res[0].success === 1) {
+            // 清空
+            STORAGE.remove('answer_record_' + id)
+            state.answerList = []
+            resolve()
+          } else {
+            throw new Error('error')
+          }
+        })
+      }
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
@@ -626,7 +647,7 @@ const actions = {
       // 将每次改动的答案存入
       let key = 'answer_record_' + state.examId
       let arr = STORAGE.get(key)
-      if (arr && arr.length) {
+      if (arr && arr.length && params && params.question_id) {
         let isExit = false
         for (let item of arr) {
           if (item.question_id === params.question_id) {
