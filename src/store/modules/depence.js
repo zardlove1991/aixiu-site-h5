@@ -504,42 +504,39 @@ const actions = {
         let data = { params: [] }
         data.params = examList
         API.saveSubjectRecords({ query: { id }, data }).then(res => {
-          // 结束
-          Indicator.close()
-          if (res[0].success === 1) {
+          if (res.success === 1) {
             // 清空
             STORAGE.remove('answer_record_' + id)
             state.answerList = []
-            resolve()
+            API.submitExam({ query: { id } }).then(res => {
+              // 删除本地缓存的单选的ID信息
+              if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+              STORAGE.remove('answer_record_' + id)
+              state.answerList = []
+              commit('SET_BLANK_ANSWER_INFO', {})
+              commit('SET_CURRENT_SUBJECT_INDEX', 0)
+              // 结束
+              Indicator.close()
+              if (res.success === 1) {
+                let raffle = res.raffle
+                if (raffle && raffle.raffle_url) {
+                  commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
+                }
+                resolve()
+              } else {
+                throw new Error({error_message: '结束考试出错'})
+              }
+            }).catch(err => {
+              // Toast(err.error_message || '结束考试出错')
+              // 结束
+              Indicator.close()
+              reject(err)
+            })
           } else {
             throw new Error('error')
           }
         })
       }
-      API.submitExam({ query: { id } }).then(res => {
-        // 删除本地缓存的单选的ID信息
-        if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
-        STORAGE.remove('answer_record_' + id)
-        state.answerList = []
-        commit('SET_BLANK_ANSWER_INFO', {})
-        commit('SET_CURRENT_SUBJECT_INDEX', 0)
-        // 结束
-        Indicator.close()
-        if (res.success === 1) {
-          let raffle = res.raffle
-          if (raffle && raffle.raffle_url) {
-            commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
-          }
-          resolve()
-        } else {
-          throw new Error({error_message: '结束考试出错'})
-        }
-      }).catch(err => {
-        // Toast(err.error_message || '结束考试出错')
-        // 结束
-        Indicator.close()
-        reject(err)
-      })
     })
   },
   SAVE_ANSWER_RECORDS ({state, commit}, payload) {
