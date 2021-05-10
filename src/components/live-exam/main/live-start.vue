@@ -214,10 +214,7 @@ export default {
       // 直接交卷
       let examId = this.id
       let answerRecord = STORAGE.get('answer_record_' + examId)
-      if (answerRecord && answerRecord.length) {
-        this.saveAnswerRecords({ examId, answerList: answerRecord })
-      }
-      await this.endExam({ id: examId })
+      await this.endExam({ id: examId, answerList: answerRecord })
       this.initStartInfo()
       this.isShowBreak = false
       this.breakDoAction()
