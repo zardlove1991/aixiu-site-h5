@@ -293,11 +293,11 @@ export default {
       }
     },
     submitExam () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = true
