@@ -206,6 +206,14 @@ export default {
         showConfirmBtn: false, // 确认按钮
         reduce_integral: 10, // 消耗积分数
         times: 1 // 获得答题次数
+      },
+      shareInfo: {
+        showShareButton: true, // 是否显示右上角的分享按钮
+        updateShareData: true, // 是否弹出分享视图
+        title: '分享标题',
+        brief: '分享简介',
+        contentURL: window.location.href, // 分享内容url
+        imageLink: '' // 分享图片链接
       }
     }
   },
@@ -271,12 +279,6 @@ export default {
   },
   created () {
     this.initStartInfo()
-    let plat = getPlat()
-    if (plat === 'smartcity') {
-      window.SmartCity.onShareSuccess((res) => {
-        this.appShareCallBack()
-      })
-    }
   },
   methods: {
     initFindAll () {
@@ -378,6 +380,17 @@ export default {
         // 分享
         this.sharePage()
         let info = this.examInfo
+        if (getPlat() === 'smartcity') {
+          const shareSettings = this.examInfo.limit.share_settings
+          const settings = {
+            title: shareSettings.share_title,
+            brief: shareSettings.share_brief,
+            contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+            imageLink: shareSettings.share_indexpic
+          }
+          this.shareInfo = {...this.shareInfo, ...settings}
+          this.initAppShare()
+        }
         if (info.person_status === 2) {
           // 考试中
           this.isShowBreak = true
@@ -474,17 +487,27 @@ export default {
       //   })
       // }
     },
-    appShareCallBack () {
-      if (this.examInfo.id && this.examInfo.limit.is_open_share) {
-        this.setShare({
-          id: this.examInfo.id,
-          title: this.examInfo.title,
-          desc: this.examInfo.desc,
-          mark: this.examInfo.mark
-        }).then(
-          this.shareAddTimes()
-        )
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.shareTo(this.shareInfo)
+        window.SmartCity.onShareSuccess((res) => {
+          this.appShareCallBack()
+        })
       }
+    },
+    appShareCallBack () {
+      console.log('app分享成功回调----')
+      // if (this.examInfo.id && this.examInfo.limit.is_open_share) {
+      //   this.setShare({
+      //     id: this.examInfo.id,
+      //     title: this.examInfo.title,
+      //     desc: this.examInfo.desc,
+      //     mark: this.examInfo.mark
+      //   }).then(
+      //     this.shareAddTimes()
+      //   )
+      // }
     },
     async startReExam () {
       let examId = this.id

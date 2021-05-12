@@ -520,7 +520,8 @@ export default {
         question_num: optionData.questions.length,
         correct_num: correntNum,
         use_time: userTime,
-        submit_time: submitTime
+        submit_time: submitTime,
+        exam_id: this.$route.params.id
       }
       if (name) {
         data.name = name
