@@ -5,7 +5,7 @@
       <div class="title">{{title}}</div>
       <div class="tips-logo" :class="{'integral-logo': dialogConfig.type === 'integral'}"></div>
       <div class="tips-content" v-html="dialogConfig.tips"></div>
-      <el-checkbox v-if="dialogConfig.type === 'integral'" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
+      <el-checkbox v-if="dialogConfig.type === 'integral'" @change="checkedUse" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
       <div class="btn-wrap" :class="{'has-confrim-btn': dialogConfig.showConfirmBtn}">
         <div class="cancel-btn" @click="closeDialog">算了吧</div>
         <div class="confirm-btn" @click="confirmDialog" v-if="dialogConfig.showConfirmBtn">使用积分</div>
@@ -15,6 +15,9 @@
 </template>
 
 <script>
+import { Toast } from 'mint-ui'
+import STORAGE from '@/utils/storage'
+
 export default {
   props: {
     visible: {
@@ -32,15 +35,26 @@ export default {
   },
   data () {
     return {
-      checked: false
+      checked: false,
+      examId: this.$route.params.id
     }
+  },
+  mounted () {
+    this.checked = STORAGE.get('use_integral_start') && STORAGE.get('use_integral_start').id === this.examId
   },
   methods: {
     closeDialog () {
       this.$emit('update:visible', false)
     },
     confirmDialog () {
-      this.$emit('handelConfirm')
+      if (this.checked) {
+        this.$emit('handelConfirm')
+      } else {
+        Toast('请勾选使用积分')
+      }
+    },
+    checkedUse () {
+      STORAGE.set('use_integral_start', {status: this.checked, id: this.examId})
     }
   }
 }
