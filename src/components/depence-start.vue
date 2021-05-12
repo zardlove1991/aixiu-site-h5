@@ -83,11 +83,11 @@
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
     </div>
-    <div class="btn-area" :class="{'is-disabled': disabledStartExam}" v-else>
+    <div class="btn-area" :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral'}" v-else>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
       <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
-      <div class="integral-number">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+      <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
     <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
     <my-model
@@ -912,7 +912,7 @@ export default {
     width:100%;
     position: fixed;;
     left:0;
-    bottom:px2rem(40px);
+    bottom:px2rem(100px);
     padding:0 px2rem(30px);
     .tooltip-style {
       top: px2rem(-68px);
@@ -942,6 +942,9 @@ export default {
     }
     .start-exambtn {
       @include bg-color('btnColor')
+    }
+    &.is-integral {
+      bottom:px2rem(40px);
     }
     &.is-disabled {
       .start-exambtn, .end-exambtn {
