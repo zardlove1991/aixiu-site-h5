@@ -85,6 +85,7 @@ export default {
   props: {
     id: String,
     rtp: String,
+    useIntegral: [Number, String],
     restart: {
       type: String,
       default: 'none'
@@ -153,7 +154,7 @@ export default {
         // 调用考试考试接口
         if (this.rtp === 'exam' && status !== 2) {
           let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart })
+          await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
         }
         // 设置标题
         setBrowserTitle(this.examInfo.title)

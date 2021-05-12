@@ -81,10 +81,13 @@
     <div class="btn-area" v-if="examInfo.timeStatus !== 0">
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
       <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
     </div>
-    <div class="btn-area" v-else>
+    <div class="btn-area" :class="{'is-disabled': disabledStartExam}" v-else>
+      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
       <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
+      <div class="integral-number">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
     <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
     <my-model
@@ -142,6 +145,10 @@
       @success="goExamPage()"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
+    <OperateDialog
+      :visible.sync="showOperateDialog"
+      :dialogConfig="dialogConfig"
+      @handelConfirm="goExamPage(1)"/>
   </div>
 </template>
 
@@ -158,6 +165,8 @@ import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
+import CustomTooltips from './exam-components/custom-tooltips'
+import OperateDialog from './exam-components/operate-dialog'
 
 export default {
   mixins: [mixins],
@@ -189,10 +198,18 @@ export default {
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
       isShowInfo: false,
-      isShowFindAll: false
+      isShowFindAll: false,
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'balance', // 弹窗类型
+        tips: '账户积分余额不足，无法参与答题下次再来吧~', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        reduce_integral: 10, // 消耗积分数
+        times: 1 // 获得答题次数
+      }
     }
   },
-  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog },
+  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
     examSubmitCount2 () {
@@ -218,6 +235,27 @@ export default {
         }
       }
       return count
+    },
+    disabledStartExam () {
+      /*
+      *开启积分消耗：无免费答题次数，无积分消耗次数
+      *关闭积分消耗：无免费答题次数
+      */
+      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
+      const flag1 = integralSettings.is_open_reduce && !integralSettings.free_counts && !integralSettings.user_integral_counts
+      const flag2 = integralSettings.free_counts && !integralSettings.is_open_reduce
+      return flag1 || flag2
+    },
+    tooltipsStr () {
+      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
+      if (!integralSettings.free_counts && integralSettings.is_open_reduce) {
+        if (integralSettings.user_integral_counts > 0) {
+          return `${integralSettings.user_integral_counts}次免费答题答题机会`
+        } else if (!integralSettings.user_integral_counts) {
+          return '积分兑换次数已达今日上限'
+        }
+      }
+      return ''
     }
   },
   created () {
@@ -431,24 +469,25 @@ export default {
       }
     },
     isShowPassword () {
-      let limit = this.examInfo.limit.visit_password_limit
-      if (limit) {
-        this.visitPasswordLimit = true
-      } else {
-        // check
-        let examId = this.id
-        API.checkPassword({query: { id: examId }}).then((res) => {
-          if (res && (res.limit_source || res.app_download_link)) {
-            this.App = true
-            this.appDownloadUrl = res.app_download_link
-            this.limitSource = res.limit_source
-          } else {
-            this.isShowCheckDraw()
-          }
-        }).catch(err => {
-          console.log(err)
-        })
-      }
+      this.goExamPage()
+      // let limit = this.examInfo.limit.visit_password_limit
+      // if (limit) {
+      //   this.visitPasswordLimit = true
+      // } else {
+      //   // check
+      //   let examId = this.id
+      //   API.checkPassword({query: { id: examId }}).then((res) => {
+      //     if (res && (res.limit_source || res.app_download_link)) {
+      //       this.App = true
+      //       this.appDownloadUrl = res.app_download_link
+      //       this.limitSource = res.limit_source
+      //     } else {
+      //       this.isShowCheckDraw()
+      //     }
+      //   }).catch(err => {
+      //     console.log(err)
+      //   })
+      // }
     },
     hiddenPasswordLimit () {
       this.visitPasswordLimit = false
@@ -563,19 +602,47 @@ export default {
         this.goExamPage()
       }
     },
-    goExamPage () {
+    goExamPage (val) {
+      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      console.log(integralSettings, 99999)
+      /*
+      *开启积分消耗：无免费答题次数，无积分消耗次数
+      *关闭积分消耗：无免费答题次数
+      */
+      if (this.disabledStartExam) return
+      if (!integralSettings.free_counts && integralSettings.is_open_reduce && val !== 1) {
+        this.showOperateDialog = true
+        this.dialogConfig = {
+          type: 'integral', // 弹窗类型
+          tips: '免费答题机会已用完可以使用积分继续答题哦~', // 提示文案
+          showConfirmBtn: true, // 确认按钮
+          reduce_integral: integralSettings.reduce_num, // 消耗积分数
+          times: integralSettings.add_times // 获得答题次数
+        }
+        return
+      }
+      if (integralSettings.is_open_reduce && this.examInfo.all_credits < integralSettings.reduce_num) {
+        this.showOperateDialog = true
+        this.dialogConfig = {
+          type: 'balance', // 弹窗类型
+          tips: '账户积分余额不足，无法参与答题下次再来吧~~', // 提示文案
+          showConfirmBtn: false
+        }
+        return
+      }
       let examId = this.id
       // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
+      const query = { use_integral: val === 1 ? 1 : 0, rtp: 'exam' }
       if (!this.examInfo.limit.is_page_submit) {
         this.$router.replace({
           path: `/alllist/${examId}`,
-          query: { rtp: 'exam' }
+          query
         })
       } else {
         this.$router.replace({
           path: `/depencelist/${examId}`,
-          query: { rtp: 'exam' }
+          query
         })
       }
     },
@@ -771,7 +838,7 @@ export default {
           justify-content: center;
           align-items: center;
           text-align:center;
-          height:px2rem(150px);
+          height:px2rem(140px);
           background:rgba(255,255,255,0.2);
           color:#fff;
           border-radius: px2rem(12px);
@@ -810,22 +877,22 @@ export default {
           }
         }
         .row-icon{
-          width:px2rem(80px);
-          height:px2rem(80px);
+          width:px2rem(73px);
+          height:px2rem(118px);
           position:absolute;
-          right:px2rem(10px);
-          top:px2rem(20px);
+          right:0;
+          bottom:0;
           background-position: center;
           background-repeat: no-repeat;
         }
         .row-naozhong{
-          @include img-retina('~@/assets/common/row_click@2x.png','~@/assets/common/row_click@3x.png', 100%, 100%);
+          @include img-retina('~@/assets/common/exam/icon_full_mark.png','~@/assets/common/exam/icon_full_mark.png', 100%, 100%);
         }
         .row-juanzi{
-          @include img-retina('~@/assets/common/juanzi@2x.png','~@/assets/common/juanzi@3x.png', 100%, 100%);
+          @include img-retina('~@/assets/common/exam/icon_paper.png','~@/assets/common/exam/icon_paper.png', 100%, 100%);
         }
         .row-jianguo{
-          @include img-retina('~@/assets/common/jianguo@2x.png','~@/assets/common/jianguo@3x.png', 100%, 100%);
+          @include img-retina('~@/assets/common/exam/icon_clock.png','~@/assets/common/exam/icon_clock.png', 100%, 100%);
         }
       }
       .footer-brief{
@@ -841,12 +908,47 @@ export default {
       }
     }
   }
-  .btn-area{
-    display:flex;
+  .btn-area {
     width:100%;
     position: fixed;;
     left:0;
-    bottom:px2rem(100px);
+    bottom:px2rem(40px);
+    padding:0 px2rem(30px);
+    .tooltip-style {
+      top: px2rem(-68px);
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+    .integral-number {
+      color: #fff;
+      font-size: px2rem(28px);
+      font-family: SourceHanSansCN-Regular, SourceHanSansCN;
+      font-weight: 400;
+      line-height: px2rem(42px);
+      text-align: center;
+      margin-top: px2rem(30px);
+    }
+    .start-exambtn, .end-exambtn {
+      box-sizing: border-box;
+      width: 100%;
+      border-radius: px2rem(8px);
+      height: px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      border: none;
+      background-color:#CCC;
+      @include font-dpr(16px);
+      color: #fff;
+    }
+    .start-exambtn {
+      @include bg-color('btnColor')
+    }
+    &.is-disabled {
+      .start-exambtn, .end-exambtn {
+        background: #BBBBBB;
+        color: #fff;
+      }
+    }
   }
   .start-exam-tips {
     position:absolute;
@@ -856,31 +958,6 @@ export default {
     text-align: center;
     color:#fff;
     @include font-dpr(14px);
-  }
-  .start-exambtn{
-    flex:1;
-    border-radius: px2rem(8px);
-    margin:0 px2rem(30px);
-    height: px2rem(90px);
-    line-height: px2rem(90px);
-    text-align: center;
-    border: none;
-    color:#fff;
-    @include font-dpr(16px);
-    @include bg-color('btnColor')
-  }
-  .end-exambtn{
-    flex:1;
-    border-radius: px2rem(8px);
-    margin:0 px2rem(30px);
-    height: px2rem(90px);
-    line-height: px2rem(90px);
-    text-align: center;
-    border: none;
-    background-color:#CCC;
-    @include font-dpr(16px);
-    // @include font-color('bgColor');
-    color: #fff;
   }
   .reset-exam-btns{
     display: flex;
