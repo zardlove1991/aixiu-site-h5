@@ -40,7 +40,7 @@ export default {
     }
   },
   mounted () {
-    this.checked = STORAGE.get('use_integral_start') && STORAGE.get('use_integral_start').id === this.examId
+    // this.checked = STORAGE.get('use_integral_start') && STORAGE.get('use_integral_start').id === this.examId
   },
   methods: {
     closeDialog () {
@@ -48,7 +48,10 @@ export default {
     },
     confirmDialog () {
       if (this.checked) {
+        const obj = {id: this.examId, record_time: new Date().getTime()}
+        STORAGE.set('use_integral_start', obj)
         this.$emit('handelConfirm')
+        this.$emit('update:visible', false)
       } else {
         Toast('请勾选使用积分')
       }
@@ -137,6 +140,7 @@ export default {
         .el-checkbox__label {
           width: 90%;
           white-space: break-spaces;
+          color: #333;
         }
       }
       .btn-wrap {
