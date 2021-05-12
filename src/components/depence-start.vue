@@ -157,7 +157,7 @@ import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
 import STORAGE from '@/utils/storage'
-import { setBrowserTitle, delUrlParams } from '@/utils/utils'
+import { setBrowserTitle, delUrlParams, getPlat } from '@/utils/utils'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import MyModel from './depence/model'
@@ -255,19 +255,21 @@ export default {
     tooltipsStr () {
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
       if (this.examInfo.mark === 'examination@integral') {
-        if (!integralSettings.free_counts && integralSettings.is_open_reduce) {
-          if (!integralSettings.user_integral_counts) {
+        if (!integralSettings.free_counts && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
+          if (!integralSettings.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
+          } else {
+            return '免费答题次数已用完，可使用积分参与答题'
           }
         }
-        if (!integralSettings.free_counts && !integralSettings.is_open_reduce) {
+        if (!integralSettings.free_counts && !integralSettings.is_open_reduce) { // 无免费答题，未开启积分消耗
           let msg = ''
           if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
             msg = this.examInfo.limit.free_times_setting.day_limit ? '今日' : '活动全程'
           }
           return `${msg}免费答题次数已用完`
         }
-        if (integralSettings.free_counts > 0) {
+        if (integralSettings.free_counts > 0) { // 免费答题次数
           return `${integralSettings.free_counts}次免费答题答题机会`
         }
       }
@@ -276,6 +278,12 @@ export default {
   },
   created () {
     this.initStartInfo()
+    let plat = getPlat()
+    if (plat === 'smartcity') {
+      window.SmartCity.onShareSuccess((res) => {
+        this.appShareCallBack()
+      })
+    }
   },
   methods: {
     initFindAll () {
@@ -454,7 +462,36 @@ export default {
         indexpic: imgUrl,
         link,
         mark: 'examination'
-      })
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      console.log('分享成功回调-----')
+      // if (this.examInfo.limit.is_open_share) {
+      //   API.shareAddTimes({
+      //     query: {
+      //       id: this.examInfo.id
+      //     }
+      //   }).then(res => {
+      //     let {data} = res
+      //     if (!data.has_share) {
+      //       this.getExamDetail({id: this.examInfo.id})
+      //     } else {
+      //       // 已经分享过
+      //     }
+      //   })
+      // }
+    },
+    appShareCallBack () {
+      if (this.examInfo.id && this.examInfo.limit.is_open_share) {
+        this.setShare({
+          id: this.examInfo.id,
+          title: this.examInfo.title,
+          desc: this.examInfo.desc,
+          mark: this.examInfo.mark
+        }).then(
+          this.shareAddTimes()
+        )
+      }
     },
     async startReExam () {
       let examId = this.id
