@@ -259,15 +259,8 @@ export default {
           if (!integralSettings.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
           } else {
-            return '免费答题次数已用完，可使用积分参与答题'
+            return '免费次数已用完，可使用积分参与答题'
           }
-        }
-        if (!integralSettings.free_counts && !integralSettings.is_open_reduce) { // 无免费答题，未开启积分消耗
-          let msg = ''
-          if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
-            msg = this.examInfo.limit.free_times_setting.day_limit ? '今日' : '活动全程'
-          }
-          return `${msg}免费答题次数已用完`
         }
         if (integralSettings.free_counts > 0) { // 免费答题次数
           return `${integralSettings.free_counts}次免费答题答题机会`
@@ -656,6 +649,7 @@ export default {
     },
     goExamPage (val) {
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      let params = {}
       /*
       *积分答题 开始答题前置条件
       *1.有免费答题机会；开始答题
@@ -674,14 +668,20 @@ export default {
             }
             return
           }
-          if (integralSettings.user_integral_counts) { // 有积分消耗机会
+          const recordTime = STORAGE.get('use_integral_start') ? STORAGE.get('use_integral_start').record_time : ''
+          const sameDay = Number(recordTime) ? new Date(Number(recordTime)).toDateString() === new Date().toDateString() : false
+          params = {use_integral: (val === 1 ? val : sameDay) ? 1 : 0}
+          const flag = val === 1 ? !val : !sameDay
+          if (integralSettings.user_integral_counts && flag) { // 有积分消耗机会
+            this.showOperateDialog = true
             let msg = ''
             if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
-              msg = this.examInfo.limit.free_times_setting.day_limit ? '今日的' : ''
+              const tmpMsg = this.examInfo.limit.free_times_setting.day_limit ? '今日的' : ''
+              msg = this.examInfo.limit.free_times_setting.is_open_limit ? `${tmpMsg}免费答题机会已用完可以使用积分继续答题哦~` : '参与答题需要消耗积分'
             }
             this.dialogConfig = {
               type: 'integral', // 弹窗类型
-              tips: `${msg}免费答题机会已用完可以使用积分继续答题哦~`, // 提示文案
+              tips: msg, // 提示文案
               showConfirmBtn: true, // 确认按钮
               reduce_integral: integralSettings.reduce_num, // 消耗积分数
               times: integralSettings.add_times // 获得答题次数
@@ -693,7 +693,7 @@ export default {
       let examId = this.id
       // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
-      const query = { use_integral: val === 1 ? 1 : 0, rtp: 'exam' }
+      const query = { ...params, rtp: 'exam' }
       if (!this.examInfo.limit.is_page_submit) {
         this.$router.replace({
           path: `/alllist/${examId}`,
@@ -976,8 +976,6 @@ export default {
     padding:0 px2rem(30px);
     .tooltip-style {
       top: px2rem(-68px);
-      left: 50%;
-      transform: translate(-50%, 0);
     }
     .integral-number {
       color: #fff;
@@ -1005,6 +1003,9 @@ export default {
     }
     &.is-integral {
       bottom:px2rem(40px);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     &.is-disabled {
       .start-exambtn, .end-exambtn {

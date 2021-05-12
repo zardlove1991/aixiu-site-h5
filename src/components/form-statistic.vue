@@ -55,7 +55,7 @@
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
-              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
+              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
           <!-- 隐藏统计信息 -->

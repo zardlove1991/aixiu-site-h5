@@ -1,6 +1,6 @@
 <template>
   <div class="custom-tooltips-wrap" v-if="visible">
-    <span class="tips-content">{{content}}</span>
+    <div class="tips-content">{{content}}</div>
     <div class="triangle-icon"></div>
   </div>
 </template>
@@ -26,8 +26,7 @@ export default {
 <style lang="scss">
 @import "@/styles/index.scss";
   .custom-tooltips-wrap {
-    max-width: px2rem(456px);
-    min-width: px2rem(50px);
+    max-width: px2rem(500px);
     border-radius: 4px;
     background: #f4dbc6;
     padding: px2rem(10px);
