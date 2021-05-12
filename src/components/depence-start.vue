@@ -201,7 +201,7 @@ export default {
       isShowFindAll: false,
       showOperateDialog: false,
       dialogConfig: {
-        type: 'balance', // 弹窗类型
+        type: 'integral', // 弹窗类型
         tips: '账户积分余额不足，无法参与答题下次再来吧~', // 提示文案
         showConfirmBtn: false, // 确认按钮
         reduce_integral: 10, // 消耗积分数
@@ -237,22 +237,38 @@ export default {
       return count
     },
     disabledStartExam () {
+      let flag = false
       /*
       *开启积分消耗：无免费答题次数，无积分消耗次数
       *关闭积分消耗：无免费答题次数
       */
-      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
-      const flag1 = integralSettings.is_open_reduce && !integralSettings.free_counts && !integralSettings.user_integral_counts
-      const flag2 = integralSettings.free_counts && !integralSettings.is_open_reduce
-      return flag1 || flag2
+      if (this.examInfo.mark === 'examination@integral') {
+        const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
+        if (integralSettings.is_open_reduce) { // 开启积分消耗
+          return !integralSettings.free_counts && !integralSettings.user_integral_counts
+        } else {
+          return !integralSettings.free_counts
+        }
+      }
+      return flag
     },
     tooltipsStr () {
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
-      if (!integralSettings.free_counts && integralSettings.is_open_reduce) {
-        if (integralSettings.user_integral_counts > 0) {
-          return `${integralSettings.user_integral_counts}次免费答题答题机会`
-        } else if (!integralSettings.user_integral_counts) {
-          return '积分兑换次数已达今日上限'
+      if (this.examInfo.mark === 'examination@integral') {
+        if (!integralSettings.free_counts && integralSettings.is_open_reduce) {
+          if (!integralSettings.user_integral_counts) {
+            return '积分兑换次数已达今日上限'
+          }
+        }
+        if (!integralSettings.free_counts && !integralSettings.is_open_reduce) {
+          let msg = ''
+          if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
+            msg = this.examInfo.limit.free_times_setting.day_limit ? '今日' : '活动全程'
+          }
+          return `${msg}免费答题次数已用完`
+        }
+        if (integralSettings.free_counts > 0) {
+          return `${integralSettings.free_counts}次免费答题答题机会`
         }
       }
       return ''
@@ -469,25 +485,24 @@ export default {
       }
     },
     isShowPassword () {
-      this.goExamPage()
-      // let limit = this.examInfo.limit.visit_password_limit
-      // if (limit) {
-      //   this.visitPasswordLimit = true
-      // } else {
-      //   // check
-      //   let examId = this.id
-      //   API.checkPassword({query: { id: examId }}).then((res) => {
-      //     if (res && (res.limit_source || res.app_download_link)) {
-      //       this.App = true
-      //       this.appDownloadUrl = res.app_download_link
-      //       this.limitSource = res.limit_source
-      //     } else {
-      //       this.isShowCheckDraw()
-      //     }
-      //   }).catch(err => {
-      //     console.log(err)
-      //   })
-      // }
+      let limit = this.examInfo.limit.visit_password_limit
+      if (limit) {
+        this.visitPasswordLimit = true
+      } else {
+        // check
+        let examId = this.id
+        API.checkPassword({query: { id: examId }}).then((res) => {
+          if (res && (res.limit_source || res.app_download_link)) {
+            this.App = true
+            this.appDownloadUrl = res.app_download_link
+            this.limitSource = res.limit_source
+          } else {
+            this.isShowCheckDraw()
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }
     },
     hiddenPasswordLimit () {
       this.visitPasswordLimit = false
@@ -604,31 +619,39 @@ export default {
     },
     goExamPage (val) {
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
-      console.log(integralSettings, 99999)
       /*
-      *开启积分消耗：无免费答题次数，无积分消耗次数
-      *关闭积分消耗：无免费答题次数
+      *积分答题 开始答题前置条件
+      *1.有免费答题机会；开始答题
+      *2.无免费答题机会，且没有开启积分消耗；中止
+      *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
       if (this.disabledStartExam) return
-      if (!integralSettings.free_counts && integralSettings.is_open_reduce && val !== 1) {
-        this.showOperateDialog = true
-        this.dialogConfig = {
-          type: 'integral', // 弹窗类型
-          tips: '免费答题机会已用完可以使用积分继续答题哦~', // 提示文案
-          showConfirmBtn: true, // 确认按钮
-          reduce_integral: integralSettings.reduce_num, // 消耗积分数
-          times: integralSettings.add_times // 获得答题次数
+      if (this.examInfo.mark === 'examination@integral' && !integralSettings.free_counts) { // 积分答题：没有免费答题机会
+        if (integralSettings.is_open_reduce) { // 开启积分消耗
+          if (integralSettings.user_integral_counts && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
+            this.showOperateDialog = true
+            this.dialogConfig = {
+              type: 'balance', // 弹窗类型
+              tips: '账户积分余额不足，无法参与答题下次再来吧~~', // 提示文案
+              showConfirmBtn: false
+            }
+            return
+          }
+          if (integralSettings.user_integral_counts) { // 有积分消耗机会
+            let msg = ''
+            if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
+              msg = this.examInfo.limit.free_times_setting.day_limit ? '今日的' : ''
+            }
+            this.dialogConfig = {
+              type: 'integral', // 弹窗类型
+              tips: `${msg}免费答题机会已用完可以使用积分继续答题哦~`, // 提示文案
+              showConfirmBtn: true, // 确认按钮
+              reduce_integral: integralSettings.reduce_num, // 消耗积分数
+              times: integralSettings.add_times // 获得答题次数
+            }
+            return
+          }
         }
-        return
-      }
-      if (integralSettings.is_open_reduce && this.examInfo.all_credits < integralSettings.reduce_num) {
-        this.showOperateDialog = true
-        this.dialogConfig = {
-          type: 'balance', // 弹窗类型
-          tips: '账户积分余额不足，无法参与答题下次再来吧~~', // 提示文案
-          showConfirmBtn: false
-        }
-        return
       }
       let examId = this.id
       // let redirectParams = this.redirectParams
