@@ -668,10 +668,11 @@ export default {
             }
             return
           }
-          const recordTime = STORAGE.get('use_integral_start') ? STORAGE.get('use_integral_start').record_time : ''
-          const sameDay = Number(recordTime) ? new Date(Number(recordTime)).toDateString() === new Date().toDateString() : false
+          const useIntegralStart = STORAGE.get('use_integral_start') || {}
+          const recordTime = Number(useIntegralStart.record_time)
+          const sameDay = recordTime ? new Date(recordTime).toDateString() === new Date().toDateString() : false
           params = {use_integral: (val === 1 ? val : sameDay) ? 1 : 0}
-          const flag = val === 1 ? !val : !sameDay
+          const flag = val === 1 ? !val : !(sameDay && useIntegralStart.id === this.id)
           if (integralSettings.user_integral_counts && flag) { // 有积分消耗机会
             this.showOperateDialog = true
             let msg = ''
