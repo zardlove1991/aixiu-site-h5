@@ -16,5 +16,6 @@ export const setUserDetail = (data) => {
 
 export const oauth = (cbk) => {
   let plat = getPlat()
+  console.log(plat, 'oauth')
   sdkPlat[plat].oauth(cbk)
 }

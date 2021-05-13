@@ -541,7 +541,7 @@ export const getAppSign = () => {
 
 export const getShareUrl = (...args) => {
   const protocol = window.location.protocol
-  let tmpLink = `${protocol}//xzh5.hoge.cn/bridge/index.html?backUrl=`
+  let tmpLink = `${protocol}//nizao.kxm.xmtv.cn/dependent-works/xiamen/bridge/index.html?backUrl=`
   let len = args.length
   for (let i = 0; i < len; i += 1) {
     tmpLink += args[i]

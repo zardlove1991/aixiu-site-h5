@@ -159,10 +159,10 @@ export default {
           width: px2rem(320px);
           height: px2rem(72px);
           line-height: px2rem(72px);
-          background: linear-gradient(318deg, #FFA37B 0%, #FF6A45 100%);
+          background: #ffffff;
           border-radius: px2rem(36px);
           @include font-dpr(14px);
-          color: #fff;
+          color: #31A3F5;
           text-align: center;
         }
         .tips1 {

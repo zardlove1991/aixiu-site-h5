@@ -27,6 +27,7 @@ router.beforeEach((to, from, next) => {
   let name = to.name
   let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
   if (allArr.includes(name) && !from.name) {
+    console.log(to, from, 'beforeEach')
     // 第一次进入页面
     oauth((res) => {
       if (res && res.id) {
@@ -39,6 +40,7 @@ router.beforeEach((to, from, next) => {
 })
 // 添加路由的钩子函数
 router.afterEach((route, from) => {
+  console.log(route, from, 'afterEach')
   // dynamicTitle 动态标题（某个内容跳转）
   let query = router.history.current.query
   let routerTitle = query && query.title ? query.title : route.meta.title

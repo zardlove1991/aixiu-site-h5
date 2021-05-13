@@ -7,9 +7,9 @@ const getOtherComponent = (name, global) => () => import(`@/components/${global}
 const routeBase = () => {
   let href = window.location.href
   if (href.indexOf('pre') > 0) {
-    return '/pre/'
+    return '/pre/xzh5/'
   }
-  return '/'
+  return '/xzh5/'
 }
 
 Vue.use(Router)
