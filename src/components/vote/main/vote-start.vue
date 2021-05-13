@@ -441,7 +441,7 @@ export default {
         setBrowserTitle(res.title)
         // 分享
         this.sharePage(res)
-        this.setLocation()
+        // this.setLocation()
         // 其他限制
         this.handleVoteData()
         // 作品列表
