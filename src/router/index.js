@@ -19,7 +19,7 @@ const routes = [{
   name: 'browserpage',
   component: getComponent('browser'),
   meta: {
-    title: '爱秀'
+    title: '看厦门'
   }
 }, {
   path: '/depencelist/:id',
