@@ -77,7 +77,7 @@ instance.interceptors.response.use((res, xhr) => {
   }
   if (res.status === 204) {
     const url = encodeURI(window.location.href)
-    window.location.href = `/nodata.html?origin=${url}`
+    window.location.href = `/xzh5/nodata.html?origin=${url}`
   }
   return data.response || data.result || data
 }, (error) => {
@@ -86,14 +86,14 @@ instance.interceptors.response.use((res, xhr) => {
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   if (isTimeout || status === 503 || (status >= 400 && status < 500 && status !== 422)) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      window.location.href = `/waitting.html?origin=${url}`
+      window.location.href = `/xzh5/waitting.html?origin=${url}`
     } else {
       store.dispatch('setDialogVisible', true)
       return
     }
   } else if (status >= 500 || status === 422) {
     // window.location.href = `/error.html?origin=${url}`
-    window.location.href = `/waitting.html?origin=${url}`
+    window.location.href = `/xzh5/waitting.html?origin=${url}`
   }
   let rej = null
   let res = error.response
@@ -121,7 +121,7 @@ instance.interceptors.response.use((res, xhr) => {
   } else {
     const url = encodeURI(window.location.href)
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      window.location.href = `/waitting.html?origin=${url}`
+      window.location.href = `/xzh5/waitting.html?origin=${url}`
     } else {
       store.dispatch('setDialogVisible', true)
       return
