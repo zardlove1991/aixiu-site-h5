@@ -206,14 +206,6 @@ export default {
         showConfirmBtn: false, // 确认按钮
         reduce_integral: 10, // 消耗积分数
         times: 1 // 获得答题次数
-      },
-      shareInfo: {
-        showShareButton: true, // 是否显示右上角的分享按钮
-        updateShareData: true, // 是否弹出分享视图
-        title: '分享标题',
-        brief: '分享简介',
-        contentURL: window.location.href, // 分享内容url
-        imageLink: '' // 分享图片链接
       }
     }
   },
@@ -381,14 +373,6 @@ export default {
         this.sharePage()
         let info = this.examInfo
         if (getPlat() === 'smartcity') {
-          const shareSettings = this.examInfo.limit.share_settings
-          const settings = {
-            title: shareSettings.share_title,
-            brief: shareSettings.share_brief,
-            contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-            imageLink: shareSettings.share_indexpic
-          }
-          this.shareInfo = {...this.shareInfo, ...settings}
           this.initAppShare()
         }
         if (info.person_status === 2) {
@@ -471,43 +455,38 @@ export default {
       }, this.shareAddTimes)
     },
     shareAddTimes () { // 分享成功回调
-      console.log('分享成功回调-----')
-      // if (this.examInfo.limit.is_open_share) {
-      //   API.shareAddTimes({
-      //     query: {
-      //       id: this.examInfo.id
-      //     }
-      //   }).then(res => {
-      //     let {data} = res
-      //     if (!data.has_share) {
-      //       this.getExamDetail({id: this.examInfo.id})
-      //     } else {
-      //       // 已经分享过
-      //     }
-      //   })
-      // }
+      const examId = this.examInfo.id
+      if (this.examInfo.limit.is_open_share) {
+        API.shareAddTimes({
+          query: {
+            id: examId
+          }
+        }).then(res => {
+          if (res.code === 1) {
+            this.getExamDetail({id: examId})
+          } else {
+            // 已经分享过
+          }
+        })
+      }
     },
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        window.SmartCity.shareTo(this.shareInfo)
+        const shareSettings = this.examInfo.limit.share_settings
+        const settings = {
+          showShareButton: true, // 是否显示右上角的分享按钮
+          updateShareData: true, // 是否弹出分享视图
+          title: shareSettings.share_title,
+          brief: shareSettings.share_brief,
+          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+          imageLink: shareSettings.share_indexpic
+        }
+        window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
-          this.appShareCallBack()
+          this.shareAddTimes()
         })
       }
-    },
-    appShareCallBack () {
-      console.log('app分享成功回调----')
-      // if (this.examInfo.id && this.examInfo.limit.is_open_share) {
-      //   this.setShare({
-      //     id: this.examInfo.id,
-      //     title: this.examInfo.title,
-      //     desc: this.examInfo.desc,
-      //     mark: this.examInfo.mark
-      //   }).then(
-      //     this.shareAddTimes()
-      //   )
-      // }
     },
     async startReExam () {
       let examId = this.id
@@ -686,7 +665,7 @@ export default {
             this.showOperateDialog = true
             this.dialogConfig = {
               type: 'balance', // 弹窗类型
-              tips: '账户积分余额不足，无法参与答题下次再来吧~~', // 提示文案
+              tips: '账户积分余额不足，无法参与答题下次再来吧~', // 提示文案
               showConfirmBtn: false
             }
             return
@@ -999,7 +978,7 @@ export default {
     bottom:px2rem(100px);
     padding:0 px2rem(30px);
     .tooltip-style {
-      top: px2rem(-68px);
+      top: px2rem(-72px);
     }
     .integral-number {
       color: #fff;

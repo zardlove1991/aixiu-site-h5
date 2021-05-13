@@ -44,7 +44,8 @@ let examUrl = {
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getExamAuthScope: 'open/examination/detail', // 测评授权接口
   getInfoDept: 'client/examination/import/verify', // 获取信息收集用户的部门
-  setLiveVideoTime: 'client/examination/live/statistics' // 直播答题观看时间
+  setLiveVideoTime: 'client/examination/live/statistics', // 直播答题观看时间
+  shareAddTimes: 'client/examination/live/share/{id}' // 分享增加答题次数
 }
 
 // 投票相关接口
@@ -140,6 +141,7 @@ export default {
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
+  shareAddTimes: config => createAPI(configUrl.shareAddTimes, 'GET', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
