@@ -19,13 +19,13 @@ export default {
 
   // 'submit': `${protocol}//nizao.kxm.xmtv.cn/result/`,
   // 'user': `${protocol}//member${suffix}${v2}.kxm.xmtv.cn/`, // 用户部分保留原始结构
-  'exam': `${protocol}//nizao.kxm.xmtv.cn/examinationapi/`,
+  'exam': `${protocol}//public.kxm.xmtv.cn/examinationapi/`,
   // 'vote': `${protocol}//nizao.kxm.xmtv.cn/voteapi/`,
   // 'mlink': `${protocol}//nizao.kxm.xmtv.cn/m/`,
   // 'reserve': `${protocol}//nizao.kxm.xmtv.cn/reserve/`,
   // 'public': `${protocol}//nizao.kxm.xmtv.cn/public/`,
-  'c4': `${protocol}//nizao.kxm.xmtv.cn/c4api/`,
-  'news': `${protocol}//nizao.kxm.xmtv.cn/news/`,
+  'c4': `${protocol}//public.kxm.xmtv.cn/c4api/`,
+  'news': `${protocol}//public.kxm.xmtv.cn/news/`,
   //
   'timeout': 10000,
   'HTTP-X-H5-VERSION': 1.0,
