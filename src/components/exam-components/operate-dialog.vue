@@ -3,8 +3,12 @@
     <div class="operate-dialog-wrap" :class="{'is-balance': dialogConfig.type !== 'integral'}">
       <span class="close-btn" @click="closeDialog"></span>
       <div class="title">{{title}}</div>
-      <div class="tips-logo" :class="{'integral-logo': dialogConfig.type === 'integral'}"></div>
-      <div class="tips-content" v-html="dialogConfig.tips"></div>
+      <div class="tips-logo" :class="`${dialogConfig.type}-logo`"></div>
+      <div class="tips-content" v-html="dialogConfig.tips" v-if="dialogConfig.type !== 'share'"></div>
+      <div class="share-tips-content" v-if="dialogConfig.type === 'share'">
+        <div class="number-tips">获得<span class="special-text">&nbsp;{{dialogConfig.showNumber}}次&nbsp;</span>免费答题的机会</div>
+        <div>{{dialogConfig.tips}}</div>
+      </div>
       <el-checkbox v-if="dialogConfig.type === 'integral'" @change="checkedUse" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
       <div class="btn-wrap" :class="{'has-confrim-btn': dialogConfig.showConfirmBtn}">
         <div class="cancel-btn" @click="closeDialog">算了吧</div>
@@ -108,6 +112,11 @@ export default {
           height: px2rem(230px);
           @include img-retina('~@/assets/common/exam/integral_tip@2x.png','~@/assets/common/exam/integral_tip@2x.png', 100%, 100%);
         }
+        &.share-logo {
+          width: px2rem(381px);
+          height: px2rem(220px);
+          @include img-retina('~@/assets/common/exam/share_logo@2x.png','~@/assets/common/exam/share_logo@2x.png', 100%, 100%);
+        }
       }
       .tips-content {
         width: px2rem(360px);
@@ -118,6 +127,24 @@ export default {
         color: #333333;
         text-align: center;
         margin: px2rem(20px) auto 0;
+      }
+      .share-tips-content {
+        padding: 0 px2rem(60px);
+        width: 100%;
+        @include font-dpr(13px);
+        font-family: SourceHanSansCN-Regular, SourceHanSansCN;
+        font-weight: 400;
+        color: #999;
+        margin-top: px2rem(30px);
+        text-align: center;
+        .number-tips {
+          @include font-dpr(15px);
+          color: #333;
+          margin-bottom: px2rem(24px);
+        }
+        .special-text {
+          color: #BE0000;
+        }
       }
       .el-checkbox {
         padding: 0 px2rem(30px);
