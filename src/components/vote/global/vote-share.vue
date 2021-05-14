@@ -1,6 +1,6 @@
 <template>
   <!-- 投票弹窗 -->
-  <div>
+  <div class="vote-share-dialog">
     <tips-dialog
       :show="show"
       @close="close()">
@@ -248,6 +248,11 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .vote-share-dialog .tips-dialog-wrap{
+    .btn-wrap {
+      display: none;
+    }
+  }
   .workvote-dialog-wrap {
     padding-bottom: px2rem(91px);
     padding-top: px2rem(86px);

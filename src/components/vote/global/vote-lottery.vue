@@ -4,6 +4,7 @@
     @touchmove.prevent="">
     <!--弹窗模块-->
     <div class="lottery-dialog-content">
+      <div class="close-btn" @click.stop="close()"></div>
       <div v-if="lottery.remain_lottery_counts" class="success-wrap">
         <div class="tips">恭喜您，{{textSetting.sign ? textSetting.sign : '投票'}}有礼</div>
         <div class="tips">感谢您的鼓励与认可</div>
@@ -17,7 +18,6 @@
       </div>
       -->
     </div>
-    <div class="close-btn" @click.stop="close()"></div>
   </div>
 </template>
 
@@ -85,6 +85,7 @@ export default {
     pointer-events: auto;
     z-index: 99;
     .lottery-dialog-content {
+      position: relative;
       width: px2rem(522px);
       height: px2rem(402px);
       border-radius: px2rem(8px);
@@ -132,12 +133,16 @@ export default {
       }
     }
     .close-btn {
-      margin-top: px2rem(60px);
+      position: absolute;
+      right: px2rem(30px);
+      top: px2rem(30px);
+      z-index: 1;
+      // margin-top: px2rem(60px);
       display: inline-block;
-      width: px2rem(80px);
-      height: px2rem(80px);
-      background-size: px2rem(80px);
-      @include img-retina("~@/assets/vote/dialog-close@2x.png","~@/assets/vote/dialog-close@3x.png", 100%, 100%);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      background-size: px2rem(30px);
+      @include img-retina("~@/assets/news/close-icon.png","~@/assets/news/close-icon.png", 100%, 100%);
     }
   }
 </style>
