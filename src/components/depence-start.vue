@@ -263,7 +263,7 @@ export default {
           }
         }
         if (integralSettings.free_counts > 0) { // 免费答题次数
-          return `${integralSettings.free_counts}次免费答题答题机会`
+          return `${integralSettings.free_counts}次免费答题机会`
         }
       }
       return ''
@@ -271,6 +271,9 @@ export default {
   },
   created () {
     this.initStartInfo()
+    this.dialog = {
+      title: '分享成功'
+    }
   },
   methods: {
     initFindAll () {
@@ -463,6 +466,13 @@ export default {
           }
         }).then(res => {
           if (res.code === 1) {
+            this.showOperateDialog = true
+            this.dialogConfig = {
+              type: 'share', // 弹窗类型
+              tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+              showConfirmBtn: false, // 确认按钮
+              showNumber: 1
+            }
             this.getExamDetail({id: examId})
           } else {
             // 已经分享过
