@@ -264,17 +264,17 @@ export const setBrowserTitle = (title) => {
   } else {
     document.title = title
     // 微信内部标题无法修改问题
-    let ua = navigator.userAgent.toLowerCase()
-    if (/micromessenger/.test(ua)) {
-      let i = document.createElement('iframe')
-      i.style.display = 'none'
-      i.onload = function () {
-        setTimeout(function () {
-          i.remove()
-        }, 9)
-      }
-      document.body.appendChild(i)
-    }
+    // let ua = navigator.userAgent.toLowerCase()
+    // if (/micromessenger/.test(ua)) {
+    //   let i = document.createElement('iframe')
+    //   i.style.display = 'none'
+    //   i.onload = function () {
+    //     setTimeout(function () {
+    //       i.remove()
+    //     }, 9)
+    //   }
+    //   document.body.appendChild(i)
+    // }
   }
 }
 
