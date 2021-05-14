@@ -27,10 +27,10 @@
             </div>
             <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
           </div>
-          <div class="num-area">
+          <!-- <div class="num-area">
             <div class="my-text rank-area"><i class="line-static-icon"></i>{{showTitle}}<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
             <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
-          </div>
+          </div> -->
         </div>
         <div class="score-tips" :style="{background: customBgColor}" v-show="statMsgVisible">
           <span class="tips-icon"></span>
@@ -698,7 +698,7 @@ $font-weight: 400;
         }
         .score-wrap {
           width: 45%;
-          border-right: 1px solid #DBDBDB;
+          // border-right: 1px solid #DBDBDB;
           position: relative;
           .tips-wrap {
             position: absolute;
