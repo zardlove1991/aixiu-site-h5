@@ -11,8 +11,10 @@
       </div>
       <el-checkbox v-if="dialogConfig.type === 'integral'" @change="checkedUse" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
       <div class="btn-wrap" :class="{'has-confrim-btn': dialogConfig.showConfirmBtn}">
-        <div class="cancel-btn" @click="closeDialog">算了吧</div>
-        <div class="confirm-btn" @click="confirmDialog" v-if="dialogConfig.showConfirmBtn">使用积分</div>
+        <div class="cancel-btn" @click="closeDialog">{{dialogConfig.cancelBtnText ? dialogConfig.cancelBtnText : '算了吧'}}</div>
+        <div class="confirm-btn" @click="confirmDialog" v-if="dialogConfig.showConfirmBtn">
+          {{dialogConfig.confirmBtnText ? dialogConfig.confirmBtnText : '使用积分'}}
+        </div>
       </div>
     </div>
   </div>
