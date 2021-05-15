@@ -460,7 +460,9 @@ export default {
               showNumber: 1,
               cancelBtnText: '知道了'
             }
-            this.getExamDetail({id: examId})
+            this.getExamDetail({id: examId}).then(res => {
+              this.tooltipsStr = this.getTooltipsStr()
+            })
           } else {
             // 已经分享过
           }
