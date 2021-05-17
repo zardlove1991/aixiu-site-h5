@@ -216,7 +216,8 @@ export default {
         showConfirmBtn: false, // 确认按钮
         reduce_integral: 10, // 消耗积分数
         times: 1 // 获得答题次数
-      }
+      },
+      tooltipsStr: ''
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog },
@@ -257,30 +258,14 @@ export default {
       *关闭积分消耗：无免费答题次数
       */
       if (this.examInfo.mark === 'examination@integral') {
-        const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
+        const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
-          return !integralSettings.free_counts && !integralSettings.user_integral_counts
+          return integralSettings.free_counts <= 0 && integralSettings.user_integral_counts <= 0
         } else {
-          return !integralSettings.free_counts
+          return integralSettings.free_counts <= 0
         }
       }
       return flag
-    },
-    tooltipsStr () {
-      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit ? this.examInfo.limit.integral_setting : {}}
-      if (this.examInfo.mark === 'examination@integral') {
-        if (!integralSettings.free_counts && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
-          if (!integralSettings.user_integral_counts) { // 无积分消耗次数
-            return '积分兑换次数已达今日上限'
-          } else {
-            return '免费次数已用完，可使用积分参与答题'
-          }
-        }
-        if (integralSettings.free_counts > 0) { // 免费答题次数
-          return `${integralSettings.free_counts}次免费答题机会`
-        }
-      }
-      return ''
     }
   },
   created () {
@@ -382,6 +367,7 @@ export default {
       let examId = this.id
       try {
         await this.getExamDetail({id: examId})
+        this.tooltipsStr = this.getTooltipsStr()
         // 是否展示查看更多
         this.initFindAll()
         // 设置标题
@@ -485,9 +471,12 @@ export default {
               type: 'share', // 弹窗类型
               tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
               showConfirmBtn: false, // 确认按钮
-              showNumber: 1
+              showNumber: 1,
+              cancelBtnText: '知道了'
             }
-            this.getExamDetail({id: examId})
+            this.getExamDetail({id: examId}).then(res => {
+              this.tooltipsStr = this.getTooltipsStr()
+            })
           } else {
             // 已经分享过
           }
@@ -683,9 +672,9 @@ export default {
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
       if (this.disabledStartExam) return
-      if (this.examInfo.mark === 'examination@integral' && !integralSettings.free_counts) { // 积分答题：没有免费答题机会
+      if (this.examInfo.mark === 'examination@integral' && integralSettings.free_counts <= 0) { // 积分答题：没有免费答题机会
         if (integralSettings.is_open_reduce) { // 开启积分消耗
-          if (integralSettings.user_integral_counts && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
+          if (integralSettings.user_integral_counts > 0 && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
             this.showOperateDialog = true
             this.dialogConfig = {
               type: 'balance', // 弹窗类型
@@ -699,7 +688,7 @@ export default {
           const sameDay = recordTime ? new Date(recordTime).toDateString() === new Date().toDateString() : false
           params = {use_integral: (val === 1 ? val : sameDay) ? 1 : 0}
           const flag = val === 1 ? !val : !(sameDay && useIntegralStart.id === this.id)
-          if (integralSettings.user_integral_counts && flag) { // 有积分消耗机会
+          if (integralSettings.user_integral_counts > 0 && flag) { // 有积分消耗机会
             this.showOperateDialog = true
             let msg = ''
             if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
@@ -755,6 +744,22 @@ export default {
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
+    },
+    getTooltipsStr () { // 获取积分答题，当前答题次数
+      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      if (this.examInfo.mark === 'examination@integral') {
+        if (integralSettings.free_counts <= 0 && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
+          if (integralSettings.user_integral_counts <= 0) { // 无积分消耗次数
+            return '积分兑换次数已达今日上限'
+          } else {
+            return '免费次数已用完，可使用积分参与答题'
+          }
+        }
+        if (integralSettings.free_counts > 0) { // 免费答题次数
+          return `${integralSettings.free_counts}次免费答题机会`
+        }
+      }
+      return ''
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
