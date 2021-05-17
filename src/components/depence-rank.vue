@@ -25,7 +25,7 @@
         <div class="rank-table-wrap">
           <div class="header rank-flex">
             <div class="wd120 item-center">排名</div>
-            <div class="flex1">{{columnName}}</div>
+            <div class="flex1 item-header-name">{{columnName}}</div>
             <div class="wd150">总分</div>
             <div class="wd200">用时</div>
           </div>
@@ -358,6 +358,9 @@ export default {
         @include font-dpr(14px);
         font-weight: 400;
         color: #666666;
+        .item-header-name {
+          @include line-overflow(1);
+        }
       }
       .body {
         height: px2rem(90px);
