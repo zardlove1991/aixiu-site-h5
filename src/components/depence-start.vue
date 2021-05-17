@@ -88,7 +88,7 @@
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
     </div>
     <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral'}"
+      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral', 'is-rank': examInfo.mark === 'examination@rank'}"
       v-else>
       <button
         class="rank-btn"
@@ -257,7 +257,7 @@ export default {
       *开启积分消耗：无免费答题次数，无积分消耗次数
       *关闭积分消耗：无免费答题次数
       */
-      if (this.examInfo.mark === 'examination@integral') {
+      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
         const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           return integralSettings.free_counts <= 0 && integralSettings.user_integral_counts <= 0
@@ -672,7 +672,7 @@ export default {
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
       if (this.disabledStartExam) return
-      if (this.examInfo.mark === 'examination@integral' && integralSettings.free_counts <= 0) { // 积分答题：没有免费答题机会
+      if ((this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && integralSettings.free_counts <= 0) { // 积分答题：没有免费答题机会
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           if (integralSettings.user_integral_counts > 0 && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
             this.showOperateDialog = true
@@ -747,7 +747,7 @@ export default {
     },
     getTooltipsStr () { // 获取积分答题，当前答题次数
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
-      if (this.examInfo.mark === 'examination@integral') {
+      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
         if (integralSettings.free_counts <= 0 && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
           if (integralSettings.user_integral_counts <= 0) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
@@ -1066,6 +1066,11 @@ export default {
       bottom:px2rem(40px);
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
+    }
+    &.is-rank {
+      bottom:px2rem(40px);
+      display: flex;
       justify-content: center;
     }
     &.is-disabled {

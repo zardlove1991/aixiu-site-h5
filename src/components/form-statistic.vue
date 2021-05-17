@@ -524,7 +524,7 @@ export default {
         submit_time: submitTime,
         exam_id: this.$route.params.id
       }
-      if (this.examInfo.mark === 'examination@integral') {
+      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
         data.win_integral = this.optionData.integral ? this.optionData.integral.integral : 0
       }
       if (name) {
