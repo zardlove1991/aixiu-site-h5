@@ -530,6 +530,7 @@ export default {
       }
     },
     isShowPassword () {
+      if (this.disabledStartExam) return
       let limit = this.examInfo.limit.visit_password_limit
       if (limit) {
         this.visitPasswordLimit = true
