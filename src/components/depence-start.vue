@@ -657,6 +657,7 @@ export default {
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {
+          this.examInfo = {...this.examInfo, ...{collection_status: 1}}
           this.goExamPage()
         }
       } else {
