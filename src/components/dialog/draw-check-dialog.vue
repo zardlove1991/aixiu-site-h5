@@ -375,7 +375,7 @@ export default {
           return
         }
         this.$emit('close')
-        this.$emit('success')
+        this.$emit('success', {collection_status: 1})
       })
     },
     ...mapMutations('depence', {
