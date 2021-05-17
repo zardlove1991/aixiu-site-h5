@@ -246,9 +246,9 @@ export default {
       if (this.examInfo.mark === 'examination@integral') {
         const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
-          return integralSettings.free_counts <= 0 && integralSettings.user_integral_counts <= 0
+          return (integralSettings.free_counts <= 0 || !integralSettings.free_counts) && (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts)
         } else {
-          return integralSettings.free_counts <= 0
+          return (integralSettings.free_counts <= 0 || !integralSettings.free_counts)
         }
       }
       return flag
@@ -658,9 +658,10 @@ export default {
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
       if (this.disabledStartExam) return
-      if (this.examInfo.mark === 'examination@integral' && integralSettings.free_counts <= 0) { // 积分答题：没有免费答题机会
+      if (this.examInfo.mark === 'examination@integral' && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
         if (integralSettings.is_open_reduce) { // 开启积分消耗
-          if (integralSettings.user_integral_counts > 0 && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
+          const hasIntegralCount = (integralSettings.user_integral_counts && integralSettings.user_integral_counts > 0) // 有积分兑换机会
+          if (hasIntegralCount && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
             this.showOperateDialog = true
             this.dialogConfig = {
               type: 'balance', // 弹窗类型
@@ -672,9 +673,10 @@ export default {
           const useIntegralStart = STORAGE.get('use_integral_start') || {}
           const recordTime = Number(useIntegralStart.record_time)
           const sameDay = recordTime ? new Date(recordTime).toDateString() === new Date().toDateString() : false
-          params = {use_integral: (val === 1 ? val : sameDay) ? 1 : 0}
-          const flag = val === 1 ? !val : !(sameDay && useIntegralStart.id === this.id)
-          if (integralSettings.user_integral_counts > 0 && flag) { // 有积分消耗机会
+          const sameActivity = sameDay && useIntegralStart.id === this.id // 同一个活动，且当天出现过积分兑换确认弹窗
+          params = {use_integral: sameActivity ? 1 : (val === 1 ? 1 : 0)}
+          const flag = val === 1 ? !val : !sameActivity // 是否出现积分兑换确认弹窗
+          if (hasIntegralCount && flag) { // 有积分消耗机会
             this.showOperateDialog = true
             let msg = ''
             if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
@@ -727,14 +729,14 @@ export default {
     getTooltipsStr () { // 获取积分答题，当前答题次数
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       if (this.examInfo.mark === 'examination@integral') {
-        if (integralSettings.free_counts <= 0 && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
-          if (integralSettings.user_integral_counts <= 0) { // 无积分消耗次数
+        if ((integralSettings.free_counts <= 0 || !integralSettings.free_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
+          if (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
           } else {
             return '免费次数已用完，可使用积分参与答题'
           }
         }
-        if (integralSettings.free_counts > 0) { // 免费答题次数
+        if (integralSettings.free_counts && integralSettings.free_counts > 0) { // 免费答题次数
           return `${integralSettings.free_counts}次免费答题机会`
         }
       }
