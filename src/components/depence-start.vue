@@ -152,7 +152,7 @@
     <draw-check-dialog
       :show="isShowDrawCheck"
       :checkDraw="checkDraw"
-      @success="goExamPage('saveCollection')"
+      @success="goExamPage"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
     <OperateDialog
@@ -664,8 +664,9 @@ export default {
       }
     },
     goExamPage (val) {
-      if (val.collection_status === 1) {
-        this.examInfo = {...this.examInfo, ...val}
+      if (val && val.collection_status === 1) {
+        const data = {...this.examInfo, ...val}
+        this.setExamInfo(data)
       }
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       let params = {}
@@ -773,7 +774,8 @@ export default {
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
       getAnswerCardInfo: 'GET_ANSWERCARD_INFO',
       endExam: 'END_EXAM',
-      setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
+      setLuckDrawLink: 'SET_LUCK_DRAW_LINK',
+      setExamInfo: 'SET_EXAM_INFO'
     })
   }
 }
