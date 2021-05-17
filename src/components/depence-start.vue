@@ -727,7 +727,7 @@ export default {
     getTooltipsStr () { // 获取积分答题，当前答题次数
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       if (this.examInfo.mark === 'examination@integral') {
-        if (!integralSettings.free_counts && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
+        if (integralSettings.free_counts <= 0 && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
           if (integralSettings.user_integral_counts <= 0) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
           } else {
