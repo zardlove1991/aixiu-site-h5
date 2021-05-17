@@ -79,14 +79,24 @@
     </div>
     <!--底部按钮-->
     <div class="btn-area" v-if="examInfo.timeStatus !== 0">
-      <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
-      <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+      <button
+        class="rank-btn"
+        v-if="examInfo.mark === 'examination@rank'"
+        @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
+      <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 1">答题未开始</button>
+      <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 2">答题已结束</button>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
     </div>
-    <div class="btn-area" :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral'}" v-else>
+    <div class="btn-area"
+      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral'}"
+      v-else>
+      <button
+        class="rank-btn"
+        v-if="examInfo.mark === 'examination@rank'"
+        @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
-      <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
-      <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
     <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
@@ -212,6 +222,10 @@ export default {
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
+    getRadius () {
+      let examInfo = this.examInfo
+      return examInfo.mark === 'examination@rank' ? 'set-radius' : ''
+    },
     examSubmitCount2 () {
       let examInfo = this.examInfo
       let count = 1
@@ -727,6 +741,13 @@ export default {
         path: `/depencecard/${examId}`
       })
     },
+    jumpRankPage () {
+      // 跳转去往排行榜页面
+      let examId = this.id
+      this.$router.push({
+        path: `/depencerank/${examId}`
+      })
+    },
     _getStarNum (level) {
       let starMap = this.starMap
       let curLevel = starMap[level] || -1
@@ -983,10 +1004,32 @@ export default {
   }
   .btn-area {
     width:100%;
-    position: fixed;;
+    position: fixed;
     left:0;
     bottom:px2rem(100px);
     padding:0 px2rem(30px);
+    display: flex;
+    .rank-btn {
+      box-sizing: border-box;
+      margin-right: px2rem(20px);
+      border: 0px;
+      width: px2rem(230px);
+      height: px2rem(90px);
+      @include bg-color('descColor')
+      border-radius: px2rem(45px);
+      @include font-dpr(16px);
+      color: #FFFFFF;
+      .rank-icon {
+        display: inline-block;
+        margin-right: px2rem(8px);
+        width: px2rem(24px);
+        height: px2rem(28px);
+        @include img-retina("~@/assets/common/rank-icon@2x.png","~@/assets/common/rank-icon@3x.png", 100%, 100%);
+      }
+    }
+    .set-radius {
+      border-radius: px2rem(45px) !important;
+    }
     .tooltip-style {
       top: px2rem(-72px);
     }
