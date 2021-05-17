@@ -512,7 +512,11 @@ const actions = {
             // 清空
             STORAGE.remove('answer_record_' + id)
             state.answerList = []
-            API.submitExam({ query: { id } }).then(res => {
+            let endParam = {}
+            if (mark === 'examination@rank') {
+              endParam.activity_mark = mark
+            }
+            API.submitExam({ query: { id }, params: endParam }).then(res => {
               // 删除本地缓存的单选的ID信息
               if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
               STORAGE.remove('answer_record_' + id)

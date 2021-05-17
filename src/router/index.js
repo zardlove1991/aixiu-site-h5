@@ -90,6 +90,16 @@ const routes = [{
     title: '测评'
   }
 }, {
+  path: '/depencerank/:id',
+  name: 'depencerank',
+  component: getComponent('depence-rank'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '排行榜'
+  }
+}, {
   path: '/livestart/:id',
   name: 'liveall',
   redirect: '/livestart/:id/start',

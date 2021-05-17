@@ -259,7 +259,8 @@ export default {
     showTitle: {
       get () {
         let title = '总分排名'
-        if (this.examInfo && (this.examInfo.mark === 'examination@random' || this.examInfo.mark === 'examination@integral')) {
+        let mark = this.examInfo.mark
+        if (this.examInfo && (mark === 'examination@random' || mark === 'examination@integral' || mark === 'examination@rank')) {
           title = '分数排名'
         }
         return title
