@@ -209,9 +209,16 @@ export default {
       }
       this.loading = true
       let data = this.getSubmitData()
+      let submitInfo = data
       API.saveEnrollInfo({
         data
       }).then(res => {
+        if (/f23557fd87e9436aad1043d00951d268/.test(location.pathname)) {
+          let _res = JSON.stringify(res)
+          let _submitInfo = JSON.stringify(submitInfo)
+          let _testInfoDiv = `传递数据：${_submitInfo}; 结果：${_res}`
+          this.$emit('update:testInfoDiv', _testInfoDiv)
+        }
         if (res.error_code) {
           this.loading = false
           Toast(res.error_message)
