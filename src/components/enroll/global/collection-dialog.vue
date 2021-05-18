@@ -47,6 +47,7 @@
       @success="selectSuccessAction"
       :is="'select-dialog'">
     </component>
+    <div class="testInfoDiv" :show="testInfoDiv">{{testInfoDiv}}</div>
   </div>
 </template>
 
@@ -113,7 +114,8 @@ export default {
       defaultSelect: '',
       focusKey: '',
       customShow: false,
-      customData: {} // 当前下拉选的对象
+      customData: {}, // 当前下拉选的对象
+      testInfoDiv: ''
     }
   },
   methods: {
@@ -209,9 +211,15 @@ export default {
       }
       this.loading = true
       let data = this.getSubmitData()
+      let submitInfo = data
       API.saveEnrollInfo({
         data
       }).then(res => {
+        if (/f23557fd87e9436aad1043d00951d268/.test(location.pathname)) {
+          let _res = JSON.stringify(res)
+          let _submitInfo = JSON.stringify(submitInfo)
+          this.testInfoDiv = `传递数据：${_submitInfo}; 结果：${_res}`
+        }
         if (res.error_code) {
           this.loading = false
           Toast(res.error_message)
@@ -280,6 +288,17 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .testInfoDiv{
+    position: fixed;
+    background: #fff;
+    z-index: 100;
+    width: 80vw;
+    height: 90vh;
+    padding: 5px;
+    border: 3px;
+    font-size: 20px;
+    color: #333;
+  }
   .collection-dialog-wrap {
     position: fixed;
     top: 0;
