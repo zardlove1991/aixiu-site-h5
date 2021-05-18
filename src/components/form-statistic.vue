@@ -703,7 +703,7 @@ $font-weight: 400;
       .statistic-wrap {
         display: flex;
         width: 100%;
-        margin: px2rem(20px) 0 px2rem(20px);
+        margin: px2rem(25px) 0 px2rem(25px);
         padding: 0 px2rem(20px) px2rem(20px) px2rem(65px);
         border-radius: 12px;
         &.up-to-limit {
