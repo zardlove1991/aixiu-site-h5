@@ -703,7 +703,7 @@ $font-weight: 400;
       .statistic-wrap {
         display: flex;
         width: 100%;
-        margin: px2rem(44px) 0 px2rem(60px);
+        margin: px2rem(20px) 0 px2rem(20px);
         padding: 0 px2rem(20px) px2rem(20px) px2rem(65px);
         border-radius: 12px;
         &.up-to-limit {
@@ -803,11 +803,12 @@ $font-weight: 400;
         }
         .integral-num {
           display: inline-block;
+          margin-top: px2rem(20px);
         }
       }
     }
     .rank-area{
-      margin-bottom:px2rem(38px);
+      margin-bottom:px2rem(20px);
     }
     .score-area{
       flex:1;
