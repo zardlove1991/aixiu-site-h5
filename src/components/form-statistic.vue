@@ -22,7 +22,7 @@
             <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
             <div class="my-text integral-num">
               获得
-              <span class="static-weight">{{optionData.integral ? (isLimited ? 0 : optionData.integral.integral) : 0}}</span>
+              <span class="static-weight">{{integralNumber}}</span>
               积分
             </div>
             <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
@@ -272,6 +272,13 @@ export default {
         flag = this.optionData.integral.type === 'upper'
       }
       return flag
+    },
+    integralNumber () {
+      let num = 0
+      if (this.optionData.integral) {
+        num = (this.isLimited && this.optionData.integral.integral < 0) ? 0 : this.optionData.integral.integral
+      }
+      return num
     }
   },
   methods: {
