@@ -53,7 +53,7 @@
     </city-select-dialog>
     <component
       :show="customShow"
-      :defaultSelect="customData.default_select"
+      :defaultSelect.sync="customData.default_select"
       :selectData="customData.select_data"
       @close="customShow = false"
       @success="selectSuccessAction"
@@ -375,7 +375,7 @@ export default {
           return
         }
         this.$emit('close')
-        this.$emit('success')
+        this.$emit('success', {collection_status: 1})
       })
     },
     ...mapMutations('depence', {

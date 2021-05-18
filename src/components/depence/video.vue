@@ -112,6 +112,8 @@ export default {
   position: relative;
   width: 100%;
   height: px2rem(360px);
+  border-radius: 8px;
+  overflow: hidden;
   .video, .video-img{
     width: 100%;
     height: 100%;
@@ -131,11 +133,11 @@ export default {
     left:0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.2);
     .play-btn{
       width: px2rem(80px);
       height: px2rem(80px);
-      @include img-retina('~@/assets/common/video@2x.png', '~@/assets/common/video@3x.png', 100%, 100%);
+      @include img-retina('~@/assets/common/icon_video.png', '~@/assets/common/icon_video.png', 100%, 100%);
       background-repeat: no-repeat;
       background-position: center;
     }
