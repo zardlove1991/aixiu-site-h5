@@ -110,11 +110,21 @@ export default {
         await this.getExamDetail({ id: this.id })
       }
       let examInfo = this.examInfo
-      console.log('initData', this.id, examInfo)
       let { rankpic, rank_cycle: rankCycle } = examInfo.limit
       // 排行榜头部图
       if (rankpic && rankpic.length) {
-        this.rankPic = rankpic[0]
+        let imgUrl = ''
+        let picObj = rankpic[0]
+        if (picObj.constructor === Object && picObj.host && picObj.filename) {
+          if (/http/.test(picObj.host)) {
+            imgUrl = picObj.host + picObj.filename
+          } else {
+            imgUrl = location.protocol + picObj.host + picObj.filename
+          }
+        } else if (picObj.constructor === String) {
+          imgUrl = picObj
+        }
+        this.rankPic = imgUrl
       }
       // 排行榜一级目录
       if (rankCycle && rankCycle.length) {
