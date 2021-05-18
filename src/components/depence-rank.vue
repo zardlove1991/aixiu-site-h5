@@ -186,6 +186,7 @@ export default {
       })
     },
     changeTab (item) {
+      if (this.loading) return
       // 一级目录切换
       let tabBar2 = this.getTabBar2(item)
       if (tabBar2 && tabBar2.length) {
@@ -199,6 +200,7 @@ export default {
       }
     },
     changeTab2 (name) {
+      if (this.loading) return
       // 二级目录切换
       this.selTab2 = name
       this.getClearRankList()
