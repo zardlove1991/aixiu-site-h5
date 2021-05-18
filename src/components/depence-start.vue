@@ -88,18 +88,25 @@
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
     </div>
     <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral', 'is-rank': examInfo.mark === 'examination@rank'}"
+      :class="{'is-disabled': disabledStartExam, 'is-rank': examInfo.mark === 'examination@rank'}"
+      v-else-if="examInfo.mark === 'examination@rank'">
+      <button class="rank-btn" @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
+      <div class="tooltips-rank">
+        <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
+        <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
+        <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
+      </div>
+      <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+    </div>
+    <div class="btn-area"
+      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral' }"
       v-else>
-      <button
-        class="rank-btn"
-        v-if="examInfo.mark === 'examination@rank'"
-        @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
-      <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
+      <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
-    <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
+    <div class="start-exam-tips" v-if="isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
     <my-model
       :show="App"
       :isLock="true"
@@ -392,7 +399,7 @@ export default {
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
           }
-          if (dayUserIdLimit === 0 && ipLimit === 0 && userIdLimit === 0) {
+          if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
           }
         }
@@ -1019,14 +1026,14 @@ export default {
     width:100%;
     position: fixed;
     left:0;
-    bottom:px2rem(100px);
+    bottom: px2rem(100px);
     padding:0 px2rem(30px);
     display: flex;
     .rank-btn {
       box-sizing: border-box;
-      margin-right: px2rem(20px);
+      margin-right: px2rem(22px);
       border: 0px;
-      width: px2rem(230px);
+      width: px2rem(215px);
       height: px2rem(90px);
       @include bg-color('descColor')
       border-radius: px2rem(45px);
@@ -1069,6 +1076,12 @@ export default {
     }
     .start-exambtn {
       @include bg-color('btnColor')
+    }
+    .tooltips-rank {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     &.is-integral {
       bottom:px2rem(40px);
