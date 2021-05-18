@@ -53,7 +53,7 @@
     </city-select-dialog>
     <component
       :show="customShow"
-      :defaultSelect="customData.default_select"
+      :defaultSelect.sync="customData.default_select"
       :selectData="customData.select_data"
       @close="customShow = false"
       @success="selectSuccessAction"

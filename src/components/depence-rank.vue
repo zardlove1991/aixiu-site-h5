@@ -29,15 +29,17 @@
             <div class="wd150">总分</div>
             <div class="wd200">用时</div>
           </div>
-          <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
-            <div class="wd120 item-center">
-              <span v-if="index > 2">{{index + 1}}</span>
-              <span :class="['rank-icon', 'rank-' + index]" v-else></span>
+          <template v-if="!loading">
+            <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
+              <div class="wd120 item-center">
+                <span v-if="index > 2">{{index + 1}}</span>
+                <span :class="['rank-icon', 'rank-' + index]" v-else></span>
+              </div>
+              <div class="flex1 rank-name">{{item.name}}</div>
+              <div class="wd150">{{item.source}}</div>
+              <div class="wd200">{{item.time}}</div>
             </div>
-            <div class="flex1 rank-name">{{item.name}}</div>
-            <div class="wd150">{{item.source}}</div>
-            <div class="wd200">{{item.time}}</div>
-          </div>
+          </template>
         </div>
         <div slot="bottom" class="mint-loadmore-top">
           <div class="loading-box" v-if="!noMore && loading">
@@ -108,11 +110,21 @@ export default {
         await this.getExamDetail({ id: this.id })
       }
       let examInfo = this.examInfo
-      console.log('initData', this.id, examInfo)
       let { rankpic, rank_cycle: rankCycle } = examInfo.limit
       // 排行榜头部图
       if (rankpic && rankpic.length) {
-        this.rankPic = rankpic[0]
+        let imgUrl = ''
+        let picObj = rankpic[0]
+        if (picObj.constructor === Object && picObj.host && picObj.filename) {
+          if (/http/.test(picObj.host)) {
+            imgUrl = picObj.host + picObj.filename
+          } else {
+            imgUrl = location.protocol + picObj.host + picObj.filename
+          }
+        } else if (picObj.constructor === String) {
+          imgUrl = picObj
+        }
+        this.rankPic = imgUrl
       }
       // 排行榜一级目录
       if (rankCycle && rankCycle.length) {
