@@ -213,7 +213,7 @@ export default {
       API.saveEnrollInfo({
         data
       }).then(res => {
-        if (/f1f27e9026cb494c859916ab4432651c/.test(location.pathname)) {
+        if (/f23557fd87e9436aad1043d00951d268/.test(location.pathname)) {
           let _res = JSON.stringify(res)
           let _submitInfo = JSON.stringify(submitInfo)
           let _testInfoDiv = `传递数据：${_submitInfo}; 结果：${_res}`
