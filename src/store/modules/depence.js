@@ -92,6 +92,9 @@ const getters = {
 }
 
 const mutations = {
+  SET_EXAM_INFO (state, payload) {
+    state.examInfo = payload
+  },
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = false
@@ -364,6 +367,9 @@ function dealSaveRecord ({
 }
 
 const actions = {
+  SET_EXAM_INFO ({state, commit, dispatch}, payload) {
+    commit('SET_EXAM_INFO', payload)
+  },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
@@ -449,11 +455,15 @@ const actions = {
   },
   START_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
+      const useIntegral = payload.useIntegral || 0
       let id = state.examId || payload.id
       let params = {
         guid: STORAGE.get('guid')
       }
-      // 添加重新开始考试的接口
+      if (useIntegral) {
+        params.use_integral = useIntegral
+      }
+      // // 添加重新开始考试的接口
       if (payload.restart) params.restart = 1
       // 开始请求数据
       API.startExam({
@@ -508,7 +518,11 @@ const actions = {
             // 清空
             STORAGE.remove('answer_record_' + id)
             state.answerList = []
-            API.submitExam({ query: { id } }).then(res => {
+            let endParam = {}
+            if (mark === 'examination@rank') {
+              endParam.activity_mark = mark
+            }
+            API.submitExam({ query: { id }, params: endParam }).then(res => {
               // 删除本地缓存的单选的ID信息
               if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
               STORAGE.remove('answer_record_' + id)

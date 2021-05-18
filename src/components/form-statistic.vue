@@ -22,7 +22,7 @@
             <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
             <div class="my-text integral-num">
               获得
-              <span class="static-weight">{{optionData.integral ? optionData.integral.integral : 0}}</span>
+              <span class="static-weight">{{integralNumber}}</span>
               积分
             </div>
             <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
@@ -55,6 +55,7 @@
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
           <!-- 隐藏统计信息 -->
@@ -258,7 +259,8 @@ export default {
     showTitle: {
       get () {
         let title = '总分排名'
-        if (this.examInfo && (this.examInfo.mark === 'examination@random' || this.examInfo.mark === 'examination@integral')) {
+        let mark = this.examInfo.mark
+        if (this.examInfo && (mark === 'examination@random' || mark === 'examination@integral' || mark === 'examination@rank')) {
           title = '分数排名'
         }
         return title
@@ -270,6 +272,13 @@ export default {
         flag = this.optionData.integral.type === 'upper'
       }
       return flag
+    },
+    integralNumber () {
+      let num = 0
+      if (this.optionData.integral) {
+        num = (this.isLimited && this.optionData.integral.integral < 0) ? 0 : this.optionData.integral.integral
+      }
+      return num
     }
   },
   methods: {
@@ -519,7 +528,11 @@ export default {
         question_num: optionData.questions.length,
         correct_num: correntNum,
         use_time: userTime,
-        submit_time: submitTime
+        submit_time: submitTime,
+        exam_id: this.$route.params.id
+      }
+      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
+        data.win_integral = this.optionData.integral ? this.optionData.integral.integral : 0
       }
       if (name) {
         data.name = name
@@ -668,15 +681,12 @@ $font-weight: 400;
       border-radius: 5px;
       padding-bottom: px2rem(20px);
       .top-wrap {
-        display: flex;
-        justify-content: space-between;
-        padding-left: px2rem(45px);
+        position: relative;
+        padding: px2rem(30px) 0 px2rem(20px) px2rem(45px);
         .my-score {
           font-size:px2rem(72px);
           line-height:px2rem(72px);
           color:#FF6A45;
-          margin-bottom:px2rem(20px);
-          margin-top: px2rem(30px);
         }
         .score-share {
           width: px2rem(224px);
@@ -685,12 +695,15 @@ $font-weight: 400;
           text-align: center;
           line-height: px2rem(64px);
           @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+          position: absolute;
+          top: 0;
+          right: 0;
         }
       }
       .statistic-wrap {
         display: flex;
         width: 100%;
-        margin: px2rem(44px) 0 px2rem(60px);
+        margin: px2rem(25px) 0 px2rem(25px);
         padding: 0 px2rem(20px) px2rem(20px) px2rem(65px);
         border-radius: 12px;
         &.up-to-limit {
@@ -790,11 +803,12 @@ $font-weight: 400;
         }
         .integral-num {
           display: inline-block;
+          margin-top: px2rem(20px);
         }
       }
     }
     .rank-area{
-      margin-bottom:px2rem(38px);
+      margin-bottom:px2rem(20px);
     }
     .score-area{
       flex:1;

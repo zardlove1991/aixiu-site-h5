@@ -47,6 +47,7 @@
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
           <!-- 隐藏统计信息 -->
@@ -660,15 +661,12 @@ $font-weight: 400;
           border-radius: 12px;
           padding-bottom: px2rem(20px);
           .top-wrap {
-            display: flex;
-            justify-content: space-between;
-            padding-left: px2rem(45px);
+            position: relative;
+            padding: px2rem(30px) 0 px2rem(20px) px2rem(45px);
             .my-score {
               font-size:px2rem(72px);
               line-height:px2rem(72px);
               color:#FF6A45;
-              margin-bottom:px2rem(20px);
-              margin-top: px2rem(30px);
             }
             .score-share {
               width: px2rem(224px);
@@ -677,6 +675,9 @@ $font-weight: 400;
               text-align: center;
               line-height: px2rem(64px);
               @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+              position: absolute;
+              top: 0;
+              right: 0;
             }
           }
           .statistic-wrap {
