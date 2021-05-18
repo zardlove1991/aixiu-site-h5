@@ -9,7 +9,7 @@
         <div class="number-tips">获得<span class="special-text">&nbsp;{{dialogConfig.showNumber}}次&nbsp;</span>免费答题的机会</div>
         <div>{{dialogConfig.tips}}</div>
       </div>
-      <el-checkbox v-if="dialogConfig.type === 'integral'" @change="checkedUse" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
+      <el-checkbox v-if="dialogConfig.type === 'integral'" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
       <div class="btn-wrap" :class="{'has-confrim-btn': dialogConfig.showConfirmBtn}">
         <div class="cancel-btn" @click="closeDialog">{{dialogConfig.cancelBtnText ? dialogConfig.cancelBtnText : '算了吧'}}</div>
         <div class="confirm-btn" @click="confirmDialog" v-if="dialogConfig.showConfirmBtn">
@@ -61,9 +61,6 @@ export default {
       } else {
         Toast('请勾选使用积分')
       }
-    },
-    checkedUse () {
-      STORAGE.set('use_integral_start', {status: this.checked, id: this.examId})
     }
   }
 }

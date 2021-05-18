@@ -92,6 +92,9 @@ const getters = {
 }
 
 const mutations = {
+  SET_EXAM_INFO (state, payload) {
+    state.examInfo = payload
+  },
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = false
@@ -364,6 +367,9 @@ function dealSaveRecord ({
 }
 
 const actions = {
+  SET_EXAM_INFO ({state, commit, dispatch}, payload) {
+    commit('SET_EXAM_INFO', payload)
+  },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
