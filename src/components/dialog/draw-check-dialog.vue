@@ -114,6 +114,7 @@ export default {
   watch: {
     show (newState) {
       if (!newState) {
+        this.showTmp = ''
         this.checkData = {}
         this.imgCodeUrl = ''
         this.imgCodeKey = ''
