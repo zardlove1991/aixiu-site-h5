@@ -85,14 +85,14 @@
         @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 1">答题未开始</button>
       <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 2">答题已结束</button>
-      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
+      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
     </div>
     <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam, 'is-rank': examInfo.mark === 'examination@rank'}"
+      :class="{'is-disabled': disabledStartExam}"
       v-else-if="examInfo.mark === 'examination@rank'">
       <button class="rank-btn" @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <div class="tooltips-rank">
-        <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
+        <!-- <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/> -->
         <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
         <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       </div>

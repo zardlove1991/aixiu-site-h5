@@ -343,11 +343,10 @@ export default {
           checkData[key] = defaultValue
         }
         if (!val) {
-          if (key === 'Vq8iwxwk3Owr' || key === 'HCuGpRSUNLXw' ||
+          if (key === 'HCuGpRSUNLXw' ||
           key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD') {
             // 临时处理 - 不填写允许提交
-            val = item.name
-            checkData[key] = ''
+            delete checkData[key]
           } else {
             if (key === 'department' && this.isGetDept) {
               Toast('抱歉，没有查到您的用户信息！')
