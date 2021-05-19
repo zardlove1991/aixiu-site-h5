@@ -106,7 +106,7 @@
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
       <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
-      <div class="integral-number" v-if="examInfo.all_credits >= 0">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+      <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
     <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
     <my-model
@@ -226,7 +226,8 @@ export default {
         reduce_integral: 10, // 消耗积分数
         times: 1 // 获得答题次数
       },
-      tooltipsStr: ''
+      tooltipsStr: '',
+      currentPlat: getPlat()
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog },
@@ -764,6 +765,9 @@ export default {
     getTooltipsStr () { // 获取积分答题，当前答题次数
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
+        if (this.examInfo.remain_counts === 0) {
+          return '当前ip提交次数已达上限'
+        }
         if ((integralSettings.free_counts <= 0 || !integralSettings.free_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
           if (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
