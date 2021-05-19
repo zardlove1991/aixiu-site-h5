@@ -96,7 +96,7 @@
         <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
         <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       </div>
-      <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+      <!-- <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div> -->
     </div>
     <div class="btn-area"
       :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral' }"
