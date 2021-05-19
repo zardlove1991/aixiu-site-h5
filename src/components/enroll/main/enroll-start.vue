@@ -55,7 +55,6 @@
       :introduce="enrollInfo.introduce">
     </info-dialog>
     <collection-dialog
-      :testInfoDiv.sync="testInfoDiv"
       :show="isShowCollection"
       :checkDraw="checkDraw"
       :setting="checkSetting"
@@ -96,7 +95,6 @@
       :show="isShowLimit"
       @close="isShowLimit = false">
     </active-limit>
-    <div class="testInfoDiv" v-show="testInfoDiv">{{testInfoDiv}}</div>
   </div>
 </template>
 
@@ -123,7 +121,6 @@ export default {
   },
   data () {
     return {
-      testInfoDiv: '',
       timeTips: {
         1: '已结束',
         2: '进行中',
@@ -901,23 +898,6 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-  .testInfoDiv{
-    position: fixed;
-    background: #fff;
-    z-index: 100;
-    width: 90vw;
-    height: 90vh;
-    padding: 5px;
-    border-radius: 3px;
-    font-size: 13px;
-    color: #333;
-    left: 5vw;
-    top: 5vh;
-    overflow: scroll;
-    overflow-x: hidden;
-    word-break: break-all;
-    border: 1px solid red;
-  }
   .enroll-start-wrap {
     width: 100%;
     min-height: 100vh;
