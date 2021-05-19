@@ -765,7 +765,7 @@ export default {
     getTooltipsStr () { // 获取积分答题，当前答题次数
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
-        if (this.examInfo.remain_counts === 0) {
+        if (this.examInfo.remain_counts === 0 && this.examInfo.limit.is_ip_limit) {
           return '当前ip提交次数已达上限'
         }
         if ((integralSettings.free_counts <= 0 || !integralSettings.free_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
