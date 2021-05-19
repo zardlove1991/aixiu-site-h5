@@ -99,14 +99,16 @@
       <!-- <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div> -->
     </div>
     <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam, 'is-integral': examInfo.mark === 'examination@integral' }"
+      :class="{'is-disabled': disabledStartExam,
+        'is-integral': examInfo.mark === 'examination@integral',
+        'show-total-integral': examInfo.all_credits >= 0 }"
       v-else>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
       <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
       <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
-      <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+      <div class="integral-number" v-if="examInfo.all_credits >= 0">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
-    <div class="start-exam-tips" v-if="isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
+    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
     <my-model
       :show="App"
       :isLock="true"
@@ -1084,10 +1086,13 @@ export default {
       justify-content: center;
     }
     &.is-integral {
-      bottom:px2rem(40px);
+      bottom:px2rem(60px);
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+    }
+    &.show-total-integral {
+      bottom:px2rem(40px);
     }
     &.is-rank {
       bottom:px2rem(40px);
