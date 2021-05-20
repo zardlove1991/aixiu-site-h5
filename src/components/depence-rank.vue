@@ -377,8 +377,8 @@ export default {
         }
       }
       .body {
-        height: px2rem(90px);
-        line-height: px2rem(90px);
+        min-height: px2rem(90px);
+        // line-height: px2rem(90px);
         @include font-dpr(14px);
         font-weight: 400;
         color: #333333;
