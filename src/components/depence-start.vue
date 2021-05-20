@@ -31,7 +31,7 @@
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
-        <div class="exam-time" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral && examInfo.limit.integral_setting.is_open_add">
+        <div class="exam-time exam-time-integral" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral && examInfo.limit.integral_setting.is_open_add">
           <div class="icon-integral"></div>
           参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
         </div>
@@ -829,6 +829,9 @@ export default {
     display:flex;
     align-items:center;
   }
+  .exam-time-integral {
+    margin-bottom: px2rem(60px);
+  }
   .icon-time, .icon-integral{
     width:px2rem(34px);
     height:px2rem(34px);
@@ -944,7 +947,7 @@ export default {
     position: absolute;
     z-index: 10;
     right: 0;
-    top: 10%;
+    top: 8%;
     .depence-rule-item {
       width: px2rem(64px);
       height: px2rem(205px);
@@ -1042,7 +1045,7 @@ export default {
         width: 100%;
         overflow: hidden;
         display:flex;
-        margin-top: px2rem(30px);
+        margin-top: px2rem(50px);
         .row{
           flex: 1;
           display: flex;
