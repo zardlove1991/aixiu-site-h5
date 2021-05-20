@@ -35,10 +35,6 @@
           <div class="icon-integral"></div>
           参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
         </div>
-        <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info2" v-html="examInfo.brief"></div>
-        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
-          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
-        </div>
         <div class="body-wrap">
           <!--信息展示-->
           <div class="row">
@@ -76,6 +72,15 @@
         <!--底部-->
         <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
+    </div>
+    <div class="depence-rule-wrap">
+      <div class="depence-rule-item"
+        :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? '-top': '') : ''"
+        @click="isShowRuleDialog = true">活动规则</div>
+      <div class="depence-rule-item"
+        v-if="checkOutLink()"
+        @click="goOutlink()"
+        :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
     <!--底部按钮-->
     <div class="btn-area" v-if="examInfo.timeStatus !== 0">
@@ -168,6 +173,11 @@
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"
       @handelConfirm="goExamPage(1)"/>
+    <page-rule
+      :show="isShowRuleDialog"
+      @close="isShowRuleDialog = false"
+      :introduce="examInfo.brief"
+      :themeColorName="colorName" />
   </div>
 </template>
 
@@ -186,6 +196,7 @@ import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import CustomTooltips from './exam-components/custom-tooltips'
 import OperateDialog from './exam-components/operate-dialog'
+import PageRule from '@/components/depence/page-rule'
 
 export default {
   mixins: [mixins],
@@ -216,8 +227,6 @@ export default {
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
-      isShowInfo: false,
-      isShowFindAll: false,
       showOperateDialog: false,
       dialogConfig: {
         type: 'integral', // 弹窗类型
@@ -227,10 +236,12 @@ export default {
         times: 1 // 获得答题次数
       },
       tooltipsStr: '',
-      currentPlat: getPlat()
+      currentPlat: getPlat(),
+      isShowRuleDialog: false,
+      colorName: ''
     }
   },
-  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog },
+  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
     getRadius () {
@@ -285,14 +296,6 @@ export default {
     }
   },
   methods: {
-    initFindAll () {
-      this.$nextTick(() => {
-        var oDiv = document.getElementById('exam-rule-info2')
-        if (oDiv.scrollHeight > oDiv.clientHeight) {
-          this.isShowFindAll = true
-        }
-      })
-    },
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
@@ -378,8 +381,6 @@ export default {
       try {
         await this.getExamDetail({id: examId})
         this.tooltipsStr = this.getTooltipsStr()
-        // 是否展示查看更多
-        this.initFindAll()
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 分享
@@ -397,13 +398,17 @@ export default {
             day_userid_limit_num: dayUserIdLimit,
             ip_limit_num: ipLimit,
             userid_limit_num: userIdLimit,
-            submit_rules: submitRules
+            submit_rules: submitRules,
+            color_scheme: setup
           } = info.limit
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
+          }
+          if (setup && setup.name) {
+            this.colorName = setup.name
           }
         }
         STORAGE.set('guid', this.examInfo.guid)
@@ -781,6 +786,16 @@ export default {
       }
       return ''
     },
+    checkOutLink () {
+      if (this.examInfo.mark === 'examination@rank' && this.examInfo.limit.outlink_title && this.examInfo.limit.outlink_url) {
+        return true
+      } else {
+        return false
+      }
+    },
+    goOutlink () {
+      window.location.href = this.examInfo.limit.outlink_url
+    },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
       saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
@@ -810,7 +825,7 @@ export default {
   .exam-time{
     @include font-dpr(15px);
     color:#fff;
-    margin-bottom:px2rem(20px);
+    margin-bottom: px2rem(25px);
     display:flex;
     align-items:center;
   }
@@ -925,6 +940,83 @@ export default {
       @include img-retina('~@/assets/common/empty_indepic_bg@2x.png','~@/assets/common/empty_indepic_bg@3x.png', 100%, 100%);
     }
   }
+  .depence-rule-wrap {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    top: 10%;
+    .depence-rule-item {
+      width: px2rem(64px);
+      height: px2rem(205px);
+      color: #fff;
+      font-size: px2rem(26px);
+      line-height: px2rem(32px);
+      padding: 0 px2rem(18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &.pureblue {
+        height: px2rem(233px);
+        @include img-retina('~@/assets/common/rule-tab/pureblue@2x.png', '~@/assets/common/rule-tab/pureblue@3x.png', px2rem(64px), px2rem(233px));
+      }
+      &.purered {
+        height: px2rem(233px);
+        @include img-retina('~@/assets/common/rule-tab/purered@2x.png', '~@/assets/common/rule-tab/purered@3x.png', px2rem(64px), px2rem(233px));
+      }
+      &.puregreen {
+        height: px2rem(233px);
+        @include img-retina('~@/assets/common/rule-tab/puregreen@2x.png', '~@/assets/common/rule-tab/puregreen@3x.png', px2rem(64px), px2rem(233px));
+      }
+      &.pureorange {
+        height: px2rem(233px);
+        @include img-retina('~@/assets/common/rule-tab/pureorange@2x.png', '~@/assets/common/rule-tab/pureorange@3x.png', px2rem(64px), px2rem(233px));
+      }
+      &.puredarkred {
+        height: px2rem(233px);
+        @include img-retina('~@/assets/common/rule-tab/puredarkred@2x.png', '~@/assets/common/rule-tab/puredarkred@3x.png', px2rem(64px), px2rem(233px));
+      }
+      &.pureblue-top {
+        padding-top: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/pureblue-top@2x.png', '~@/assets/common/rule-tab/pureblue-top@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.purered-top {
+        padding-top: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/purered-top@2x.png', '~@/assets/common/rule-tab/purered-top@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.puregreen-top {
+        padding-top: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/puregreen-top@2x.png', '~@/assets/common/rule-tab/puregreen-top@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.pureorange-top {
+        padding-top: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/pureorange-top@2x.png', '~@/assets/common/rule-tab/pureorange-top@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.puredarkred-top {
+        padding-top: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/puredarkred-top@2x.png', '~@/assets/common/rule-tab/puredarkred-top@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.pureblue-bottom {
+        padding-bottom: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/pureblue-bottom@2x.png', '~@/assets/common/rule-tab/pureblue-bottom@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.purered-bottom {
+        padding-bottom: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/purered-bottom@2x.png', '~@/assets/common/rule-tab/purered-bottom@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.puregreen-bottom {
+        padding-bottom: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/puregreen-bottom@2x.png', '~@/assets/common/rule-tab/puregreen-bottom@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.pureorange-bottom {
+        padding-bottom: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/pureorange-bottom@2x.png', '~@/assets/common/rule-tab/pureorange-bottom@3x.png', px2rem(64px), px2rem(205px));
+      }
+      &.puredarkred-bottom {
+        padding-bottom: px2rem(18px);
+        @include img-retina('~@/assets/common/rule-tab/puredarkred-bottom@2x.png', '~@/assets/common/rule-tab/puredarkred-bottom@3x.png', px2rem(64px), px2rem(205px));
+      }
+    }
+  }
   .content-wrap{
     position: relative;
     padding: 0 px2rem(34px);
@@ -935,7 +1027,7 @@ export default {
       box-sizing: border-box;
       // @include bg-color('bgColor');
       .header-desc{
-        margin:px2rem(26px) 0;
+        margin: px2rem(40px) 0;
         .title{
           line-height: px2rem(68px);
           font-family:SourceHanSansCN-Medium;

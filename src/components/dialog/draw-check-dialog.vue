@@ -114,6 +114,7 @@ export default {
   watch: {
     show (newState) {
       if (!newState) {
+        this.showTmp = ''
         this.checkData = {}
         this.imgCodeUrl = ''
         this.imgCodeKey = ''
@@ -343,8 +344,8 @@ export default {
           checkData[key] = defaultValue
         }
         if (!val) {
-          if (key === 'HCuGpRSUNLXw' ||
-          key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD') {
+          if (this.showTmp !== item.name && (key === 'HCuGpRSUNLXw' ||
+          key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD')) {
             // 临时处理 - 不填写允许提交
             delete checkData[key]
           } else {
