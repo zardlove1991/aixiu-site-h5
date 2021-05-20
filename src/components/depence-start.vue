@@ -75,7 +75,7 @@
     </div>
     <div class="depence-rule-wrap">
       <div class="depence-rule-item"
-        :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '' : '-top': '') : ''"
+        :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
         @click="isShowRuleDialog = true">活动规则</div>
       <div class="depence-rule-item"
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
