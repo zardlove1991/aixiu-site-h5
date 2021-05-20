@@ -75,10 +75,10 @@
     </div>
     <div class="depence-rule-wrap">
       <div class="depence-rule-item"
-        :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? '-top': '') : ''"
+        :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '' : '-top': '') : ''"
         @click="isShowRuleDialog = true">活动规则</div>
       <div class="depence-rule-item"
-        v-if="checkOutLink()"
+        v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
         :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
@@ -787,7 +787,7 @@ export default {
       return ''
     },
     checkOutLink () {
-      if (this.examInfo.mark === 'examination@rank' && this.examInfo.limit.outlink_title && this.examInfo.limit.outlink_url) {
+      if (this.examInfo.limit.outlink_title && this.examInfo.limit.outlink_url) {
         return true
       } else {
         return false
