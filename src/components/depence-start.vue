@@ -78,8 +78,9 @@
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? '-top': '') : ''"
         @click="isShowRuleDialog = true">活动规则</div>
       <div class="depence-rule-item"
-        v-if="examInfo.mark === 'examination@rank'"
-        :class="colorName ? colorName + '-bottom' : ''">党史题库</div>
+        v-if="checkOutLink()"
+        @click="goOutlink()"
+        :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
     <!--底部按钮-->
     <div class="btn-area" v-if="examInfo.timeStatus !== 0">
@@ -784,6 +785,16 @@ export default {
         }
       }
       return ''
+    },
+    checkOutLink () {
+      if (this.examInfo.mark === 'examination@rank' && this.examInfo.limit.outlink_title && this.examInfo.limit.outlink_url) {
+        return true
+      } else {
+        return false
+      }
+    },
+    goOutlink () {
+      window.location.href = this.examInfo.limit.outlink_url
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
