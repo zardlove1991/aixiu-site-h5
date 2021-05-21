@@ -36,12 +36,12 @@
           参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
         </div>
         <div
-          v-if="examInfo.mark === 'examination@random'"
+          v-if="getShowRule"
           :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']"
           id="exam-rule-info2"
           v-html="examInfo.brief"></div>
         <div class="find-all-rule"
-          v-if="examInfo.mark === 'examination@random' && isShowFindAll"
+          v-if="getShowRule && isShowFindAll"
           @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
           <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
         </div>
@@ -83,7 +83,7 @@
         <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
     </div>
-    <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random'">
+    <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random' && examInfo.mark !== 'examination'">
       <div class="depence-rule-item"
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
         @click="isShowRuleDialog = true">活动介绍</div>
@@ -256,6 +256,10 @@ export default {
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
+    getShowRule () {
+      let mark = this.examInfo.mark
+      return mark === 'examination@random' || mark === 'examination'
+    },
     getRadius () {
       let examInfo = this.examInfo
       return examInfo.mark === 'examination@rank' ? 'set-radius' : ''
@@ -1228,7 +1232,7 @@ export default {
     }
   }
   .start-exam-tips {
-    position:absolute;
+    position: fixed;
     left:0;
     right: 0;
     bottom:px2rem(30px);
