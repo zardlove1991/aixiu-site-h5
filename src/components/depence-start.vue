@@ -93,7 +93,9 @@
         :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
     <!--底部按钮-->
-    <div class="btn-area" v-if="examInfo.timeStatus !== 0">
+    <div class="btn-area" v-if="examInfo.timeStatus !== 0" :class="{
+      'is-integral': tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'
+    }">
       <button
         class="rank-btn"
         v-if="examInfo.mark === 'examination@rank'"
