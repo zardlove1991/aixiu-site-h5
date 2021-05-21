@@ -35,6 +35,16 @@
           <div class="icon-integral"></div>
           参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
         </div>
+        <div
+          v-if="examInfo.mark === 'examination@random'"
+          :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']"
+          id="exam-rule-info2"
+          v-html="examInfo.brief"></div>
+        <div class="find-all-rule"
+          v-if="examInfo.mark === 'examination@random' && isShowFindAll"
+          @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
+        </div>
         <div class="body-wrap">
           <!--信息展示-->
           <div class="row">
@@ -73,10 +83,10 @@
         <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
     </div>
-    <div class="depence-rule-wrap">
+    <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random'">
       <div class="depence-rule-item"
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
-        @click="isShowRuleDialog = true">活动规则</div>
+        @click="isShowRuleDialog = true">活动介绍</div>
       <div class="depence-rule-item"
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
@@ -227,6 +237,8 @@ export default {
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
+      isShowInfo: false,
+      isShowFindAll: false,
       showOperateDialog: false,
       dialogConfig: {
         type: 'integral', // 弹窗类型
@@ -296,6 +308,14 @@ export default {
     }
   },
   methods: {
+    initFindAll () {
+      this.$nextTick(() => {
+        var oDiv = document.getElementById('exam-rule-info2')
+        if (oDiv.scrollHeight > oDiv.clientHeight) {
+          this.isShowFindAll = true
+        }
+      })
+    },
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
@@ -381,6 +401,8 @@ export default {
       try {
         await this.getExamDetail({id: examId})
         this.tooltipsStr = this.getTooltipsStr()
+        // 是否展示查看更多
+        this.initFindAll()
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 分享
