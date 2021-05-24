@@ -29,7 +29,7 @@
             <div class="wd150">总分</div>
             <div class="wd200">用时</div>
           </div>
-          <template v-if="!loading">
+          <template>
             <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
               <div class="wd120 item-center">
                 <span v-if="index > 2">{{index + 1}}</span>
