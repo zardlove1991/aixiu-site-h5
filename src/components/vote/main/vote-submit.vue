@@ -39,7 +39,7 @@
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
         <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
-        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else>小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
@@ -334,10 +334,10 @@ export default {
         Toast('请输入名称')
         return
       }
-      if (!examineData.source || !examineData.source.trim()) {
-        Toast('请输入来源')
-        return
-      }
+      // if (!examineData.source || !examineData.source.trim()) {
+      //   Toast('请输入来源')
+      //   return
+      // }
       if (this.showModel === 'text') {
         if (!examineData.introduce || !examineData.introduce.trim()) {
           Toast('请输入文字内容')
