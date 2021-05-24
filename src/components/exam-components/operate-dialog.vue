@@ -164,7 +164,7 @@ export default {
           }
         }
         .el-checkbox__label {
-          width: 90%;
+          // width: 90%;
           white-space: break-spaces;
           color: #333;
         }
