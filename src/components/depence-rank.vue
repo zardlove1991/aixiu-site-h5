@@ -81,7 +81,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 10,
+        count: 100,
         totalPages: 0
       },
       dateMap: {
