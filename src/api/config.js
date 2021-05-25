@@ -25,7 +25,8 @@ export default {
   // 'mlink': `${protocol}//nizao.kxm.xmtv.cn/m/`,
   // 'reserve': `${protocol}//nizao.kxm.xmtv.cn/reserve/`,
   // 'public': `${protocol}//nizao.kxm.xmtv.cn/public/`,
-  'c4': `${protocol}//public.kxm.xmtv.cn/c4api/`,
+  // 'c4': `${protocol}//public.kxm.xmtv.cn/c4api/`,
+  'c4': `${protocol}//c4api.kxm.xmtv.cn/`,
   'news': `${protocol}//public.kxm.xmtv.cn/news/`,
   //
   'timeout': 10000,

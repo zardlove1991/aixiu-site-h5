@@ -43,11 +43,12 @@ let smartcity = {
         let { avoid_landing: avoidanding } = limit.source_limit
         if (avoidanding) {
           // 免登陆
+
           const params2 = {
             userId: 'xiuzan',
             sign: getAppSign(),
             userName: '爱秀小秘书',
-            avatarUrl: '//aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
+            avatarUrl: `${location.protocol}//aixiu.aihoge.com/dist/images/global/toplogo-2x.png`
           }
           try {
             API.getSmartCityUser({
