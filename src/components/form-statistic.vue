@@ -165,13 +165,14 @@ import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
 import { formatDate, getPlat } from '@/utils/utils'
 import OperateDialog from './exam-components/operate-dialog'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'form-statistic',
   components: {
     Pie, ShareDialog, OperateDialog
   },
-  mixins: [ SubjectMixin ],
+  mixins: [ SubjectMixin, mixins ],
   props: ['params'],
   data () {
     return {
