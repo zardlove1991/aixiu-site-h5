@@ -210,7 +210,7 @@ export default {
       this.pager = {
         total: 0,
         page: 0,
-        count: 10,
+        count: 100,
         totalPages: 0
       }
       this.getRankList()
