@@ -644,7 +644,7 @@ export default {
       let {
         mark,
         rule,
-        // my_work: myWork,
+        my_work: myWork,
         text_setting: textSetting,
         status
       } = detailInfo
@@ -690,23 +690,9 @@ export default {
       }
       this.showModel = showModel
       // 我的作品
-      // if (myWork && myWork.id) {
-      //   this.myWorkStatus = myWork.audit_status
-      //   if (myWork.audit_status === 1) {
-      //     let key = this.checkFullScene
-      //     if (key) {
-      //       if (key === myWork.full_scene_type) {
-      //         this.myWork = myWork
-      //       } else {
-      //         this.myWork = {}
-      //       }
-      //     } else {
-      //       this.myWork = myWork
-      //     }
-      //     myWork.is_my = 1
-      //     this.setMyVote(myWork)
-      //   }
-      // }
+      if (myWork && myWork.id) {
+        this.myWorkStatus = myWork.audit_status
+      }
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
       }
