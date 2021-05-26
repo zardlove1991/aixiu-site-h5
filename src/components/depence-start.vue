@@ -31,9 +31,19 @@
           <div class="icon-time"></div>
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
-        <div class="exam-time" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral && examInfo.limit.integral_setting.is_open_add">
+        <div class="exam-time exam-time-integral" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral && examInfo.limit.integral_setting.is_open_add">
           <div class="icon-integral"></div>
           参与答题送 {{examInfo.limit.integral_setting.every_add_num}}  积分
+        </div>
+        <div
+          v-if="getShowRule"
+          :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']"
+          id="exam-rule-info2"
+          v-html="examInfo.brief"></div>
+        <div class="find-all-rule"
+          v-if="getShowRule && isShowFindAll"
+          @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
         </div>
         <div class="body-wrap">
           <!--信息展示-->
@@ -73,17 +83,19 @@
         <!-- <div class="footer-brief" v-show="examInfo.brief">{{examInfo.brief}}</div> -->
       </div>
     </div>
-    <div class="depence-rule-wrap">
+    <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random' && examInfo.mark !== 'examination'">
       <div class="depence-rule-item"
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
-        @click="isShowRuleDialog = true">活动规则</div>
+        @click="isShowRuleDialog = true">活动介绍</div>
       <div class="depence-rule-item"
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
         :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
     <!--底部按钮-->
-    <div class="btn-area" v-if="examInfo.timeStatus !== 0">
+    <div class="btn-area" v-if="examInfo.timeStatus !== 0" :class="{
+      'is-integral': tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'
+    }">
       <button
         class="rank-btn"
         v-if="examInfo.mark === 'examination@rank'"
@@ -113,7 +125,7 @@
       <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
     </div>
-    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次<span v-if="examSubmitCount2">，活动期间最多提交{{examSubmitCount2}}次</span></div>
+    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次</div>
     <my-model
       :show="App"
       :isLock="true"
@@ -227,6 +239,8 @@ export default {
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false, // 弹窗显隐
+      isShowInfo: false,
+      isShowFindAll: false,
       showOperateDialog: false,
       dialogConfig: {
         type: 'integral', // 弹窗类型
@@ -244,6 +258,10 @@ export default {
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
+    getShowRule () {
+      let mark = this.examInfo.mark
+      return mark === 'examination@random' || mark === 'examination'
+    },
     getRadius () {
       let examInfo = this.examInfo
       return examInfo.mark === 'examination@rank' ? 'set-radius' : ''
@@ -296,6 +314,14 @@ export default {
     }
   },
   methods: {
+    initFindAll () {
+      this.$nextTick(() => {
+        var oDiv = document.getElementById('exam-rule-info2')
+        if (oDiv.scrollHeight > oDiv.clientHeight) {
+          this.isShowFindAll = true
+        }
+      })
+    },
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
@@ -381,6 +407,8 @@ export default {
       try {
         await this.getExamDetail({id: examId})
         this.tooltipsStr = this.getTooltipsStr()
+        // 是否展示查看更多
+        this.initFindAll()
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 分享
@@ -829,6 +857,9 @@ export default {
     display:flex;
     align-items:center;
   }
+  .exam-time-integral {
+    margin-bottom: px2rem(60px);
+  }
   .icon-time, .icon-integral{
     width:px2rem(34px);
     height:px2rem(34px);
@@ -944,7 +975,7 @@ export default {
     position: absolute;
     z-index: 10;
     right: 0;
-    top: 10%;
+    top: 8%;
     .depence-rule-item {
       width: px2rem(64px);
       height: px2rem(205px);
@@ -1042,7 +1073,7 @@ export default {
         width: 100%;
         overflow: hidden;
         display:flex;
-        margin-top: px2rem(30px);
+        margin-top: px2rem(50px);
         .row{
           flex: 1;
           display: flex;
@@ -1203,7 +1234,7 @@ export default {
     }
   }
   .start-exam-tips {
-    position:absolute;
+    position: fixed;
     left:0;
     right: 0;
     bottom:px2rem(30px);

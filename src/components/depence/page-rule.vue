@@ -2,7 +2,7 @@
   <div class="page-dialog-wrap" v-if="show">
     <div class="rule-dialog2">
       <div :class="['rule-dialog-main', themeColorName]">
-        <div class="rule-header">活动规则</div>
+        <div class="rule-header">活动介绍</div>
         <div class="rule-content" v-html="introduce"></div>
         <div class="close-btn" @click.stop="close()"></div>
       </div>

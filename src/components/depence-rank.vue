@@ -29,7 +29,7 @@
             <div class="wd150">总分</div>
             <div class="wd200">用时</div>
           </div>
-          <template v-if="!loading">
+          <template>
             <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
               <div class="wd120 item-center">
                 <span v-if="index > 2">{{index + 1}}</span>
@@ -81,7 +81,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 10,
+        count: 100,
         totalPages: 0
       },
       dateMap: {
@@ -210,7 +210,7 @@ export default {
       this.pager = {
         total: 0,
         page: 0,
-        count: 10,
+        count: 100,
         totalPages: 0
       }
       this.getRankList()
@@ -377,8 +377,8 @@ export default {
         }
       }
       .body {
-        height: px2rem(90px);
-        line-height: px2rem(90px);
+        min-height: px2rem(90px);
+        // line-height: px2rem(90px);
         @include font-dpr(14px);
         font-weight: 400;
         color: #333333;
