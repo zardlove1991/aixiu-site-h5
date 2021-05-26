@@ -409,79 +409,79 @@ export default {
     }
   },
   methods: {
-    initData () {
+    async initData () {
       let voteId = this.id
       let { sign, invotekey } = this.$route.query
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
-      API.getVodeDetail({
-        query: { id: voteId }
-      }).then((res) => {
-        let url = res.indexpic
-        if (url) {
-          let swipeList = []
-          if (url.constructor === Object) {
-            swipeList.push(url.host + url.filename)
-          } else if (url.constructor === String) {
-            swipeList.push(url)
-          } else if (url.constructor === Array) {
-            swipeList = [...url]
-          }
-          this.swipeList = swipeList
+      let res = STORAGE.get('detailInfo')
+      if (!res) {
+        res = await API.getVodeDetail({
+          query: { id: voteId }
+        })
+      }
+      let url = res.indexpic
+      if (url) {
+        let swipeList = []
+        if (url.constructor === Object) {
+          swipeList.push(url.host + url.filename)
+        } else if (url.constructor === String) {
+          swipeList.push(url)
+        } else if (url.constructor === Array) {
+          swipeList = [...url]
         }
-        this.detailInfo = res
-        // 校验抽奖入口条件
-        let {lottery, rule, today_votes: todayVotes} = res
-        if (lottery) {
-          this.lottery = lottery
-          this.checkLotteryOpen(lottery, rule, todayVotes)
+        this.swipeList = swipeList
+      }
+      this.detailInfo = res
+      // 校验抽奖入口条件
+      let {lottery, rule, today_votes: todayVotes} = res
+      if (lottery) {
+        this.lottery = lottery
+        this.checkLotteryOpen(lottery, rule, todayVotes)
+      }
+      STORAGE.set('detailInfo', res)
+      setBrowserTitle(res.title)
+      // 分享
+      this.sharePage(res)
+      this.setLocation()
+      // 其他限制
+      this.handleVoteData()
+      // 作品列表
+      this.getVoteWorks('', false, '', true, true)
+      // 索引图尺寸比例
+      if (rule.limit.indexpic_ratio) {
+        let ratio = rule.limit.indexpic_ratio
+        ratio = ratio.replace('.', '')
+        let arr = ratio.split(':')
+        let size = ''
+        if (arr.length === 2) {
+          size = 'size-' + arr[0] + '-' + arr[1]
         }
-        STORAGE.set('detailInfo', res)
-        setBrowserTitle(res.title)
-        // 分享
-        this.sharePage(res)
-        this.setLocation()
-        // 其他限制
-        this.handleVoteData()
-        // 作品列表
-        this.getVoteWorks('', false, '', true, true)
-        // 索引图尺寸比例
-        if (rule.limit.indexpic_ratio) {
-          let ratio = rule.limit.indexpic_ratio
-          ratio = ratio.replace('.', '')
-          let arr = ratio.split(':')
-          let size = ''
-          if (arr.length === 2) {
-            size = 'size-' + arr[0] + '-' + arr[1]
-          }
-          this.indexRadio = size
-        }
-        if (rule.limit.show_mode) {
-          this.videoMode = rule.limit.show_mode
-        }
-        if (rule.page_setup && rule.page_setup.font_color) {
-          this.darkMark = rule.page_setup.font_color
-        }
-        // 是否开启边投票边报名
-        let isOpenVoteReport = 0
-        if (rule.limit.is_open_enroll_vote) {
-          isOpenVoteReport = rule.limit.is_open_enroll_vote
-        }
-        if (isOpenVoteReport === 1) {
-          isOpenVoteReport = true
-        } else {
-          isOpenVoteReport = false
-        }
-        this.isOpenVoteReport = isOpenVoteReport
-        if (isOpenVoteReport) {
-          this.initVoteReportTime()
-        } else {
-          this.initReportTime()
-        }
-      }).catch(err => {
-        console.log(err)
-      })
+        this.indexRadio = size
+      }
+      if (rule.limit.show_mode) {
+        this.videoMode = rule.limit.show_mode
+      }
+      if (rule.page_setup && rule.page_setup.font_color) {
+        this.darkMark = rule.page_setup.font_color
+      }
+      // 是否开启边投票边报名
+      let isOpenVoteReport = 0
+      if (rule.limit.is_open_enroll_vote) {
+        isOpenVoteReport = rule.limit.is_open_enroll_vote
+      }
+      if (isOpenVoteReport === 1) {
+        isOpenVoteReport = true
+      } else {
+        isOpenVoteReport = false
+      }
+      this.isOpenVoteReport = isOpenVoteReport
+      if (isOpenVoteReport) {
+        this.initVoteReportTime()
+      } else {
+        this.initReportTime()
+      }
     },
     // 如果有中奖记录和抽奖次数 默认显示
     async checkLotteryOpen (lottery, rule, todayVotes) {
