@@ -47,6 +47,7 @@
             <span class="loading-more-txt">正在加载中</span>
           </div>
           <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+          <div v-show="noMore && id === 'b6de24ff7c8a4024a50ae8a6ff7ae634'" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
     </div>
@@ -95,6 +96,9 @@ export default {
   computed: {
     noMore () {
       // 当起始页数大于总页数时停止加载
+      if (this.id === 'b6de24ff7c8a4024a50ae8a6ff7ae634') {
+        return true
+      }
       let { page, totalPages } = this.pager
       return page >= totalPages
     },
@@ -155,9 +159,11 @@ export default {
         unique_name: this.uniqueName,
         type
       }
-      this.$nextTick(() => {
-        this.$refs['depence-rank-loadmore'].onBottomLoaded()
-      })
+      if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634') {
+        this.$nextTick(() => {
+          this.$refs['depence-rank-loadmore'].onBottomLoaded()
+        })
+      }
       API.getExamRankList({
         query: { id: voteId },
         params: params
