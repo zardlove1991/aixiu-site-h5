@@ -171,7 +171,7 @@ export default {
         member_id: memberId
       }
       // 区域限制
-      let { rule } = detailInfo
+      let { rule, id } = detailInfo
       let { area_limit: areaLimit, unlock_duration: limitTime } = rule
       if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
         this.limitArea = areaLimit.area
@@ -183,6 +183,7 @@ export default {
         }
       }
       API.workVote({
+        query: { id },
         data: obj
       }).then(res => {
         let errCode = res.error_code
