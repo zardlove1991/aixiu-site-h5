@@ -65,14 +65,14 @@ let voteUrl = {
   getIsCollect: 'client/report/collect/{id}', // 是否手机用户信息
   workReport: 'client/report/work', // 用户创建/编辑报名
   getReportDetail: 'client/report/work/{id}', // 获取报名内容详情
-  workVote: 'client/voting', // 给他投票
+  workVote: 'client/voting/{id}', // 给他投票
   saveSharer: 'client/voting/save_sharer', // 点击拉票将分享者信息，投票id和作品id入库
   shareMake: 'share/make', // 生成海报
   getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: 'mobile/verify/send', // 获取手机code
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
-  getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
+  getVoteTypeFid: 'client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
