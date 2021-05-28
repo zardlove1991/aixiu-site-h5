@@ -549,6 +549,9 @@ const actions = {
           } else {
             throw new Error('error')
           }
+        }).catch(err => {
+          Indicator.close()
+          reject(err)
         })
       }
     })

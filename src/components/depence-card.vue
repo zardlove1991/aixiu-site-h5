@@ -97,6 +97,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
+import { Toast } from 'mint-ui'
 
 export default {
   name: 'depence-card',
@@ -186,6 +187,7 @@ export default {
         // 重新载入答题卡页面
         this.$router.go(0)
       } catch (err) {
+        Toast(err.error_message)
         console.log(err)
       }
     },

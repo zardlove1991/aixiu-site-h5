@@ -326,10 +326,15 @@ export default {
       // 直接交卷
       let examId = this.id
       let answerRecord = STORAGE.get('answer_record_' + examId)
-      await this.endExam({ id: examId, answerList: answerRecord })
-      this.initStartInfo()
-      this.isShowBreak = false
-      this.breakDoAction()
+      try {
+        await this.endExam({ id: examId, answerList: answerRecord })
+      } catch (err) {
+        Toast(err.error_message)
+      } finally {
+        this.initStartInfo()
+        this.isShowBreak = false
+        this.breakDoAction()
+      }
     },
     cancelBreakModel () {
       // 继续答题
