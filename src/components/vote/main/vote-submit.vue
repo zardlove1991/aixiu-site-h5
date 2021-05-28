@@ -82,13 +82,13 @@
           <div class="drop-icon"></div>
         </div>
       </div>
-      <!-- <div class="form-item">
+      <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>来源</div>
+        <div class="form-title" v-else>位置</div>
         <div class="form-content">
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
-      </div> -->
+      </div>
       <div class="form-item" v-if="showModel !== 'text'">
         <div class="form-title">描述<span class="form-tips">(选填)</span></div>
         <div class="form-content">
@@ -147,7 +147,7 @@ export default {
       disabled: false,
       examineData: {
         name: '',
-        source: '用户报名',
+        source: '',
         introduce: '',
         contact_name: '',
         contact_phone: '',
@@ -335,7 +335,7 @@ export default {
         return
       }
       if (!examineData.source || !examineData.source.trim()) {
-        Toast('请输入来源')
+        Toast('请输入位置')
         return
       }
       if (this.showModel === 'text') {

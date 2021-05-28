@@ -259,10 +259,14 @@ export const setBrowserTitle = (title) => {
         i.remove()
       }, 2)
     }
-    document.title = title
+    if (title) {
+      document.title = title
+    }
     document.body.appendChild(i)
   } else {
-    document.title = title
+    if (title) {
+      document.title = title
+    }
   }
 }
 

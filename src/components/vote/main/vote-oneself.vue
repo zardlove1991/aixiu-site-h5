@@ -46,7 +46,7 @@
         </div>
         <div class="header">
           <span v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村：</span>
-          <span v-else>来源：</span>
+          <span v-else>位置：</span>
           <span class="header-txt">{{selfData.source}}</span>
         </div>
         <div class="header" v-show="showModel !== 'text'">
