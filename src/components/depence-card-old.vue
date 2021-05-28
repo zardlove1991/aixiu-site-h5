@@ -74,6 +74,7 @@ import { DEPENCE } from '@/common/currency'
 import MyCircle from '@/components/depence/circle'
 import MyModel from './depence/model'
 import mixins from '@/mixins/index'
+import { Toast } from 'mint-ui'
 
 export default {
   name: 'depence-card-old',
@@ -139,6 +140,7 @@ export default {
         // 重新载入答题卡页面
         this.$router.go(0)
       } catch (err) {
+        Toast(err.error_message)
         console.log(err)
       }
     },

@@ -123,7 +123,7 @@ instance.interceptors.response.use((res, xhr) => {
       store.dispatch('setDialogVisible', true)
       return
     }
-  } else if (status >= 500 || status === 422) {
+  } else if (status >= 500) {
     // window.location.href = `/error.html?origin=${url}`
     // window.location.href = `/waitting.html?origin=${url}`
   }
