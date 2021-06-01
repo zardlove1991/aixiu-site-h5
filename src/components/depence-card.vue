@@ -89,15 +89,22 @@
       <div class="reexam-btn" @click.stop="startReExam('ops')">重新考试</div>
       <div class="giveup-btn" @click.stop='giveupSumitExam'>放弃并交卷</div>
     </div>
+    <!-- 分享成功弹窗 -->
+    <OperateDialog
+      :visible.sync="showOperateDialog"
+      :dialogConfig="dialogConfig"/>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
+import { getPlat } from '@/utils/utils'
 import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { Toast } from 'mint-ui'
+import OperateDialog from './exam-components/operate-dialog'
 
 export default {
   name: 'depence-card',
@@ -105,11 +112,20 @@ export default {
   props: {
     id: String
   },
+  components: { OperateDialog },
   data () {
     return {
       defaultAvaterUrl: require('@/assets/common/avater@3x.png'),
       isShowOpsPage: false,
-      isBottomBtnCenter: false
+      isBottomBtnCenter: false,
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'share', // 弹窗类型
+        tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        showNumber: 1,
+        cancelBtnText: '知道了'
+      }
     }
   },
   computed: {
@@ -168,15 +184,52 @@ export default {
         if (url && !/^http/.test(url)) {
           url = location.protocol + url
         }
+        if (getPlat() === 'smartcity') {
+          this.initAppShare()
+        }
         this.initPageShareInfo({
           title: examInfo.title,
           desc: examInfo.brief,
           indexpic: url,
           link: this.redirect,
           mark: 'examination'
-        })
+        }, this.shareAddTimes)
       } catch (err) {
         console.log(err)
+      }
+    },
+    shareAddTimes () { // 分享成功回调
+      const examId = this.examInfo.id
+      if (this.examInfo.limit.is_open_share) {
+        API.shareAddTimes({
+          query: {
+            id: examId
+          }
+        }).then(res => {
+          if (res.code === 1) {
+            this.showOperateDialog = true
+          } else {
+            // 已经分享过
+          }
+        })
+      }
+    },
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        const shareSettings = this.examInfo.limit.share_settings
+        const settings = {
+          showShareButton: true, // 是否显示右上角的分享按钮
+          updateShareData: true, // 是否弹出分享视图
+          title: shareSettings.share_title,
+          brief: shareSettings.share_brief,
+          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+          imageLink: shareSettings.share_indexpic
+        }
+        window.SmartCity.shareTo(settings)
+        window.SmartCity.onShareSuccess((res) => {
+          this.shareAddTimes()
+        })
       }
     },
     async giveupSumitExam () {

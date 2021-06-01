@@ -146,6 +146,10 @@
         :shareUrl="shareUrl"
         @close="isShowShare = false">
       </share-dialog>
+      <!-- 分享成功弹窗 -->
+      <OperateDialog
+        :visible.sync="showOperateDialog"
+        :dialogConfig="dialogConfig"/>
     </div>
   </div>
 </template>
@@ -159,14 +163,16 @@ import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
-import { formatDate } from '@/utils/utils'
+import { formatDate, getPlat } from '@/utils/utils'
+import OperateDialog from './exam-components/operate-dialog'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'form-statistic',
   components: {
-    Pie, ShareDialog
+    Pie, ShareDialog, OperateDialog
   },
-  mixins: [ SubjectMixin ],
+  mixins: [ SubjectMixin, mixins ],
   props: ['params'],
   data () {
     return {
@@ -197,8 +203,16 @@ export default {
       raffleUrl: '',
       shareLoading: false,
       isShowShare: false,
-      shareUrl: '' // 分享海报地址
+      shareUrl: '', // 分享海报地址
       // isLimited: false
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'share', // 弹窗类型
+        tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        showNumber: 1,
+        cancelBtnText: '知道了'
+      }
     }
   },
   computed: {
@@ -326,6 +340,10 @@ export default {
         if (displayTrueAnswer && displayTrueAnswer === 1) {
           this.displayTrueAnswer = true
         }
+      }
+      this.sharePage()
+      if (getPlat() === 'smartcity') {
+        this.initAppShare()
       }
     },
     async getExamList () {
@@ -551,6 +569,9 @@ export default {
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         window.location.href = link
       }
     },
@@ -562,7 +583,95 @@ export default {
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
-    })
+    }),
+    sharePage () {
+      let examInfo = this.examInfo
+      if (!examInfo) {
+        return
+      }
+      let limit = examInfo.limit
+      let title = ''
+      let link = ''
+      let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        title = share.share_title ? share.share_title : examInfo.title
+        link = share.share_url
+        desc = share.share_brief ? share.share_brief : examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = examInfo.indexpic
+        if (picObj) {
+          if (picObj.constructor === Object && picObj.host && picObj.filename) {
+            imgUrl = picObj.host + picObj.filename
+          } else if (picObj.constructor === String) {
+            imgUrl = picObj
+          }
+        } else if (indexObj) {
+          if (indexObj.host && indexObj.filename) {
+            imgUrl = indexObj.host + indexObj.filename
+          } else if (indexObj.url) {
+            imgUrl = indexObj.url
+          }
+        }
+      }
+      if (!link) {
+        let local = window.location
+        let pathname = local.pathname
+        let index = pathname.indexOf('depencelist')
+        if (index !== -1) {
+          pathname = pathname.replace(/depencelist/, 'depencestart')
+        }
+        link = this.getShareUrl(local.origin, pathname)
+      } else {
+        link = this.getShareUrl(link)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
+      this.initPageShareInfo({
+        id: examInfo.id,
+        title,
+        desc,
+        indexpic: imgUrl,
+        link,
+        mark: 'examination'
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      const examId = this.examInfo.id
+      if (this.examInfo.limit.is_open_share) {
+        API.shareAddTimes({
+          query: {
+            id: examId
+          }
+        }).then(res => {
+          if (res.code === 1) {
+            this.showOperateDialog = true
+          } else {
+            // 已经分享过
+          }
+        })
+      }
+    },
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        const shareSettings = this.examInfo.limit.share_settings
+        const settings = {
+          showShareButton: true, // 是否显示右上角的分享按钮
+          updateShareData: true, // 是否弹出分享视图
+          title: shareSettings.share_title,
+          brief: shareSettings.share_brief,
+          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+          imageLink: shareSettings.share_indexpic
+        }
+        window.SmartCity.shareTo(settings)
+        window.SmartCity.onShareSuccess((res) => {
+          this.shareAddTimes()
+        })
+      }
+    }
   },
   created () {
     this.getExamList()
