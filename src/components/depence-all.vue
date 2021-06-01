@@ -149,7 +149,9 @@ export default {
       let redirectParams = this.redirectParams
       try {
         // 获取试卷详情
-        await this.getExamDetail({ id: examId })
+        if (!this.examInfo) {
+          await this.getExamDetail({ id: examId })
+        }
         let status = this.examInfo.person_status
         // 调用考试考试接口
         if (this.rtp === 'exam' && status !== 2) {
