@@ -118,7 +118,7 @@
           <div :class="['name-bar-wrap', darkMark === '2' ? 'light' : '']">
             <input v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'" class="search-input" type="text" placeholder="名称/乡镇及行政村/编号" v-model="searchVal"
                 @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" @input="dealSearch('input-search')"/>
-            <input v-else class="search-input" type="text" placeholder="名称/来源/编号" v-model="searchVal"
+            <input v-else class="search-input" type="text" placeholder="名称/拍摄地点/编号" v-model="searchVal"
                 @focus.stop="searchBarFocus = true" @blur.stop="searchBarFocus = false" @input="dealSearch('input-search')"/>
             <div class="search-icon" :class="{ 'focus': searchBarFocus }" @click.stop="dealSearch('input-search')">
             </div>
@@ -259,6 +259,8 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
+    <!-- 复制 -->
+    <input type="text" id="copyInput">
   </div>
 </template>
 

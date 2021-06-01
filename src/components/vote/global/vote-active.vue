@@ -11,7 +11,6 @@
       <button class="dialog-ok-btn" v-if="!downloadLink" @click="close()">好的</button>
       <button class="dialog-ok-btn" v-else @click="goDownload()">去下载</button>
     </div>
-    <input type="text" id="copyInput">
   </tips-dialog>
 </template>
 
@@ -53,9 +52,12 @@ export default {
       // 复制功能
       let copyUrl = 'xmtv:' + window.location.href
       let copyInput = document.getElementById('copyInput')
-      copyInput.value = copyUrl
-      copyInput.select()
-      document.execCommand('copy')
+      if (copyInput) {
+        copyInput.value = copyUrl
+        copyInput.select()
+        document.execCommand('copy')
+        copyInput.blur()
+      }
       //
       let url = this.downloadLink
       if (url) {

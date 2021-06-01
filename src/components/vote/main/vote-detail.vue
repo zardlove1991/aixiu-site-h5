@@ -65,8 +65,11 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import { fullSceneMap } from '@/utils/config'
+import mixins from '@/mixins/index'
+import { getPlat } from '@/utils/utils'
 
 export default {
+  mixins: [mixins],
   components: {
     VoteVideo,
     VoteAudio,
@@ -96,11 +99,18 @@ export default {
       videoMode: '1',
       isCloseDialog: false, // 是否开启投票弹框
       darkMark: '1', // 1: 深色系 2: 浅色系
-      fullSceneMap
+      fullSceneMap,
+      shareConfigData: {}
     }
   },
   created () {
     this.inintDetail()
+    let plat = getPlat()
+    if (plat === 'smartcity') {
+      window.SmartCity.onShareSuccess((res) => {
+        this.appShareCallBack()
+      })
+    }
   },
   props: {
     id: String,
@@ -182,6 +192,8 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         this.workDetail = res
+        // 调整详情页的分享
+        this.sharePage(detailInfo, res)
       })
     },
     getDetail () {
@@ -214,7 +226,7 @@ export default {
     },
     dealDetailMenu (slug) {
       if (slug === 'back') {
-        if (this.isBackList) {
+        if (this.isBackList || /wechat=true/.test(location.href)) {
           this.$router.replace({
             name: 'votebegin',
             params: { id: this.id }
@@ -247,9 +259,109 @@ export default {
         this.workDetail.total_votes++
       }
     },
+    sharePage (detailInfo, workDetail) {
+      if (!detailInfo) {
+        return false
+      }
+      let {
+        // title,
+        // introduce,
+        indexpic,
+        rule
+      } = detailInfo
+      let { name, introduce } = workDetail
+      let imgUrl = ''
+      let shareLink = location.href + '&wechat=true'
+      // let shareTitle = title
+      let shareBrief = introduce
+      if (rule && rule.is_close_dialog) {
+        this.isCloseDialog = true
+      } else {
+        this.isCloseDialog = false
+      }
+      if (rule && rule.share_settings) {
+        let share = rule.share_settings
+        let sharePic = share.indexpic
+        // if (share.title) {
+        //   shareTitle = share.title
+        // }
+        // if (share.brief) {
+        //   shareBrief = share.brief
+        // }
+        // shareLink = share.link
+        if (sharePic) {
+          if (sharePic.constructor === Array && sharePic.length > 0) {
+            let obj = sharePic[0]
+            if (obj.constructor === Object) {
+              if (/http/.test(obj.host)) {
+                imgUrl = obj.host + obj.filename
+              } else {
+                imgUrl = location.protocol + obj.host + obj.filename
+              }
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
+            if (/http/.test(sharePic.host)) {
+              imgUrl = sharePic.host + sharePic.filename
+            } else {
+              imgUrl = location.protocol + sharePic.host + sharePic.filename
+            }
+          } else if (sharePic.constructor === String) {
+            imgUrl = sharePic
+          }
+        } else if (indexpic) {
+          if (indexpic.constructor === Array && indexpic.length > 0) {
+            let obj = indexpic[0]
+            if (obj.constructor === Object) {
+              imgUrl = obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
+            imgUrl = indexpic.host + indexpic.filename
+          } else if (indexpic.constructor === String) {
+            imgUrl = indexpic
+          }
+        }
+      }
+
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
+      this.shareConfigData = {
+        id: detailInfo.id,
+        title: name,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
+      }
+      this.initPageShareInfo({
+        id: detailInfo.id,
+        title: name,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
+      })
+    },
+    appShareCallBack () {
+      if (this.shareConfigData.id && this.isOpenShare) {
+        this.setShare({
+          id: this.shareConfigData.id,
+          title: this.shareConfigData.title,
+          from: this.shareConfigData.from,
+          mark: this.shareConfigData.mark
+        })
+      }
+    },
     ...mapActions('vote', {
       setShareData: 'SET_SHARE_DATA',
       setIsBtnAuth: 'SET_IS_BTN_AUTH'
+    }),
+    ...mapActions('depence', {
+      setShare: 'SET_SHARE'
     })
   }
 }

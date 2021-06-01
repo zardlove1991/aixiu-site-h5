@@ -84,9 +84,9 @@
       </div>
       <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>位置</div>
+        <div class="form-title" v-else>拍摄地点</div>
         <div class="form-content">
-          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
+          <el-input v-model="examineData.source" @blur="blurAction()"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="showModel !== 'text'">
@@ -335,7 +335,7 @@ export default {
         return
       }
       if (!examineData.source || !examineData.source.trim()) {
-        Toast('请输入位置')
+        Toast('请输入拍摄地点')
         return
       }
       if (this.showModel === 'text') {

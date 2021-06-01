@@ -55,7 +55,8 @@ export default {
       // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
       // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
       let appid = env === 'test' ? 'wx025937621152c396' : 'wx867227e69004473c'
-      let res = STORAGE.get('signature')
+      // let res = STORAGE.get('signature')
+      let res = STORAGE.get('signature_' + location.href)
       if (!res) {
         res = await this.getWeixinInfo({
           url,
@@ -63,7 +64,8 @@ export default {
           appid
         })
         if (res) {
-          STORAGE.set('signature', res)
+          // STORAGE.set('signature', res)
+          STORAGE.set('signature_' + location.href, res)
         }
       }
       let { appId, timestamp, nonceStr, signature } = res
@@ -78,7 +80,8 @@ export default {
         if (!this.isWxError) {
           this.isWxError = true
           console.log('重新获取微信签名')
-          STORAGE.remove('signature')
+          // STORAGE.remove('signature')
+          STORAGE.remove('signature_' + location.href)
           this.initWeixinInfo()
         }
       })
