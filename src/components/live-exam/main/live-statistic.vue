@@ -516,6 +516,9 @@ export default {
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         window.location.href = link
       }
     },

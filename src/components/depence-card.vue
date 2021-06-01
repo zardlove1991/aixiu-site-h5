@@ -103,8 +103,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { DEPENCE } from '@/common/currency'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
-import OperateDialog from './exam-components/operate-dialog'
 import { Toast } from 'mint-ui'
+import OperateDialog from './exam-components/operate-dialog'
 
 export default {
   name: 'depence-card',
