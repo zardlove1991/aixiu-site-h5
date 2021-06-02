@@ -151,6 +151,9 @@ export default {
       }
       this.$emit('changeFile')
     },
+    clearFile () {
+      this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+    },
     // 文件超出个数
     handleExceed () {
       Toast(`最多只能选择${this.settings[this.flag].limit}个文件`)
@@ -223,13 +226,17 @@ export default {
       img {
         border-radius: px2rem(8px);
       }
+      &.vertical {
+        width: 6.25rem;
+        height: calc(6.25rem * 5.6 / 4);
+      }
       &.video-cover {
         width: px2rem(470px);
         height: px2rem(260px);
       }
-      &.vertical {
-        width: 6.25rem;
-        height: calc(6.25rem * 5.6 / 4);
+      &.video-cover.vertical {
+        width: px2rem(250px);
+        height: px2rem(375px);
       }
       .file-delete-icon {
         display: inline-block;

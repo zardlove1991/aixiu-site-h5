@@ -44,7 +44,9 @@ let examUrl = {
   checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
   getExamAuthScope: 'open/examination/detail', // 测评授权接口
   getInfoDept: 'client/examination/import/verify', // 获取信息收集用户的部门
-  setLiveVideoTime: 'client/examination/live/statistics' // 直播答题观看时间
+  setLiveVideoTime: 'client/examination/live/statistics', // 直播答题观看时间
+  shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
+  getExamRankList: 'client/examination/{id}/source' // 考试排行列表
 }
 
 // 投票相关接口
@@ -63,14 +65,14 @@ let voteUrl = {
   getIsCollect: 'client/report/collect/{id}', // 是否手机用户信息
   workReport: 'client/report/work', // 用户创建/编辑报名
   getReportDetail: 'client/report/work/{id}', // 获取报名内容详情
-  workVote: 'client/voting', // 给他投票
+  workVote: 'client/voting/{id}', // 给他投票
   saveSharer: 'client/voting/save_sharer', // 点击拉票将分享者信息，投票id和作品id入库
   shareMake: 'share/make', // 生成海报
   getSharer: 'client/voting/get_sharer', // 用户扫描二维码后获得分享者信息
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: 'mobile/verify/send', // 获取手机code
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
-  getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
+  getVoteTypeFid: 'client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
@@ -140,6 +142,8 @@ export default {
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
+  shareAddTimes: config => createAPI(configUrl.shareAddTimes, 'GET', config, API_FLAG),
+  getExamRankList: config => createAPI(configUrl.getExamRankList, 'GET', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),

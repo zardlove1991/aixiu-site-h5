@@ -1,27 +1,28 @@
 <template>
-  <div class="commvote-detail color-bg_color">
+  <div class="commvote-detail">
     <div class="detail-page-content-wrap">
       <div class="detail-header">
         <div class="common-page-detail-back" @click.stop="dealDetailMenu('back')"></div>
-        <div class="lottery-button color-button_color color-button_text"
+        <div class="lottery-button"
           v-if="workDetail.lottery && workDetail.lottery.remain_lottery_counts && workDetail.is_member_voted === 1 && isBtnAuth === 1"
           @click.stop="goLottery(workDetail.lottery.link)">有{{workDetail.lottery.remain_lottery_counts}}次抽奖机会</div>
       </div>
       <!--媒体组件渲染-->
-      <div class="detail-video-wrap"
-        v-if="flag === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
+      <div :class="['detail-video-wrap', videoMode === '3' ? 'vertical' : '']"
+        v-if="showModel === 'video' && workDetail.material && workDetail.material.video && workDetail.material.video.length">
         <vote-video class="base-video"
           v-for="(video, index) in workDetail.material.video" :key="index"
           :data="video">
         </vote-video>
       </div>
-      <div v-if="flag === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
+      <div v-if="showModel === 'audio' && workDetail.material && workDetail.material.audio && workDetail.material.audio.length">
         <vote-audio class="base-audio"
           v-for="(audio, index) in workDetail.material.audio" :key="index"
+          :darkMark="darkMark"
           :data="audio">
         </vote-audio>
       </div>
-      <div v-if="flag === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
+      <div v-if="showModel === 'picture' && workDetail.material && workDetail.material.image && workDetail.material.image.length">
         <img class="base-image"
           :class="imageRatio?'vertical':''"
           v-for="(image, index) in workDetail.material.image" :key="index"
@@ -50,7 +51,7 @@
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
-    <canvass-vote :flag="flag" :signUnit="signUnit" ref="canvass-vote-detail" />
+    <canvass-vote :flag="showModel" :signUnit="signUnit" ref="canvass-vote-detail" />
 </div>
 </template>
 
@@ -63,6 +64,7 @@ import CanvassVote from '@/components/vote/global/vote-canvass'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
+import { fullSceneMap } from '@/utils/config'
 
 export default {
   components: {
@@ -74,6 +76,7 @@ export default {
   },
   data () {
     return {
+      showModel: this.flag,
       workDetail: {},
       isShowWorkVote: false,
       mark: '',
@@ -90,7 +93,10 @@ export default {
       signUnit: '票',
       isOpenClassify: false,
       imageRatio: 0, // 图片模式
-      isCloseDialog: false // 是否开启投票弹框
+      videoMode: '1',
+      isCloseDialog: false, // 是否开启投票弹框
+      darkMark: '1', // 1: 深色系 2: 浅色系
+      fullSceneMap
     }
   },
   created () {
@@ -133,6 +139,9 @@ export default {
       } else {
         this.imageRatio = 0
       }
+      if (pageSetup.font_color) {
+        this.darkMark = pageSetup.font_color
+      }
       // 判断投票弹窗
       if (detailInfo.rule && detailInfo.rule.is_close_dialog) {
         this.isCloseDialog = true
@@ -142,6 +151,9 @@ export default {
       let limit = detailInfo.rule.limit
       if (limit.is_open_classify && limit.is_open_classify === 1) {
         this.isOpenClassify = true
+      }
+      if (limit.show_mode) {
+        this.videoMode = limit.show_mode
       }
       // 根据投票、报名的时间范围计算按钮的权限
       this.setBtnAuth(detailInfo)
@@ -165,6 +177,10 @@ export default {
           newVotes = remainVotes
         }
         res.remain_votes = newVotes
+        let fullSceneType = res.full_scene_type
+        if (fullSceneType && fullSceneType !== '0') {
+          this.showModel = this.fullSceneMap[fullSceneType][1]
+        }
         this.workDetail = res
       })
     },
@@ -291,8 +307,11 @@ export default {
       }
       .detail-video-wrap {
         width: 100%;
-        height: px2rem(390px);
+        height: calc((100vw - 1.875rem) * 9 / 16);
         margin-bottom: px2rem(40px);
+        &.vertical {
+          height: calc((100vw - 1.875rem) * 4.5 / 3);
+        }
       }
       .base-video, .base-audio, .base-image {
         width: 100%;
@@ -303,7 +322,7 @@ export default {
       }
       .detail-cotent {
         font-size: px2rem(30px);
-        color: #fff;
+        @include font-color('fontColor');
         line-height: px2rem(48px);
         white-space: pre-line;
       }

@@ -4,7 +4,6 @@
     v-if="show"
     :class="{'lock': isLock}"
     @touchmove.prevent=""
-    @click.stop='cancel'
     >
     <!--弹窗模块-->
     <div class="model-content">

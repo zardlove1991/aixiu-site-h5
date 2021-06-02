@@ -293,11 +293,11 @@ export default {
       }
     },
     submitExam () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = true
@@ -368,7 +368,7 @@ export default {
     text-align: center;
     color:#fff;
     // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-    @include bg-linear-color('themeColor');
+    @include bg-color('themeColor');
     @include font-dpr(16px);
     margin:0 auto;
     border-radius: 5px;
@@ -533,7 +533,7 @@ export default {
       // text-align: center;
       color:#fff;
       // @include bg-color('btnColor');
-      @include bg-linear-color('themeColor');
+      @include bg-color('themeColor');
       font-size: px2rem(32px);
       border-radius: 5px;
     }

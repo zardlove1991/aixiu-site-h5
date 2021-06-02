@@ -1,43 +1,51 @@
 <template>
-  <div class="form-statistic-wrap">
+  <div class="form-statistic-wrap" :class="colorConfig.name">
     <!--头部提示-->
     <div class="header-tip flex-v-center flex-between">
       <span class="icon-wrap flex-v-center">
         <i class="tips-icon"></i>
-        <span class="tips-title">测评已提交</span>
+        <span class="tips-title" :style="{color: bgColor}">测评已提交</span>
       </span>
-      <div @click="backUrl" class="back-btn">返回试题页</div>
+      <div @click="backUrl" class="back-btn" :style="{color: bgColor, 'border-color': bgColor}">返回活动页</div>
+      <div class="bg" :style="{background: customBgColor}"></div>
     </div>
-    <div class="header-bg">
-      <div class="exam-statInfo">
-        <div class="score-line">
-          <div class="score-area">
-            <div v-cloak>
-              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
-            </div>
-            <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
-          </div>
-          <div class="num-area">
-            <div class="my-text rank-area"><i class="line-static-icon"></i>{{examInfo.mark === 'examination@random' ? '分数排名' : '总分排名'}}<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
-            <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
-          </div>
+    <div class="header-bg" :class="colorConfig.name">
+      <div class="bg"></div>
+      <div class="exam-statInfo"
+        :class="{'is-open-integral': examInfo && examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral}">
+        <div class="top-wrap">
+          <div class="my-score" :style="{color: bgColor}" v-cloak v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+          <div class="score-share" @click.stop="shareScore()">成绩分享</div>
         </div>
-        <div class="score-tips" v-show="statMsgVisible">
+        <div class="statistic-wrap" :class="{'up-to-limit': isLimited}">
+          <div class="score-wrap">
+            <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
+            <div class="my-text integral-num">
+              获得
+              <span class="static-weight">{{integralNumber}}</span>
+              积分
+            </div>
+            <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
+          </div>
+          <!-- <div class="num-area">
+            <div class="my-text rank-area"><i class="line-static-icon"></i>{{showTitle}}<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
+            <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
+          </div> -->
+        </div>
+        <div class="score-tips" :style="{background: customBgColor}" v-show="statMsgVisible">
           <span class="tips-icon"></span>
           <span class="score-tips-txt">{{statMsg}}</span>
         </div>
-        <div class="score-box"></div>
-        <div class="score-share" v-if="!shareLoading" @click.stop="shareScore()">成绩分享<span class="score-share-icon"></span></div>
-        <div class="score-share" v-else>成绩分享<span class="score-share-icon"></span></div>
       </div>
     </div>
     <div class="content">
-      <div class="operate-wrap flex-v-center">
+      <!-- 隐藏统计信息 -->
+      <!-- <div class="operate-wrap flex-v-center">
         <span class="btn btn-left examfont iconshuju flex-v-center" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
         <span class="btn btn-right examfont iconbingzhuangtu flex-v-center" :class="{'is-active': showType === 'pie'}"
         @click="showType = 'pie'">饼状图</span>
-      </div>
+      </div> -->
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
@@ -47,11 +55,13 @@
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
-          <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
+          <!-- 隐藏统计信息 -->
+          <!-- <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
-          </div>
+          </div> -->
           <ul v-if="item.options && item.options.length">
             <li class="choice-item" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
@@ -67,22 +77,22 @@
                     </div>
                     <span class="content-name">{{val.name}}</span>
                   </div>
-                  <span class="option-pie-percent" v-show="showType === 'pie'">
+                  <!-- 隐藏统计信息 -->
+                  <!-- <span class="option-pie-percent" v-show="showType === 'pie'">
                     <i class="icon-percent" :style="{background: colorData[index]}"></i>
                     <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
-                  </span>
+                  </span> -->
               </div>
-              <!-- 柱状图 进度条-->
-              <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
+              <!-- 隐藏统计信息  柱状图:进度条 -->
+              <!-- <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
                 <div class="line-wrap">
                   <span class="starck-bar"
                     :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
                 </div>
                 <span class="option-percent">
-                  <!-- <i class="icon-percent" :style="{background: colorData[index]}"></i> -->
                   <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
                 </span>
-              </div>
+              </div> -->
             </li>
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
@@ -136,6 +146,10 @@
         :shareUrl="shareUrl"
         @close="isShowShare = false">
       </share-dialog>
+      <!-- 分享成功弹窗 -->
+      <OperateDialog
+        :visible.sync="showOperateDialog"
+        :dialogConfig="dialogConfig"/>
     </div>
   </div>
 </template>
@@ -149,14 +163,16 @@ import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
-import { formatDate } from '@/utils/utils'
+import { formatDate, getPlat } from '@/utils/utils'
+import OperateDialog from './exam-components/operate-dialog'
+import mixins from '@/mixins/index'
 
 export default {
   name: 'form-statistic',
   components: {
-    Pie, ShareDialog
+    Pie, ShareDialog, OperateDialog
   },
-  mixins: [ SubjectMixin ],
+  mixins: [ SubjectMixin, mixins ],
   props: ['params'],
   data () {
     return {
@@ -187,13 +203,97 @@ export default {
       raffleUrl: '',
       shareLoading: false,
       isShowShare: false,
-      shareUrl: '' // 分享海报地址
+      shareUrl: '', // 分享海报地址
+      // isLimited: false
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'share', // 弹窗类型
+        tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        showNumber: 1,
+        cancelBtnText: '知道了'
+      }
     }
   },
   computed: {
     ...mapGetters('depence', [
       'examInfo', 'luckDrawLink'
-    ])
+    ]),
+    isOpenIntegral: {
+      get () {
+        let flag = false
+        if (this.examInfo && this.examInfo.limit.integral_setting) {
+          flag = this.examInfo.limit.integral_setting.is_open_integral
+        }
+        return flag
+      }
+    },
+    bgColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          color = this.examInfo.limit.color_scheme.content.bg_color
+        }
+        return color
+      }
+    },
+    colorConfig: {
+      get () {
+        let obj = {}
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          obj = this.examInfo.limit.color_scheme
+        }
+        return obj
+      }
+    },
+    costomColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          const config = this.examInfo.limit.color_scheme
+          const buttonColor = config.content.button_color
+          const costomColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.2)`
+          color = costomColor
+        }
+        return color
+      }
+    },
+    customBgColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          const config = this.examInfo.limit.color_scheme
+          const buttonColor = config.content.bg_color
+          const costomBgColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.05)`
+          color = costomBgColor
+        }
+        return color
+      }
+    },
+    showTitle: {
+      get () {
+        let title = '总分排名'
+        let mark = this.examInfo.mark
+        if (this.examInfo && (mark === 'examination@random' || mark === 'examination@integral' || mark === 'examination@rank')) {
+          title = '分数排名'
+        }
+        return title
+      }
+    },
+    isLimited () {
+      let flag = false
+      if (this.optionData.integral) {
+        flag = this.optionData.integral.type === 'upper'
+      }
+      return flag
+    },
+    integralNumber () {
+      let num = 0
+      if (this.optionData.integral) {
+        num = (this.isLimited && this.optionData.integral.integral < 0) ? 0 : this.optionData.integral.integral
+      }
+      return num
+    }
   },
   methods: {
     initStatInfo (score, correctNum, total) {
@@ -240,6 +340,10 @@ export default {
         if (displayTrueAnswer && displayTrueAnswer === 1) {
           this.displayTrueAnswer = true
         }
+      }
+      this.sharePage()
+      if (getPlat() === 'smartcity') {
+        this.initAppShare()
       }
     },
     async getExamList () {
@@ -408,6 +512,7 @@ export default {
       })
     },
     shareScore () {
+      if (this.shareLoading) return
       let optionData = this.optionData
       // console.log('shareScore', this.optionData)
       if (!optionData || !optionData.title) {
@@ -441,7 +546,11 @@ export default {
         question_num: optionData.questions.length,
         correct_num: correntNum,
         use_time: userTime,
-        submit_time: submitTime
+        submit_time: submitTime,
+        exam_id: this.$route.params.id
+      }
+      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
+        data.win_integral = this.optionData.integral ? this.optionData.integral.integral : 0
       }
       if (name) {
         data.name = name
@@ -460,6 +569,9 @@ export default {
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         window.location.href = link
       }
     },
@@ -471,7 +583,95 @@ export default {
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
-    })
+    }),
+    sharePage () {
+      let examInfo = this.examInfo
+      if (!examInfo) {
+        return
+      }
+      let limit = examInfo.limit
+      let title = ''
+      let link = ''
+      let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        title = share.share_title ? share.share_title : examInfo.title
+        link = share.share_url
+        desc = share.share_brief ? share.share_brief : examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = examInfo.indexpic
+        if (picObj) {
+          if (picObj.constructor === Object && picObj.host && picObj.filename) {
+            imgUrl = picObj.host + picObj.filename
+          } else if (picObj.constructor === String) {
+            imgUrl = picObj
+          }
+        } else if (indexObj) {
+          if (indexObj.host && indexObj.filename) {
+            imgUrl = indexObj.host + indexObj.filename
+          } else if (indexObj.url) {
+            imgUrl = indexObj.url
+          }
+        }
+      }
+      if (!link) {
+        let local = window.location
+        let pathname = local.pathname
+        let index = pathname.indexOf('depencelist')
+        if (index !== -1) {
+          pathname = pathname.replace(/depencelist/, 'depencestart')
+        }
+        link = this.getShareUrl(local.origin, pathname)
+      } else {
+        link = this.getShareUrl(link)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
+      this.initPageShareInfo({
+        id: examInfo.id,
+        title,
+        desc,
+        indexpic: imgUrl,
+        link,
+        mark: 'examination'
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      const examId = this.examInfo.id
+      if (this.examInfo.limit.is_open_share) {
+        API.shareAddTimes({
+          query: {
+            id: examId
+          }
+        }).then(res => {
+          if (res.code === 1) {
+            this.showOperateDialog = true
+          } else {
+            // 已经分享过
+          }
+        })
+      }
+    },
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        const shareSettings = this.examInfo.limit.share_settings
+        const settings = {
+          showShareButton: true, // 是否显示右上角的分享按钮
+          updateShareData: true, // 是否弹出分享视图
+          title: shareSettings.share_title,
+          brief: shareSettings.share_brief,
+          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+          imageLink: shareSettings.share_indexpic
+        }
+        window.SmartCity.shareTo(settings)
+        window.SmartCity.onShareSuccess((res) => {
+          this.shareAddTimes()
+        })
+      }
+    }
   },
   created () {
     this.getExamList()
@@ -507,495 +707,650 @@ $font-weight: 400;
 }
 
 .form-statistic-wrap{
-    font-family: $font-family;
-    background-color:#fff;
-    min-height: 100vh;
-    i {
+  font-family: $font-family;
+  background-color:#fff;
+  min-height: 100vh;
+  i {
+      display: inline-block;
+  }
+  .header-tip{
+      width: 100%;
+      height:px2rem(80px);
+      background:#fff;
+      color: $primary-color;
+      padding-left:px2rem(43px);
+      padding-right:px2rem(20px);
+      box-sizing: border-box;
+      z-index: 2;
+      position: relative;
+      .icon-wrap {
         display: inline-block;
+        vertical-align: middle;
+      }
+      .tips-icon{
+        width: px2rem(36px);
+        height: px2rem(36px);
+        background-size: px2rem(36px);
+        @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
+      }
+      .tips-title{
+          display: inline-block;
+          @include font-dpr(14px);
+          font-weight: $font-weight;
+          color: $primary-color;
+          margin-left: 7px;
+      }
+      .back-btn{
+        color: $primary-color;
+        padding: 3.5px 7px;
+        border: 1.2px solid $primary-color;
+        border-radius: 15px;
+        font-size: 14px;
+        position: relative;
+        z-index: 1;
+      }
+      .bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+      }
+  }
+  .header-bg{
+    width: 100%;
+    position: relative;
+    padding: 0;
+    padding-top:px2rem(40px);
+    .bg {
+      position: absolute;
+      width: 100%;
+      height: px2rem(300px);
+      text-align: center;
+      line-height: 50px;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      &:after {
+        content: '';
+        width: 140%;
+        height: px2rem(300px);
+        position: absolute;
+        left: -20%;
+        top: 0;
+        border-radius: 0 0 50% 50%;
+        background: rgb(255, 177, 56);
+      }
     }
-    .score-area .my-score{
-        font-size:px2rem(72px);
-        line-height:px2rem(72px);
-        color:#FF6A45;
-        margin-bottom:px2rem(20px);
-    }
-    .score-area .my-text{
+    .exam-statInfo{
+      position: relative;
+      margin:0 px2rem(28px);
+      background-color:#fff;
+      box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
+      border-radius: 5px;
+      padding-bottom: px2rem(20px);
+      .top-wrap {
+        position: relative;
+        padding: px2rem(30px) 0 px2rem(20px) px2rem(45px);
+        .my-score {
+          font-size:px2rem(72px);
+          line-height:px2rem(72px);
+          color:#FF6A45;
+        }
+        .score-share {
+          width: px2rem(224px);
+          height: px2rem(64px);
+          color: #fff;
+          text-align: center;
+          line-height: px2rem(64px);
+          @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+      }
+      .statistic-wrap {
+        display: flex;
+        width: 100%;
+        margin: px2rem(25px) 0 px2rem(25px);
+        padding: 0 px2rem(20px) px2rem(20px) px2rem(65px);
+        border-radius: 12px;
+        &.up-to-limit {
+          margin-bottom: px2rem(40px);
+        }
+        .score-wrap {
+          width: 45%;
+          // border-right: 1px solid #DBDBDB;
+          position: relative;
+          .tips-wrap {
+            position: absolute;
+            bottom: px2rem(-66px);
+            left: px2rem(-48px);
+            width: px2rem(268px);
+            height: px2rem(57px);
+            font-size: px2rem(24px);
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            background: #FFF3DC;
+            color: #FFA800;
+            line-height: px2rem(57px);
+            text-align: center;
+            border-radius: 4px;
+            display: none;
+            .trangle-icon {
+              position: absolute;
+              top: -11px;
+              left: -12px;
+              right: 0;
+              margin: auto;
+              color: #FFF3DC;
+              font-size: 16px;
+            }
+          }
+        }
+        .num-area {
+          width: 55%;
+          padding-left: px2rem(74px);
+        }
+        .my-text {
+          color:#666;
+          font-size:px2rem(30px);
+          line-height:px2rem(30px);
+          .line-static-icon {
+            width: px2rem(18px);
+            height: px2rem(28px);
+            background-size: px2rem(18px) px2rem(28px);
+            margin-right: px2rem(15px);
+            @include img-retina("~@/assets/common/line-static@2x.png","~@/assets/common/line-static@3x.png", 100%, 100%);
+          }
+          .static-weight {
+            color: #333;
+          }
+        }
+        .integral-num {
+          display: none;
+        }
+      }
+      .my-text{
         color:#666;
         font-size:px2rem(30px);
         line-height:px2rem(30px);
         .static-weight {
           color: #333;
         }
-    }
-    .header-tip{
-        width: 100%;
-        height:px2rem(80px);
+      }
+      .score-tips {
+        margin-top:px2rem(48px);
         background:#fff1ed;
-        color: $primary-color;
-        padding-left:px2rem(43px);
-        padding-right:px2rem(20px);
-        box-sizing: border-box;
-        z-index: 2;
-        .icon-wrap {
+        padding: px2rem(20px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 px2rem(20px);
+        border-radius: 8px;
+        .tips-icon {
           display: inline-block;
-          vertical-align: middle;
+          width: px2rem(29px);
+          height: px2rem(32px);
+          @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
         }
-        .tips-icon{
-          width: px2rem(36px);
-          height: px2rem(36px);
-          background-size: px2rem(36px);
-          @include img-retina("~@/assets/common/have_info@2x.png","~@/assets/common/have_info@3x.png", 100%, 100%);
+        .score-tips-txt {
+          flex: 1;
+          margin-left: px2rem(15px);
+          display: inline-block;
+          color: #333;
+          @include font-dpr(14px);
+          @include line-overflow(1);
         }
-        .tips-title{
-            display: inline-block;
-            @include font-dpr(14px);
-            font-weight: $font-weight;
-            color: $primary-color;
-            margin-left: 7px;
-        }
-        .back-btn{
-            color: $primary-color;
-            padding: 3.5px 7px;
-            border: 1.2px solid $primary-color;
-            border-radius: 15px;
-            font-size: 14px;
-        }
-    }
-    .header-bg{
-        width: 100%;
-        // height: px2rem(315px);
-        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%,  px2rem(315px));
-        background-repeat: no-repeat;
-        position: relative;
-        padding: 0;
-        padding-top:px2rem(78px);
-        .exam-statInfo{
-          position: relative;
-          margin:0 px2rem(28px);
-          // height:px2rem(290px);
-          background-color:#fff;
-          box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
-          border-radius: 5px;
-          padding:px2rem(110px) px2rem(50px) px2rem(50px) px2rem(67px);
-          .score-box {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: px2rem(67px);
-            @include img-retina("~@/assets/common/share-bg@2x.png","~@/assets/common/share-bg@3x.png", 100%, 100%);
-          }
-          .score-share {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: px2rem(67px);
-            line-height: px2rem(67px);
-            padding: 0 px2rem(20px);
-            @include font-dpr(14px);
-            color: #fff;
-            .score-share-icon {
-              display: inline-block;
-              width: px2rem(26px);
-              height: px2rem(28px);
-              line-height: px2rem(67px);
-              margin-left: px2rem(15px);
-              @include img-retina("~@/assets/common/share-icon@2x.png","~@/assets/common/share-icon@3x.png", 100%, 100%);
-            }
-          }
-        }
-        .score-tips {
-          margin-top:px2rem(48px);
-          background:#fff1ed;
-          padding: px2rem(20px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .tips-icon {
-            display: inline-block;
-            width: px2rem(29px);
-            height: px2rem(32px);
-            @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
-          }
-          .score-tips-txt {
-            flex: 1;
-            margin-left: px2rem(15px);
-            display: inline-block;
-            color: #333;
-            @include font-dpr(14px);
-            @include line-overflow(1);
-          }
-        }
+      }
+      &.is-open-integral {
         .score-line {
-            display:flex;
-            align-items: center;
-            text-align: left;
+          margin-bottom: px2rem(80px);
         }
-        .rank-area{
-            margin-bottom:px2rem(38px);
+        .tips-wrap {
+          display: inline-block !important;
         }
-        .score-area{
-            flex:1;
-            border-right:1px solid #DBDBDB;
+        .integral-num {
+          display: inline-block;
+          margin-top: px2rem(20px);
         }
-        .num-area{
-            flex:1;
-            text-align: left;
-            margin-left: px2rem(70px);
-            .my-text {
-              color:#666;
-              font-size:px2rem(30px);
-              line-height:px2rem(30px);
-              .line-static-icon {
-                width: px2rem(18px);
-                height: px2rem(28px);
-                background-size: px2rem(18px) px2rem(28px);
-                margin-right: px2rem(15px);
-                @include img-retina("~@/assets/common/line-static@2x.png","~@/assets/common/line-static@3x.png", 100%, 100%);
-              }
-              .static-weight {
-                color: #333;
-              }
-            }
-        }
-        .title{
-            font-size: 20px;
-            font-family: PingFangSC-Medium,PingFang SC;
-            font-weight: 500;
-            color: #fff;
-            line-height: 28px;
-            position: absolute;
-            top: 35px;
-            left: 22px;
-        }
-        .submit-num{
-            height: 20px;
-            font-size: 14px;
-            font-family: $font-family;
-            font-weight: $font-weight;
-            color: #fff;
-            line-height: 20px;
-            position: absolute;
-            margin-top: 9px;
-            top: 60px;
-            left: 22px;
-        }
+      }
     }
-    .content{
-        padding: 15px;
-        margin-top:px2rem(80px);
-        .operate-wrap{
-            .btn{
-                display: inline-block;
-                width: 75px;
-                height: 29px;
-                text-align: center;
-                border: 1px solid #dbdbdb;
-                font-size: 12px;
-                font-family: $font-family;
-                font-weight: $font-weight;
-                color: #666;
-                line-height: 29px;
-                &.btn-left{
-                    border-radius: 2px 0px 0px 2px;
-                }
-                &.btn-right{
-                    border-radius: 0px 2px 2px 0px;
-                    border-left: none;
-                }
-            }
-            .iconbingzhuangtu:before, .iconshuju:before{
+    .rank-area{
+      margin-bottom:px2rem(20px);
+    }
+    .score-area{
+      flex:1;
+      border-right:1px solid #DBDBDB;
+    }
+    .title{
+      font-size: 20px;
+      font-family: PingFangSC-Medium,PingFang SC;
+      font-weight: 500;
+      color: #fff;
+      line-height: 28px;
+      position: absolute;
+      top: 35px;
+      left: 22px;
+    }
+    .submit-num{
+      height: 20px;
+      font-size: 14px;
+      font-family: $font-family;
+      font-weight: $font-weight;
+      color: #fff;
+      line-height: 20px;
+      position: absolute;
+      margin-top: 9px;
+      top: 60px;
+      left: 22px;
+    }
+  }
+  .content{
+      padding: 15px;
+      // margin-top:px2rem(80px);
+      .operate-wrap{
+          .btn{
+              display: inline-block;
+              width: 75px;
+              height: 29px;
+              text-align: center;
+              border: 1px solid #dbdbdb;
+              font-size: 12px;
+              font-family: $font-family;
+              font-weight: $font-weight;
+              color: #666;
+              line-height: 29px;
+              &.btn-left{
+                  border-radius: 2px 0px 0px 2px;
+              }
+              &.btn-right{
+                  border-radius: 0px 2px 2px 0px;
+                  border-left: none;
+              }
+          }
+          .iconbingzhuangtu:before, .iconshuju:before{
+              font-size: 16px;
+              margin: 0 px2rem(15px) 0 px2rem(12px);
+              color: #ccc;
+          }
+          .is-active{
+              background: $primary-color;
+              color: #fff;
+              border-color: $primary-color;
+              &.btn-right{
+                  margin-left: -1px;
+              }
+              &.iconbingzhuangtu:before, &.iconshuju:before{
+                  color: #fff;
+              }
+          }
+      }
+      .option-wrap{
+          ul{
+              padding: 0;
+              margin: 0;
+          }
+          margin-top: px2rem(90px);
+          &.is-first{
+              margin-top: px2rem(60px);
+          }
+          .title-wrap{
+              color: $font-color;
+              font-family: $font-family;
+              font-weight: $font-weight;
+              margin-bottom: 8px;
+              .title {
+                font-weight: 500;
                 font-size: 16px;
-                margin: 0 px2rem(15px) 0 px2rem(12px);
-                color: #ccc;
-            }
-            .is-active{
+                line-height: 24px;
+                .option-num {
+                  color: #999;
+                  font-size: 13px;
+                  margin-left: 7px;
+                  .my-score {
+                    font-size: 13px;
+                    color: #ff6a45;
+                  }
+                }
+              }
+              .media-wrap {
+                padding:0 px2rem(43px) 0 px2rem(30px);
+                box-sizing: border-box;
+                text-align: center;
+                margin-top: px2rem(10px);
+                .my-img{
+                  width: 100%;
+                  max-width: 100%;
+                  height: px2rem(320px);
+                  object-fit: cover;
+                }
+              }
+          }
+          .choice-item{
+              font-size: 15px;
+              font-family: $font-family;
+              color: $font-color;
+              position: relative;
+              margin-bottom: px2rem(30px);
+              .check-box, .radio-box{
+                  margin-right: 10px;
+                  .el-radio__input.is-disabled+span.el-radio__label{
+                      display: none;
+                  }
+                  .el-radio__inner, .el-checkbox__inner{
+                      width: 19px;
+                      height: 19px;
+                      background: #fbfbfb;
+                      border-color: #ccc;
+                  }
+                  .el-checkbox__inner{
+                      &::after{
+                          width: 7px;
+                          height: 11px;
+                          color: #ccc;
+                          top: 0px;
+                          left: 4px;
+                          border-width: 1.5px;
+                      }
+                  }
+                  .el-radio__inner{
+                      &::after{
+                          width: 8px;
+                          height: 8px;
+                          color: #ccc;
+                      }
+                  }
+                  .el-checkbox, .el-checkbox__input{
+                      position: absolute;
+                  }
+                  &.el-checkbox{
+                      height: 19px;
+                      width: 19px;
+                      position: relative;
+                  }
+              }
+              .option-content{
+                  flex: 1;
+                  position: relative;
+                  .option-img{
+                      width: 45px;
+                      height: 45px;
+                      object-fit: cover;
+                      margin-right: 10px;
+                  }
+                  .text-content{
+                      color: $font-color;
+                      word-break: break-word;
+                      font-size: 15px;
+                      line-height: 22px;
+                      flex: 1;
+                      .text-index {
+                        display: inline-block;
+                        margin-right: px2rem(20px);
+                      }
+                      .media-wrap-option .my-img {
+                        width: px2rem(90px);
+                        height: px2rem(90px);
+                        margin-right: px2rem(20px);
+                        object-fit: cover;
+                      }
+                      .content-name {
+                        flex: 1;
+                      }
+                  }
+                  .option-pie-percent {
+                    width: px2rem(120px);
+                    margin-left: px2rem(20px);
+                  }
+                  .el-radio {
+                    margin-right: px2rem(20px);
+                  }
+                  .el-radio__input {
+                    .el-radio__inner {
+                      width: px2rem(40px);
+                      height: px2rem(40px);
+                      border-color: #CCCCCC;
+                      &:after {
+                        width: px2rem(18px);
+                        height: px2rem(18px);
+                        background-color: #CCCCCC;
+                      }
+                    }
+                  }
+                  .select-tip-checkbox {
+                    width:px2rem(38px);
+                    height:px2rem(38px);
+                    border:1px solid #cccccc;
+                    border-radius: px2rem(4px);
+                    margin-right: px2rem(20px);
+                    &.active {
+                      color:#ccc;
+                      position:relative;
+                      text-align: center;
+                      &:after {
+                        content:'';
+                        position: absolute;
+                        left:50%;
+                        top:50%;
+                        margin-left:px2rem(-10px);
+                        margin-top:px2rem(-7px);
+                        width:px2rem(20px);
+                        height:px2rem(14px);
+                        line-height:px2rem(40px);
+                        background-repeat: no-repeat;
+                        background-size: 100%;
+                        @include img-retina('~@/assets/common/duihao2@2x.png','~@/assets/common/duihao2@3x.png', 100%,100%);
+                      }
+                    }
+                  }
+              }
+              .icon-percent{
+                  width: 7px;
+                  height: 7px;
+                  font-size: 14px;
+                  margin-right: 6px;
+                  border-radius: 1px;
+              }
+              .progress-wrap {
+                height: px2rem(30px);
+                margin-top: px2rem(10px);
+                position: relative;
+                .line-wrap {
+                  margin-left: 29px;
+                  // width: calc(100% - 29px - 50px);
+                  flex: 1;
+                  height: 3px;
+                  background: #fff6f4;
+                  border-radius: 3px;
+                  position: relative;
+                  box-sizing: border-box;
+                  .starck-bar{
+                    background: $primary-color;
+                    height: 3px;
+                    border-radius: 3px;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                  }
+                }
+                .option-percent{
+                  margin-left: px2rem(38px);
+                  width: px2rem(90px);
+                }
+              }
+          }
+          .picture-wrap{
+              margin-left: 25px;
+              .img-list{
+                  width: 100px;
+                  height: 100px;
+                  margin-right: 10px;
+                  &:nth-child(3n){
+                      margin-right: 0;
+                  }
+                  &.is-multiply-pic{
+                      margin-bottom: 10px;
+                  }
+              }
+              .el-image-viewer__btn{
+                  display: flex;
+              }
+          }
+          .answer-wrap{
+              width: 100%;
+              font-family: $font-family;
+              font-weight: $font-weight;
+              .flex-answer {
+                display: flex;
+                align-items: center;
+                margin-bottom: px2rem(20px);
+              }
+              .answer-icon{
+                width: px2rem(30px);
+                height: px2rem(30px);
                 background: $primary-color;
                 color: #fff;
-                border-color: $primary-color;
-                &.btn-right{
-                    margin-left: -1px;
-                }
-                &.iconbingzhuangtu:before, &.iconshuju:before{
-                    color: #fff;
-                }
-            }
-        }
-        .option-wrap{
-            ul{
-                padding: 0;
-                margin: 0;
-            }
-            margin-top: px2rem(90px);
-            &.is-first{
-                margin-top: px2rem(60px);
-            }
-            .title-wrap{
-                color: $font-color;
-                font-family: $font-family;
-                font-weight: $font-weight;
-                margin-bottom: 8px;
-                .title {
-                  font-weight: 500;
-                  font-size: 16px;
-                  line-height: 24px;
-                  .option-num {
-                    color: #999;
-                    font-size: 13px;
-                    margin-left: 7px;
-                    .my-score {
-                      font-size: 13px;
-                      color: #ff6a45;
-                    }
-                  }
-                }
-                .media-wrap {
-                  padding:0 px2rem(43px) 0 px2rem(30px);
-                  box-sizing: border-box;
-                  text-align: center;
-                  margin-top: px2rem(10px);
-                  .my-img{
-                    width: 100%;
-                    max-width: 100%;
-                    height: px2rem(320px);
-                    object-fit: cover;
-                  }
-                }
-            }
-            .choice-item{
-                font-size: 15px;
-                font-family: $font-family;
-                color: $font-color;
-                position: relative;
-                margin-bottom: px2rem(30px);
-                .check-box, .radio-box{
-                    margin-right: 10px;
-                    .el-radio__input.is-disabled+span.el-radio__label{
-                        display: none;
-                    }
-                    .el-radio__inner, .el-checkbox__inner{
-                        width: 19px;
-                        height: 19px;
-                        background: #fbfbfb;
-                        border-color: #ccc;
-                    }
-                    .el-checkbox__inner{
-                        &::after{
-                            width: 7px;
-                            height: 11px;
-                            color: #ccc;
-                            top: 0px;
-                            left: 4px;
-                            border-width: 1.5px;
-                        }
-                    }
-                    .el-radio__inner{
-                        &::after{
-                            width: 8px;
-                            height: 8px;
-                            color: #ccc;
-                        }
-                    }
-                    .el-checkbox, .el-checkbox__input{
-                        position: absolute;
-                    }
-                    &.el-checkbox{
-                        height: 19px;
-                        width: 19px;
-                        position: relative;
-                    }
-                }
-                .option-content{
-                    flex: 1;
-                    position: relative;
-                    .option-img{
-                        width: 45px;
-                        height: 45px;
-                        object-fit: cover;
-                        margin-right: 10px;
-                    }
-                    .text-content{
-                        color: $font-color;
-                        word-break: break-word;
-                        font-size: 15px;
-                        line-height: 22px;
-                        flex: 1;
-                        .text-index {
-                          display: inline-block;
-                          margin-right: px2rem(20px);
-                        }
-                        .media-wrap-option .my-img {
-                          width: px2rem(90px);
-                          height: px2rem(90px);
-                          margin-right: px2rem(20px);
-                          object-fit: cover;
-                        }
-                        .content-name {
-                          flex: 1;
-                        }
-                    }
-                    .option-pie-percent {
-                      width: px2rem(120px);
-                      margin-left: px2rem(20px);
-                    }
-                    .el-radio {
-                      margin-right: px2rem(20px);
-                    }
-                    .el-radio__input {
-                      .el-radio__inner {
-                        width: px2rem(40px);
-                        height: px2rem(40px);
-                        border-color: #CCCCCC;
-                        &:after {
-                          width: px2rem(18px);
-                          height: px2rem(18px);
-                          background-color: #CCCCCC;
-                        }
-                      }
-                    }
-                    .select-tip-checkbox {
-                      width:px2rem(38px);
-                      height:px2rem(38px);
-                      border:1px solid #cccccc;
-                      border-radius: px2rem(4px);
-                      margin-right: px2rem(20px);
-                      &.active {
-                        color:#ccc;
-                        position:relative;
-                        text-align: center;
-                        &:after {
-                          content:'';
-                          position: absolute;
-                          left:50%;
-                          top:50%;
-                          margin-left:px2rem(-10px);
-                          margin-top:px2rem(-7px);
-                          width:px2rem(20px);
-                          height:px2rem(14px);
-                          line-height:px2rem(40px);
-                          background-repeat: no-repeat;
-                          background-size: 100%;
-                          @include img-retina('~@/assets/common/duihao2@2x.png','~@/assets/common/duihao2@3x.png', 100%,100%);
-                        }
-                      }
-                    }
-                }
-                .icon-percent{
-                    width: 7px;
-                    height: 7px;
-                    font-size: 14px;
-                    margin-right: 6px;
-                    border-radius: 1px;
-                }
-                .progress-wrap {
-                  height: px2rem(30px);
-                  margin-top: px2rem(10px);
-                  position: relative;
-                  .line-wrap {
-                    margin-left: 29px;
-                    // width: calc(100% - 29px - 50px);
-                    flex: 1;
-                    height: 3px;
-                    background: #fff6f4;
-                    border-radius: 3px;
-                    position: relative;
-                    box-sizing: border-box;
-                    .starck-bar{
-                      background: $primary-color;
-                      height: 3px;
-                      border-radius: 3px;
-                      position: absolute;
-                      left: 0;
-                      top: 0;
-                    }
-                  }
-                  .option-percent{
-                    margin-left: px2rem(38px);
-                    width: px2rem(90px);
-                  }
-                }
-            }
-            .picture-wrap{
-                margin-left: 25px;
-                .img-list{
-                    width: 100px;
-                    height: 100px;
-                    margin-right: 10px;
-                    &:nth-child(3n){
-                        margin-right: 0;
-                    }
-                    &.is-multiply-pic{
-                        margin-bottom: 10px;
-                    }
-                }
-                .el-image-viewer__btn{
-                    display: flex;
-                }
-            }
-            .answer-wrap{
-                width: 100%;
-                font-family: $font-family;
-                font-weight: $font-weight;
-                .flex-answer {
-                  display: flex;
-                  align-items: center;
-                  margin-bottom: px2rem(20px);
-                }
-                .answer-icon{
-                  width: px2rem(30px);
-                  height: px2rem(30px);
-                  background: $primary-color;
-                  color: #fff;
-                  border-radius: 2px;
-                  font-size: px2rem(20px);
-                  text-align: center;
+                border-radius: 2px;
+                font-size: px2rem(20px);
+                text-align: center;
+                line-height: px2rem(30px);
+                font-style: normal;
+              }
+              .answer-content{
+                  width: 314px;
+                  font-size: px2rem(30px);
+                  color: $font-color;
                   line-height: px2rem(30px);
-                  font-style: normal;
-                }
-                .answer-content{
-                    width: 314px;
-                    font-size: px2rem(30px);
-                    color: $font-color;
-                    line-height: px2rem(30px);
-                    margin-left: px2rem(24px);
-                    word-break: break-all;
-                    &.is-no-answer{
-                        color: rgba(51, 51, 51, 0.3);
-                    }
-                }
-            }
+                  margin-left: px2rem(24px);
+                  word-break: break-all;
+                  &.is-no-answer{
+                      color: rgba(51, 51, 51, 0.3);
+                  }
+              }
+          }
+      }
+      .standard-answer {
+        background-color: #FFF6F4;
+        padding: 15px;
+        font-size: 14px;
+        color: #333333;
+        letter-spacing: 0.2px;
+        .true-answer-title {
+          margin-bottom: 20px;
         }
-        .standard-answer {
-          background-color: #FFF6F4;
-          padding: 15px;
-          font-size: 14px;
-          color: #333333;
-          letter-spacing: 0.2px;
-          .true-answer-title {
-            margin-bottom: 20px;
+      }
+      .luck-pop {
+        position: fixed;
+        right: px2rem(20px);
+        bottom: px2rem(100px);
+        .luck-pop-icon {
+          width: px2rem(160px);
+          height: px2rem(226px);
+          @include img-retina('~@/assets/common/luck-draw-pop@2x.png','~@/assets/common/luck-draw-pop@3x.png', 100%, 100%);
+          background-repeat: no-repeat;
+          position: relative;
+          .luck-pop-tips {
+            position: absolute;
+            bottom: px2rem(50px);
+            left: 0;
+            right: 0;
+            text-align: center;
+            @include font-dpr(12px);
+            color: #fff;
           }
         }
-        .luck-pop {
-          position: fixed;
-          right: px2rem(20px);
-          bottom: px2rem(100px);
-          .luck-pop-icon {
-            width: px2rem(160px);
-            height: px2rem(226px);
-            @include img-retina('~@/assets/common/luck-draw-pop@2x.png','~@/assets/common/luck-draw-pop@3x.png', 100%, 100%);
-            background-repeat: no-repeat;
-            position: relative;
-            .luck-pop-tips {
-              position: absolute;
-              bottom: px2rem(50px);
-              left: 0;
-              right: 0;
-              text-align: center;
-              @include font-dpr(12px);
-              color: #fff;
-            }
-          }
-        }
+      }
+  }
+  &.pureblue {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/pureblue_info@2x.png","~@/assets/statistic/pureblue_info@2x.png", 100%, 100%);
+      }
     }
+    .header-bg {
+      .bg::after {
+        background: rgb(31, 82, 231);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/pureblue_share@2x.png","~@/assets/statistic/pureblue_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/pureblue_num@2x.png","~@/assets/statistic/pureblue_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.purered {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/purered_info@2x.png","~@/assets/statistic/purered_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background: rgb(255, 77, 61);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/purered_num@2x.png","~@/assets/statistic/purered_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.puregreen {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/puregreen_info@2x.png","~@/assets/statistic/puregreen_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background: rgb(38, 188, 128);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/puregreen_share@2x.png","~@/assets/statistic/puregreen_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/puregreen_num@2x.png","~@/assets/statistic/puregreen_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.pureorange {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/pureorange_info@2x.png","~@/assets/statistic/pureorange_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background:rgb(255, 177, 56);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/pureorange_share@2x.png","~@/assets/statistic/pureorange_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/pureorange_num@2x.png","~@/assets/statistic/pureorange_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.puredarkred {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/puredarkred_info@2x.png","~@/assets/statistic/puredarkred_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background:rgb(190, 0, 0);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/puredarkred_share@2x.png","~@/assets/statistic/puredarkred_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/puredarkred_num@2x.png","~@/assets/statistic/puredarkred_num@2x.png", 100%, 100%);
+      }
+    }
+  }
 }
 </style>

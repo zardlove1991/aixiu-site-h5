@@ -6,9 +6,9 @@
         v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
         <div class="end-tips">
           <i class="tips-icon"></i>
-          <span class="tips-msg">测评已提交</span>
+          <span class="tips-msg">已提交</span>
         </div>
-        <div class="to-score" @click.stop="toStatistic">查看测评结果</div>
+        <div class="to-score" @click.stop="toStatistic">查看结果</div>
       </div>
       <div class="exam-body-content">
         <div class="header-desc">
@@ -19,7 +19,9 @@
           {{examInfo.start_time}} - {{examInfo.end_time}}
         </div>
         <div :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']" id="exam-rule-info" v-html="examInfo.brief"></div>
-        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}</div>
+        <div class="find-all-rule" v-if="isShowFindAll" @click="isShowInfo = !isShowInfo">{{isShowInfo ? '收起' : '查看更多'}}
+          <i :class="['icon-base', isShowInfo ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"></i>
+        </div>
         <div class="body-wrap" v-if="examInfo.is_open_exam_info !== 0">
           <!--信息展示-->
           <div class="row">
@@ -27,7 +29,7 @@
             <div :class="['row-icon', 'row-naozhong', examInfo.limit.color_scheme && examInfo.limit.color_scheme.name]"></div>
             <div class="row-content-wrap">
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
-              <div class="title">限时</div>
+              <div class="title">时长</div>
             </div>
           </div>
           <div class="row">
@@ -35,7 +37,7 @@
             <div :class="['row-icon', 'row-juanzi', examInfo.limit.color_scheme && examInfo.limit.color_scheme.name]"></div>
             <div class="row-content-wrap">
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">答题</div>
+              <div class="title">试题</div>
             </div>
           </div>
           <div class="row">
@@ -56,7 +58,7 @@
           <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
           <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
         </div>
-        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每个用户最多提交{{examSubmitCount}}次</div>
+        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次</div>
       </div>
     </div>
     <my-model
@@ -140,6 +142,7 @@ import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import LiveVideo from '@/components/live-exam/global/live-video'
+import { Toast } from 'mint-ui'
 
 export default {
   mixins: [mixins],
@@ -179,23 +182,26 @@ export default {
   components: { MyModel, DrawCheckDialog, LiveVideo, LinkDialog, PopDialog, LuckDrawDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
+    examSubmitCount2 () {
+      let examInfo = this.examInfo
+      let count = 1
+      if (examInfo && examInfo.limit) {
+        let userIdLimit = examInfo.limit.userid_limit_num
+        if (userIdLimit) {
+          userIdLimit = parseInt(userIdLimit)
+          count = userIdLimit
+        }
+      }
+      return count
+    },
     examSubmitCount () {
       let examInfo = this.examInfo
       let count = 1
       if (examInfo && examInfo.limit) {
-        let {
-          day_userid_limit_num: dayUserIdLimit,
-          ip_limit_num: ipLimit,
-          userid_limit_num: userIdLimit
-        } = examInfo.limit
-        if (dayUserIdLimit && dayUserIdLimit > count) {
+        let dayUserIdLimit = examInfo.limit.day_userid_limit_num
+        if (dayUserIdLimit) {
+          dayUserIdLimit = parseInt(dayUserIdLimit)
           count = dayUserIdLimit
-        }
-        if (ipLimit && ipLimit > count) {
-          count = ipLimit
-        }
-        if (userIdLimit && userIdLimit > count) {
-          count = userIdLimit
         }
       }
       return count
@@ -209,13 +215,15 @@ export default {
       // 直接交卷
       let examId = this.id
       let answerRecord = STORAGE.get('answer_record_' + examId)
-      if (answerRecord && answerRecord.length) {
-        this.saveAnswerRecords({ examId, answerList: answerRecord })
+      try {
+        await this.endExam({ id: examId, answerList: answerRecord })
+      } catch (err) {
+        Toast(err.error_message)
+      } finally {
+        this.initStartInfo()
+        this.isShowBreak = false
+        this.breakDoAction()
       }
-      await this.endExam({ id: examId })
-      this.initStartInfo()
-      this.isShowBreak = false
-      this.breakDoAction()
     },
     cancelBreakModel () {
       // 继续答题
@@ -262,6 +270,9 @@ export default {
     pageToLuckDraw () {
       let link = this.luckDrawLink
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         this.isLuckSubmitSuccess = false
         window.location.replace(link)
         this.setLuckDrawLink('')
@@ -597,7 +608,7 @@ export default {
         height:px2rem(54px);
         line-height:px2rem(54px);
         text-align:center;
-        width:px2rem(200px);
+        width:px2rem(180px);
         border:1px solid #FF6A45;
         border-radius: 27px;
       }
@@ -637,6 +648,14 @@ export default {
         margin-top: px2rem(20px);
         @include font-dpr(15px);
         @include font-color('highColor');
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .icon-base {
+          display: inline-block;
+          @include font-dpr(12px);
+          margin-left: px2rem(15px);
+        }
       }
       .header-desc {
         margin:px2rem(26px) 0;
@@ -666,7 +685,7 @@ export default {
           .bg {
             width: 100%;
             height:px2rem(150px);
-            @include bg-linear-color('themeColor');
+            @include bg-color('themeColor');
             opacity: 0.06;
             border-radius: px2rem(12px);
           }
@@ -764,7 +783,7 @@ export default {
     border: none;
     color:#fff;
     @include font-dpr(16px);
-    @include bg-linear-color('themeColor');
+    @include bg-color('themeColor');
   }
   .end-exambtn{
     flex:1;
@@ -840,7 +859,7 @@ export default {
       text-align: center;
       color:#fff;
       // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-      @include bg-linear-color('themeColor');
+      @include bg-color('themeColor');
       @include font-dpr(16px);
       margin:0 auto;
       border-radius: 5px;
@@ -916,7 +935,7 @@ export default {
       .password-limit-surebtn {
         width: px2rem(305px);
         height: px2rem(90px);
-        @include bg-linear-color('themeColor');
+        @include bg-color('themeColor');
         // background: linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
         border-radius: px2rem(12px);
         font-size: px2rem(34px);

@@ -1,42 +1,43 @@
 <template>
-  <div class="live-statistic-wrap">
+  <div class="live-statistic-wrap" :class="colorConfig.name">
     <div class="header-tip flex-v-center flex-between">
       <span class="icon-wrap flex-v-center">
         <i class="tips-icon"></i>
-        <span class="tips-title">测评 已提交</span>
+        <span class="tips-title" :style="{color: bgColor}">已交卷</span>
       </span>
-      <div @click="backUrl" class="back-btn">返回试题页</div>
+      <div @click="backUrl" class="back-btn" :style="{color: bgColor, 'border-color': bgColor}">返回活动页</div>
+      <div class="bg" :style="{background: customBgColor}"></div>
     </div>
-    <div class="header-bg">
-      <div class="exam-statInfo">
-        <div class="score-line">
-          <div class="score-area">
-            <div v-cloak>
-              <div class="my-score" v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
-            </div>
-            <div class="my-text">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
+    <div class="header-bg" :class="colorConfig.name">
+      <div class="bg"></div>
+      <div class="exam-statInfo" :class="{'is-open-integral': true}">
+        <div class="top-wrap">
+          <div class="my-score" :style="{color: bgColor}" v-cloak v-if="optionData.score">{{ parseFloat(optionData.score) }}分</div>
+          <div class="score-share" @click.stop="shareScore()">成绩分享</div>
+        </div>
+        <div class="statistic-wrap">
+          <div class="score-wrap">
+            <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
           </div>
           <div class="num-area">
-            <div class="my-text rank-area"><i class="line-static-icon"></i>总分排名<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
+            <div class="my-text rank-area"><i class="line-static-icon"></i>{{showTitle}}<span class="static-weight"> {{optionData.score_ranking}} </span>名</div>
             <div class="my-text"><i class="line-static-icon"></i>交卷排名<span> {{optionData.submit_ranking}} </span>名</div>
           </div>
         </div>
-        <div class="score-tips" v-show="statMsgVisible">
+        <div class="score-tips" :style="{background: customBgColor}" v-show="statMsgVisible">
           <span class="tips-icon"></span>
           <span class="score-tips-txt">{{statMsg}}</span>
         </div>
-        <div class="score-box"></div>
-        <div class="score-share" v-if="!shareLoading" @click.stop="shareScore()">成绩分享<span class="score-share-icon"></span></div>
-        <div class="score-share" v-else>成绩分享<span class="score-share-icon"></span></div>
       </div>
     </div>
     <div class="content">
-      <div class="operate-wrap flex-v-center">
+      <!-- 隐藏统计信息 -->
+      <!-- <div class="operate-wrap flex-v-center">
         <span class="btn btn-left examfont iconshuju flex-v-center" :class="{'is-active': showType === 'line'}"
         @click="showType = 'line'">柱状图</span>
         <span class="btn btn-right examfont iconbingzhuangtu flex-v-center" :class="{'is-active': showType === 'pie'}"
         @click="showType = 'pie'">饼状图</span>
-      </div>
+      </div> -->
       <div class="option-wrap" v-for="(item, key) in optionData.questions" :key="key" :class="{'is-first': key === 0}">
         <div v-if="isChoiceOption(item.type)">
           <div class="title-wrap">
@@ -46,11 +47,13 @@
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
+              <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).url"></my-video>
             </div>
           </div>
-          <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
+          <!-- 隐藏统计信息 -->
+          <!-- <div v-if="showType === 'pie' && item.pieData && (item.type === 'radio' || item.type === 'pictureRadio')">
             <pie classify='pie' :data-array="item.pieData" :color-data="colorData" :el="item.form_type + key"></pie>
-          </div>
+          </div> -->
           <ul v-if="item.options && item.options.length">
             <li class="choice-item" v-for="(val, index) in item.options" :key="index"
             :class="{'no-img': !val.pic && showType=== 'pie', 'is-show-line': showType=== 'line'}">
@@ -66,22 +69,22 @@
                     </div>
                     <span class="content-name">{{val.name}}</span>
                   </div>
-                  <span class="option-pie-percent" v-show="showType === 'pie'">
+                  <!-- 隐藏统计信息 -->
+                  <!-- <span class="option-pie-percent" v-show="showType === 'pie'">
                     <i class="icon-percent" :style="{background: colorData[index]}"></i>
                     <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
-                  </span>
+                  </span> -->
               </div>
-              <!-- 柱状图 进度条-->
-              <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
+              <!-- 隐藏统计信息  柱状图:进度条 -->
+              <!-- <div class="progress-wrap flex-v-center" v-if="showType !== 'pie'">
                 <div class="line-wrap">
                   <span class="starck-bar"
                     :style="{ width: val.choose_percent ? (val.choose_percent <= 100 ? val.choose_percent : 100) + '%' : '0%'}"></span>
                 </div>
                 <span class="option-percent">
-                  <!-- <i class="icon-percent" :style="{background: colorData[index]}"></i> -->
                   <span>{{(val.choose_percent || val.choose_percent === 0) ? `${val.choose_percent}%` : `${val.answer_counts}人`}}</span>
                 </span>
-              </div>
+              </div> -->
             </li>
           </ul>
           <div class="standard-answer" v-show="displayTrueAnswer">
@@ -193,7 +196,49 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examInfo', 'luckDrawLink'
-    ])
+    ]),
+    bgColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          color = this.examInfo.limit.color_scheme.content.bg_color
+        }
+        return color
+      }
+    },
+    colorConfig: {
+      get () {
+        let obj = {}
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          obj = this.examInfo.limit.color_scheme
+        }
+        return obj
+      }
+    },
+    costomColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          const config = this.examInfo.limit.color_scheme
+          const buttonColor = config.content.high_text
+          const costomColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.2)`
+          color = costomColor
+        }
+        return color
+      }
+    },
+    customBgColor: {
+      get () {
+        let color = ''
+        if (this.examInfo && this.examInfo.limit.color_scheme) {
+          const config = this.examInfo.limit.color_scheme
+          const buttonColor = config.content.theme_color
+          const costomBgColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.05)`
+          color = costomBgColor
+        }
+        return color
+      }
+    }
   },
   methods: {
     initStatInfo (score, correctNum, total) {
@@ -471,6 +516,9 @@ export default {
     pageToLuckDraw () {
       let link = this.raffleUrl
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         window.location.href = link
       }
     },
@@ -548,6 +596,7 @@ $font-weight: 400;
       padding-left:px2rem(43px);
       padding-right:px2rem(20px);
       // box-sizing: border-box;
+      position: relative;
       .icon-wrap {
         display: inline-block;
         vertical-align: middle;
@@ -571,89 +620,108 @@ $font-weight: 400;
           border: 1.2px solid $primary-color;
           border-radius: 15px;
           font-size: 14px;
+          position: relative;
+          z-index: 1;
+      }
+      .bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
       }
     }
     .header-bg{
         width: 100%;
-        // height: px2rem(315px);
-        @include img-retina('~@/assets/common/stbg@2x.png','~@/assets/common/stbg@3x.png', 100%,  px2rem(315px));
-        background-repeat: no-repeat;
         position: relative;
         padding: 0;
         padding-top:px2rem(78px);
+        .bg {
+          position: absolute;
+          width: 100%;
+          height: px2rem(300px);
+          text-align: center;
+          line-height: 50px;
+          top: 0;
+          left: 0;
+          overflow: hidden;
+          &:after {
+            content: '';
+            width: 140%;
+            height: px2rem(300px);
+            position: absolute;
+            left: -20%;
+            top: 0;
+            border-radius: 0 0 50% 50%;
+            background: rgb(255, 177, 56);
+          }
+        }
         .exam-statInfo{
           position: relative;
           margin:0 px2rem(28px);
-          // height:px2rem(290px);
           background-color:#fff;
           box-shadow: 0 0 12px 0 rgba(0,0,0,0.15);
-          border-radius: 5px;
-          padding:px2rem(110px) px2rem(50px) px2rem(50px) px2rem(67px);
-          .score-box {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: px2rem(67px);
-            @include img-retina("~@/assets/common/share-bg@2x.png","~@/assets/common/share-bg@3x.png", 100%, 100%);
-          }
-          .score-share {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: px2rem(67px);
-            line-height: px2rem(67px);
-            padding: 0 px2rem(20px);
-            @include font-dpr(14px);
-            color: #fff;
-            .score-share-icon {
-              display: inline-block;
-              width: px2rem(26px);
-              height: px2rem(28px);
-              line-height: px2rem(67px);
-              margin-left: px2rem(15px);
-              @include img-retina("~@/assets/common/share-icon@2x.png","~@/assets/common/share-icon@3x.png", 100%, 100%);
+          border-radius: 12px;
+          padding-bottom: px2rem(20px);
+          .top-wrap {
+            position: relative;
+            padding: px2rem(30px) 0 px2rem(20px) px2rem(45px);
+            .my-score {
+              font-size:px2rem(72px);
+              line-height:px2rem(72px);
+              color:#FF6A45;
+            }
+            .score-share {
+              width: px2rem(224px);
+              height: px2rem(64px);
+              color: #fff;
+              text-align: center;
+              line-height: px2rem(64px);
+              @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+              position: absolute;
+              top: 0;
+              right: 0;
             }
           }
-        }
-        .score-tips {
-          margin-top: px2rem(48px);
-          background:#fff1ed;
-          padding: px2rem(20px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .tips-icon {
-            display: inline-block;
-            width: px2rem(29px);
-            height: px2rem(32px);
-            @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
-          }
-          .score-tips-txt {
-            flex: 1;
-            margin-left: px2rem(15px);
-            display: inline-block;
-            color: #333;
-            @include font-dpr(14px);
-            @include line-overflow(1);
-          }
-        }
-        .score-line {
-            display:flex;
-            align-items: center;
-            text-align: left;
-        }
-        .rank-area{
-            margin-bottom:px2rem(38px);
-        }
-        .score-area{
-            flex:1;
-            border-right:1px solid #DBDBDB;
-        }
-        .num-area{
-            flex:1;
-            text-align: left;
-            margin-left: px2rem(70px);
+          .statistic-wrap {
+            display: flex;
+            width: 100%;
+            margin: px2rem(44px) 0 px2rem(40px);
+            padding: 0 px2rem(20px) px2rem(20px) px2rem(65px);
+            .score-wrap {
+              width: 45%;
+              border-right: 1px solid #DBDBDB;
+              position: relative;
+              .tips-wrap {
+                position: absolute;
+                bottom: px2rem(-66px);
+                left: px2rem(-48px);
+                width: px2rem(268px);
+                height: px2rem(57px);
+                font-size: px2rem(24px);
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                background: #FFF3DC;
+                color: #FFA800;
+                line-height: px2rem(57px);
+                text-align: center;
+                border-radius: 4px;
+                display: none;
+                .trangle-icon {
+                  position: absolute;
+                  top: -11px;
+                  left: -12px;
+                  right: 0;
+                  margin: auto;
+                  color: #FFF3DC;
+                  font-size: 16px;
+                }
+              }
+            }
+            .num-area {
+              width: 55%;
+              padding-left: px2rem(74px);
+            }
             .my-text {
               color:#666;
               font-size:px2rem(30px);
@@ -669,33 +737,50 @@ $font-weight: 400;
                 color: #333;
               }
             }
-        }
-        .title{
-            font-size: 20px;
-            font-family: PingFangSC-Medium,PingFang SC;
-            font-weight: 500;
-            color: #fff;
-            line-height: 28px;
-            position: absolute;
-            top: 35px;
-            left: 22px;
-        }
-        .submit-num{
-            height: 20px;
-            font-size: 14px;
-            font-family: $font-family;
-            font-weight: $font-weight;
-            color: #fff;
-            line-height: 20px;
-            position: absolute;
-            margin-top: 9px;
-            top: 60px;
-            left: 22px;
+            .integral-num {
+              display: none;
+            }
+            .rank-area{
+              margin-bottom:px2rem(38px);
+            }
+          }
+          .my-text{
+            color:#666;
+            font-size:px2rem(30px);
+            line-height:px2rem(30px);
+            .static-weight {
+              color: #333;
+            }
+          }
+          .score-tips {
+            margin-top:px2rem(48px);
+            background:#fff1ed;
+            padding: px2rem(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 px2rem(20px);
+            border-radius: 8px;
+            .tips-icon {
+              display: inline-block;
+              width: px2rem(29px);
+              height: px2rem(32px);
+              @include img-retina("~@/assets/common/tips-icon@2x.png","~@/assets/common/tips-icon@3x.png", 100%, 100%);
+            }
+            .score-tips-txt {
+              flex: 1;
+              margin-left: px2rem(15px);
+              display: inline-block;
+              color: #333;
+              @include font-dpr(14px);
+              @include line-overflow(1);
+            }
+          }
         }
     }
     .content {
       padding: 15px;
-      margin-top:px2rem(80px);
+      // margin-top:px2rem(80px);
       .operate-wrap{
           .btn{
             display: inline-block;
@@ -1009,5 +1094,95 @@ $font-weight: 400;
           }
         }
     }
+  &.pureblue {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/pureblue_info@2x.png","~@/assets/statistic/pureblue_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background: rgb(31, 82, 231);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/pureblue_share@2x.png","~@/assets/statistic/pureblue_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/pureblue_num@2x.png","~@/assets/statistic/pureblue_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.purered {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/purered_info@2x.png","~@/assets/statistic/purered_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background: rgb(255, 77, 61);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/purered_share@2x.png","~@/assets/statistic/purered_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/purered_num@2x.png","~@/assets/statistic/purered_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.puregreen {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/puregreen_info@2x.png","~@/assets/statistic/puregreen_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background: rgb(38, 188, 128);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/puregreen_share@2x.png","~@/assets/statistic/puregreen_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/puregreen_num@2x.png","~@/assets/statistic/puregreen_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.pureorange {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/pureorange_info@2x.png","~@/assets/statistic/pureorange_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background:rgb(255, 177, 56);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/pureorange_share@2x.png","~@/assets/statistic/pureorange_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/pureorange_num@2x.png","~@/assets/statistic/pureorange_num@2x.png", 100%, 100%);
+      }
+    }
+  }
+  &.puredarkred {
+    .header-tip {
+      .tips-icon {
+        @include img-retina("~@/assets/statistic/puredarkred_info@2x.png","~@/assets/statistic/puredarkred_info@2x.png", 100%, 100%);
+      }
+    }
+    .header-bg {
+      .bg::after {
+        background:rgb(190, 0, 0);
+      }
+      .exam-statInfo .top-wrap .score-share {
+        @include img-retina("~@/assets/statistic/puredarkred_share@2x.png","~@/assets/statistic/puredarkred_share@2x.png", 100%, 100%);
+      }
+      .exam-statInfo .statistic-wrap .my-text .line-static-icon {
+        @include img-retina("~@/assets/statistic/puredarkred_num@2x.png","~@/assets/statistic/puredarkred_num@2x.png", 100%, 100%);
+      }
+    }
+  }
 }
 </style>

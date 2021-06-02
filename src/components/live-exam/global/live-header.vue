@@ -231,6 +231,9 @@ export default {
     pageToLuckDraw () {
       let link = this.luckDrawLink
       if (link) {
+        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
+          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+        }
         this.isLuckSubmitSuccess = false
         window.location.replace(link)
         this.setLuckDrawLink('')
@@ -288,7 +291,7 @@ export default {
     position: fixed;
     right:0;
     bottom:50px;
-    @include bg-linear-color('themeColor');
+    @include bg-color('themeColor');
     border-radius: px2rem(30px) 0 0 px2rem(30px);
     padding-left:px2em(13px);
     padding-right:px2rem(10px);
@@ -376,7 +379,7 @@ export default {
         .line {
           width: px2rem(2px);
           height: px2rem(24px);
-          @include bg-linear-color('themeColor');
+          @include bg-color('themeColor');
         }
         .submit-btn {
           padding-left: px2rem(26px);
@@ -408,7 +411,7 @@ export default {
         height: px2rem(8px);
         border-radius: px2rem(4px);
         // background-color:#25C17C;
-        @include bg-linear-color('themeColor');
+        @include bg-color('themeColor');
         z-index: 1;
       }
     }
@@ -447,7 +450,7 @@ export default {
       text-align: center;
       color:#fff;
       // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
-      @include bg-linear-color('themeColor');
+      @include bg-color('themeColor');
       @include font-dpr(16px);
       margin:0 auto;
       margin-top: px2rem(50px);

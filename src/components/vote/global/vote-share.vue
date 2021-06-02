@@ -1,6 +1,6 @@
 <template>
   <!-- 投票弹窗 -->
-  <div>
+  <div class="vote-share-dialog">
     <tips-dialog
       :show="show"
       @close="close()">
@@ -171,8 +171,8 @@ export default {
         member_id: memberId
       }
       // 区域限制
-      let { rule } = detailInfo
-      let { area_limit: areaLimit, user_limit_times: limitTime } = rule
+      let { rule, id } = detailInfo
+      let { area_limit: areaLimit, unlock_duration: limitTime } = rule
       if (areaLimit && areaLimit.is_area_limit && areaLimit.area && areaLimit.area.length) {
         this.limitArea = areaLimit.area
         // 区域限制，传入经纬度
@@ -183,16 +183,17 @@ export default {
         }
       }
       API.workVote({
+        query: { id },
         data: obj
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          // console.log('xxxxxx', errCode)
-          if (errCode === 'WORKS_LOCKED') {
+          // console.log('errCode', errCode)
+          if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
             this.isShowMax = true
-            this.voteTime = limitTime
+            this.voteTime = parseInt(limitTime / 60)
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
@@ -201,6 +202,10 @@ export default {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
+            this.voteDisable = false
+            return
+          } else if (errCode === 'NO_REMAIN_VOTES') {
+            Toast('对当前作品的投票次数已用完')
             this.voteDisable = false
             return
           } else {
@@ -244,6 +249,11 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .vote-share-dialog .tips-dialog-wrap{
+    .btn-wrap {
+      display: none;
+    }
+  }
   .workvote-dialog-wrap {
     padding-bottom: px2rem(91px);
     padding-top: px2rem(86px);
