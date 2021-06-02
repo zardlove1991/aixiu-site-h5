@@ -3,10 +3,10 @@
     <div class="rule-dialog2">
       <div class="rule-dialog-main">
         <div class="rule-header">活动规则</div>
+        <div class="close-btn-wrap">
+          <div class="close-btn" @click.stop="close()"></div>
+        </div>
         <div class="rule-content" v-html="introduce"></div>
-      </div>
-      <div class="close-btn-wrap">
-        <div class="close-btn" @click.stop="close()"></div>
       </div>
     </div>
   </div>
@@ -62,6 +62,7 @@ export default {
       width: 100%;
       padding-top: px2rem(30px);
       .rule-dialog-main {
+        position: relative;
         margin: 0 auto;
         background-color: #fff;
         width: px2rem(600px);
@@ -94,16 +95,22 @@ export default {
         }
       }
       .close-btn-wrap {
-        margin-top: px2rem(60px);
-        width: 100%;
-        height: px2rem(80px);
+        // margin-top: px2rem(60px);
+        // width: 100%;
+        width: px2rem(30px);
+        height: px2rem(30px);
         text-align: center;
+        position: absolute;
+        top: px2rem(30px);
+        right: px2rem(30px);
+        z-index: 1;
         .close-btn {
           display: inline-block;
-          width: px2rem(80px);
-          height: px2rem(80px);
-          background-size: px2rem(80px);
-          @include img-retina("~@/assets/common/luck-draw-close@2x.png","~@/assets/common/luck-draw-close@3x.png", 100%, 100%);
+          width: px2rem(30px);
+          height: px2rem(30px);
+          background-size: px2rem(30px);
+          // @include img-retina("~@/assets/common/luck-draw-close@2x.png","~@/assets/common/luck-draw-close@3x.png", 100%, 100%);
+          @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
         }
       }
     }

@@ -36,6 +36,9 @@ export default {
   watch: {
     show (val) {
       this.selectShow = val
+      if (!val) {
+        this.message = ''
+      }
     }
   },
   components: {
@@ -55,6 +58,8 @@ export default {
       let message = this.message
       if (!message) {
         message = this.defaultSelect
+      } else {
+        this.$emit('update:defaultSelect', message)
       }
       this.$emit('success', message)
     }

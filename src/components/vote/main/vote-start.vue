@@ -241,6 +241,12 @@
       :show="isShowStart"
       @close="isShowStart = false">
     </active-start>
+    <active-vote
+      :show="isShowActiveTips"
+      @close="isShowActiveTips = false"
+      :downloadLink="downloadLink"
+      :activeTips="activeTips">
+    </active-vote>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
@@ -270,12 +276,13 @@ import RuleVote from '@/components/vote/global/vote-rule'
 import ActiveStop from '@/components/vote/global/active-stop'
 import ActivePause from '@/components/vote/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
+import ActiveVote from '@/components/vote/global/vote-active'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
-import { formatSecByTime, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
+import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } from '@/utils/utils'
 import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
@@ -299,6 +306,7 @@ export default {
     ActiveStop,
     ActivePause,
     ActiveStart,
+    ActiveVote,
     VoteClassifyList,
     Spinner,
     Loadmore,
@@ -364,7 +372,10 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap
+      fullSceneMap,
+      isShowActiveTips: false,
+      activeTips: [],
+      downloadLink: ''
     }
   },
   created () {
@@ -398,79 +409,79 @@ export default {
     }
   },
   methods: {
-    initData () {
+    async initData () {
       let voteId = this.id
       let { sign, invotekey } = this.$route.query
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
-      API.getVodeDetail({
-        query: { id: voteId }
-      }).then((res) => {
-        let url = res.indexpic
-        if (url) {
-          let swipeList = []
-          if (url.constructor === Object) {
-            swipeList.push(url.host + url.filename)
-          } else if (url.constructor === String) {
-            swipeList.push(url)
-          } else if (url.constructor === Array) {
-            swipeList = [...url]
-          }
-          this.swipeList = swipeList
+      let res = STORAGE.get('detailInfo')
+      if (!res) {
+        res = await API.getVodeDetail({
+          query: { id: voteId }
+        })
+      }
+      let url = res.indexpic
+      if (url) {
+        let swipeList = []
+        if (url.constructor === Object) {
+          swipeList.push(url.host + url.filename)
+        } else if (url.constructor === String) {
+          swipeList.push(url)
+        } else if (url.constructor === Array) {
+          swipeList = [...url]
         }
-        this.detailInfo = res
-        // 校验抽奖入口条件
-        let {lottery, rule, today_votes: todayVotes} = res
-        if (lottery) {
-          this.lottery = lottery
-          this.checkLotteryOpen(lottery, rule, todayVotes)
+        this.swipeList = swipeList
+      }
+      this.detailInfo = res
+      // 校验抽奖入口条件
+      let {lottery, rule, today_votes: todayVotes} = res
+      if (lottery) {
+        this.lottery = lottery
+        this.checkLotteryOpen(lottery, rule, todayVotes)
+      }
+      STORAGE.set('detailInfo', res)
+      setBrowserTitle(res.title)
+      // 分享
+      this.sharePage(res)
+      this.setLocation()
+      // 其他限制
+      this.handleVoteData()
+      // 作品列表
+      this.getVoteWorks('', false, '', true, true)
+      // 索引图尺寸比例
+      if (rule.limit.indexpic_ratio) {
+        let ratio = rule.limit.indexpic_ratio
+        ratio = ratio.replace('.', '')
+        let arr = ratio.split(':')
+        let size = ''
+        if (arr.length === 2) {
+          size = 'size-' + arr[0] + '-' + arr[1]
         }
-        STORAGE.set('detailInfo', res)
-        setBrowserTitle(res.title)
-        // 分享
-        this.sharePage(res)
-        this.setLocation()
-        // 其他限制
-        this.handleVoteData()
-        // 作品列表
-        this.getVoteWorks()
-        // 索引图尺寸比例
-        if (rule.limit.indexpic_ratio) {
-          let ratio = rule.limit.indexpic_ratio
-          ratio = ratio.replace('.', '')
-          let arr = ratio.split(':')
-          let size = ''
-          if (arr.length === 2) {
-            size = 'size-' + arr[0] + '-' + arr[1]
-          }
-          this.indexRadio = size
-        }
-        if (rule.limit.show_mode) {
-          this.videoMode = rule.limit.show_mode
-        }
-        if (rule.page_setup && rule.page_setup.font_color) {
-          this.darkMark = rule.page_setup.font_color
-        }
-        // 是否开启边投票边报名
-        let isOpenVoteReport = 0
-        if (rule.limit.is_open_enroll_vote) {
-          isOpenVoteReport = rule.limit.is_open_enroll_vote
-        }
-        if (isOpenVoteReport === 1) {
-          isOpenVoteReport = true
-        } else {
-          isOpenVoteReport = false
-        }
-        this.isOpenVoteReport = isOpenVoteReport
-        if (isOpenVoteReport) {
-          this.initVoteReportTime()
-        } else {
-          this.initReportTime()
-        }
-      }).catch(err => {
-        console.log(err)
-      })
+        this.indexRadio = size
+      }
+      if (rule.limit.show_mode) {
+        this.videoMode = rule.limit.show_mode
+      }
+      if (rule.page_setup && rule.page_setup.font_color) {
+        this.darkMark = rule.page_setup.font_color
+      }
+      // 是否开启边投票边报名
+      let isOpenVoteReport = 0
+      if (rule.limit.is_open_enroll_vote) {
+        isOpenVoteReport = rule.limit.is_open_enroll_vote
+      }
+      if (isOpenVoteReport === 1) {
+        isOpenVoteReport = true
+      } else {
+        isOpenVoteReport = false
+      }
+      this.isOpenVoteReport = isOpenVoteReport
+      if (isOpenVoteReport) {
+        this.initVoteReportTime()
+      } else {
+        this.initReportTime()
+      }
     },
     // 如果有中奖记录和抽奖次数 默认显示
     async checkLotteryOpen (lottery, rule, todayVotes) {
@@ -765,7 +776,7 @@ export default {
         } else {
           this.setIsBtnAuth(0)
           // 获取剩余票数
-          this.getRemainVotes(id)
+          // this.getRemainVotes(id)
           // 检查是否报名
           this.checkUserReport(id)
         }
@@ -891,7 +902,7 @@ export default {
       }
       let nowTime = new Date().getTime()
       let { noStatus, voteStatus, endStatus } = this.statusCode
-      let { id, start_time: startTime, end_time: endTime } = detailInfo
+      let { start_time: startTime, end_time: endTime } = detailInfo
       let startTimeMS = startTime * 1000
       let endTimeMS = endTime * 1000
       let flag = startTimeMS > nowTime
@@ -916,7 +927,7 @@ export default {
         this.setIsModelShow(true)
         this.setIsBtnAuth(0)
       } else {
-        this.getRemainVotes(id)
+        // this.getRemainVotes(id)
         this.setIsBtnAuth(1)
       }
       this.startCountTime(time, (timeArr) => {
@@ -1063,7 +1074,7 @@ export default {
         }
       }
     },
-    getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true) {
+    getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -1109,11 +1120,19 @@ export default {
         this.workList = this.workList.concat(data)
         this.pager = { total, page, count, totalPages }
         this.getRemainVotes(voteId)
-        this.getVodeDetail(voteId)
+        if (!isFirst) {
+          this.getVodeDetail(voteId)
+        }
         this.loading = false
       })
     },
     jumpPage (page, data) {
+      if (page === 'votesubmit') {
+        this.sourceLimit()
+        if (this.isShowActiveTips) {
+          return
+        }
+      }
       let params = {
         flag: this.showModel,
         id: this.id
@@ -1123,6 +1142,44 @@ export default {
         params,
         query: data
       })
+    },
+    sourceLimit () {
+      // 来源限制
+      let res = false
+      let detailInfo = STORAGE.get('detailInfo')
+      if (!detailInfo) {
+        return res
+      }
+      let { source_limit: sourceLimit } = detailInfo.rule.limit
+      if (sourceLimit) {
+        let {
+          user_app_source: appSource,
+          source_limit: limitTxt,
+          app_download_link: downloadLink
+        } = sourceLimit
+        if (limitTxt && appSource && appSource.length > 0) {
+          let plat = getAppSign()
+          let limitArr = limitTxt.split(',')
+          let flag = false
+          for (let item of limitArr) {
+            if (item === 'smartcity' && plat.includes('smartcity')) {
+              flag = true
+              break
+            }
+            if (item === plat) {
+              flag = true
+              break
+            }
+          }
+          if (!flag) {
+            res = true
+            this.isShowActiveTips = true
+            this.downloadLink = downloadLink
+            this.activeTips = appSource
+          }
+        }
+      }
+      return res
     },
     triggerWork (obj, index) {
       if (index !== null && index !== undefined) {

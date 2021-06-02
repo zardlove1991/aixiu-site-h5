@@ -92,6 +92,9 @@ const getters = {
 }
 
 const mutations = {
+  SET_EXAM_INFO (state, payload) {
+    state.examInfo = payload
+  },
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
     let show = false
@@ -152,8 +155,14 @@ const mutations = {
       }
     }
     if (payload.limit.background && payload.limit.background.indexpic) {
-      payload.limit.background.indexpic.url = payload.limit.background.indexpic.host + payload.limit.background.indexpic.filename
-      window.document.getElementById('app').style.backgroundImage = 'url(' + payload.limit.background.indexpic.url + ')'
+      const img = payload.limit.background.indexpic
+      if (img.constructor === Object) {
+        payload.limit.background.indexpic.url = `${img.host}${img.filename}`
+      } else if (img.constructor === String) {
+        payload.limit.background.indexpic = {}
+        payload.limit.background.indexpic.url = img
+      }
+      window.document.getElementById('app').style.backgroundImage = `url(${payload.limit.background.indexpic.url})`
       if (payload.limit.background.mode && payload.limit.background.mode === 1) {
         // 固定
         window.document.getElementById('app').style.backgroundSize = '100%'
@@ -358,6 +367,9 @@ function dealSaveRecord ({
 }
 
 const actions = {
+  SET_EXAM_INFO ({state, commit, dispatch}, payload) {
+    commit('SET_EXAM_INFO', payload)
+  },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       let { id, pageNum, renderType, listType } = payload
@@ -443,11 +455,15 @@ const actions = {
   },
   START_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
+      const useIntegral = payload.useIntegral || 0
       let id = state.examId || payload.id
       let params = {
         guid: STORAGE.get('guid')
       }
-      // 添加重新开始考试的接口
+      if (useIntegral) {
+        params.use_integral = useIntegral
+      }
+      // // 添加重新开始考试的接口
       if (payload.restart) params.restart = 1
       // 开始请求数据
       API.startExam({
@@ -466,7 +482,12 @@ const actions = {
   },
   END_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
-      let id = state.examId || payload.id
+      let id = state.examId
+      let examList = state.answerList
+      if (!id) {
+        id = payload.id
+        examList = payload.answerList
+      }
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       // 开始请求数据
       let mark = 'examination'
@@ -489,29 +510,50 @@ const actions = {
         console.log(res)
       })
       Indicator.open({ spinnerType: 'fading-circle' })
-      API.submitExam({ query: { id } }).then(res => {
-        // 删除本地缓存的单选的ID信息
-        if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
-        STORAGE.remove('answer_record_' + id)
-        commit('SET_BLANK_ANSWER_INFO', {})
-        commit('SET_CURRENT_SUBJECT_INDEX', 0)
-        // 结束
-        Indicator.close()
-        if (res.success === 1) {
-          let raffle = res.raffle
-          if (raffle && raffle.raffle_url) {
-            commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
+      if (examList && examList.length) {
+        let data = { params: [] }
+        data.params = examList
+        API.saveSubjectRecords({ query: { id }, data }).then(res => {
+          if (res.success === 1) {
+            // 清空
+            STORAGE.remove('answer_record_' + id)
+            state.answerList = []
+            let endParam = {}
+            if (mark === 'examination@rank') {
+              endParam.activity_mark = mark
+            }
+            API.submitExam({ query: { id }, params: endParam }).then(res => {
+              // 删除本地缓存的单选的ID信息
+              if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+              STORAGE.remove('answer_record_' + id)
+              state.answerList = []
+              commit('SET_BLANK_ANSWER_INFO', {})
+              commit('SET_CURRENT_SUBJECT_INDEX', 0)
+              // 结束
+              Indicator.close()
+              if (res.success === 1) {
+                let raffle = res.raffle
+                if (raffle && raffle.raffle_url) {
+                  commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
+                }
+                resolve()
+              } else {
+                throw new Error({error_message: '结束考试出错'})
+              }
+            }).catch(err => {
+              // Toast(err.error_message || '结束考试出错')
+              // 结束
+              Indicator.close()
+              reject(err)
+            })
+          } else {
+            throw new Error('error')
           }
-          resolve()
-        } else {
-          throw new Error({error_message: '结束考试出错'})
-        }
-      }).catch(err => {
-        // Toast(err.error_message || '结束考试出错')
-        // 结束
-        Indicator.close()
-        reject(err)
-      })
+        }).catch(err => {
+          Indicator.close()
+          reject(err)
+        })
+      }
     })
   },
   SAVE_ANSWER_RECORDS ({state, commit}, payload) {
@@ -535,7 +577,9 @@ const actions = {
         // 结束
         Indicator.close()
         if (saveInfo[0].success === 1) {
+          // 清空
           STORAGE.remove('answer_record_' + id)
+          state.answerList = []
           resolve()
         } else {
           throw new Error('error')
@@ -617,7 +661,7 @@ const actions = {
       // 将每次改动的答案存入
       let key = 'answer_record_' + state.examId
       let arr = STORAGE.get(key)
-      if (arr && arr.length) {
+      if (arr && arr.length && params && params.question_id) {
         let isExit = false
         for (let item of arr) {
           if (item.question_id === params.question_id) {

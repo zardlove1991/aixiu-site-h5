@@ -23,16 +23,12 @@
           :key="item.id">
         </subject-content>
       </div>
-    </div>
-    <div class="fixed-btn-wrap">
       <!--底部跳转按钮-->
-      <div class="btn-wrap" :class="{'iphonex-h': isInIphoneX }">
-        <!--上一题按钮-->
+      <div class="btn-wrap">
         <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
           :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
           @click.stop="changeSubjectIndex('sub')">
           上一题
-          <!-- <div class="prev-text">上一题</div> -->
         </div>
         <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
@@ -46,26 +42,14 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <!--填空题和排序题的确认按钮操作-->
-        <!-- <div class="btn-confrim-wrap" v-if="_dealShowBtn('confirm')">
-          <div class="btn-confrim-shadow"></div>
-          <div class="btn-confrim-content">
-            <div class="btn-confrim-option"
-              :class="{ 'disabled': !isDidCurSubject }"
-              @click.stop="dealConfrimOption">确认</div>
-          </div>
-        </div> -->
-        <!--下一题按钮-->
         <div class="next-wrap"
           v-show="!isShowSubmitBtn"
           :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
           @click.stop="changeSubjectIndex('add')">
            下一题
-          <!-- <div class="next-text">下一题</div> -->
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
-          <!-- <div class="next-text">交卷</div> -->
         </div>
       </div>
     </div>
@@ -129,13 +113,18 @@
       </div>
     </transition>
     <!--遮罩包裹-->
+    <!-- 分享成功弹窗 -->
+    <OperateDialog
+      :visible.sync="showOperateDialog"
+      :dialogConfig="dialogConfig"/>
     </div>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
@@ -146,6 +135,7 @@ import SubjectContent from './depence/subject-content'
 import SubjectList from '@/components/depence/subject-list'
 import MyModel from './depence/model'
 import MyRecord from './depence/record'
+import OperateDialog from './exam-components/operate-dialog'
 
 export default {
   name: 'depence-list',
@@ -153,6 +143,7 @@ export default {
   props: {
     id: String,
     rtp: String,
+    useIntegral: [Number, String],
     restart: {
       type: String,
       default: 'none'
@@ -167,7 +158,15 @@ export default {
       isInIphoneX: isIphoneX(),
       isShowSuspendModel: false,
       isShowSuspendModels: false,
-      isShowSubmitModel: false
+      isShowSubmitModel: false,
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'share', // 弹窗类型
+        tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        showNumber: 1,
+        cancelBtnText: '知道了'
+      }
     }
   },
   components: {
@@ -176,7 +175,8 @@ export default {
     SubjectContent,
     SubjectList,
     MyModel,
-    MyRecord
+    MyRecord,
+    OperateDialog
   },
   computed: {
     ...mapGetters('depence', [
@@ -220,12 +220,14 @@ export default {
       let redirectParams = this.redirectParams
       try {
         // 获取试卷详情
-        await this.getExamDetail({ id: examId })
+        if (!this.examInfo) {
+          await this.getExamDetail({ id: examId })
+        }
         let status = this.examInfo.person_status
         // 调用考试考试接口
         if (this.rtp === 'exam' && status !== 2) {
           let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart })
+          await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
         }
         // 设置标题
         setBrowserTitle(this.examInfo.title)
@@ -238,6 +240,9 @@ export default {
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
         this.sharePage()
+        if (getPlat() === 'smartcity') {
+          this.initAppShare()
+        }
       } catch (err) {
         console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
@@ -295,7 +300,41 @@ export default {
         indexpic: imgUrl,
         link,
         mark: 'examination'
-      })
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      const examId = this.examInfo.id
+      if (this.examInfo.limit.is_open_share) {
+        API.shareAddTimes({
+          query: {
+            id: examId
+          }
+        }).then(res => {
+          if (res.code === 1) {
+            this.showOperateDialog = true
+          } else {
+            // 已经分享过
+          }
+        })
+      }
+    },
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        const shareSettings = this.examInfo.limit.share_settings
+        const settings = {
+          showShareButton: true, // 是否显示右上角的分享按钮
+          updateShareData: true, // 是否弹出分享视图
+          title: shareSettings.share_title,
+          brief: shareSettings.share_brief,
+          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+          imageLink: shareSettings.share_indexpic
+        }
+        window.SmartCity.shareTo(settings)
+        window.SmartCity.onShareSuccess((res) => {
+          this.shareAddTimes()
+        })
+      }
     },
     async confirmSuspendModel () {
       let examId = this.id
@@ -335,11 +374,11 @@ export default {
       })
     },
     submitExam () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
       this.isShowSubmitModel = true
     },
     noEndTime () {
-      this.saveAnswerRecords(this.answerList)
+      // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
       this.isShowSuspendModels = !this.isShowSuspendModels

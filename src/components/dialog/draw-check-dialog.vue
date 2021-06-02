@@ -3,19 +3,23 @@
     <div class="check-dialog-content" :class="isShowVideo ? 'show-video' : ''">
       <div class="check-dialog-main">
         <div class="check-header">答题验证</div>
-        <div class="check-item" v-for="(item, index) in checkDraw" :key="index">
-          <el-input
-            :placeholder="item.name"
-            :type="item.type"
-            :maxlength="item.maxlength"
-            :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
-            item.unique_name === 'address' || item.type === 'select'"
-            :disabled="isGetDept && item.unique_name === 'department'"
-            @focus="focusAction(item)"
-            @blur="blurAction(item)"
-            v-model="checkData[item.unique_name]"></el-input>
-          <div v-show="(item.unique_name === 'gender' || item.unique_name === 'birthday' ||
-            item.unique_name === 'address' || item.type === 'select') && !isGetDept" class="drop-icon"></div>
+        <template v-for="(item, index) in checkDraw">
+          <div class="check-item" :key="index"
+            v-if="(item.unique_name !== 'HCuGpRSUNLXw' && item.unique_name !== 'wVefsbQKWOlF' && item.unique_name !== 'sEtIQMMiWRnD') ||
+            showTmp === item.name">
+             <el-input
+              :placeholder="item.name"
+              :type="item.type"
+              :maxlength="item.maxlength"
+              :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+              item.unique_name === 'address' || item.type === 'select'"
+              :disabled="isGetDept && item.unique_name === 'department'"
+              @focus="focusAction(item)"
+              @blur="blurAction(item)"
+              v-model="checkData[item.unique_name]"></el-input>
+            <div v-show="(item.unique_name === 'gender' || item.unique_name === 'birthday' ||
+              item.unique_name === 'address' || item.type === 'select') && !isGetDept" class="drop-icon"></div>
+          </div>
           <!-- <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
             class="get-code" :class="isShowVideo ? 'get-code-video' : ''"
@@ -27,7 +31,7 @@
             v-if="item.unique_name === 'imgCode'"
             @click.stop="getImgCode()"
             :style="{ backgroundImage: 'url(' + imgCodeUrl + ')'}"></div> -->
-        </div>
+        </template>
         <div class="submit-btn-wrap color-button_color" :class="isShowVideo ? 'submit-btn-wrap-video' : ''" @click.stop="sureCheckDraw()">确认</div>
       </div>
       <div class="close-btn-wrap">
@@ -53,7 +57,7 @@
     </city-select-dialog>
     <component
       :show="customShow"
-      :defaultSelect="customData.default_select"
+      :defaultSelect.sync="customData.default_select"
       :selectData="customData.select_data"
       @close="customShow = false"
       @success="selectSuccessAction"
@@ -110,6 +114,7 @@ export default {
   watch: {
     show (newState) {
       if (!newState) {
+        this.showTmp = ''
         this.checkData = {}
         this.imgCodeUrl = ''
         this.imgCodeKey = ''
@@ -140,7 +145,8 @@ export default {
       codeTimer: null,
       totalTime: 60,
       customShow: false,
-      customData: {} // 当前下拉选的对象
+      customData: {}, // 当前下拉选的对象
+      showTmp: '' // 临时处理
     }
   },
   methods: {
@@ -226,6 +232,17 @@ export default {
       } else if (key === 'address') {
         this.checkData.address = val
         this.isShowCitySelect = false
+      }
+      // 临时处理
+      if (key === 'department') {
+        this.showTmp = val
+        let arr = this.checkDraw
+        for (let tmp of arr) {
+          let key = tmp.unique_name
+          if (key === 'HCuGpRSUNLXw' || key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD') {
+            this.checkData[key] = '' // 清空
+          }
+        }
       }
       if (this.customShow) {
         this.customShow = false
@@ -327,9 +344,10 @@ export default {
           checkData[key] = defaultValue
         }
         if (!val) {
-          if (key === 'Vq8iwxwk3Owr') {
-            val = item.name
-            checkData[key] = item.name
+          if (this.showTmp !== item.name && (key === 'HCuGpRSUNLXw' ||
+          key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD')) {
+            // 临时处理 - 不填写允许提交
+            delete checkData[key]
           } else {
             if (key === 'department' && this.isGetDept) {
               Toast('抱歉，没有查到您的用户信息！')
@@ -375,7 +393,7 @@ export default {
           return
         }
         this.$emit('close')
-        this.$emit('success')
+        this.$emit('success', {collection_status: 1})
       })
     },
     ...mapMutations('depence', {
