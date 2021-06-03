@@ -124,7 +124,11 @@ export default {
   methods: {
     // 文件上传前准备签名
     beforeUpload (file) {
-      // console.log('beforeUpload', file)
+      if (/image/.test(file.type) && file.size > 5242880) {
+        Toast(`图片大小超出限制`)
+        this.clearFile()
+        return
+      }
       this.$emit('update:loading', true)
       let flag = this.flag
       return new Promise((resolve, reject) => {
@@ -160,9 +164,13 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
+      // console.log('上传成功：', response, files, fileList2)
       // console.log('onSuccess', response)
-      let { obj, duration, width, height } = response
+      let { obj, duration, width, height, ErrorCode, ErrorText } = response
       if (!obj) {
+        if (ErrorCode) {
+          Toast(ErrorText)
+        }
         return
       }
       let limit = this.settings[this.flag].limit

@@ -66,7 +66,10 @@ import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import { fullSceneMap } from '@/utils/config'
 import mixins from '@/mixins/index'
-import { getPlat } from '@/utils/utils'
+import {
+  // getPlat,
+  setBrowserTitle
+} from '@/utils/utils'
 
 export default {
   mixins: [mixins],
@@ -105,12 +108,12 @@ export default {
   },
   created () {
     this.inintDetail()
-    let plat = getPlat()
-    if (plat === 'smartcity') {
-      window.SmartCity.onShareSuccess((res) => {
-        this.appShareCallBack()
-      })
-    }
+    // let plat = getPlat()
+    // if (plat === 'smartcity') {
+    //   window.SmartCity.onShareSuccess((res) => {
+    //     this.appShareCallBack()
+    //   })
+    // }
   },
   props: {
     id: String,
@@ -192,6 +195,7 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         this.workDetail = res
+        setBrowserTitle(res.name)
         // 调整详情页的分享
         this.sharePage(detailInfo, res)
       })
@@ -269,7 +273,7 @@ export default {
         indexpic,
         rule
       } = detailInfo
-      let { name, introduce } = workDetail
+      let { name, introduce, material } = workDetail
       let imgUrl = ''
       let shareLink = location.href + '&wechat=true'
       // let shareTitle = title
@@ -325,18 +329,35 @@ export default {
           }
         }
       }
-
+      //
+      if (material.image.length > 0) {
+        imgUrl = material.image[0].url
+      }
       if (imgUrl && !/^http/.test(imgUrl)) {
         imgUrl = location.protocol + imgUrl
       }
-      this.shareConfigData = {
-        id: detailInfo.id,
-        title: name,
-        desc: shareBrief,
-        indexpic: imgUrl,
-        link: shareLink,
-        mark: detailInfo.mark
-      }
+      // let plat = getPlat()
+      // if (plat === 'smartcity') {
+      //   // window.SmartCity.onShareSuccess((res) => {
+      //   //   this.appShareCallBack()
+      //   // })
+      //   this.shareConfigData = {
+      //     id: detailInfo.id,
+      //     title: name,
+      //     desc: shareBrief,
+      //     indexpic: imgUrl,
+      //     link: location.href,
+      //     mark: detailInfo.mark
+      //   }
+      //   window.SmartCity.shareTo({
+      //     // showShareButton: "是否显示右上角的分享按钮",
+      //     // updateShareData: "是否弹出分享视图",
+      //     title: name,
+      //     brief: shareBrief,
+      //     contentURL: location.href,
+      //     imageLink: imgUrl
+      //   })
+      // }
       this.initPageShareInfo({
         id: detailInfo.id,
         title: name,
@@ -346,16 +367,16 @@ export default {
         mark: detailInfo.mark
       })
     },
-    appShareCallBack () {
-      if (this.shareConfigData.id && this.isOpenShare) {
-        this.setShare({
-          id: this.shareConfigData.id,
-          title: this.shareConfigData.title,
-          from: this.shareConfigData.from,
-          mark: this.shareConfigData.mark
-        })
-      }
-    },
+    // appShareCallBack () {
+    //   if (this.shareConfigData.id && this.isOpenShare) {
+    //     this.setShare({
+    //       id: this.shareConfigData.id,
+    //       title: this.shareConfigData.title,
+    //       from: this.shareConfigData.from,
+    //       mark: this.shareConfigData.mark
+    //     })
+    //   }
+    // },
     ...mapActions('vote', {
       setShareData: 'SET_SHARE_DATA',
       setIsBtnAuth: 'SET_IS_BTN_AUTH'

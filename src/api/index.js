@@ -58,6 +58,7 @@ function dealError ({code, msg}) {
 // 请求后的过滤器
 instance.interceptors.response.use((res, xhr) => {
   const data = res.data
+  let {config: { url }} = res
   let curErrorCode = data.error || data.error_code || data.ErrorCode
   let curErrorMsg = data.message || data.error_message || data.ErrorText
   dealError({ code: curErrorCode, msg: curErrorMsg })
@@ -75,12 +76,13 @@ instance.interceptors.response.use((res, xhr) => {
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'
   }
-  if (res.status === 204) {
+  if (res.status === 204 && !/setClick/.test(url)) {
     const url = encodeURI(window.location.href)
     window.location.href = `/xzh5/nodata.html?origin=${url}`
   }
   return data.response || data.result || data
 }, (error) => {
+  console.log('失败！', error)
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
@@ -92,7 +94,6 @@ instance.interceptors.response.use((res, xhr) => {
       return
     }
   } else if (status >= 500 || status === 422) {
-    // window.location.href = `/error.html?origin=${url}`
     window.location.href = `/xzh5/waitting.html?origin=${url}`
   }
   let rej = null
