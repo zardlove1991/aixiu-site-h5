@@ -110,7 +110,7 @@
       <button class="rank-btn" @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <div class="tooltips-rank">
         <!-- <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/> -->
-        <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0">{{examInfo.limit.button || '开始答题'}}</button>
+        <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
         <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
       </div>
       <!-- <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div> -->
