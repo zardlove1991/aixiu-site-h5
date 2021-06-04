@@ -48,6 +48,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['news']
       break
     }
+    case 'xzh5': {
+      host = globalConfig['xzh5']
+      break
+    }
     default: {
       host = globalConfig['exam']
     }

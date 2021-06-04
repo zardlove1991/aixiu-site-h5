@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4, createXzh5 } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -182,5 +182,5 @@ export default {
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
   // 上传base64图片
-  submitBase64: config => createC4(configUrl.submitBase64, 'POST', config, API_FLAG)
+  submitBase64: config => createXzh5(configUrl.submitBase64, 'POST', config, API_FLAG)
 }
