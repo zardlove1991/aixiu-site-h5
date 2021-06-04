@@ -32,7 +32,7 @@
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
     </el-upload>
-    <div v-if="$wx" @click.stop='wxChoseImg'>测试上传</div>
+    <div v-if="$wx" @click.stop='wxChoseImg'>安卓上传</div>
   </div>
 </template>
 
@@ -101,10 +101,17 @@ export default {
   created () {
     // 判断环境
     let isWx = isWeixnBrowser()
+    console.log('isWx:', isWx)
+    console.log('isIOSsystem:', isIOSsystem())
     if (!isIOSsystem() && isWx) {
+      console.log('微信安卓系统')
       // 没有的时候在引用
       if (!this.$wx) this.$wx = wx
+    } else {
+      console.log('非微信ios系统')
+      this.$wx = ''
     }
+    console.log('$wx:', this.$wx)
   },
   watch: {
     fileList: {

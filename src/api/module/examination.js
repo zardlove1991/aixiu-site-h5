@@ -93,7 +93,8 @@ let newsUrl = {
 }
 
 let drawUrl = {
-  getMyDrawList: 'xiuzan/account/mine/'
+  getMyDrawList: 'xiuzan/account/mine/',
+  submitBase64: 'xiuzan/gift_box/hoo/upload/'
 }
 
 // 不带GUID
@@ -179,5 +180,7 @@ export default {
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
-  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG)
+  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+  // 上传base64图片
+  submitBase64: config => createC4(configUrl.submitBase64, 'POST', config, API_FLAG)
 }
