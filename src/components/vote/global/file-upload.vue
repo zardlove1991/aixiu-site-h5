@@ -32,6 +32,7 @@
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
     </el-upload>
+    <div v-if="$wx" @click.stop='wxChoseImg'>测试上传</div>
   </div>
 </template>
 
@@ -41,9 +42,12 @@ import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import { Toast } from 'mint-ui'
 import SubjectMixin from '@/mixins/subject'
+import mixins from '@/mixins/index'
+import { isWeixnBrowser, isIOSsystem } from '@/utils/app'
+import wx from '@/config/weixin-js-sdk'
 
 export default {
-  mixins: [ SubjectMixin ],
+  mixins: [ mixins, SubjectMixin ],
   props: {
     imageRatio: {
       type: Number,
@@ -89,7 +93,17 @@ export default {
       currentLimit: 9,
       uploadUrl: '', // 上传地址
       file: {},
-      signature: {} // 签名
+      signature: {}, // 签名
+      androidImgs: [],
+      $wx: ''
+    }
+  },
+  created () {
+    // 判断环境
+    let isWx = isWeixnBrowser()
+    if (!isIOSsystem() && isWx) {
+      // 没有的时候在引用
+      if (!this.$wx) this.$wx = wx
     }
   },
   watch: {
@@ -190,6 +204,74 @@ export default {
       this.fileList.push(tmp)
       this.$emit('update:loading', false)
       this.$emit('changeFile')
+    },
+    // 兼容安卓微信图片多选
+    wxChoseImg () {
+      let _this = this
+      wx.execute('chooseImage', {
+        count: this.settings[this.flag].limit,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success: function (res) {
+          console.log('上传图片返回的信息', res)
+          _this.getLocalBase64(res.localIds)
+          console.log('最终图片列表：', this.imgResult)
+        },
+        fail (err) {
+          console.log('失败：', err)
+        }
+      })
+    },
+    async getLocalBase64 (weixinLocalIds) {
+      let id = weixinLocalIds[0]
+      let imgResult = await wx.getLocalImgData(id)
+      if (imgResult) {
+        let imageBase64 = imgResult.localData
+        if (imageBase64.indexOf('data:image') !== 0) {
+          imageBase64 = 'data:image/jpeg;base64,' + imageBase64.replace(/\n/g, '')
+          this.androidImgs.push(imageBase64)
+        }
+        if (imageBase64.length > 5242880) {
+          Toast('图片大小超出限制')
+        } else {
+          this.androidImgs.push(imageBase64)
+        }
+      }
+      weixinLocalIds.shift()
+      if (weixinLocalIds.length > 0) {
+        this.getLocalBase64(weixinLocalIds)
+      } else {
+        this.androidSubmitImg()
+      }
+      console.log('%c结果：', 'color: red', imgResult)
+    },
+    async androidSubmitImg () {
+      //
+      if (this.androidImgs.length > 0) {
+        this.$emit('update:loading', true)
+        let imgName = 'vote_' + new Date().getTime()
+        let base64 = this.androidImgs[0]
+        let imgResult = await API.submitBase64({
+          base64: base64,
+          name: imgName
+        })
+        let { url } = imgResult
+        let tmp = {
+          name: imgName,
+          filename: imgName,
+          url: url,
+          uid: imgName,
+          size: base64.length
+        }
+        this.androidImgs.shift()
+        this.fileList.push(tmp)
+        this.$emit('changeFile')
+        this.$nextTick(() => {
+          this.androidSubmitImg()
+        })
+      } else {
+        this.$emit('update:loading', false)
+      }
     }
   }
 }

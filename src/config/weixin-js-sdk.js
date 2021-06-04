@@ -10,6 +10,7 @@ const API_CONFIG = {
   shareWeibo: 'onMenuShareWeibo', // 分享到微博
   chooseImage: 'chooseImage', // 上传图片
   uploadImage: 'uploadImage', // 上传图片
+  getLocalImgData: 'getLocalImgData',
   startRecord: 'startRecord', // 开始录音
   stopRecord: 'stopRecord', // 停止录音
   playVoice: 'playVoice', // 播放语音
@@ -73,12 +74,15 @@ const WX_API = {
     wx.checkJsApi({
       jsApiList: [methodName], // 需要检测的JS接口列表，所有JS接口列表见附录2,
       success (res) {
+        console.log('需要校验的方法名：', methodName)
+        console.log('微信接口校验：', res)
         // 以键值对的形式返回，可用的api值true，不可用为false
         // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
         let resObj = JSON.parse(JSON.stringify(res.checkResult))
+        let { errMsg } = res
         let isPass = resObj[methodName]
         console.log('当前检查API结果', resObj)
-        if (isPass) {
+        if (isPass || errMsg === 'checkJsApi:ok') {
           // 所有JS-SDK的方法全部放在ready函数中执行
           wx.ready(() => {
             params.from = methodName
@@ -162,6 +166,23 @@ const WX_API = {
       console.log('当前执行微信的参数', wx.miniProgram)
       wx.miniProgram.getEnv(res => {
         resolve(res.miniprogram)
+      })
+    })
+  },
+  getLocalImgData (localId) {
+    console.log('本地图片id：', localId)
+    return new Promise((resolve, reject) => {
+      WX_API.execute('getLocalImgData', {
+        localId: localId,
+        success (res) {
+          resolve(res)
+        },
+        fail (err) {
+          console.log('本地图片错误信息：', err)
+          let tip = '获取本地图片出错'
+          Toast(tip)
+          reject(new Error(tip))
+        }
       })
     })
   }
