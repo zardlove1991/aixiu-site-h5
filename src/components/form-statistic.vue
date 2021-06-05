@@ -657,16 +657,16 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        const shareSettings = this.examInfo.limit.share_settings
-        const settings = {
-          showShareButton: true, // 是否显示右上角的分享按钮
-          updateShareData: true, // 是否弹出分享视图
-          title: shareSettings.share_title,
-          brief: shareSettings.share_brief,
-          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-          imageLink: shareSettings.share_indexpic
-        }
-        window.SmartCity.shareTo(settings)
+        // const shareSettings = this.examInfo.limit.share_settings
+        // const settings = {
+        //   showShareButton: true, // 是否显示右上角的分享按钮
+        //   updateShareData: true, // 是否弹出分享视图
+        //   title: shareSettings.share_title,
+        //   brief: shareSettings.share_brief,
+        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+        //   imageLink: shareSettings.share_indexpic
+        // }
+        // window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })
