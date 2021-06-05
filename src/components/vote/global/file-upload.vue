@@ -41,6 +41,7 @@
       <i class="el-icon-plus"></i>
     </el-upload>
     <div
+      v-if="$wx"
       :style="uploadStyle"
       class="android-upload"
       v-loading="loading"
@@ -125,7 +126,7 @@ export default {
       console.log('非微信ios系统')
       this.$wx = ''
     }
-    if (!this.$wx) this.$wx = wx
+    // if (!this.$wx) this.$wx = wx
   },
   watch: {
     fileList: {
