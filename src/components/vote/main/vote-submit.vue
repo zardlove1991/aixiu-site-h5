@@ -18,7 +18,7 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList.sync="fileList" @changeFile="changeFile"></video-upload>
         </div>
       </div>
       <div v-if="showModel === 'video'" class="form-item">
@@ -31,7 +31,7 @@
             ref="video-file-upload"
             flag="videoCover"
             :imageRatio="videoMode === '3' ? 1 : 0"
-            :fileList="videoCoverList"
+            :fileList.sync="videoCoverList"
             @changeFile="changeVideoCoverFile">
           </file-upload>
         </div>
@@ -46,7 +46,7 @@
             :imageRatio="imageRatio"
             :loading.sync="loading"
             :flag="showModel"
-            :fileList="fileList"
+            :fileList.sync="fileList"
             @changeFile="changeFile">
           </file-upload>
         </div>
@@ -54,7 +54,7 @@
       <div v-if="showModel === 'audio'" class="form-item">
         <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3)</span></div>
         <div class="form-content">
-          <file-upload :loading.sync="loading" :flag="showModel" :fileList="fileList" @changeFile="changeFile"></file-upload>
+          <file-upload :loading.sync="loading" :flag="showModel" :fileList.sync="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="showModel === 'text'" class="form-item">
@@ -372,22 +372,24 @@ export default {
         data.id = this.worksId
       }
       this.disabled = true
-      API.workReport({
-        data
-      }).then(res => {
-        this.disabled = false
-        if (res.error_code) {
-          Toast(res.error_message)
-          return
-        }
-        Toast('报名成功')
-        this.$router.replace({
-          name: 'votebegin',
-          params: { id }
-        })
-      })
+      console.log('提交的数据：', this.material)
+      // API.workReport({
+      //   data
+      // }).then(res => {
+      //   this.disabled = false
+      //   if (res.error_code) {
+      //     Toast(res.error_message)
+      //     return
+      //   }
+      //   Toast('报名成功')
+      //   this.$router.replace({
+      //     name: 'votebegin',
+      //     params: { id }
+      //   })
+      // })
     },
-    changeFile () {
+    changeFile (data) {
+      this.fileList = JSON.parse(JSON.stringify(data))
       let fileList = this.fileList
       if (!fileList || fileList.length <= 0) {
         this.material = {...this.material}
@@ -398,11 +400,11 @@ export default {
             item.cover_image = this.videoCover
           })
         }
-        this.material = {...this.material, video: [...this.fileList]}
+        this.material = {...this.material, video: [...fileList]}
       } else if (this.showModel === 'picture') {
-        this.material = {...this.material, image: [...this.fileList]}
+        this.material = {...this.material, image: [...fileList]}
       } else if (this.showModel === 'audio') {
-        this.material = {...this.material, audio: [...this.fileList]}
+        this.material = {...this.material, audio: [...fileList]}
       }
     },
     changeVideoCoverFile () {
@@ -443,6 +445,30 @@ export default {
           obj2 && obj2.clearFile()
         })
       }
+    }
+  },
+  watch: {
+    fileList: {
+      handler: function (val) {
+        console.log('修改来源fileList', val)
+        let fileList = val
+        if (!fileList || fileList.length <= 0) {
+          this.material = {...this.material}
+        }
+        if (this.showModel === 'video') {
+          if (this.videoCover) {
+            fileList.forEach(item => {
+              item.cover_image = this.videoCover
+            })
+          }
+          this.material = {...this.material, video: [...fileList]}
+        } else if (this.showModel === 'picture') {
+          this.material = {...this.material, image: [...fileList]}
+        } else if (this.showModel === 'audio') {
+          this.material = {...this.material, audio: [...fileList]}
+        }
+      },
+      deep: true
     }
   }
 }

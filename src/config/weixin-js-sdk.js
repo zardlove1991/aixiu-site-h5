@@ -74,14 +74,11 @@ const WX_API = {
     wx.checkJsApi({
       jsApiList: [methodName], // 需要检测的JS接口列表，所有JS接口列表见附录2,
       success (res) {
-        console.log('需要校验的方法名：', methodName)
-        console.log('微信接口校验：', res)
         // 以键值对的形式返回，可用的api值true，不可用为false
         // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
         let resObj = JSON.parse(JSON.stringify(res.checkResult))
         let { errMsg } = res
         let isPass = resObj[methodName]
-        console.log('当前检查API结果', resObj)
         if (isPass || errMsg === 'checkJsApi:ok') {
           // 所有JS-SDK的方法全部放在ready函数中执行
           wx.ready(() => {
