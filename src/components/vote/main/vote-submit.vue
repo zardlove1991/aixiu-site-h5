@@ -372,20 +372,20 @@ export default {
       }
       this.disabled = true
       console.log('提交的数据：', this.material)
-      // API.workReport({
-      //   data
-      // }).then(res => {
-      //   this.disabled = false
-      //   if (res.error_code) {
-      //     Toast(res.error_message)
-      //     return
-      //   }
-      //   Toast('报名成功')
-      //   this.$router.replace({
-      //     name: 'votebegin',
-      //     params: { id }
-      //   })
-      // })
+      API.workReport({
+        data
+      }).then(res => {
+        this.disabled = false
+        if (res.error_code) {
+          Toast(res.error_message)
+          return
+        }
+        Toast('报名成功')
+        this.$router.replace({
+          name: 'votebegin',
+          params: { id }
+        })
+      })
     },
     changeFile (data) {
       this.fileList = JSON.parse(JSON.stringify(data))
