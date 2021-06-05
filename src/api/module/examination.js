@@ -75,7 +75,7 @@ let voteUrl = {
   getVoteTypeFid: 'client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/', // 获取用户抽奖记录
-  submitBase64: 'share/img/' // 上传base64图片
+  submitBase64: 'share/img' // 上传base64图片
 }
 
 // 预约报名

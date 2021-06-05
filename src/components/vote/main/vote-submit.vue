@@ -358,6 +358,11 @@ export default {
           return
         }
       }
+      this.material.forEach((item, index) => {
+        if (item.isDraggableBtn) {
+          delete this.material[index]
+        }
+      })
       let data = {
         voting_id: id,
         material: {

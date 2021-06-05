@@ -24,6 +24,7 @@
     </vote-audio>
     <el-upload
       v-if="!$wx"
+      :style="uploadStyle"
       ref="vote-file-upload"
       :class="{ hide: fileList.length >= settings[flag].limit }"
       list-type="picture-card"
@@ -40,7 +41,7 @@
       <i class="el-icon-plus"></i>
     </el-upload>
     <div
-      v-if="$wx"
+      :style="uploadStyle"
       class="android-upload"
       v-loading="loading"
       @click.stop='wxChoseImg'
@@ -124,12 +125,22 @@ export default {
       console.log('非微信ios系统')
       this.$wx = ''
     }
+    if (!this.$wx) this.$wx = wx
   },
   watch: {
     fileList: {
       handler: function (val) {
         if (val) {
+          console.log('%c文件列表：', 'color: red;', val)
           this.currentLimit = this.settings[this.flag].limit - val.length
+          let len = val.length
+          switch (len) {
+            case 4: this.uploadStyle = { position: 'absolute', left: '7.1875rem', top: '7.03125rem' }; break
+            case 7: this.uploadStyle = { position: 'absolute', left: '7.1875rem', top: '14.0625rem' }; break
+            case 5: this.uploadStyle = { position: 'absolute', left: '14.375rem', top: '7.03125rem' }; break
+            case 8: this.uploadStyle = { position: 'absolute', left: '14.375rem', top: '14.0625rem' }; break
+            default: this.uploadStyle = {}
+          }
         }
       },
       immediate: true,
@@ -234,7 +245,6 @@ export default {
         success: function (res) {
           console.log('上传图片返回的信息', res)
           _this.getLocalBase64(res.localIds)
-          console.log('最终图片列表：', this.imgResult)
         },
         fail (err) {
           console.log('失败：', err)
@@ -246,39 +256,45 @@ export default {
       let imgResult = await wx.getLocalImgData(id)
       if (imgResult) {
         let imageBase64 = imgResult.localData
-        if (imageBase64.indexOf('data:image') !== 0) {
-          imageBase64 = 'data:image/jpeg;base64,' + imageBase64.replace(/\n/g, '')
-          this.androidImgs.push(imageBase64)
-        }
         if (imageBase64.length > 5242880) {
           Toast('图片大小超出限制')
         } else {
+          if (imageBase64.indexOf('data:image') !== 0) {
+            imageBase64 = 'data:image/jpeg;base64,' + imageBase64.replace(/\n/g, '')
+          }
           this.androidImgs.push(imageBase64)
         }
       }
       weixinLocalIds.shift()
-      if (weixinLocalIds.length > 0) {
-        this.getLocalBase64(weixinLocalIds)
-      } else {
-        this.androidSubmitImg()
-      }
+      console.log('获取本地ID长度：', weixinLocalIds.length)
+      this.$nextTick(() => {
+        if (weixinLocalIds.length > 0) {
+          this.getLocalBase64(weixinLocalIds)
+        } else {
+          this.androidSubmitImg()
+        }
+      })
+      console.log('本地保存的androidImgs长度', this.androidImgs.length)
       console.log('%c结果：', 'color: red', imgResult)
     },
     async androidSubmitImg () {
+      console.log('上传图片androidImgs长度：', this.androidImgs.length)
       //
       if (this.androidImgs.length > 0) {
         this.$emit('update:loading', true)
         let imgName = 'vote_' + new Date().getTime()
         let base64 = this.androidImgs[0]
         let imgResult = await API.submitBase64({
-          data: base64,
-          name: imgName
+          data: {
+            data: base64,
+            imagename: imgName
+          }
         })
-        let { url } = imgResult
+        let { image } = imgResult
         let tmp = {
           name: imgName,
           filename: imgName,
-          url: url,
+          url: `${location.protocol}` + image,
           uid: imgName,
           size: base64.length
         }
@@ -304,6 +320,7 @@ export default {
   .vote-upload {
     display: flex;
     flex-wrap: wrap;
+    position: relative;
     .hide .el-upload--picture-card {
       display: none;
     }
