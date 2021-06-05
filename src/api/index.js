@@ -254,16 +254,3 @@ export const createC4 = (url, method, config = {}, api) => {
     ...config
   })
 }
-
-export const createXzh5 = (url, method, config = {}, api) => {
-  api = 'xzh5'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    headers: {
-      'x-member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
-    },
-    ...config
-  })
-}

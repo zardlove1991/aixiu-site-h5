@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4, createXzh5 } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -74,7 +74,8 @@ let voteUrl = {
   getVoteType: 'client/voting/{id}/type', // 获取分类列表
   getVoteTypeFid: 'client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
-  getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
+  getUserLotteryList: 'instant_lottery/activity/{id}/result/', // 获取用户抽奖记录
+  submitBase64: 'share/img/' // 上传base64图片
 }
 
 // 预约报名
@@ -93,8 +94,7 @@ let newsUrl = {
 }
 
 let drawUrl = {
-  getMyDrawList: 'xiuzan/account/mine/',
-  submitBase64: 'xiuzan/gift_box/hoo/upload/'
+  getMyDrawList: 'xiuzan/account/mine/'
 }
 
 // 不带GUID
@@ -182,5 +182,5 @@ export default {
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
   // 上传base64图片
-  submitBase64: config => createXzh5(configUrl.submitBase64, 'POST', config, API_FLAG)
+  submitBase64: config => createVote(configUrl.submitBase64, 'POST', config, API_FLAG)
 }
