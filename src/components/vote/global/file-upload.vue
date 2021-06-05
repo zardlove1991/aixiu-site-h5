@@ -1,12 +1,12 @@
 <template>
   <div :class="['vote-upload', imageRatio ? 'vote-upload-vertical' : '']">
-    <vue-draggable v-model="fileList" animation="1000" @end="onEnd" filter=".forbid">
+    <vue-draggable v-model="copyFileList" animation="1000" @end="onEnd" filter=".forbid">
       <transition-group>
         <div
           :class="['upload-picture-item', flag === 'videoCover' ? 'video-cover' : '',
           imageRatio ? 'vertical' : '']"
-          v-show="(flag === 'picture' || flag === 'videoCover') && fileList.length"
-          v-for="item in fileList"
+          v-show="(flag === 'picture' || flag === 'videoCover') && copyFileList.length"
+          v-for="item in copyFileList"
           :key="item.uid">
           <img :src="item.url"
             @click.stop="_setPreviewState"
@@ -112,7 +112,8 @@ export default {
       file: {},
       signature: {}, // 签名
       androidImgs: [],
-      $wx: ''
+      $wx: '',
+      copyFileList: []
     }
   },
   created () {
@@ -142,6 +143,9 @@ export default {
             case 8: this.uploadStyle = { position: 'absolute', left: '14.375rem', top: '14.0625rem' }; break
             default: this.uploadStyle = {}
           }
+          this.copyFileList = JSON.parse(JSON.stringify(val))
+        } else {
+          this.copyFileList = []
         }
       },
       immediate: true,
@@ -193,12 +197,12 @@ export default {
     handleRemove (file) {
       this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
       let uid = file.uid
-      for (let i in this.fileList) {
-        if (this.fileList[i].uid === uid) {
-          this.fileList.splice(i, 1)
+      for (let i in this.copyFileList) {
+        if (this.copyFileList[i].uid === uid) {
+          this.copyFileList.splice(i, 1)
         }
       }
-      this.$emit('changeFile')
+      this.$emit('update:fileList', this.copyFileList)
     },
     clearFile () {
       this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
@@ -219,7 +223,7 @@ export default {
         return
       }
       let limit = this.settings[this.flag].limit
-      let fileSize = this.fileList.length
+      let fileSize = this.copyFileList.length
       if (fileSize >= limit) {
         return
       }
@@ -240,9 +244,9 @@ export default {
         }
         tmp.duration = tempDura
       }
-      this.fileList.push(tmp)
+      this.copyFileList.push(tmp)
       this.$emit('update:loading', false)
-      this.$emit('changeFile')
+      this.$emit('update:fileList', this.copyFileList)
     },
     // 兼容安卓微信图片多选
     wxChoseImg () {
@@ -308,8 +312,8 @@ export default {
           size: base64.length
         }
         this.androidImgs.shift()
-        this.fileList.push(tmp)
-        this.$emit('changeFile')
+        this.copyFileList.push(tmp)
+        this.$emit('update:fileList', this.copyFileList)
         this.$nextTick(() => {
           this.androidSubmitImg()
         })
@@ -318,7 +322,7 @@ export default {
       }
     },
     onEnd () {
-      this.$emit('changeFile')
+      this.$emit('update:fileList', this.copyFileList)
     }
   }
 }
