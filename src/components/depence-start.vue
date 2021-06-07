@@ -297,7 +297,9 @@ export default {
       *关闭积分消耗：无免费答题次数
       */
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
-        const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+        let tmp = this.examInfo.integral_settings ? this.examInfo.integral_settings : {}
+        let tmp2 = this.examInfo.limit.integral_setting ? this.examInfo.limit.integral_setting : {}
+        const integralSettings = {...tmp, ...tmp2}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           return (integralSettings.free_counts <= 0 || !integralSettings.free_counts) && (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts)
         } else {
@@ -339,7 +341,7 @@ export default {
     cancelBreakModel () {
       // 继续答题
       this.isShowBreak = false
-      this.goExamPage()
+      this.goExamPage(null, {special_status: 1})
     },
     breakDoAction () {
       let examInfo = this.examInfo
@@ -537,16 +539,16 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        const shareSettings = this.examInfo.limit.share_settings
-        const settings = {
-          showShareButton: true, // 是否显示右上角的分享按钮
-          updateShareData: true, // 是否弹出分享视图
-          title: shareSettings.share_title,
-          brief: shareSettings.share_brief,
-          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-          imageLink: shareSettings.share_indexpic
-        }
-        window.SmartCity.shareTo(settings)
+        // const shareSettings = this.examInfo.limit.share_settings
+        // const settings = {
+        //   showShareButton: true, // 是否显示右上角的分享按钮
+        //   updateShareData: true, // 是否弹出分享视图
+        //   title: shareSettings.share_title,
+        //   brief: shareSettings.share_brief,
+        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+        //   imageLink: shareSettings.share_indexpic
+        // }
+        // window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })
@@ -714,12 +716,14 @@ export default {
         this.goExamPage()
       }
     },
-    goExamPage (val) {
+    goExamPage (val, obj) {
       if (val && val.collection_status === 1) {
         const data = {...this.examInfo, ...val}
         this.setExamInfo(data)
       }
-      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      let tmp = this.examInfo.integral_settings ? this.examInfo.integral_settings : {}
+      let tmp2 = this.examInfo.limit.integral_setting ? this.examInfo.limit.integral_setting : {}
+      const integralSettings = {...tmp, ...tmp2}
       let params = {}
       /*
       *积分答题 开始答题前置条件
@@ -727,8 +731,8 @@ export default {
       *2.无免费答题机会，且没有开启积分消耗；中止
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
-      if (this.disabledStartExam) return
-      if ((this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
+      if (this.disabledStartExam && (!obj || !obj.special_status)) return
+      if ((!obj || !obj.special_status) && (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           const hasIntegralCount = (integralSettings.user_integral_counts && integralSettings.user_integral_counts > 0) // 有积分兑换机会
           if (hasIntegralCount && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
