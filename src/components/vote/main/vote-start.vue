@@ -1728,6 +1728,7 @@ export default {
           .search-icon {
             margin-right: px2rem(20px);
             width: px2rem(34px);
+            flex: 0 0 px2rem(34px);
             height: 100%;
             background-repeat: no-repeat;
             background-position: center;
