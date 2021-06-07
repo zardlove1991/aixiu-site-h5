@@ -1715,6 +1715,7 @@ export default {
           display: flex;
           .search-input {
             flex: 1;
+            width: 100%;
             padding: px2rem(20px);
             font-size: px2rem(28px);
             @include font-color('fontColor');
