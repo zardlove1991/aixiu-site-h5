@@ -1,7 +1,6 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getAppSign } from '@/utils/utils'
-const protocol = window.location.protocol
 const smartCitySign = {'m2osmartcity_367': 1, 'm2osmartcity_381': 1}
 
 let smartcity = {
