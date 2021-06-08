@@ -98,7 +98,7 @@ export default {
           accept: 'image/*'
         },
         picture: {
-          limit: 9,
+          limit: 3,
           // accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
           accept: 'image/*'
         },
@@ -107,7 +107,7 @@ export default {
           accept: '.mp3,.MP3'
         }
       },
-      currentLimit: 9,
+      currentLimit: 3,
       uploadUrl: '', // 上传地址
       file: {},
       signature: {}, // 签名
@@ -173,7 +173,7 @@ export default {
   methods: {
     // 文件上传前准备签名
     beforeUpload (file) {
-      if (/image/.test(file.type) && file.size > 5242880) {
+      if (/image/.test(file.type) && file.size > 10485760) {
         Toast(`图片大小超出限制`)
         this.clearFile()
         return

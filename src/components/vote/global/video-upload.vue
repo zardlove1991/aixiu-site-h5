@@ -63,7 +63,10 @@ export default {
           accept: 'video/*'
         }
       },
-      signature: {} // 签名
+      signature: {}, // 签名
+      // 接口超时及节流
+      ajaxTime: 0, // 请求超过4次 8秒认为失败
+      lastTime: 0 // 上次请求的时间 2s请求一次
     }
   },
   methods: {
@@ -154,6 +157,20 @@ export default {
       let credential = this.credential
       if (credential) {
         let videoId = credential.VideoId
+        this.checkVideoRequest(videoId)
+      }
+    },
+    // 设置阈值
+    checkVideoRequest (videoId) {
+      // 设置阈值
+      if (this.lastTime) {
+        let _now = new Date().getTime()
+        if (_now - this.lastTime < 2000) {
+          this.checkVideoRequest(videoId)
+        }
+      } else {
+        this.lastTime = new Date().getTime()
+        this.ajaxTime++
         this.getVideoUrl(videoId)
       }
     },
@@ -164,7 +181,10 @@ export default {
         }
       }).then(res => {
         if (!res || !res.url || !res.cover) {
-          this.getVideoUrl(videoId)
+          if (this.ajaxTime >= 4) {
+            return
+          }
+          this.checkVideoRequest(videoId)
           return
         }
         let { id, url, cover } = res
@@ -173,6 +193,8 @@ export default {
           url,
           cover
         })
+        this.lastTime = 0
+        this.ajaxTime = 0
         // console.log(this.fileList)
         this.$emit('changeFile')
         this.$emit('update:loading', false)
