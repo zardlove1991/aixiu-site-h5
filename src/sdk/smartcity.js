@@ -50,43 +50,6 @@ let smartcity = {
       cbk(-1, '智慧城市：授权登录失败', err)
     }
   },
-  async getExamAuthScope (id, cbk) {
-    let params = { id }
-    API.getExamAuthScope({ params }).then(res => {
-      let limit = res.limit
-      if (limit && limit.source_limit) {
-        let { avoid_landing: avoidanding } = limit.source_limit
-        if (avoidanding) {
-          // 免登陆
-          const params2 = {
-            userId: 'xiuzan',
-            sign: getAppSign(),
-            userName: '爱秀小秘书',
-            avatarUrl: protocol + '//aixiu.aihoge.com/dist/images/global/toplogo-2x.png'
-          }
-          try {
-            API.getSmartCityUser({
-              params: params2
-            }).then((res) => {
-              if (res && res.id) {
-                STORAGE.set('userinfo', res)
-                cbk(res)
-              }
-            })
-          } catch (err) {
-            console.log(err)
-            cbk(-1, '智慧城市：失败', err)
-          }
-        } else {
-          smartcity.authorize((code, sdkInfo) => {
-            if (code > 0) {
-              smartcity.h5Signature(sdkInfo, cbk)
-            }
-          })
-        }
-      }
-    })
-  },
   getActiveId (pathname) {
     let id = ''
     if (pathname.indexOf('livestart') !== -1) {
@@ -118,16 +81,10 @@ export const oauth = (cbk) => {
     STORAGE.remove('appid')
     STORAGE.remove('location')
     STORAGE.remove('news_weather')
-    if (pathname.indexOf('votebegin') !== -1 || pathname.indexOf('votedetail') !== -1 ||
-      pathname.indexOf('enrollstart') !== -1 || pathname.indexOf('newstart') !== -1 || pathname.indexOf('drawlist') !== -1) {
-      smartcity.authorize((code, sdkInfo) => {
-        if (code > 0) {
-          smartcity.h5Signature(sdkInfo, cbk)
-        }
-      })
-    } else {
-      // 测评 判断是否需要免登陆
-      smartcity.getExamAuthScope(id, cbk)
-    }
+    smartcity.authorize((code, sdkInfo) => {
+      if (code > 0) {
+        smartcity.h5Signature(sdkInfo, cbk)
+      }
+    })
   }
 }
