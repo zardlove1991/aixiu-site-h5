@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no">
+		<title>加载中</title>
+		<style type="text/css">
+			html, body{height:100%; }
+			body{max-width:500px; margin:0 auto; background-color:#999; color:#989898; -webkit-font-smoothing:antialiased; font-family:sans-serif; font-size:1.4rem; overflow-x:hidden;  }
+			.page-content{min-height:100%;  background:url('//xzh5.hoge.cn/p/Tplglobal/images/logo.png') no-repeat center 150px #f0f2f6; background-size:142px; }
+
+		</style>
+		<script type="text/javascript">
+			var param = getUrlParam();
+			if( param.clearCache ){
+				window.localStorage.clear();
+			}
+			
+			if( param.backUrl ){
+				if( param.code ){
+					var key = param.backUrl.indexOf('?') > -1 ? '&' : '?';
+					window.location.href = param.backUrl + key + 'code=' + param.code;
+				}else{
+					window.location.href = param.backUrl;
+				}
+			}
+			 function getUrlParam( key ){
+				if( typeof key === 'undefined' ){
+					var param = {};
+					location.search.replace(/([^=?&]*)=([^&]*)/g,
+			        function( item , key, value) {
+			            return param[decodeURIComponent(key)] = decodeURIComponent(value);
+			        });
+					return param;
+				}
+				var pattern = new RegExp("(^|&)" + key + "=([^&]*)(&|$)"),
+					match = window.location.search.substr(1).match( pattern );
+				return match !== null ? decodeURIComponent( match[2] ) : null;
+			}
+		</script>
+	</head>
+	<body>
+		<div class="page-content">&nbsp;</div>
+	</body>
+</html>
