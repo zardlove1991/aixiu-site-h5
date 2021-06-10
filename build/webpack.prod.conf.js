@@ -130,6 +130,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, '../nodata.html'),
         to: config.build.assetsRoot,
         ignore: ['.*']
+      },
+      {
+        from: path.resolve(__dirname, '../bridge.html'),
+        to: config.build.assetsRoot,
+        ignore: ['.*']
       }
     ])
   ]
