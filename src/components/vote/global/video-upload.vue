@@ -1,35 +1,45 @@
 <template>
   <div :class="['vote-upload', videoMode === '3' ? 'vote-upload-vertical' : '']">
     <div
-      v-if="fileList.length"
+      v-if="copyFileList.length"
       :class="['upload-video-wrap', videoMode === '3' ? 'vertical': '']">
       <vote-video
-        :data="fileList[0]"
+        :data="copyFileList[0]"
         :isShowDelBtn="true"
         :isSmall="true"
         :noSetCover="true"
         @deleteFile="handleRemove">
       </vote-video>
     </div>
-    <el-upload
-      :class="{ hide: fileList.length >= settings['video'].limit }"
+    <!-- <el-upload
+      :class="{ hide: copyFileList.length >= settings['video'].limit }"
       list-type="picture-card"
       action=""
       :limit="settings['video'].limit"
       :multiple="false"
       :show-file-list="false"
-      :file-list="fileList"
+      :file-list="copyFileList"
       :http-request="uploadFile"
       v-loading="loading"
       :accept="settings['video'].accept">
       <i class="el-icon-plus"></i>
-    </el-upload>
+    </el-upload> -->
+    <div
+      class="el-upload el-upload--picture-card"
+      id="locaVideoUpload-btn"
+      v-loading="loading"
+      v-if="copyFileList.length < settings['video'].limit"
+    >
+      <i class="el-icon-plus"></i>
+      <input v-show="!loading" type="file" @change="getFile" :accept="settings['video'].accept">
+    </div>
   </div>
 </template>
 
 <script>
 import VoteVideo from '@/components/vote/global/vote-video'
 import API from '@/api/module/examination'
+// import axios from 'axios'
 
 export default {
   props: {
@@ -63,7 +73,8 @@ export default {
           accept: 'video/*'
         }
       },
-      signature: {} // 签名
+      signature: {}, // 签名
+      copyFileList: []
     }
   },
   methods: {
@@ -142,12 +153,12 @@ export default {
       this.uploader.startUpload()
     },
     handleRemove (file) {
-      for (let i in this.fileList) {
-        if (this.fileList[i].fileid === file.fileid) {
-          this.fileList.splice(i, 1)
+      for (let i in this.copyFileList) {
+        if (this.copyFileList[i].fileid === file.fileid) {
+          this.copyFileList.splice(i, 1)
         }
       }
-      this.$emit('changeFile')
+      this.$emit('update:fileList', this.copyFileList)
     },
     // 上传成功
     onSuccess () {
@@ -167,16 +178,49 @@ export default {
           this.getVideoUrl(videoId)
           return
         }
-        let { id, url, cover } = res
-        this.fileList.push({
+        let { id, url } = res
+        this.copyFileList.push({
           fileid: id,
           url,
-          cover
+          cover: ''
         })
-        // console.log(this.fileList)
-        this.$emit('changeFile')
+        this.$emit('update:fileList', this.copyFileList)
         this.$emit('update:loading', false)
       })
+    },
+    // 测试上传视频
+    getFile (e) {
+      let _files = e.target.files
+      if (_files && _files.length > 0) {
+        let _file = _files[0]
+        let formData = new FormData()
+        formData.append('file', _file)
+        API.sendVideo({
+          data: formData,
+          headers: {'Content-Type': 'multipart/form-data'}
+        }).then(res => {
+          let { fileid, url } = res
+          this.copyFileList.push({
+            fileid,
+            url,
+            cover: ''
+          })
+          this.$emit('update:fileList', this.copyFileList)
+          this.$emit('update:loading', false)
+        })
+      }
+    }
+  },
+  watch: {
+    fileList: {
+      handler: function (val) {
+        if (val) {
+          this.copyFileList = JSON.parse(JSON.stringify(val))
+        } else {
+          this.copyFileList = []
+        }
+      },
+      deep: true
     }
   }
 }
@@ -212,6 +256,17 @@ export default {
         width: px2rem(250px);
         height: px2rem(375px);
       }
+    }
+  }
+  #locaVideoUpload-btn{
+    position: relative;
+    input{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      left: 0;
+      top: 0;
     }
   }
 </style>

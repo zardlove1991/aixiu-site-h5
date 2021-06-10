@@ -22,7 +22,7 @@
       :isShowDelBtn="true"
       @deleteFile="handleRemove">
     </vote-audio>
-    <el-upload
+    <!-- <el-upload
       v-if="!$wx"
       :style="uploadStyle"
       ref="vote-file-upload"
@@ -39,7 +39,19 @@
       v-loading="loading"
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
-    </el-upload>
+    </el-upload> -->
+    <div v-if="!$wx" id="originUpload-btn" class="el-upload el-upload--picture-card" :style="uploadStyle" v-loading="loading">
+      <i class="el-icon-plus"></i>
+      <input
+        ref="vote-file-upload"
+        type="text"
+        :accept="settings[flag].accept"
+        :limit="settings[flag].limit"
+        :multiple="settings[flag].limit > 1"
+        v-show="loading"
+        @change="choseImg"
+      >
+    </div>
     <div
       v-if="$wx"
       :style="uploadStyle"
@@ -313,8 +325,39 @@ export default {
         this.$emit('update:loading', false)
       }
     },
+    // 拖动结束 更新数据
     onEnd () {
       this.$emit('update:fileList', this.copyFileList)
+    },
+    // 获取本地base64
+
+    // 图片上传本地
+    choseImg (e) {
+      console.log('新的图片上传!')
+      let _this = this
+      let imgList = e.target.files
+      let limit = this.settings[this.flag].limit
+      if (imgList.length > limit) {
+        this.$refs['vote-file-upload'].value = ''
+        Toast(`最多只能选择${limit}个文件`)
+      } else {
+        imgList.forEach((file, index) => {
+          let reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = function (f) {
+            let imageBase64 = f.target.result
+            if (imageBase64.length > 5242880) {
+              Toast('图片大小超出限制')
+            } else {
+              _this.androidImgs.push(imageBase64)
+            }
+            if (index === imgList.length) {
+              _this.androidSubmitImg()
+              this.$refs['vote-file-upload'].value = ''
+            }
+          }
+        })
+      }
     }
   }
 }
@@ -376,6 +419,16 @@ export default {
         height: px2rem(40px);
         @include img-retina('~@/assets/vote/file-delete@2x.png','~@/assets/vote/file-delete@3x.png', 100%, 100%);
       }
+    }
+  }
+  #originUpload-btn {
+    position: relative;
+    input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      opacity: 0;
     }
   }
 </style>

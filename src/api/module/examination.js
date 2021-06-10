@@ -20,7 +20,8 @@ let baseUrl = {
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
-  setShare: 'setShare' // 分享活动时请求分享接口
+  setShare: 'setShare', // 分享活动时请求分享接口
+  sendVideo: 'video/upload/local'
 }
 
 let examUrl = {
@@ -76,6 +77,7 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/', // 获取用户抽奖记录
   submitBase64: 'share/img' // 上传base64图片
+
 }
 
 // 预约报名
@@ -182,5 +184,6 @@ export default {
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
   // 上传base64图片
-  submitBase64: config => createVote(configUrl.submitBase64, 'POST', config, API_FLAG)
+  submitBase64: config => createVote(configUrl.submitBase64, 'POST', config, API_FLAG),
+  sendVideo: config => createBase(configUrl.sendVideo, 'POST', config, 'mlink')
 }
