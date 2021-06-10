@@ -40,20 +40,27 @@
       :accept="settings[flag].accept">
       <i class="el-icon-plus"></i>
     </el-upload> -->
-    <div v-if="!$wx" id="originUpload-btn" class="el-upload el-upload--picture-card" :style="uploadStyle" v-loading="loading">
+    <div
+    v-show="!$wx && fileList.length < settings[flag].limit"
+    id="originUpload-btn"
+    class="el-upload el-upload--picture-card"
+    :style="uploadStyle"
+    v-loading="loading">
       <i class="el-icon-plus"></i>
       <input
         ref="vote-file-upload"
-        type="text"
+        id="vote-file-upload"
+        type="file"
         :accept="settings[flag].accept"
         :limit="settings[flag].limit"
         :multiple="settings[flag].limit > 1"
-        v-show="loading"
+        v-show="!loading"
         @change="choseImg"
       >
     </div>
     <div
       v-if="$wx"
+      v-show="fileList.length < settings[flag].limit"
       :style="uploadStyle"
       class="android-upload"
       v-loading="loading"
@@ -203,7 +210,12 @@ export default {
       })
     },
     handleRemove (file) {
-      this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+      // this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+      if (this.$refs['vote-file-upload']) {
+        this.$refs['vote-file-upload'].value = ''
+      } else {
+        document.getElementById('vote-file-upload').value = ''
+      }
       let uid = file.uid
       for (let i in this.copyFileList) {
         if (this.copyFileList[i].uid === uid) {
@@ -213,7 +225,11 @@ export default {
       this.$emit('update:fileList', this.copyFileList)
     },
     clearFile () {
-      this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
+      if (this.$refs['vote-file-upload']) {
+        this.$refs['vote-file-upload'].value = ''
+      } else {
+        document.getElementById('vote-file-upload').value = ''
+      }
     },
     // 文件超出个数
     handleExceed () {
@@ -333,12 +349,23 @@ export default {
 
     // 图片上传本地
     choseImg (e) {
-      console.log('新的图片上传!')
+      console.log('新的图片上传!', e)
       let _this = this
-      let imgList = e.target.files
+      let fileList = e.target.files
+      let imgList = []
+      if (!(fileList instanceof Array)) {
+        imgList.push(fileList[0])
+      } else {
+        imgList = fileList
+      }
+      console.log('图片列表：', imgList)
       let limit = this.settings[this.flag].limit
       if (imgList.length > limit) {
-        this.$refs['vote-file-upload'].value = ''
+        if (this.$refs['vote-file-upload']) {
+          this.$refs['vote-file-upload'].value = ''
+        } else {
+          document.getElementById('vote-file-upload').value = ''
+        }
         Toast(`最多只能选择${limit}个文件`)
       } else {
         imgList.forEach((file, index) => {
@@ -346,14 +373,20 @@ export default {
           reader.readAsDataURL(file)
           reader.onload = function (f) {
             let imageBase64 = f.target.result
+            console.log('获取base64', imageBase64)
             if (imageBase64.length > 5242880) {
               Toast('图片大小超出限制')
             } else {
               _this.androidImgs.push(imageBase64)
             }
-            if (index === imgList.length) {
+            console.log(index)
+            if ((index + 1) === imgList.length) {
               _this.androidSubmitImg()
-              this.$refs['vote-file-upload'].value = ''
+              if (this.$refs['vote-file-upload']) {
+                this.$refs['vote-file-upload'].value = ''
+              } else {
+                document.getElementById('vote-file-upload').value = ''
+              }
             }
           }
         })
@@ -427,6 +460,8 @@ export default {
       position: absolute;
       left: 0;
       top: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
       opacity: 0;
     }
