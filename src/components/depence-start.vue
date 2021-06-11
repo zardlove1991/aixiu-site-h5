@@ -498,7 +498,7 @@ export default {
     },
     goLotteryPage () {
       if (this.lotteryUrl) {
-        let originUrl = location.href
+        let originUrl = encodeURIComponent(location.href)
         window.location.href = this.lotteryUrl +
         '?lotteryEnterType=' + this.lotteryEnterType +
         '&time=' + new Date().getTime() +
