@@ -190,6 +190,13 @@
       @close="isShowRuleDialog = false"
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
+      <div @click="goLotteryPage()">
+        <img src="@/assets/vote/gift@3x.png" alt="">
+        <div class="info">{{lotteryMsg}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -252,7 +259,12 @@ export default {
       tooltipsStr: '',
       currentPlat: getPlat(),
       isShowRuleDialog: false,
-      colorName: ''
+      colorName: '',
+      // 关联抽奖
+      lotteryMsg: '',
+      lotteryEnterType: 'lottery',
+      showLotteryEntrance: false,
+      lotteryUrl: ''
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
@@ -441,6 +453,9 @@ export default {
           } = info.limit
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
+            if (submitRules.raffle_url) {
+              this.lotteryUrl = submitRules.raffle_url
+            }
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
@@ -449,9 +464,44 @@ export default {
             this.colorName = setup.name
           }
         }
+        if (info.raffle) {
+          // 是否放开关联抽奖
+          if (info.raffle.is_open_raffle) {
+            // 是否可抽奖
+            if (info.raffle.raffle_url) {
+              this.lotteryMsg = '参与抽奖'
+              this.this.lotteryUrl = info.raffle.raffle_url
+              this.showLotteryEntrance = true
+            } else {
+              // 没有符合抽奖条件
+              this.checkLotteryOpen(info.raffle)
+            }
+          }
+        }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
+      }
+    },
+    // 如果有中奖记录
+    async checkLotteryOpen (raffle) {
+      let openLottery = false
+      // 用户中奖记录
+      let res = await API.getUserLotteryList({
+        query: { id: raffle.raffle_id }
+      })
+      if (res.data.length > 0) {
+        this.lotteryEnterType = 'history'
+        openLottery = true
+        this.lotteryMsg = '查看中奖情况'
+      }
+      this.showLotteryEntrance = openLottery
+    },
+    goLotteryPage () {
+      if (this.lotteryUrl) {
+        window.location.href = this.lotteryUrl +
+        '?lotteryEnterType=' + this.lotteryEnterType +
+        '&time=' + new Date().getTime()
       }
     },
     sharePage () {
@@ -1425,6 +1475,22 @@ export default {
         color: #fff;
         border: 0;
       }
+    }
+  }
+  .lottery_entrance{
+    position: absolute;
+    bottom: 6.5rem;
+    right: px2rem(30px);
+    text-align: center;
+    img {
+      width: 16vw;
+    }
+    .info{
+      background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 15px;
+      margin-top: -4px;
     }
   }
 }
