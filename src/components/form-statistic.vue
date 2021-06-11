@@ -572,7 +572,8 @@ export default {
         if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
-        window.location.href = link
+        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
+        window.location.href = link + '?backActionUtl=' + encodeURIComponent(backUrl)
       }
     },
     isCheckBox (val) {
