@@ -87,7 +87,7 @@ const routes = [{
     delta: route.query.delta // 小程序需要回退的页面层级
   }),
   meta: {
-    title: '测评'
+    title: ''
   }
 }, {
   path: '/depencerank/:id',
