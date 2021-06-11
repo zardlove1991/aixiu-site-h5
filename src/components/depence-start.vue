@@ -458,7 +458,7 @@ export default {
             STORAGE.set('statInfo', submitRules.result)
             if (submitRules.raffle_url) {
               this.lotteryUrl = submitRules.raffle_url
-              this.checkLotteryOpen(submitRules, info)
+              this.checkLotteryOpen(submitRules)
             }
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
@@ -468,24 +468,24 @@ export default {
             this.colorName = setup.name
           }
         }
-        if (info.raffle) {
-          // 是否放开关联抽奖
-          if (info.raffle.is_open_raffle) {
-            // 是否可抽奖
-            if (info.raffle.raffle_url) {
-              this.lotteryMsg = '参与抽奖'
-              this.lotteryUrl = info.raffle.raffle_url
-              this.showLotteryEntrance = true
-            }
-          }
-        }
+        // if (info.raffle) {
+        //   // 是否放开关联抽奖
+        //   if (info.raffle.is_open_raffle) {
+        //     // 是否可抽奖
+        //     if (info.raffle.raffle_url) {
+        //       this.lotteryMsg = '参与抽奖'
+        //       this.lotteryUrl = info.raffle.raffle_url
+        //       this.showLotteryEntrance = true
+        //     }
+        //   }
+        // }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
       }
     },
     // 如果有中奖记录
-    async checkLotteryOpen (raffle, info) {
+    async checkLotteryOpen (raffle) {
       // 用户中奖记录
       let res = await API.getUserLotteryList({
         query: { id: raffle.raffle_id }
@@ -495,18 +495,18 @@ export default {
         this.lotteryMsg = '查看中奖情况'
         this.showLotteryEntrance = true
       }
-      if (info.raffle) {
-        // 是否放开关联抽奖
-        if (info.raffle.is_open_raffle) {
-          // 是否可抽奖
-          if (info.raffle.raffle_url) {
-            this.lotteryEnterType = 'lottery'
-            this.lotteryMsg = '参与抽奖'
-            this.lotteryUrl = info.raffle.raffle_url
-            this.showLotteryEntrance = true
-          }
-        }
-      }
+      // if (info.raffle) {
+      //   // 是否放开关联抽奖
+      //   if (info.raffle.is_open_raffle) {
+      //     // 是否可抽奖
+      //     if (info.raffle.raffle_url) {
+      //       this.lotteryEnterType = 'lottery'
+      //       this.lotteryMsg = '参与抽奖'
+      //       this.lotteryUrl = info.raffle.raffle_url
+      //       this.showLotteryEntrance = true
+      //     }
+      //   }
+      // }
     },
     goLotteryPage () {
       if (this.lotteryUrl) {
