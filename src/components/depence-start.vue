@@ -470,12 +470,14 @@ export default {
             // 是否可抽奖
             if (info.raffle.raffle_url) {
               this.lotteryMsg = '参与抽奖'
-              this.this.lotteryUrl = info.raffle.raffle_url
+              this.lotteryUrl = info.raffle.raffle_url
               this.showLotteryEntrance = true
-            } else {
-              // 没有符合抽奖条件
               this.checkLotteryOpen(info.raffle)
             }
+            // else {
+            //   // 没有符合抽奖条件
+            //   this.checkLotteryOpen(info.raffle)
+            // }
           }
         }
         STORAGE.set('guid', this.examInfo.guid)
@@ -485,17 +487,14 @@ export default {
     },
     // 如果有中奖记录
     async checkLotteryOpen (raffle) {
-      let openLottery = false
       // 用户中奖记录
       let res = await API.getUserLotteryList({
         query: { id: raffle.raffle_id }
       })
       if (res.data.length > 0) {
         this.lotteryEnterType = 'history'
-        openLottery = true
         this.lotteryMsg = '查看中奖情况'
       }
-      this.showLotteryEntrance = openLottery
     },
     goLotteryPage () {
       if (this.lotteryUrl) {
@@ -589,16 +588,6 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        // const shareSettings = this.examInfo.limit.share_settings
-        // const settings = {
-        //   showShareButton: true, // 是否显示右上角的分享按钮
-        //   updateShareData: true, // 是否弹出分享视图
-        //   title: shareSettings.share_title,
-        //   brief: shareSettings.share_brief,
-        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-        //   imageLink: shareSettings.share_indexpic
-        // }
-        // window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })
@@ -705,19 +694,6 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              // indexMobile = i
-              // imgCodeObj = {
-              //   name: '图形验证码',
-              //   unique_name: 'imgCode',
-              //   type: 'text',
-              //   maxlength: 10
-              // }
-              // codeObj = {
-              //   name: '验证码',
-              //   unique_name: 'verify_code',
-              //   type: 'text',
-              //   maxlength: 4
-              // }
             } else {
               item.maxlength = 100
               item.type = 'text'
@@ -741,22 +717,6 @@ export default {
           if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
           }
-          // if (indexMobile !== -1 && indexAddress !== -1) {
-          //   if (indexMobile < indexAddress) {
-          //     checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //     checkDraw.splice(indexMobile, 0, imgCodeObj)
-          //     checkDraw.splice(indexAddress + 3, 0, addressObj)
-          //   } else {
-          //     checkDraw.splice(indexAddress + 1, 0, addressObj)
-          //     checkDraw.splice(indexMobile + 2, 0, codeObj)
-          //     checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
-          //   }
-          // } else if (indexMobile === -1 && indexAddress !== -1) {
-          //   checkDraw.splice(indexAddress + 1, 0, addressObj)
-          // } else if (indexMobile !== -1 && indexAddress === -1) {
-          //   checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //   checkDraw.splice(indexMobile, 0, imgCodeObj)
-          // }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {
