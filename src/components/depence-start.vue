@@ -397,7 +397,8 @@ export default {
         if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
-        link += '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(location.href)
+        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
+        link += '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
         this.isLuckSubmitSuccess = false
         window.location.replace(link)
         this.setLuckDrawLink('')
