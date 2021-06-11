@@ -573,7 +573,7 @@ export default {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
         let backUrl = location.origin + '/depencestart/' + this.$route.params.id
-        window.location.href = link + '?backActionUtl=' + encodeURIComponent(backUrl)
+        window.location.href = link + '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
       }
     },
     isCheckBox (val) {
