@@ -458,6 +458,7 @@ export default {
             STORAGE.set('statInfo', submitRules.result)
             if (submitRules.raffle_url) {
               this.lotteryUrl = submitRules.raffle_url
+              this.checkLotteryOpen(submitRules)
             }
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
@@ -475,12 +476,7 @@ export default {
               this.lotteryMsg = '参与抽奖'
               this.lotteryUrl = info.raffle.raffle_url
               this.showLotteryEntrance = true
-              this.checkLotteryOpen(info.raffle)
             }
-            // else {
-            //   // 没有符合抽奖条件
-            //   this.checkLotteryOpen(info.raffle)
-            // }
           }
         }
         STORAGE.set('guid', this.examInfo.guid)
@@ -497,6 +493,7 @@ export default {
       if (res.data.length > 0) {
         this.lotteryEnterType = 'history'
         this.lotteryMsg = '查看中奖情况'
+        this.showLotteryEntrance = true
       }
     },
     goLotteryPage () {
