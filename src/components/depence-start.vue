@@ -498,9 +498,11 @@ export default {
     },
     goLotteryPage () {
       if (this.lotteryUrl) {
+        let originUrl = location.href
         window.location.href = this.lotteryUrl +
         '?lotteryEnterType=' + this.lotteryEnterType +
-        '&time=' + new Date().getTime()
+        '&time=' + new Date().getTime() +
+        '&backActionUtl=' + originUrl
       }
     },
     sharePage () {
