@@ -193,7 +193,7 @@
     <!-- 抽奖历史入口图标 -->
     <div class="lottery_entrance" v-if="showLotteryEntrance">
       <div @click="goLotteryPage()">
-        <img src="@/assets/vote/gift@3x.png" alt="">
+        <img :src="imgUrl" alt="">
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
@@ -264,7 +264,8 @@ export default {
       lotteryMsg: '',
       lotteryEnterType: 'lottery',
       showLotteryEntrance: false,
-      lotteryUrl: ''
+      lotteryUrl: '',
+      imgUrl: require('@/assets/vote/gift@3x.png')
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
