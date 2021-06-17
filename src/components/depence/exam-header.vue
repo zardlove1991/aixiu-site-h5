@@ -74,6 +74,7 @@ import LuckDrawDialog from '../dialog/luck-draw-dialog'
 // import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'exam-header',
@@ -176,8 +177,15 @@ export default {
     async confirmSubmitModel () {
       this.toggleSubmitModel()
       // 提交试卷
-      // 获取答题记录
-      let _result = await API.submitExam()
+      let params = {
+        options_id: [...this.getAnswerArr()],
+        question_id: this.examId
+      }
+      let _result = await API.submitExam({
+        data: {
+          params: params
+        }
+      })
       clearInterval(this.timer)
       if (_result) {
         let {success, raffle, result} = _result
@@ -189,6 +197,7 @@ export default {
               is_open_jump: _openJump,
               jump_conditions: _jumpConditions
             } = raffle
+            //
             if (_openRaffle) {
               if (_raffleUrl) {
                 this.isLuckDraw = true
@@ -255,6 +264,30 @@ export default {
       // } catch (err) {
       //   console.log(err)
       // }
+    },
+    // 获取答题记录
+    getAnswerArr () {
+      // 这边针对判断题、单选题、多选题做处理
+      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
+      // 添加data参数
+      let optionsId = null
+      // 筛选当前选中的数据
+      let optionsArr = []
+      if (this.currentSubjectInfo.options) {
+        this.currentSubjectInfo.options.forEach(item => {
+          if (item.active) optionsArr.push(item.id)
+        })
+      }
+      // 针对单选和判断做处理
+      if (optionsArr.length === 1 && this.currentSubjectInfo.type !== 'checkbox') {
+        optionsArr = optionsArr.join('')
+        // 这边保存下当前单选和判断选择的题目ID为了做防止多次请求操作
+        if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
+          STORAGE.set('examlist-single-selcectid', optionsArr)
+        }
+      }
+      optionsId = optionsArr
+      return optionsId
     },
     pageToLuckDraw () {
       let link = this.luckDrawLink
