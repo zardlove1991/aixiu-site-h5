@@ -113,7 +113,8 @@ export default {
       signature: {}, // 签名
       androidImgs: [],
       $wx: '',
-      copyFileList: []
+      copyFileList: [],
+      maxSize: 20971520
     }
   },
   created () {
@@ -173,7 +174,7 @@ export default {
   methods: {
     // 文件上传前准备签名
     beforeUpload (file) {
-      if (/image/.test(file.type) && file.size > 10485760) {
+      if (/image/.test(file.type) && file.size > this.maxSize) {
         Toast(`图片大小超出限制`)
         this.clearFile()
         return
@@ -269,12 +270,12 @@ export default {
       let imgResult = await wx.getLocalImgData(id)
       if (imgResult) {
         let imageBase64 = imgResult.localData
-        if (imageBase64.length > 10485760) {
+        if (imageBase64.indexOf('data:image') !== 0) {
+          imageBase64 = 'data:image/jpeg;base64,' + imageBase64.replace(/\n/g, '')
+        }
+        if (imageBase64.length > this.maxSize) {
           Toast('图片大小超出限制')
         } else {
-          if (imageBase64.indexOf('data:image') !== 0) {
-            imageBase64 = 'data:image/jpeg;base64,' + imageBase64.replace(/\n/g, '')
-          }
           this.androidImgs.push(imageBase64)
         }
       }

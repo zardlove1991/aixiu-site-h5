@@ -24,8 +24,8 @@
       <div v-if="showModel === 'video'" class="form-item">
         <div class="form-title">视频封面<span class="form-tips">(选填)</span></div>
         <div class="form-tips-div"></div>
-        <div class="form-tips-div" v-if="videoMode === '3'">建议比例3:4.5，支持PNG、JPG、GIF格式，小于5M</div>
-        <div class="form-tips-div" v-else>建议比例16:9，支持PNG、JPG、GIF格式，小于5M</div>
+        <div class="form-tips-div" v-if="videoMode === '3'">建议比例3:4.5，支持PNG、JPG格式，小于10M</div>
+        <div class="form-tips-div" v-else>建议比例16:9，支持PNG、JPG格式，小于10M</div>
         <div class="form-content">
           <file-upload :loading.sync="videoCoverLoading"
             ref="video-file-upload"
@@ -38,7 +38,7 @@
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div" v-if="imageRatio">小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-if="imageRatio">小于10M；图片最多上传3张；支持PNG、JPG格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
