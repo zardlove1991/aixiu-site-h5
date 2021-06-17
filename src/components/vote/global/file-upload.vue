@@ -269,7 +269,7 @@ export default {
       let imgResult = await wx.getLocalImgData(id)
       if (imgResult) {
         let imageBase64 = imgResult.localData
-        if (imageBase64.length > 5242880) {
+        if (imageBase64.length > 10485760) {
           Toast('图片大小超出限制')
         } else {
           if (imageBase64.indexOf('data:image') !== 0) {
