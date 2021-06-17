@@ -21,7 +21,6 @@
         </div>
         <div class="right-wrap" @click.stop="$emit('showlist')">
           <!--当前题目进度提示-->
-          <!-- <div class="submit-btn" @click.stop="toggleSubmitModel">交卷</div> -->
           <div class="right-card-title">答题卡</div>
           <div class="right-triangle"></div>
         </div>
@@ -74,6 +73,7 @@ import PopDialog from '../dialog/pop-dialog'
 import LuckDrawDialog from '../dialog/luck-draw-dialog'
 // import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
+import API from '@/api/module/examination'
 
 export default {
   name: 'exam-header',
@@ -173,71 +173,88 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    // async confirmGiveupModel () {
-    //   let subject = this.currentSubjectInfo
-    //   let examId = this.examId
-
-    //   try {
-    //     await this.sendSaveRecordOption(subject) // 检查多选考试的提交
-    //     await this.endExam() // 提交试卷
-    //     // 跳转去答题卡页面
-    //     this.$router.replace({
-    //       path: `/depencecard/${examId}`,
-    //       query: {
-    //         delta: redirectParams.delta
-    //       }
-    //     })
-    //   } catch (err) {
-    //     console.log(err)
-    //     DEPENCE.dealErrorType({ examId, redirectParams }, err)
-    //   }
-    // },
     async confirmSubmitModel () {
-      // let subject = this.currentSubjectInfo
       this.toggleSubmitModel()
-      try {
-        // await this.sendSaveRecordOption(subject) // 检查最后一题的提交
-        await this.endExam() // 提交试卷
-        clearInterval(this.timer)
-        let rules = this.examInfo.limit.submit_rules
-        if (rules) {
-          let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-          if (isOpenRaffle && isOpenRaffle !== 0) {
-            // 抽奖
-            this.isLuckSubmitSuccess = true
-            if (this.luckDrawLink) {
-              this.isLuckDraw = true
-              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-            } else {
-              this.isLuckDraw = false
-              this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+      // 提交试卷
+      // 获取答题记录
+      let _result = await API.submitExam()
+      clearInterval(this.timer)
+      if (_result) {
+        let {success, raffle, result} = _result
+        if (success) {
+          if (raffle) {
+            let {
+              raffle_url: _raffleUrl,
+              is_open_raffle: _openRaffle,
+              is_open_jump: _openJump,
+              jump_conditions: _jumpConditions
+            } = raffle
+            if (_openRaffle) {
+              if (_raffleUrl) {
+                this.isLuckDraw = true
+                this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+              } else {
+                this.isLuckDraw = false
+                this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+              }
+            } else if (_openJump) {
+              this.isSubmitSuccess = true
+              setTimeout(() => {
+                this.isSubmitSuccess = false
+                window.location.replace(_jumpConditions.value)
+              }, 1000)
+            } else if (result) {
+              let examId = this.examId
+              this.$router.replace({
+                path: `/statistic/${examId}`
+              })
             }
-          } else if (link) {
-            this.isSubmitSuccess = true
-            setTimeout(() => {
-              this.isSubmitSuccess = false
-              window.location.replace(link.url)
-            }, 1000)
-          } else if (result) {
-            let examId = this.examId
-            this.$router.replace({
-              path: `/statistic/${examId}`
-            })
-          } else if (pop) {
-            this.isPopSubmitSuccess = true
-            this.pop = pop
-          } else {
-            // 跳转去答题卡页面
-            this.pageToStart()
           }
         } else {
-          // 跳转去答题卡页面
-          this.pageToStart()
+          console.error('提交失败')
         }
-      } catch (err) {
-        console.log(err)
-        // DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
+      // try {
+      //   // await this.endExam() // 提交试卷
+      //   clearInterval(this.timer)
+      //   let rules = this.examInfo.limit.submit_rules
+      //   if (rules) {
+      //     let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
+      //     if (isOpenRaffle && isOpenRaffle !== 0) {
+      //       // 抽奖
+      //       this.isLuckSubmitSuccess = true
+      //       if (this.luckDrawLink) {
+      //         this.isLuckDraw = true
+      //         this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+      //       } else {
+      //         this.isLuckDraw = false
+      //         this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+      //       }
+      //     } else if (link) {
+      //       this.isSubmitSuccess = true
+      //       setTimeout(() => {
+      //         this.isSubmitSuccess = false
+      //         window.location.replace(link.url)
+      //       }, 1000)
+      //     } else if (result) {
+      //       let examId = this.examId
+      //       this.$router.replace({
+      //         path: `/statistic/${examId}`
+      //       })
+      //     } else if (pop) {
+      //       this.isPopSubmitSuccess = true
+      //       this.pop = pop
+      //     } else {
+      //       // 跳转去答题卡页面
+      //       this.pageToStart()
+      //     }
+      //   } else {
+      //     // 跳转去答题卡页面
+      //     this.pageToStart()
+      //   }
+      // } catch (err) {
+      //   console.log(err)
+      // }
     },
     pageToLuckDraw () {
       let link = this.luckDrawLink
@@ -265,11 +282,11 @@ export default {
       } else {
         this.isShowSubmitModel = !this.isShowSubmitModel
       }
-      // 展示的时候去计算下当前题目是否回答
-      if (this.isShowSubmitModel || this.showSubmitModel) {
-        let subject = this.currentSubjectInfo
-        this.checkSubjectAnswerInfo(subject)
-      }
+      // // 展示的时候去计算下当前题目是否回答
+      // if (this.isShowSubmitModel || this.showSubmitModel) {
+      //   let subject = this.currentSubjectInfo
+      //   this.checkSubjectAnswerInfo(subject)
+      // }
     },
     _moveProgressBtn () {
       if (this.$refs.headerProgressBar && this.$refs.headerProgressBar.clientWidth) {
@@ -283,10 +300,10 @@ export default {
       headerProgressEl.style.width = `${offsetWidth}px`
     },
     ...mapActions('depence', {
-      endExam: 'END_EXAM',
+      // endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
-      checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
+      // checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
       setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
     })
   }

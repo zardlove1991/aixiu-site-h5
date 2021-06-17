@@ -541,7 +541,6 @@ const actions = {
                 throw new Error({error_message: '结束考试出错'})
               }
             }).catch(err => {
-              // Toast(err.error_message || '结束考试出错')
               // 结束
               Indicator.close()
               reject(err)
@@ -624,7 +623,6 @@ const actions = {
             throw new Error('保存答题记录出错')
           }
         }).catch(err => {
-          // Toast(err.error_message || err)
           reject(err)
         })
       })

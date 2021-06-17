@@ -31,7 +31,7 @@ let examUrl = {
   getErrorList: 'client/examination/mistakes', // 获得错题列表
   getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
   getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/examination/{id}/end',
+  submitExam: 'client/examination/end/{id}',
   startExam: 'client/examination/{id}/start',
   saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
@@ -131,7 +131,6 @@ export default {
   getLatestErrorList: config => createAPI(configUrl.getLatestErrorList, 'get', config, API_FLAG),
   getExamDetailsList: config => createAPI(configUrl.getExamDetailsList, 'get', config, API_FLAG),
   getExamDetailsStatistics: config => createAPI(configUrl.getExamDetailsStatistics, 'get', config, API_FLAG),
-  submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG),
   getExamDetail: config => createAPI(configUrl.getExamDetail, 'get', config, API_FLAG),
   shareExamination: config => createAPI(configUrl.shareExamination, 'post', config, API_FLAG),
   saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public'),
@@ -179,5 +178,8 @@ export default {
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
-  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG)
+  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+
+  // 答题改造
+  submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG)
 }
