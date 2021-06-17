@@ -572,7 +572,8 @@ export default {
         if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
-        window.location.href = link
+        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
+        window.location.href = link + '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
       }
     },
     isCheckBox (val) {
@@ -657,16 +658,16 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        const shareSettings = this.examInfo.limit.share_settings
-        const settings = {
-          showShareButton: true, // 是否显示右上角的分享按钮
-          updateShareData: true, // 是否弹出分享视图
-          title: shareSettings.share_title,
-          brief: shareSettings.share_brief,
-          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-          imageLink: shareSettings.share_indexpic
-        }
-        window.SmartCity.shareTo(settings)
+        // const shareSettings = this.examInfo.limit.share_settings
+        // const settings = {
+        //   showShareButton: true, // 是否显示右上角的分享按钮
+        //   updateShareData: true, // 是否弹出分享视图
+        //   title: shareSettings.share_title,
+        //   brief: shareSettings.share_brief,
+        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+        //   imageLink: shareSettings.share_indexpic
+        // }
+        // window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })

@@ -190,6 +190,13 @@
       @close="isShowRuleDialog = false"
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
+      <div @click="goLotteryPage()">
+        <img :src="imgUrl" alt="">
+        <div class="info">{{lotteryMsg}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -252,7 +259,13 @@ export default {
       tooltipsStr: '',
       currentPlat: getPlat(),
       isShowRuleDialog: false,
-      colorName: ''
+      colorName: '',
+      // 关联抽奖
+      lotteryMsg: '',
+      lotteryEnterType: 'lottery',
+      showLotteryEntrance: false,
+      lotteryUrl: '',
+      imgUrl: require('@/assets/vote/gift@3x.png')
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
@@ -297,7 +310,9 @@ export default {
       *关闭积分消耗：无免费答题次数
       */
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
-        const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+        let tmp = this.examInfo.integral_settings ? this.examInfo.integral_settings : {}
+        let tmp2 = this.examInfo.limit.integral_setting ? this.examInfo.limit.integral_setting : {}
+        const integralSettings = {...tmp, ...tmp2}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           return (integralSettings.free_counts <= 0 || !integralSettings.free_counts) && (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts)
         } else {
@@ -339,7 +354,7 @@ export default {
     cancelBreakModel () {
       // 继续答题
       this.isShowBreak = false
-      this.goExamPage()
+      this.goExamPage(null, {special_status: 1})
     },
     breakDoAction () {
       let examInfo = this.examInfo
@@ -382,6 +397,8 @@ export default {
         if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
+        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
+        link += '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
         this.isLuckSubmitSuccess = false
         window.location.replace(link)
         this.setLuckDrawLink('')
@@ -439,6 +456,10 @@ export default {
           } = info.limit
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
+            if (submitRules.raffle_url) {
+              this.lotteryUrl = submitRules.raffle_url
+              this.checkLotteryOpen(submitRules)
+            }
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
@@ -447,9 +468,55 @@ export default {
             this.colorName = setup.name
           }
         }
+        // if (info.raffle) {
+        //   // 是否放开关联抽奖
+        //   if (info.raffle.is_open_raffle) {
+        //     // 是否可抽奖
+        //     if (info.raffle.raffle_url) {
+        //       this.lotteryMsg = '参与抽奖'
+        //       this.lotteryUrl = info.raffle.raffle_url
+        //       this.showLotteryEntrance = true
+        //     }
+        //   }
+        // }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
+      }
+    },
+    // 如果有中奖记录
+    async checkLotteryOpen (raffle) {
+      // 用户中奖记录
+      let res = await API.getUserLotteryList({
+        query: { id: raffle.raffle_id }
+      })
+      if (res.data.length > 0) {
+        this.lotteryEnterType = 'history'
+        this.lotteryMsg = '查看中奖情况'
+        this.showLotteryEntrance = true
+      }
+      // if (info.raffle) {
+      //   // 是否放开关联抽奖
+      //   if (info.raffle.is_open_raffle) {
+      //     // 是否可抽奖
+      //     if (info.raffle.raffle_url) {
+      //       this.lotteryEnterType = 'lottery'
+      //       this.lotteryMsg = '参与抽奖'
+      //       this.lotteryUrl = info.raffle.raffle_url
+      //       this.showLotteryEntrance = true
+      //     }
+      //   }
+      // }
+    },
+    goLotteryPage () {
+      if (this.lotteryUrl) {
+        let originUrl = encodeURIComponent(location.href)
+        let jumpUrl = this.lotteryUrl +
+        '?lotteryEnterType=' + this.lotteryEnterType +
+        '&time=' + new Date().getTime() +
+        '&backActionUtl=' + originUrl
+        console.log('%c跳转链接!：', 'color:red;font-size: 20px;', jumpUrl)
+        window.location.href = jumpUrl
       }
     },
     sharePage () {
@@ -537,16 +604,6 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        const shareSettings = this.examInfo.limit.share_settings
-        const settings = {
-          showShareButton: true, // 是否显示右上角的分享按钮
-          updateShareData: true, // 是否弹出分享视图
-          title: shareSettings.share_title,
-          brief: shareSettings.share_brief,
-          contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-          imageLink: shareSettings.share_indexpic
-        }
-        window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })
@@ -653,19 +710,6 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              // indexMobile = i
-              // imgCodeObj = {
-              //   name: '图形验证码',
-              //   unique_name: 'imgCode',
-              //   type: 'text',
-              //   maxlength: 10
-              // }
-              // codeObj = {
-              //   name: '验证码',
-              //   unique_name: 'verify_code',
-              //   type: 'text',
-              //   maxlength: 4
-              // }
             } else {
               item.maxlength = 100
               item.type = 'text'
@@ -689,22 +733,6 @@ export default {
           if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
           }
-          // if (indexMobile !== -1 && indexAddress !== -1) {
-          //   if (indexMobile < indexAddress) {
-          //     checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //     checkDraw.splice(indexMobile, 0, imgCodeObj)
-          //     checkDraw.splice(indexAddress + 3, 0, addressObj)
-          //   } else {
-          //     checkDraw.splice(indexAddress + 1, 0, addressObj)
-          //     checkDraw.splice(indexMobile + 2, 0, codeObj)
-          //     checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
-          //   }
-          // } else if (indexMobile === -1 && indexAddress !== -1) {
-          //   checkDraw.splice(indexAddress + 1, 0, addressObj)
-          // } else if (indexMobile !== -1 && indexAddress === -1) {
-          //   checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //   checkDraw.splice(indexMobile, 0, imgCodeObj)
-          // }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {
@@ -714,12 +742,14 @@ export default {
         this.goExamPage()
       }
     },
-    goExamPage (val) {
+    goExamPage (val, obj) {
       if (val && val.collection_status === 1) {
         const data = {...this.examInfo, ...val}
         this.setExamInfo(data)
       }
-      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      let tmp = this.examInfo.integral_settings ? this.examInfo.integral_settings : {}
+      let tmp2 = this.examInfo.limit.integral_setting ? this.examInfo.limit.integral_setting : {}
+      const integralSettings = {...tmp, ...tmp2}
       let params = {}
       /*
       *积分答题 开始答题前置条件
@@ -727,8 +757,8 @@ export default {
       *2.无免费答题机会，且没有开启积分消耗；中止
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
-      if (this.disabledStartExam) return
-      if ((this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
+      if (this.disabledStartExam && (!obj || !obj.special_status)) return
+      if ((!obj || !obj.special_status) && (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
         if (integralSettings.is_open_reduce) { // 开启积分消耗
           const hasIntegralCount = (integralSettings.user_integral_counts && integralSettings.user_integral_counts > 0) // 有积分兑换机会
           if (hasIntegralCount && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
@@ -1421,6 +1451,22 @@ export default {
         color: #fff;
         border: 0;
       }
+    }
+  }
+  .lottery_entrance{
+    position: absolute;
+    bottom: 6.5rem;
+    right: px2rem(30px);
+    text-align: center;
+    img {
+      width: 16vw;
+    }
+    .info{
+      background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 15px;
+      margin-top: -4px;
     }
   }
 }

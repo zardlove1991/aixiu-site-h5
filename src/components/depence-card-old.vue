@@ -307,7 +307,7 @@ export default {
       text-align: center;
       line-height: px2rem(80px);
       border-radius: px2rem(40px);
-      @include border('all', 1px, solid, 'activeColor')
+      @include border('all', 1px, solid, 'activeColor');
       @include font-dpr(16px);
       @include font-color('activeColor');
     }
@@ -397,7 +397,7 @@ export default {
       padding:0 0 px2rem(40px) px2rem(24px);
       box-sizing: border-box;;
       @include font-dpr(12px);
-      @include font-color('tipColor')
+      @include font-color('tipColor');
       .use-time,.submit-time{
         line-height: 1;
       }
