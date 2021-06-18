@@ -61,16 +61,6 @@
               <div class="title">试题</div>
             </div>
           </div>
-          <!-- <div class="row">
-            <span class="title">考试难度</span>
-            <div class="desc-wrap">
-              <i class="star" :class='{active: index <= _getStarNum(examInfo.level)}' v-for="(val,index) in 5" :key='index'></i>
-            </div>
-          </div>
-          <div class="row">
-            <span class="title">辅导老师</span>
-            <span class="desc">{{examInfo.builder || '暂无'}}</span>
-          </div> -->
           <div class="row">
             <div class="row-icon row-jianguo"></div>
             <div>
@@ -153,11 +143,6 @@
         <div class="tip tip-center">考试意外中断了</div>
       </div>
     </my-model>
-    <!--底部已考按钮组-->
-    <!-- <div v-else class="btn-area reset-exam-btns" :class="{'center': !examInfo.restart}">
-      <button class="reset" v-show="examInfo.restart" @click.stop="startReExam">重新测验</button>
-      <button class="show" @click.stop="jumpGradePage">查看成绩</button>
-    </div> -->
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
       <div class="password-limit-wrap" @click.stop>
         <div class="password-limit-title">请输入密码参与答题</div>
