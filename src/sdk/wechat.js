@@ -5,6 +5,8 @@ import globalConfig from '@/api/config'
 
 let wechat = {
   getAuthUrl: (scope) => {
+    console.log('1:', STORAGE.get('appid'))
+    console.log('2:', globalConfig['APPID'])
     let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
     let host = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     let redirectUri = globalConfig['REDIRECT-URI'] + '?backUrl=' + delUrlParams(['code'], true)
