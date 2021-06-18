@@ -5,11 +5,13 @@
   "author": "张应锋 <zhangyingfeng@hogecloud.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js ",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js",
-    "pre": "cross-env BUILD_TARGET=pre node build/build.js"
+    "k8sdev": "cross-env BUILD_TARGET=k8s_dev node build/build.js",
+    "k8spre": "cross-env BUILD_TARGET=k8s_pre node build/build.js",
+    "k8sonline": "cross-env BUILD_TARGET=k8s_online node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
