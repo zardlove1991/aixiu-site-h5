@@ -428,9 +428,9 @@ export default {
       })
     },
     async initStartInfo () {
-      let examId = this.id
+      // let examId = this.id
       try {
-        await this.getExamDetail({id: examId})
+        // await this.getExamDetail({id: examId})
         this.tooltipsStr = this.getTooltipsStr()
         // 是否展示查看更多
         this.initFindAll()
