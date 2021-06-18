@@ -247,7 +247,7 @@ export default {
         }
         this.isLuckSubmitSuccess = false
         let backUrl = location.origin + '/depencestart/' + this.$route.params.id
-        window.location.href = `${link}?time=${new Date().getTime()}&backActionUtl=${encodeURIComponent(backUrl)}&Draw=1`
+        window.location.href = `${link}?time=${new Date().getTime()}&backActionUtl=${encodeURIComponent(backUrl)}&canDraw=1`
         this.setLuckDrawLink('')
       } else {
         this.isLuckSubmitSuccess = false
