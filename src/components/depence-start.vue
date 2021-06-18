@@ -190,6 +190,13 @@
       @close="isShowRuleDialog = false"
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="showLotteryEntrance">
+      <div @click="goLotteryPage()">
+        <img :src="imgUrl" alt="">
+        <div class="info">{{lotteryMsg}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -252,7 +259,13 @@ export default {
       tooltipsStr: '',
       currentPlat: getPlat(),
       isShowRuleDialog: false,
-      colorName: ''
+      colorName: '',
+      // 关联抽奖
+      lotteryMsg: '',
+      lotteryEnterType: 'lottery',
+      showLotteryEntrance: false,
+      lotteryUrl: '',
+      imgUrl: require('@/assets/vote/gift@3x.png')
     }
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
@@ -384,6 +397,8 @@ export default {
         if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
+        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
+        link += '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
         this.isLuckSubmitSuccess = false
         window.location.replace(link)
         this.setLuckDrawLink('')
@@ -441,6 +456,10 @@ export default {
           } = info.limit
           if (submitRules && submitRules.result) {
             STORAGE.set('statInfo', submitRules.result)
+            if (submitRules.raffle_url) {
+              this.lotteryUrl = submitRules.raffle_url
+              this.checkLotteryOpen(submitRules)
+            }
           }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
@@ -449,9 +468,55 @@ export default {
             this.colorName = setup.name
           }
         }
+        // if (info.raffle) {
+        //   // 是否放开关联抽奖
+        //   if (info.raffle.is_open_raffle) {
+        //     // 是否可抽奖
+        //     if (info.raffle.raffle_url) {
+        //       this.lotteryMsg = '参与抽奖'
+        //       this.lotteryUrl = info.raffle.raffle_url
+        //       this.showLotteryEntrance = true
+        //     }
+        //   }
+        // }
         STORAGE.set('guid', this.examInfo.guid)
       } catch (err) {
         console.log(err)
+      }
+    },
+    // 如果有中奖记录
+    async checkLotteryOpen (raffle) {
+      // 用户中奖记录
+      let res = await API.getUserLotteryList({
+        query: { id: raffle.raffle_id }
+      })
+      if (res.data.length > 0) {
+        this.lotteryEnterType = 'history'
+        this.lotteryMsg = '查看中奖情况'
+        this.showLotteryEntrance = true
+      }
+      // if (info.raffle) {
+      //   // 是否放开关联抽奖
+      //   if (info.raffle.is_open_raffle) {
+      //     // 是否可抽奖
+      //     if (info.raffle.raffle_url) {
+      //       this.lotteryEnterType = 'lottery'
+      //       this.lotteryMsg = '参与抽奖'
+      //       this.lotteryUrl = info.raffle.raffle_url
+      //       this.showLotteryEntrance = true
+      //     }
+      //   }
+      // }
+    },
+    goLotteryPage () {
+      if (this.lotteryUrl) {
+        let originUrl = encodeURIComponent(location.href)
+        let jumpUrl = this.lotteryUrl +
+        '?lotteryEnterType=' + this.lotteryEnterType +
+        '&time=' + new Date().getTime() +
+        '&backActionUtl=' + originUrl
+        console.log('%c跳转链接!：', 'color:red;font-size: 20px;', jumpUrl)
+        window.location.href = jumpUrl
       }
     },
     sharePage () {
@@ -539,16 +604,6 @@ export default {
     initAppShare () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        // const shareSettings = this.examInfo.limit.share_settings
-        // const settings = {
-        //   showShareButton: true, // 是否显示右上角的分享按钮
-        //   updateShareData: true, // 是否弹出分享视图
-        //   title: shareSettings.share_title,
-        //   brief: shareSettings.share_brief,
-        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
-        //   imageLink: shareSettings.share_indexpic
-        // }
-        // window.SmartCity.shareTo(settings)
         window.SmartCity.onShareSuccess((res) => {
           this.shareAddTimes()
         })
@@ -655,19 +710,6 @@ export default {
             } else if (item.unique_name === 'mobile') {
               item.maxlength = 11
               item.type = 'text'
-              // indexMobile = i
-              // imgCodeObj = {
-              //   name: '图形验证码',
-              //   unique_name: 'imgCode',
-              //   type: 'text',
-              //   maxlength: 10
-              // }
-              // codeObj = {
-              //   name: '验证码',
-              //   unique_name: 'verify_code',
-              //   type: 'text',
-              //   maxlength: 4
-              // }
             } else {
               item.maxlength = 100
               item.type = 'text'
@@ -691,22 +733,6 @@ export default {
           if (indexAddress !== -1) {
             checkDraw.splice(indexAddress + 1, 0, addressObj)
           }
-          // if (indexMobile !== -1 && indexAddress !== -1) {
-          //   if (indexMobile < indexAddress) {
-          //     checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //     checkDraw.splice(indexMobile, 0, imgCodeObj)
-          //     checkDraw.splice(indexAddress + 3, 0, addressObj)
-          //   } else {
-          //     checkDraw.splice(indexAddress + 1, 0, addressObj)
-          //     checkDraw.splice(indexMobile + 2, 0, codeObj)
-          //     checkDraw.splice(indexMobile + 1, 0, imgCodeObj)
-          //   }
-          // } else if (indexMobile === -1 && indexAddress !== -1) {
-          //   checkDraw.splice(indexAddress + 1, 0, addressObj)
-          // } else if (indexMobile !== -1 && indexAddress === -1) {
-          //   checkDraw.splice(indexMobile + 1, 0, codeObj)
-          //   checkDraw.splice(indexMobile, 0, imgCodeObj)
-          // }
           this.isShowDrawCheck = true
           this.checkDraw = checkDraw
         } else {
@@ -1425,6 +1451,22 @@ export default {
         color: #fff;
         border: 0;
       }
+    }
+  }
+  .lottery_entrance{
+    position: absolute;
+    bottom: 6.5rem;
+    right: px2rem(30px);
+    text-align: center;
+    img {
+      width: 16vw;
+    }
+    .info{
+      background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 15px;
+      margin-top: -4px;
     }
   }
 }
