@@ -136,11 +136,11 @@
           </div>
         </div>
       </div>
-      <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
+      <!-- <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
         <div class="luck-pop-icon">
           <div class="luck-pop-tips">点击抽奖</div>
         </div>
-      </div>
+      </div> -->
       <share-dialog
         :show="isShowShare"
         :shareUrl="shareUrl"
