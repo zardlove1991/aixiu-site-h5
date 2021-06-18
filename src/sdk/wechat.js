@@ -12,6 +12,7 @@ let wechat = {
     let redirectUri = globalConfig['REDIRECT-URI'] + '?backUrl=' + delUrlParams(['code'], true)
     let newRedirectUri = encodeURIComponent(redirectUri)
     let url = host + '?appid=' + appid + '&redirect_uri=' + newRedirectUri + '&response_type=code&scope=' + scope + '&state=' + randomNum(6)
+    console.log('请求连接：', url)
     return url
   },
   async getDefaultScope () {
