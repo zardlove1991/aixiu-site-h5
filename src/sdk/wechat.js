@@ -57,6 +57,8 @@ let wechat = {
     })
   },
   async h5Signature (info, cbk) {
+    console.log('1-1:', STORAGE.get('appid'))
+    console.log('2-2:', globalConfig['APPID'])
     let scope = STORAGE.get('scope_limit')
     let compAppid = STORAGE.get('component_appid')
     let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
