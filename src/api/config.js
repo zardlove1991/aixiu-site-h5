@@ -5,12 +5,14 @@ const protocol = window.location.protocol
 
 export default {
   'submit': `${host}/result/`,
-  'user': `${host}/member/`,
+  // 'user': `${host}/member/`,
+  'user': `${host}/memberhy/`,
   'exam': `${host}/examinationapi/`,
   'vote': `${host}/voteapi/`,
   'mlink': `${host}/m/`,
   'reserve': `${host}/reserve/`,
-  'public': `${host}/public/`,
+  // 'public': `${host}/public/`,
+  'public': `${host}/publichy/`,
   'c4': `//c4api${apiHost}/`,
   'news': `${host}/news/`,
   'timeout': 36000,
