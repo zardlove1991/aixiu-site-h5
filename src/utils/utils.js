@@ -7,7 +7,7 @@ import {
 } from '@/config/upload'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
-import store from '@/store/modules/depence'
+import store from '@/store'
 
 /**
  * [格式化时间戳]
@@ -108,8 +108,8 @@ export const setTheme = (id, name, isFirst) => {
       query: { id }
     }).then(res => {
       let info = res
-      console.log('测评数据：', info)
-      store.dispatch('SET_EXAM_INFO', info)
+      console.log('测评数据new：', info)
+      store.dispatch('depence/SET_EXAM_INFO', info)
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
         if (content.bg_color) {

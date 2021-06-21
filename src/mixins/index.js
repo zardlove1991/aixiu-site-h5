@@ -2,6 +2,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
+import wechat from '@/sdk/wechat'
 const env = getEnvironment()
 
 export default {
@@ -48,22 +49,27 @@ export default {
   methods: {
     async initWeixinInfo () {
       // 执行调用
-      let url = window.location.href.split('#')[0]
+      // let url = window.location.href.split('#')[0]
       let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
-      let res = STORAGE.get('signature')
+      // let res = STORAGE.get('signature')
+      let res = STORAGE.get('userinfo')
+      // if (!res) {
+      //   res = await this.getWeixinInfo({
+      //     url,
+      //     sign: 'wechat',
+      //     appid
+      //   })
+      //   if (res) {
+      //     STORAGE.set('signature', res)
+      //   }
+      // }
+      // let { appId, timestamp, nonceStr, signature } = res
       if (!res) {
-        res = await this.getWeixinInfo({
-          url,
-          sign: 'wechat',
-          appid
-        })
-        if (res) {
-          STORAGE.set('signature', res)
-        }
+        wechat.goRedirect()
       }
-      let { appId, timestamp, nonceStr, signature } = res
+      let { timestamp, randomstr: nonceStr, signature } = res
       wx.config({
-        appId,
+        appid,
         timestamp,
         nonceStr,
         signature
@@ -73,7 +79,7 @@ export default {
         if (!this.isWxError) {
           this.isWxError = true
           console.log('重新获取微信签名')
-          STORAGE.remove('signature')
+          STORAGE.remove('userinfo')
           this.initWeixinInfo()
         }
       })
