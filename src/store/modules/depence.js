@@ -814,13 +814,16 @@ const actions = {
         // appid
       } = payload
       let userInfo = STORAGE.get('userInfo')
+      if (!userInfo) {
+        console.log('%c没有用户信息！', 'color: red; font-size: 15px;')
+        return
+      }
       let { nick_name: nickName, id: userId } = userInfo
       let guid = getAppInfo().guid
       // 获得微信信息
       API.getWeixinInfo({
         params: {
           // url,
-          test: 'two',
           sign,
           // appid
           nickName,

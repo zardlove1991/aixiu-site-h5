@@ -57,12 +57,15 @@ export default {
       // let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
       let res = STORAGE.get('signature')
       let userInfo = STORAGE.get('userInfo')
+      if (!userInfo) {
+        console.error('没有用户信息')
+        return
+      }
       let { nick_name: nickName, id: userId } = userInfo
       let guid = getAppInfo().guid
       if (!res) {
         res = await this.getWeixinInfo({
           // url,
-          test: 'one',
           sign: 'wechat',
           // appid
           guid,
