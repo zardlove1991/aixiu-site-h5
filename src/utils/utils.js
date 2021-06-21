@@ -19,6 +19,7 @@ export const setTheme = (id, name, isFirst) => {
   if (!id || !name) {
     return
   }
+  console.log('name: ', name)
   if (name.indexOf('vote') !== -1) {
     // 投票
     API.getVodeDetail({ query: { id } }).then((res) => {

@@ -40,9 +40,7 @@ export default {
     }
   },
   created () {
-    // this.$wx = wx// 初始化通用weixin变量
     this.initWeixinInfo() // 初始化微信配置信息
-    // this.initReirectParams() // 判断是否有全局参数
   },
   computed: {
     ...mapGetters('depence', ['redirectParams'])
@@ -51,9 +49,6 @@ export default {
     async initWeixinInfo () {
       // 执行调用
       let url = window.location.href.split('#')[0]
-      // encodeURIComponent(location.href.split('#')[0])
-      // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
-      // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
       let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
       let res = STORAGE.get('signature')
       if (!res) {
@@ -82,24 +77,6 @@ export default {
           this.initWeixinInfo()
         }
       })
-
-      // this.getWeixinInfo({
-      //   url,
-      //   sign: 'wechat',
-      //   appid
-      // }).then(res => {
-      //   console.log(res)
-      //   let { appId, timestamp, nonceStr, signature } = res
-      //   wx.config({
-      //     appId,
-      //     timestamp,
-      //     nonceStr,
-      //     signature
-      //   })
-      //   wx.error(function (res) {
-      //     console.error('微信错误：', res)
-      //   })
-      // })
     },
     getLocation () {
       return new Promise((resolve, reject) => {

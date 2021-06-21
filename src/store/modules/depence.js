@@ -93,6 +93,7 @@ const getters = {
 
 const mutations = {
   SET_EXAM_INFO (state, payload) {
+    console.log('插入store的值：', payload)
     state.examInfo = payload
   },
   SET_ANSWER_LIST (state, payload) {
