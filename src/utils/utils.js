@@ -7,6 +7,7 @@ import {
 } from '@/config/upload'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import store from '@/store/modules/depence'
 
 /**
  * [格式化时间戳]
@@ -102,8 +103,11 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else {
     // 测评
-    API.getExamDetail({ query: { id } }).then(res => {
+    API.getExamDetail({
+      query: { id }
+    }).then(res => {
       let info = res
+      store.dispatch('SET_EXAM_INFO', info)
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
         if (content.bg_color) {
