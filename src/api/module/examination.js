@@ -16,7 +16,6 @@ let baseUrl = {
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
-  // getWeixinInfo: 'signature', // 获得微信公众号信息
   getWeixinInfo: 'member/signature', // 获得微信公众号信息
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
