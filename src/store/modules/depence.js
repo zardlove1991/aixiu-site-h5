@@ -820,6 +820,7 @@ const actions = {
       API.getWeixinInfo({
         params: {
           // url,
+          test: 'two',
           sign,
           // appid
           nickName,

@@ -62,6 +62,7 @@ export default {
       if (!res) {
         res = await this.getWeixinInfo({
           // url,
+          test: 'one',
           sign: 'wechat',
           // appid
           guid,
@@ -88,24 +89,6 @@ export default {
           this.initWeixinInfo()
         }
       })
-
-      // this.getWeixinInfo({
-      //   url,
-      //   sign: 'wechat',
-      //   appid
-      // }).then(res => {
-      //   console.log(res)
-      //   let { appId, timestamp, nonceStr, signature } = res
-      //   wx.config({
-      //     appId,
-      //     timestamp,
-      //     nonceStr,
-      //     signature
-      //   })
-      //   wx.error(function (res) {
-      //     console.error('微信错误：', res)
-      //   })
-      // })
     },
     getLocation () {
       return new Promise((resolve, reject) => {
