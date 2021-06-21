@@ -1,8 +1,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
+import { isIOSsystem, isWeixnBrowser, getAppInfo } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-const env = getEnvironment()
+// const env = getEnvironment()
 
 export default {
   props: {
@@ -50,17 +50,23 @@ export default {
   methods: {
     async initWeixinInfo () {
       // 执行调用
-      let url = window.location.href.split('#')[0]
+      // let url = window.location.href.split('#')[0]
       // encodeURIComponent(location.href.split('#')[0])
       // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
       // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
-      let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
+      // let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
       let res = STORAGE.get('signature')
+      let userInfo = STORAGE.get('userInfo')
+      let { nick_name: nickName, id: userId } = userInfo
+      let guid = getAppInfo().guid
       if (!res) {
         res = await this.getWeixinInfo({
-          url,
+          // url,
           sign: 'wechat',
-          appid
+          // appid
+          guid,
+          nickName,
+          userId
         })
         if (res) {
           STORAGE.set('signature', res)
