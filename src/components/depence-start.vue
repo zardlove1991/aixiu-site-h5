@@ -311,11 +311,13 @@ export default {
     'examInfo': {
       handler: function (v) {
         console.log('examInfo的值:', v)
-      }
+        this.initStartInfo()
+      },
+      deep: true,
+      immediate: true
     }
   },
   created () {
-    this.initStartInfo()
     this.dialog = {
       title: '分享成功'
     }
