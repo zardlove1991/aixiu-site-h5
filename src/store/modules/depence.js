@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
@@ -94,7 +95,8 @@ const getters = {
 const mutations = {
   SET_EXAM_INFO (state, payload) {
     console.log('插入store的值：', payload)
-    state.examInfo = payload
+    // state.examInfo = payload
+    Vue.set(state, 'examInfo', payload)
   },
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
@@ -369,7 +371,6 @@ function dealSaveRecord ({
 
 const actions = {
   SET_EXAM_INFO ({state, commit, dispatch}, payload) {
-    console.log('插入actions的值：', payload)
     commit('SET_EXAM_INFO', payload)
   },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
