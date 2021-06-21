@@ -3,7 +3,6 @@ import STORAGE from '@/utils/storage'
 import { Toast, Indicator } from 'mint-ui'
 import { METHODS, DEPENCE } from '@/common/currency'
 import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
-import { getAppInfo } from '@/utils/app'
 
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
@@ -808,27 +807,13 @@ const actions = {
   },
   GET_WEIXIN_INFO ({commit, state}, payload) {
     return new Promise((resolve, reject) => {
-      let {
-        // url,
-        sign
-        // appid
-      } = payload
-      let userInfo = STORAGE.get('userInfo')
-      if (!userInfo) {
-        console.log('%c没有用户信息！', 'color: red; font-size: 15px;')
-        return
-      }
-      let { nick_name: nickName, id: userId } = userInfo
-      let guid = getAppInfo().guid
+      let { url, sign, appid } = payload
       // 获得微信信息
       API.getWeixinInfo({
         params: {
-          // url,
+          url,
           sign,
-          // appid
-          nickName,
-          userId,
-          guid
+          appid
         }
       }).then(data => {
         // 设置数据

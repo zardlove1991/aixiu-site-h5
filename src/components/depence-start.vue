@@ -313,6 +313,9 @@ export default {
       title: '分享成功'
     }
   },
+  mounted () {
+    console.log('初始化examInfo：', this.examInfo)
+  },
   methods: {
     initFindAll () {
       this.$nextTick(() => {
@@ -413,44 +416,48 @@ export default {
       })
     },
     async initStartInfo () {
-      this.tooltipsStr = this.getTooltipsStr()
-      // 是否展示查看更多
-      this.initFindAll()
-      // 设置标题
-      setBrowserTitle(this.examInfo.title)
-      // 分享
-      this.sharePage()
-      let info = this.examInfo
-      if (getPlat() === 'smartcity') {
-        this.initAppShare()
-      }
-      if (info.person_status === 2) {
-        // 考试中
-        this.isShowBreak = true
-      }
-      if (info.limit) {
-        let {
-          day_userid_limit_num: dayUserIdLimit,
-          ip_limit_num: ipLimit,
-          userid_limit_num: userIdLimit,
-          submit_rules: submitRules,
-          color_scheme: setup
-        } = info.limit
-        if (submitRules && submitRules.result) {
-          STORAGE.set('statInfo', submitRules.result)
-          if (submitRules.raffle_url) {
-            this.lotteryUrl = submitRules.raffle_url
-            this.checkLotteryOpen(submitRules)
+      try {
+        this.tooltipsStr = this.getTooltipsStr()
+        // 是否展示查看更多
+        this.initFindAll()
+        // 设置标题
+        setBrowserTitle(this.examInfo.title)
+        // 分享
+        this.sharePage()
+        let info = this.examInfo
+        if (getPlat() === 'smartcity') {
+          this.initAppShare()
+        }
+        if (info.person_status === 2) {
+          // 考试中
+          this.isShowBreak = true
+        }
+        if (info.limit) {
+          let {
+            day_userid_limit_num: dayUserIdLimit,
+            ip_limit_num: ipLimit,
+            userid_limit_num: userIdLimit,
+            submit_rules: submitRules,
+            color_scheme: setup
+          } = info.limit
+          if (submitRules && submitRules.result) {
+            STORAGE.set('statInfo', submitRules.result)
+            if (submitRules.raffle_url) {
+              this.lotteryUrl = submitRules.raffle_url
+              this.checkLotteryOpen(submitRules)
+            }
+          }
+          if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
+            this.isNoLimit = true
+          }
+          if (setup && setup.name) {
+            this.colorName = setup.name
           }
         }
-        if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
-          this.isNoLimit = true
-        }
-        if (setup && setup.name) {
-          this.colorName = setup.name
-        }
+        STORAGE.set('guid', this.examInfo.guid)
+      } catch (err) {
+        console.log(err)
       }
-      STORAGE.set('guid', this.examInfo.guid)
     },
     // 如果有中奖记录
     async checkLotteryOpen (raffle) {
@@ -802,6 +809,7 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     getTooltipsStr () { // 获取积分答题，当前答题次数
+      console.log('examInfo:', this.examInfo)
       const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
         if (this.examInfo.remain_counts === 0 && this.examInfo.limit.is_ip_limit) {
