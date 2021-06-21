@@ -255,7 +255,6 @@ export default {
   },
   components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
   computed: {
-    ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
     getShowRule () {
       let mark = this.examInfo.mark
       return mark === 'examination@random' || mark === 'examination'
@@ -305,6 +304,14 @@ export default {
         }
       }
       return flag
+    },
+    ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink'])
+  },
+  watch: {
+    'examInfo': {
+      handler: function (v) {
+        console.log('examInfo的值:', v)
+      }
     }
   },
   created () {

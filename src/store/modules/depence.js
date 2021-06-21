@@ -97,6 +97,7 @@ const mutations = {
     console.log('插入store的值：', payload)
     // state.examInfo = payload
     Vue.set(state, 'examInfo', payload)
+    console.log('state的值：', state)
   },
   SET_ANSWER_LIST (state, payload) {
     let list = state.answerList
