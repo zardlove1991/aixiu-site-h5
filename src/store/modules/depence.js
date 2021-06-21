@@ -369,6 +369,7 @@ function dealSaveRecord ({
 
 const actions = {
   SET_EXAM_INFO ({state, commit, dispatch}, payload) {
+    console.log('插入actions的值：', payload)
     commit('SET_EXAM_INFO', payload)
   },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {

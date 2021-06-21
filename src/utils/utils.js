@@ -108,6 +108,7 @@ export const setTheme = (id, name, isFirst) => {
       query: { id }
     }).then(res => {
       let info = res
+      console.log('测评数据：', info)
       store.dispatch('SET_EXAM_INFO', info)
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
