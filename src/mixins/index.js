@@ -2,7 +2,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-import wechat from '@/sdk/wechat'
+// import wechat from '@/sdk/wechat'
 const env = getEnvironment()
 
 export default {
@@ -40,7 +40,7 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.initWeixinInfo() // 初始化微信配置信息
   },
   computed: {
@@ -65,7 +65,9 @@ export default {
       // }
       // let { appId, timestamp, nonceStr, signature } = res
       if (!res) {
-        wechat.goRedirect()
+        // wechat.goRedirect()
+        console.log('wx没有用户信息')
+        return
       }
       let { timestamp, randomstr: nonceStr, signature } = res
       wx.config({
