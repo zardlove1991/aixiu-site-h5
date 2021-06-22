@@ -310,7 +310,6 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
-        console.log('examInfo的值:', v)
         this.initStartInfo()
       },
       deep: true,
@@ -321,9 +320,6 @@ export default {
     this.dialog = {
       title: '分享成功'
     }
-  },
-  mounted () {
-    console.log('初始化examInfo：', this.examInfo)
   },
   methods: {
     initFindAll () {
@@ -818,8 +814,13 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     getTooltipsStr () { // 获取积分答题，当前答题次数
-      console.log('examInfo:', this.examInfo)
-      const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      if (!this.examInfo) {
+        console.log('尚未获取详情数据')
+        return
+      }
+      let {integral_settings: outIntSet, limit: {integral_setting: intSet}} = this.examInfo
+      // const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
+      const integralSettings = {...outIntSet, ...intSet}
       if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
         if (this.examInfo.remain_counts === 0 && this.examInfo.limit.is_ip_limit) {
           return '当前ip提交次数已达上限'
