@@ -37,6 +37,7 @@
         </div>
         <div
           v-if="getShowRule"
+          ref="exam-rule-info2"
           :class="['exam-rule', isShowInfo ? '' : 'exam-overflow']"
           id="exam-rule-info2"
           v-html="examInfo.brief"></div>
@@ -310,6 +311,7 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
+        console.log('%cexamInfo: ', 'color: red; font-size: 18px;', v)
         this.initStartInfo()
       },
       deep: true,
@@ -323,12 +325,10 @@ export default {
   },
   methods: {
     initFindAll () {
-      this.$nextTick(() => {
-        var oDiv = document.getElementById('exam-rule-info2')
-        if (oDiv.scrollHeight > oDiv.clientHeight) {
-          this.isShowFindAll = true
-        }
-      })
+      var oDiv = document.getElementById('exam-rule-info2') || this.$refs['exam-rule-info2']
+      if (oDiv && (oDiv.scrollHeight > oDiv.clientHeight)) {
+        this.isShowFindAll = true
+      }
     },
     async downBreakModel () {
       // 直接交卷
