@@ -38,6 +38,10 @@
       :data="data"
       :mode="mode">
     </select-blank-subject>
+    <div class="saveIntoCloud" v-if="showCloudBtn">
+      <div class="confirm-btn" @click="confirmSave()">保存答题信息</div>
+      <div class="cancel-btn" @click="cancelSave()">取消</div>
+    </div>
   </div>
 </template>
 
@@ -67,6 +71,10 @@ export default {
     isShowVideo: {
       type: Boolean,
       default: false
+    },
+    itemIndex: {
+      type: Number,
+      default: 0
     }
   },
   components: {
@@ -76,10 +84,75 @@ export default {
     SortSubject,
     BlankSubject,
     SelectBlankSubject
+  },
+  data () {
+    return {
+      showCloudBtn: false,
+      oldValue: ''
+    }
+  },
+  watch: {
+    data: {
+      handler: function (newV) {
+        if (!this.oldValue) {
+          this.oldValue = JSON.parse(JSON.stringify(newV))
+        } else {
+          if (newV) {
+            let newStr = JSON.stringify(newV)
+            let oldStr = JSON.stringify(this.oldValue)
+            if (newStr !== oldStr) {
+              console.log('%c发生改变：', 'color: green; font-size: 14px;', newV)
+              this.showCloudBtn = true
+            }
+          }
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  methods: {
+    cancelSave () {
+      let _data = JSON.parse(JSON.stringify(this.oldValue))
+      console.log('老的数据：', _data)
+      // this.$emit('update:data', _data)
+      this.showCloudBtn = false
+    },
+    confirmSave () {
+      this.setAllCurrentIndex(this.itemIndex).then(res => {
+        this.changeSubjectIndex(this.itemIndex)
+        this.showCloudBtn = false
+      })
+    }
   }
 }
 </script>
 
 <style lang="scss">
 @import "@/styles/components/subject-content.scss";
+.subject-content-wrap {
+  padding-bottom: 50px;
+  position: relative;
+  .saveIntoCloud{
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    div{
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-right: .9375rem;
+    }
+    .confirm-btn{
+      background: #FFA800;
+      color: #fff;
+    }
+    .cancel-btn{
+      background: rgba(255, 168, 0, 0.12);
+      color: #FFA800;
+    }
+  }
+}
 </style>

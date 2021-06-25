@@ -84,37 +84,27 @@
         :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
     </div>
     <!--底部按钮-->
-    <div class="btn-area" v-if="examInfo.timeStatus !== 0" :class="{
-      'is-integral': tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'
+    <div class="btn-area"
+    :class="{
+      'is-integral': tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank',
+      'is-disabled': disabledStartExam,
+      'show-total-integral': examInfo.all_credits >= 0
     }">
       <button
         class="rank-btn"
         v-if="examInfo.mark === 'examination@rank'"
         @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
-      <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 1">答题未开始</button>
-      <button class="end-exambtn" :class="getRadius" v-if ="examInfo.timeStatus == 2">答题已结束</button>
-      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
-    </div>
-    <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam}"
-      v-else-if="examInfo.mark === 'examination@rank'">
-      <button class="rank-btn" @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
-      <div class="tooltips-rank">
-        <!-- <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/> -->
-        <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
-        <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
+      <!-- 按钮校验 -->
+      <div class="btn-view">
+        <!-- 置灰 1：未开始；2：已结束 -->
+        <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
+        <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
+        <button v-else
+        :class="[getRadius, examInfo.remain_counts !== 0 || !isNoLimit ? 'start-exambtn':'end-exambtn']"
+        @click.stop="examInfo.remain_counts !== 0 || !isNoLimit ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+        <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
-      <!-- <div class="integral-number" v-if="examInfo.limit.integral_setting && examInfo.limit.integral_setting.is_open_integral">我的积分&nbsp;{{examInfo.all_credits || 0}}</div> -->
-    </div>
-    <div class="btn-area"
-      :class="{'is-disabled': disabledStartExam,
-        'is-integral': examInfo.mark === 'examination@integral',
-        'show-total-integral': examInfo.all_credits >= 0 }"
-      v-else>
-      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0"/>
-      <button class="start-exambtn" :class="getRadius" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || !isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
-      <button class="end-exambtn" :class="getRadius" v-else>{{examInfo.limit.button || '开始答题'}}</button>
-      <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
+      <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
     </div>
     <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次</div>
     <my-model
@@ -299,9 +289,9 @@ export default {
         let tmp2 = this.examInfo.limit.integral_setting ? this.examInfo.limit.integral_setting : {}
         const integralSettings = {...tmp, ...tmp2}
         if (integralSettings.is_open_reduce) { // 开启积分消耗
-          return (integralSettings.free_counts <= 0 || !integralSettings.free_counts) && (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts)
+          return (this.examInfo.remain_counts <= 0 || !this.examInfo.remain_counts) && (this.examInfo.user_integral_counts <= 0 || !this.examInfo.user_integral_counts)
         } else {
-          return (integralSettings.free_counts <= 0 || !integralSettings.free_counts)
+          return (this.examInfo.remain_counts <= 0 || !this.examInfo.remain_counts)
         }
       }
       return flag
@@ -312,7 +302,7 @@ export default {
     'examInfo': {
       handler: function (v) {
         console.log('%cexamInfo: ', 'color: red; font-size: 18px;', v)
-        this.initStartInfo()
+        v && this.initStartInfo()
       },
       deep: true,
       immediate: true
@@ -333,9 +323,12 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      let answerRecord = STORAGE.get('answer_record_' + examId)
+      // let answerRecord = STORAGE.get('answer_record_' + examId)
       try {
-        await this.endExam({ id: examId, answerList: answerRecord })
+        await this.endExam({
+          id: examId
+          // answerList: answerRecord
+        })
       } catch (err) {
         Toast(err.error_message)
       } finally {
@@ -649,14 +642,15 @@ export default {
       } else {
         // 发送请求校验密码是否正确
         let examId = this.id
-        API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
+        API.checkPassword({ query: { id: examId }, data: { password: this.password } }).then(() => {
           this.hiddenPasswordLimit()
           this.isShowCheckDraw()
         }).catch(err => {
           // console.log(err)
-          if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
-            this.passwordTips = err.error_message
-          }
+          // if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
+          //   this.passwordTips = err.error_message
+          // }
+          this.passwordTips = err.error_message
         })
       }
     },
@@ -738,9 +732,9 @@ export default {
       *3.无免费答题机会，开启积分消耗；（1）账户积分大于每次消耗积分；（2）有积分消耗机会；开始答题
       */
       if (this.disabledStartExam && (!obj || !obj.special_status)) return
-      if ((!obj || !obj.special_status) && (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (integralSettings.free_counts <= 0 || !integralSettings.free_counts)) { // 积分答题：没有免费答题机会
-        if (integralSettings.is_open_reduce) { // 开启积分消耗
-          const hasIntegralCount = (integralSettings.user_integral_counts && integralSettings.user_integral_counts > 0) // 有积分兑换机会
+      if ((!obj || !obj.special_status) && (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') && (this.examInfo.free_counts <= 0 || !this.examInfo.free_counts)) { // 积分答题：没有免费答题机会
+        if (this.examInfo.is_open_reduce) { // 开启积分消耗
+          const hasIntegralCount = (this.examInfo.user_integral_counts && this.examInfo.user_integral_counts > 0) // 有积分兑换机会
           if (hasIntegralCount && this.examInfo.all_credits < integralSettings.reduce_num) { // 账户积分小于消耗积分
             this.showOperateDialog = true
             this.dialogConfig = {
@@ -825,15 +819,15 @@ export default {
         if (this.examInfo.remain_counts === 0 && this.examInfo.limit.is_ip_limit) {
           return '当前ip提交次数已达上限'
         }
-        if ((integralSettings.free_counts <= 0 || !integralSettings.free_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
-          if (integralSettings.user_integral_counts <= 0 || !integralSettings.user_integral_counts) { // 无积分消耗次数
+        if ((this.examInfo.free_counts <= 0 || !this.examInfo.free_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
+          if (this.examInfo.user_integral_counts <= 0 || !this.examInfo.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
           } else {
             return '免费次数已用完，可使用积分参与答题'
           }
         }
-        if (integralSettings.free_counts && integralSettings.free_counts > 0) { // 免费答题次数
-          return `${integralSettings.free_counts}次免费答题机会`
+        if (this.examInfo.free_counts && this.examInfo.free_counts > 0) { // 免费答题次数
+          return `${this.examInfo.free_counts}次免费答题机会`
         }
       }
       return ''
@@ -1215,6 +1209,7 @@ export default {
       text-align: center;
       margin-top: px2rem(30px);
     }
+    .btn-view {width: 100%;}
     .start-exambtn, .end-exambtn {
       box-sizing: border-box;
       width: 100%;

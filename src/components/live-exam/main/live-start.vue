@@ -426,14 +426,15 @@ export default {
       } else {
         // 发送请求校验密码是否正确
         let examId = this.id
-        API.checkPassword({ query: { id: examId }, params: { password: this.password } }).then(() => {
+        API.checkPassword({ query: { id: examId }, data: { password: this.password } }).then((res) => {
           this.hiddenPasswordLimit()
           this.isShowCheckDraw()
         }).catch(err => {
           // console.log(err)
-          if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
-            this.passwordTips = err.error_message
-          }
+          // if (err.error_code && err.error_code === 'VISIT_PASSWORD_ERROR') {
+          //   this.passwordTips = err.error_message
+          // }
+          this.passwordTips = err.error_message
         })
       }
     },

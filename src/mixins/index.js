@@ -78,12 +78,12 @@ export default {
       })
       wx.error().catch(err => {
         console.log('微信桥接出错', err)
-        if (!this.isWxError) {
-          this.isWxError = true
-          console.log('重新获取微信签名')
-          STORAGE.remove('userinfo')
-          this.initWeixinInfo()
-        }
+        // if (!this.isWxError) {
+        //   this.isWxError = true
+        //   console.log('重新获取微信签名')
+        //   STORAGE.remove('userinfo')
+        //   this.initWeixinInfo()
+        // }
       })
     },
     getLocation () {

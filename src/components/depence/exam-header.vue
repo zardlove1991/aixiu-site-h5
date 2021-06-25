@@ -75,9 +75,11 @@ import LuckDrawDialog from '../dialog/luck-draw-dialog'
 import { formatTimeBySec } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import SubjectMixin from '@/mixins/subject'
 
 export default {
   name: 'exam-header',
+  mixins: [SubjectMixin],
   props: {
     type: {
       type: String,
@@ -148,7 +150,11 @@ export default {
   methods: {
     initCountTime () {
       let limitTime = this.examInfo.limit_time
-      this.duration = this.list[0].remain_time
+      // this.duration = this.list[0].remain_time
+      if (this.examInfo.times) {
+        let _nowTime = parseInt(new Date().getTime() / 1000)
+        this.duration = parseInt(new Date(this.examInfo.times).getTime() / 1000) - _nowTime
+      }
       let timeFun = () => {
         if (this.duration === 2) {
           this.$emit('notimeup')
@@ -177,27 +183,24 @@ export default {
     async confirmSubmitModel () {
       this.toggleSubmitModel()
       // 提交试卷
-      let params = {
-        options_id: [...this.getAnswerArr()],
-        question_id: this.examId
-      }
       let _result = await API.submitExam({
-        data: {
-          params: params
+        query: {
+          id: this.examId
         }
       })
       clearInterval(this.timer)
       if (_result) {
-        let {success, raffle, result} = _result
+        let {success, raffle} = _result
         if (success) {
           if (raffle) {
+            let _raffleUrl = raffle.raffle_url
             let {
-              raffle_url: _raffleUrl,
               is_open_raffle: _openRaffle,
               is_open_jump: _openJump,
-              jump_conditions: _jumpConditions
+              jump_conditions: _jumpConditions,
+              result,
+              pop
             } = raffle
-            //
             if (_openRaffle) {
               if (_raffleUrl) {
                 this.isLuckDraw = true
@@ -217,6 +220,11 @@ export default {
               this.$router.replace({
                 path: `/statistic/${examId}`
               })
+            } else if (pop) {
+              this.isPopSubmitSuccess = true
+              this.pop = pop
+            } else {
+              console.log('_openRaffle:', _openRaffle, '_openJump:', _openJump, 'result:', result, 'pop:', pop)
             }
           }
         } else {
@@ -335,7 +343,6 @@ export default {
     ...mapActions('depence', {
       // endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       // checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
       setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
     })

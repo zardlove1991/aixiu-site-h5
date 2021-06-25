@@ -45,8 +45,8 @@
         <div class="next-wrap"
           v-show="!isShowSubmitBtn"
           :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
-          @click.stop="changeSubjectIndex('add')">
-           下一题
+          @click.stop="saveCloud('add')">
+           确认
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
@@ -166,7 +166,8 @@ export default {
         showConfirmBtn: false, // 确认按钮
         showNumber: 1,
         cancelBtnText: '知道了'
-      }
+      },
+      loadList: false
     }
   },
   components: {
@@ -190,10 +191,10 @@ export default {
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
     }
   },
-  created () {
-    // 初始化方法
-    this.initList()
-  },
+  // created () {
+  //   // 初始化方法
+  //   this.initList()
+  // },
   methods: {
     toStatistic () {
       this.isShowSuspendModels = false
@@ -219,16 +220,16 @@ export default {
       let listType = this.listType
       let redirectParams = this.redirectParams
       try {
-        // 获取试卷详情
-        if (!this.examInfo) {
-          await this.getExamDetail({ id: examId })
-        }
-        let status = this.examInfo.person_status
-        // 调用考试考试接口
-        if (this.rtp === 'exam' && status !== 2) {
-          let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
-        }
+        // // 获取试卷详情
+        // if (!this.examInfo) {
+        //   await this.getExamDetail({ id: examId })
+        // }
+        // let status = this.examInfo.person_status
+        // // 调用考试考试接口
+        // if (this.rtp === 'exam' && status !== 2) {
+        //   let isRestart = this.restart === 'need'
+        //   await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
+        // }
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -375,6 +376,9 @@ export default {
     },
     submitExam () {
       // this.saveAnswerRecords(this.answerList)
+      console.log(this.currentSubjectIndex)
+      this.changeSubjectIndex(this.currentSubjectIndex)
+      // this.saveCloud('add')
       this.isShowSubmitModel = true
     },
     noEndTime () {
@@ -414,6 +418,7 @@ export default {
       if (renderType === 'exam' && answerMaxQuestionId) {
         let list = this.examList
         let index = list.findIndex(item => item.id === answerMaxQuestionId)
+        console.log('插入的index: ', index)
         if (index >= 0) this.changeSubjectIndex(index)
       }
     },
@@ -431,14 +436,39 @@ export default {
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
     },
+    async saveCloud () {
+      this.changeSubjectIndex('add')
+      // this.examList.map(subject => {
+      //   // this.getSubjectAnswerInfo(subject)
+      //   console.log('%c处理提交数据：', 'color: red;font-size: 14px;', subject)
+      // })
+      // // console.log('%c保存到云端的数据：', 'color: red;  font-size: 18px;', )
+      // // await this.saveIntoCloud()
+    },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
-      unlockCorse: 'UNLOCK_COURSE'
+      unlockCorse: 'UNLOCK_COURSE',
+      getSubjectAnswerInfo: 'GET_SUBJECT_ANSWER_INFO'
     })
+  },
+  watch: {
+    'examInfo': {
+      handler: function (v) {
+        console.log('answerList:', this.answerList)
+        if (v && !this.loadList) {
+          this.loadList = true
+          this.$nextTick(() => {
+            this.initList()
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   }
 }
 </script>

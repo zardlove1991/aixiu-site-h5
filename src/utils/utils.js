@@ -104,11 +104,9 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else {
     // 测评
-    API.getExamDetail({
-      query: { id }
-    }).then(res => {
+    store.dispatch('depence/GET_EXAM_DETAIL', {id}).then(res => {
       let info = res
-      store.dispatch('depence/SET_EXAM_INFO', info)
+      console.log('info 数据：', info)
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
         if (content.bg_color) {
@@ -247,7 +245,8 @@ export const setClick = (id, title, mark) => {
       }]
     }
   }
-  API.setClick({ params: datas }).then(() => {})
+  // API.setClick({ params: datas }).then(() => {})
+  console.log('关闭setClick：', datas)
 }
 
 /*

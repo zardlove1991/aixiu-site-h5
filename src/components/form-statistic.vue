@@ -51,7 +51,7 @@
           <div class="title-wrap">
             <span class="title">{{key + 1}}、
               <span v-html="item.title"></span>
-              <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+              <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
             </span>
             <div class="media-wrap" v-show="item.annex" v-for="(media,mediaKey) in item.annex" :key="mediaKey">
               <img v-if="mediaKey=='image' && (media && media.length)" :src="annexMedia(media)" @click.stop="_setPreviewState" v-preview="annexMedia(media)" preview-nav-enable="false" class="my-img"/>
@@ -103,7 +103,7 @@
         <div v-else>
           <div class="title-wrap">
             <span class="title">{{key + 1}}、<span v-html="item.title"></span>
-            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.total_score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
+            <span class="option-num">({{typeOptions[item.type]}} {{parseFloat(item.score)}}分 <span class="my-score">得{{parseFloat(item.answer_score)}}分</span>)</span>
             </span>
           </div>
           <div v-if="item.form_type === 'picture' && item.srcList.length" class="picture-wrap">
@@ -349,7 +349,7 @@ export default {
     async getExamList () {
       let id = this.$route.params.id
       await this.initPage(id)
-      API.getExamDetailsStatistics({params: {id}}).then(res => {
+      API.getExamDetailsStatistics({query: {id}}).then(res => {
         let correctNum = res.correct_num
         let count = res.questions.length
         if (this.statMsgVisible) {

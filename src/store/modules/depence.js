@@ -232,6 +232,7 @@ function dealInitExamList ({ list, renderType, id }) {
   let answerRecord = STORAGE.get('answer_record_' + id)
   if (answerRecord && answerRecord.length) {
     for (let subject of list) {
+      if (!subject.id && subject.hashid) { subject.id = subject.hashid }
       for (let item of answerRecord) {
         if (subject.id === item.question_id) {
           if (item.options_id.constructor === String) {
@@ -246,6 +247,8 @@ function dealInitExamList ({ list, renderType, id }) {
   }
   // 处理列表
   list.forEach((subject, index) => {
+    console.log('%c 处理列表：', 'color: red;', subject)
+    if (!subject.id && subject.hashid) { subject.id = subject.hashid }
     let curType = subject.type
     subject.options.forEach((item, itemIdx) => {
       // 做答题数据兼容 选项数据全部转换成字符串
@@ -261,6 +264,10 @@ function dealInitExamList ({ list, renderType, id }) {
           item.active = true
         }
       }
+      // 云端存储的记录「value」
+      if (subject.value) {
+        if (subject.value.includes(item.id)) item.active = true
+      }
     })
     // 初始化为问答题的基础提交数据对象
     if (curType === 'essay') {
@@ -272,8 +279,9 @@ function dealInitExamList ({ list, renderType, id }) {
       // 赋值数据
       tempOralAnswerInfo[subject.id] = oralData
     } else if (['singleblank', 'mulitblank', 'optionblank'].includes(curType)) {
-      let answer = subject.answer
+      let answer = subject.options
       // 赋值数据
+      console.log('赋值数据 subject.id:', subject.id)
       tempBlankAnswerInfo[subject.id] = [...answer]
     }
   })
@@ -298,9 +306,9 @@ function dealSaveRecord ({
   if (!subject) {
     subject = {}
   }
-  let params = { question_id: subject.id }
+  console.log('dealSaveRecord: ', subject)
+  let params = { question_id: subject.hashid }
   // 问答题保存参数和普通题目不同这边需要区分
-  // console.log('dealSaveRecord', params, subject.type)
   if (subject.type === 'essay') {
     // 这边判断提交的问答题数据是否为空 为空就不发送请求
     if (DEPENCE.checkCurEssayEmpty(essayAnswerInfo, subject.id)) {
@@ -353,7 +361,7 @@ function dealSaveRecord ({
     }
     // 针对单选和判断做处理
     if (optionsArr.length === 1 && subject.type !== 'checkbox') {
-      optionsArr = optionsArr.join('')
+      // optionsArr = optionsArr.join('')
       // 这边保存下当前单选和判断选择的题目ID为了做防止多次请求操作
       if (!storageSingleSelcectInfo || storageSingleSelcectInfo !== optionsArr) {
         STORAGE.set('examlist-single-selcectid', optionsArr)
@@ -376,20 +384,23 @@ const actions = {
   },
   GET_EXAMLIST ({state, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      let { id, pageNum, renderType, listType } = payload
+      let { id, renderType, listType } = payload
       if (!id) {
         Toast('没有试题ID,请求出错')
         return
       }
-      let params = {
-        examination_id: id,
-        page: pageNum || 1,
-        count: 100
-      }
+      STORAGE.remove('answer_record_' + id)
+      // let params = {
+      //   examination_id: id,
+      //   page: pageNum || 1,
+      //   count: 100
+      // }
       // 开始请求数据 更具listType决定请求的方法
       let reqMethodName = (listType === 'errorlist' ? 'getLatestErrorList' : 'getExamDetailsList')
       Indicator.open({ spinnerType: 'fading-circle' })
-      API[reqMethodName]({ params }).then(res => {
+      API[reqMethodName]({
+        query: {id: id}
+      }).then(res => {
         let list = res.data
         if (list && list.length) {
           commit('SET_EXAMID', id)
@@ -402,7 +413,13 @@ const actions = {
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
           commit('SET_BLANK_ANSWER_INFO', blankInfo)
           // 这边初始化调用判断当前题目是否已做
-          list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject }))
+          // list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject }))
+          list.forEach(subject => {
+            if (!subject.id && subject.hashid) {
+              subject.id = subject.hashid
+            }
+            dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject })
+          })
         } else {
           throw new Error('初始化试题列表失败')
         }
@@ -426,7 +443,7 @@ const actions = {
         Indicator.close() // 结束
         let info = res
         commit('SET_EXAM_DETAIL', info)
-        resolve()
+        resolve(info)
       }).catch(err => {
         Indicator.close() // 结束
         reject(err)
@@ -484,79 +501,113 @@ const actions = {
       })
     })
   },
+  // END_EXAM ({state, commit}, payload) {
+  //   return new Promise((resolve, reject) => {
+  //     let id = state.examId
+  //     let examList = state.answerList
+  //     if (!id) {
+  //       id = payload.id
+  //       examList = payload.answerList
+  //     }
+  //     let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
+  //     // 开始请求数据
+  //     let mark = 'examination'
+  //     let title = ''
+  //     if (state.examInfo) {
+  //       mark = state.examInfo.mark
+  //       title = state.examInfo.title
+  //     }
+  //     let params = {
+  //       data: [{
+  //         id,
+  //         mark,
+  //         title,
+  //         create_time: parseInt((new Date().getTime()) / 1000)
+  //       }],
+  //       member: STORAGE.get('userinfo')
+  //     }
+  //     // console.log('sumbitUV', params)
+  //     API.sumbitUV({ data: params }).then(res => {
+  //       console.log(res)
+  //     })
+  //     Indicator.open({ spinnerType: 'fading-circle' })
+  //     if (examList && examList.length) {
+  //       let data = { params: [] }
+  //       data.params = examList
+  //       API.saveSubjectRecords({ query: { id }, data }).then(res => {
+  //         if (res.success === 1) {
+  //           // 清空
+  //           STORAGE.remove('answer_record_' + id)
+  //           state.answerList = []
+  //           let endParam = {}
+  //           if (mark === 'examination@rank') {
+  //             endParam.activity_mark = mark
+  //           }
+  //           API.submitExam({ query: { id }, params: endParam }).then(res => {
+  //             // 删除本地缓存的单选的ID信息
+  //             if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+  //             STORAGE.remove('answer_record_' + id)
+  //             state.answerList = []
+  //             commit('SET_BLANK_ANSWER_INFO', {})
+  //             commit('SET_CURRENT_SUBJECT_INDEX', 0)
+  //             // 结束
+  //             Indicator.close()
+  //             if (res.success === 1) {
+  //               let raffle = res.raffle
+  //               if (raffle && raffle.raffle_url) {
+  //                 commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
+  //               }
+  //               resolve()
+  //             } else {
+  //               throw new Error({error_message: '结束考试出错'})
+  //             }
+  //           }).catch(err => {
+  //             // 结束
+  //             Indicator.close()
+  //             reject(err)
+  //           })
+  //         } else {
+  //           throw new Error('error')
+  //         }
+  //       }).catch(err => {
+  //         Indicator.close()
+  //         reject(err)
+  //       })
+  //     }
+  //   })
+  // },
   END_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
+      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       let id = state.examId
-      let examList = state.answerList
+      // let examList = state.answerList
       if (!id) {
         id = payload.id
-        examList = payload.answerList
+        // examList = payload.answerList
       }
-      let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
-      // 开始请求数据
-      let mark = 'examination'
-      let title = ''
-      if (state.examInfo) {
-        mark = state.examInfo.mark
-        title = state.examInfo.title
-      }
-      let params = {
-        data: [{
-          id,
-          mark,
-          title,
-          create_time: parseInt((new Date().getTime()) / 1000)
-        }],
-        member: STORAGE.get('userinfo')
-      }
-      // console.log('sumbitUV', params)
-      API.sumbitUV({ data: params }).then(res => {
-        console.log(res)
-      })
-      Indicator.open({ spinnerType: 'fading-circle' })
-      if (examList && examList.length) {
-        let data = { params: [] }
-        data.params = examList
-        API.saveSubjectRecords({ query: { id }, data }).then(res => {
-          if (res.success === 1) {
-            // 清空
-            STORAGE.remove('answer_record_' + id)
-            state.answerList = []
-            let endParam = {}
-            if (mark === 'examination@rank') {
-              endParam.activity_mark = mark
-            }
-            API.submitExam({ query: { id }, params: endParam }).then(res => {
-              // 删除本地缓存的单选的ID信息
-              if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
-              STORAGE.remove('answer_record_' + id)
-              state.answerList = []
-              commit('SET_BLANK_ANSWER_INFO', {})
-              commit('SET_CURRENT_SUBJECT_INDEX', 0)
-              // 结束
-              Indicator.close()
-              if (res.success === 1) {
-                let raffle = res.raffle
-                if (raffle && raffle.raffle_url) {
-                  commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
-                }
-                resolve()
-              } else {
-                throw new Error({error_message: '结束考试出错'})
-              }
-            }).catch(err => {
-              // 结束
-              Indicator.close()
-              reject(err)
-            })
-          } else {
-            throw new Error('error')
+      API.submitExam({ query: { id } }).then(res => {
+        // 删除本地缓存的单选的ID信息
+        if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
+        STORAGE.remove('answer_record_' + id)
+        state.answerList = []
+        commit('SET_BLANK_ANSWER_INFO', {})
+        commit('SET_CURRENT_SUBJECT_INDEX', 0)
+        // 结束
+        Indicator.close()
+        if (res.success === 1) {
+          let raffle = res.raffle
+          if (raffle && raffle.raffle_url) {
+            commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
           }
-        }).catch(err => {
-          Indicator.close()
-          reject(err)
-        })
-      }
+          resolve()
+        } else {
+          throw new Error({error_message: '结束考试出错'})
+        }
+      }).catch(err => {
+        // 结束
+        Indicator.close()
+        reject(err)
+      })
     })
   },
   SAVE_ANSWER_RECORDS ({state, commit}, payload) {
@@ -602,6 +653,10 @@ const actions = {
       let id = state.examId
       let renderType = state.renderType
       let subject = payload
+      // 兼容新的id
+      if (!subject.id && subject.hashid) {
+        subject.id = subject.hashid
+      }
       if (renderType === 'analysis') {
         reject(new Error('当前为解析不需要保存答题记录'))
         return
@@ -612,9 +667,11 @@ const actions = {
         // 提交的参数
         let data = Object.assign({}, params)
         // 为空的时候全部return
-        if (isEmpty) {
+        if (!isEmpty) {
+          console.log(id)
+          console.log('单题提交的数据：', data)
           resolve()
-          return
+          // return
         }
         // 发送保存答题信息
         API.saveSubjectRecord({
@@ -632,7 +689,7 @@ const actions = {
       })
     })
   },
-  CHANGE_SUBJECT_ANSWER_INFO ({state, commit}, { subject, optionFlag = 'check-answer' }) {
+  CHANGE_SUBJECT_ANSWER_INFO ({state, commit, dispatch}, { subject, optionFlag = 'check-answer' }) {
     return new Promise((resolve, reject) => {
       let subjectAnswerInfo = state.subjectAnswerInfo
       let essayAnswerInfo = state.essayAnswerInfo
@@ -698,7 +755,8 @@ const actions = {
       }
     })
   },
-  CHANGE_CURRENT_SUBJECT_INDEX ({state, commit}, payload) {
+  async CHANGE_CURRENT_SUBJECT_INDEX ({state, dispatch, commit}, payload) {
+    console.log('修改题目！！！！')
     let index = state.currentSubjectIndex
     let list = state.examList
     // 判断什么操作 加减 还是 直接赋值
@@ -713,7 +771,35 @@ const actions = {
     } else if (typeof payload === 'number') {
       index = payload
     }
-    commit('SET_CURRENT_SUBJECT_INDEX', index)
+    // 存储到云端
+    let subject = state.examList[state.currentSubjectIndex]
+    let essayAnswerInfo = state.essayAnswerInfo
+    let oralAnswerInfo = state.oralAnswerInfo
+    let sortAnswerInfo = state.sortAnswerInfo
+    let blankAnswerInfo = state.blankAnswerInfo
+    // 通过整理参数的方法判断盖提是否为空
+    let result = dealSaveRecord({
+      subject,
+      essayAnswerInfo,
+      oralAnswerInfo,
+      sortAnswerInfo,
+      blankAnswerInfo
+    }, 'check-answer')
+    let _arr = []
+    _arr.push(result.params)
+    let data = {
+      params: _arr
+    }
+    await API.saveIntoCloud({
+      query: {
+        id: state.examId
+      },
+      data
+    }).then(res => {
+      if (res.success === 1) {
+        commit('SET_CURRENT_SUBJECT_INDEX', index)
+      }
+    })
   },
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
     let selectIndex = payload.selectIndex
@@ -892,6 +978,12 @@ const actions = {
         Indicator.close() // 结束
         reject(err)
       })
+    })
+  },
+  SET_ALL_CURRENT_INDEX ({state, commit}, payload) {
+    return new Promise((resolve, reject) => {
+      commit('SET_CURRENT_SUBJECT_INDEX', payload)
+      resolve(state.currentSubjectIndex)
     })
   }
 }

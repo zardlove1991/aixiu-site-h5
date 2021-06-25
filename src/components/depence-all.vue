@@ -13,10 +13,11 @@
     </exam-header>
     <!--主体试题渲染-->
     <div class="alllist-wrap">
-      <div class="list-item-wrap" v-for="item in examList" :key="item.id">
+      <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
         <!--每个题型内容渲染-->
         <subject-content
-          :data="item"
+          :itemIndex="index"
+          :data.sync="item"
           :mode="renderType"
           :key="item.id">
         </subject-content>
@@ -114,7 +115,8 @@ export default {
         showConfirmBtn: false, // 确认按钮
         showNumber: 1,
         cancelBtnText: '知道了'
-      }
+      },
+      loadList: false
     }
   },
   components: {
@@ -138,10 +140,10 @@ export default {
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
     }
   },
-  created () {
-    // 初始化方法
-    this.initList()
-  },
+  // created () {
+  //   // 初始化方法
+  //   this.initList()
+  // },
   methods: {
     toStatistic () {
       this.isShowSuspendModels = false
@@ -161,36 +163,23 @@ export default {
       let examId = this.id
       let rtp = this.rtp
       let listType = this.listType
-      let redirectParams = this.redirectParams
-      try {
-        // 获取试卷详情
-        if (!this.examInfo) {
-          await this.getExamDetail({ id: examId })
-        }
-        let status = this.examInfo.person_status
-        // 调用考试考试接口
-        if (this.rtp === 'exam' && status !== 2) {
-          let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
-        }
-        // 设置标题
-        setBrowserTitle(this.examInfo.title)
-        // 获取试卷列表
-        await this.getExamList({
-          id: examId,
-          renderType: rtp,
-          listType
-        })
-        // 检查是否存在中断考试的情况
-        this.checkAnswerMaxQuestionId()
-        if (getPlat() === 'smartcity') {
-          this.initAppShare()
-        }
-        this.sharePage()
-      } catch (err) {
-        console.log(err)
-        DEPENCE.dealErrorType({ examId, redirectParams }, err)
+      setBrowserTitle(this.examInfo.title)
+      // 获取试卷列表
+      await this.getExamList({
+        id: examId,
+        renderType: rtp,
+        listType
+      })
+      // 检查是否存在中断考试的情况
+      // this.checkAnswerMaxQuestionId()
+      if (getPlat() === 'smartcity') {
+        this.initAppShare()
       }
+      this.sharePage()
+      // } catch (err) {
+      //   console.log(err)
+      //   DEPENCE.dealErrorType({ examId, redirectParams }, err)
+      // }
     },
     sharePage () {
       let examInfo = this.examInfo
@@ -352,16 +341,16 @@ export default {
         this.changeSubjectIndex('add')
       }
     },
-    checkAnswerMaxQuestionId () {
-      let renderType = this.renderType
-      // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam') {
-        let list = this.examList
-        list.forEach((item, index) => {
-          this.changeSubjectIndex(index)
-        })
-      }
-    },
+    // checkAnswerMaxQuestionId () {
+    //   let renderType = this.renderType
+    //   // 拿到当前答题的索引当前答题的索引
+    //   if (renderType === 'exam') {
+    //     let list = this.examList
+    //     list.forEach((item, index) => {
+    //       this.changeSubjectIndex(index)
+    //     })
+    //   }
+    // },
     _dealShowBtn (flag) {
       let renderType = this.renderType
       let curSubject = this.currentSubjectInfo
@@ -384,6 +373,21 @@ export default {
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE'
     })
+  },
+  watch: {
+    'examInfo': {
+      handler: function (v) {
+        console.log('answerList:', this.answerList)
+        if (v && !this.loadList) {
+          this.loadList = true
+          this.$nextTick(() => {
+            this.initList()
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   }
 }
 </script>

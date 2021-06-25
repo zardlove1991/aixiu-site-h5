@@ -290,7 +290,7 @@ export default {
     async getExamList () {
       let id = this.$route.params.id
       await this.initPage(id)
-      API.getExamDetailsStatistics({params: {id}}).then(res => {
+      API.getExamDetailsStatistics({query: {id}}).then(res => {
         let correctNum = res.correct_num
         let count = res.questions.length
         if (this.statMsgVisible) {

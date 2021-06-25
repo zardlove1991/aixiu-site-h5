@@ -51,10 +51,17 @@ instance.interceptors.request.use((config) => {
   // if (config.url.indexOf('setSubmit') > -1) {
   //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
   // }
+  let userInfo = STORAGE.get('userinfo')
+  let userStr = ''
+  if (userInfo) {
+    let {id, expire, token, source, nick_name: nickName} = userInfo
+    userStr = JSON.stringify({id, expire, token, source, nick_name: encodeURIComponent(nickName)})
+  }
   if (config.url.indexOf('setClick') < 0) {
-    if (STORAGE.get('userinfo')) {
-      config.params.member = STORAGE.get('userinfo')
-    }
+    // if (STORAGE.get('userinfo')) {
+    //   config.params.member = STORAGE.get('userinfo')
+    // }
+    config.headers['member'] = userStr
     if (STORAGE.get('guid')) {
       config.params.guid = STORAGE.get('guid')
     }
@@ -118,7 +125,8 @@ instance.interceptors.response.use((res, xhr) => {
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   if (isTimeout || status === 503 || status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      window.location.href = `/waitting.html?origin=${url}`
+      // window.location.href = `/waitting.html?origin=${url}`
+      console.log(url)
     } else {
       store.dispatch('setDialogVisible', true)
       return
@@ -153,7 +161,8 @@ instance.interceptors.response.use((res, xhr) => {
   } else {
     const url = encodeURI(window.location.href)
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      window.location.href = `/waitting.html?origin=${url}`
+      // window.location.href = `/waitting.html?origin=${url}`
+      console.log(url)
     } else {
       store.dispatch('setDialogVisible', true)
       return

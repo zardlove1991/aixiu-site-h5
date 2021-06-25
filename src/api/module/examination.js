@@ -26,12 +26,12 @@ let baseUrl = {
 let examUrl = {
   getExamlist: 'client/examination', // 考试列表
   getRecord: 'client/examination/{id}/card', // 考试列表
-  getExamDetailsList: 'client/examination/questions',
-  getExamDetailsStatistics: 'client/examination/statistics',
+  getExamDetailsList: 'client/examination/{id}/question',
+  getExamDetailsStatistics: 'client/examination/statistics/{id}',
   getErrorList: 'client/examination/mistakes', // 获得错题列表
   getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
   getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/examination/end/{id}',
+  submitExam: 'client/examination/end/submit/{id}',
   startExam: 'client/examination/{id}/start',
   saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
@@ -46,7 +46,8 @@ let examUrl = {
   getInfoDept: 'client/examination/import/verify', // 获取信息收集用户的部门
   setLiveVideoTime: 'client/examination/live/statistics', // 直播答题观看时间
   shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
-  getExamRankList: 'client/examination/{id}/source' // 考试排行列表
+  getExamRankList: 'client/examination/{id}/source', // 考试排行列表
+  saveIntoCloud: 'client/examination/submit/{id}'
 }
 
 // 投票相关接口
@@ -136,7 +137,7 @@ export default {
   saveDrawRecord: config => createBase(configUrl.saveDrawRecord, 'POST', config, 'public'),
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
-  checkPassword: config => createAPI(configUrl.checkPassword, 'get', config, API_FLAG),
+  checkPassword: config => createAPI(configUrl.checkPassword, 'post', config, API_FLAG),
   getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
@@ -181,5 +182,6 @@ export default {
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
 
   // 答题改造
-  submitExam: config => createAPI(configUrl.submitExam, 'get', config, API_FLAG)
+  submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
+  saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG)
 }

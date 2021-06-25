@@ -186,7 +186,6 @@ export default {
       // let subject = this.currentSubjectInfo
       this.toggleSubmitModel()
       try {
-        // await this.sendSaveRecordOption(subject) // 检查最后一题的提交
         await this.endExam() // 提交试卷
         clearInterval(this.timer)
         let rules = this.examInfo.limit.submit_rules
@@ -274,7 +273,6 @@ export default {
     ...mapActions('depence', {
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
-      sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       checkSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
       setLuckDrawLink: 'SET_LUCK_DRAW_LINK'
     })

@@ -52,7 +52,15 @@ export default {
       let renderType = this.renderType
       let subjectAnswerInfo = this.subjectAnswerInfo
       let subject = this.examList[oldIndex]
+      if (!subject.id && subject.hashid) {
+        subject.id = subject.hashid
+      }
       let isPrevIndex = newIndex < oldIndex // 判断是不是上一题
+      console.log('subject:', subject)
+      console.log('newIndex:', newIndex)
+      console.log('oldIndex:', oldIndex)
+      console.log('subject.id:', subject.id)
+      console.log('subjectAnswerInfo:', subjectAnswerInfo)
       // 判断是当前考试题目未答显示提醒 条件: 考试、没有选中、没有记录过答题信息、不是上一题
       if (renderType === 'exam') {
         // 上一题没有做答的时候
@@ -371,7 +379,8 @@ export default {
       sendSaveRecordOption: 'SEND_SAVE_RECORD_OPTION',
       saveAnswerRecord: 'SAVE_ANSWER_RECORD',
       changeSubjectIndex: 'CHANGE_CURRENT_SUBJECT_INDEX',
-      changeSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO'
+      changeSubjectAnswerInfo: 'CHANGE_SUBJECT_ANSWER_INFO',
+      setAllCurrentIndex: 'SET_ALL_CURRENT_INDEX'
     })
   }
 }
