@@ -39,7 +39,7 @@ export default {
     ...mapGetters('depence', [
       'essayAnswerInfo', 'currentSubjectInfo', 'isShowModelThumb',
       'renderType', 'examList', 'currentSubjectIndex', 'oralAnswerInfo',
-      'subjectAnswerInfo'
+      'subjectAnswerInfo', 'blankAnswerInfo'
     ]),
     isDidCurSubject () { // 当前题目是否回答过
       let allAnswerState = this.subjectAnswerInfo
@@ -370,7 +370,8 @@ export default {
       setOralAnswerInfo: 'SET_ORAL_ANSWER_INFO',
       setSubjectListShow: 'SET_SUBJECT_LIST_SHOW',
       setModelThumbState: 'SET_MODEL_THUMB_STATE',
-      setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS'
+      setCurSubjectVideos: 'SET_CURSUBJECT_VIDEOS',
+      setExamList: 'SET_EXAMLIST'
     }),
     ...mapActions('depence', {
       getMaterialInfo: 'GET_MATERIAL_INFO',

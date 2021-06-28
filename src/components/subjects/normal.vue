@@ -84,6 +84,15 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  watch: {
+    data: {
+      handler: function (v) {
+        // console.log('组件数据：', v)
+      },
+      deep: true,
+      immediate: true
+    }
   }
 }
 </script>

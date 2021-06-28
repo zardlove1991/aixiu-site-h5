@@ -16,6 +16,7 @@
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
         <!--每个题型内容渲染-->
         <subject-content
+          :type="'all'"
           :itemIndex="index"
           :data.sync="item"
           :mode="renderType"

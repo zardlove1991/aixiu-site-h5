@@ -38,7 +38,7 @@
       :data="data"
       :mode="mode">
     </select-blank-subject>
-    <div class="saveIntoCloud" v-if="showCloudBtn">
+    <div class="saveIntoCloud" v-if="showCloudBtn && type === 'all'">
       <div class="confirm-btn" @click="confirmSave()">保存答题信息</div>
       <div class="cancel-btn" @click="cancelSave()">取消</div>
     </div>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import VoiceSubject from '@/components/subjects/voice'
 import EssaySubject from '@/components/subjects/essay'
 import SortSubject from '@/components/subjects/sort'
@@ -75,6 +76,10 @@ export default {
     itemIndex: {
       type: Number,
       default: 0
+    },
+    type: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -88,16 +93,18 @@ export default {
   data () {
     return {
       showCloudBtn: false,
-      oldValue: ''
+      oldValue: '', // 保存上次的提交记录
+      singleblankOldValue: ''
     }
   },
   watch: {
     data: {
       handler: function (newV) {
+        console.log(this.data)
         if (!this.oldValue) {
           this.oldValue = JSON.parse(JSON.stringify(newV))
         } else {
-          if (newV) {
+          if (newV && this.data.type !== 'singleblank') {
             let newStr = JSON.stringify(newV)
             let oldStr = JSON.stringify(this.oldValue)
             if (newStr !== oldStr) {
@@ -106,24 +113,64 @@ export default {
             }
           }
         }
+        if (this.data.type === 'singleblank') {
+          if (newV.value) {
+            this.singleblankOldValue = newV.value
+          }
+        }
       },
       deep: true,
       immediate: true
+    },
+    blankAnswerInfo: {
+      handler: function (val) {
+        if (this.data.type === 'singleblank') {
+          if (val && val[this.data.id]) {
+            let newStr = val[this.data.id]
+            if (newStr instanceof Array) {
+              newStr = newStr.join(',')
+            }
+            let oldStr = this.singleblankOldValue
+            if (newStr !== oldStr) {
+              this.showCloudBtn = true
+            }
+          }
+        }
+      }
     }
   },
   methods: {
     cancelSave () {
+      let _examList = JSON.parse(JSON.stringify(this.examList))
       let _data = JSON.parse(JSON.stringify(this.oldValue))
-      console.log('老的数据：', _data)
-      // this.$emit('update:data', _data)
+      _examList[this.itemIndex] = _data
+      if (this.data.type === 'singleblank') {
+        let _blankAnswerInfo = JSON.parse(JSON.stringify(this.blankAnswerInfo))
+        _blankAnswerInfo[this.data.id] = this.singleblankOldValue.split(',')
+        _examList[this.itemIndex] = {..._examList[this.itemIndex], value: this.singleblankOldValue}
+        console.log('_examList[this.itemIndex] :', _examList[this.itemIndex])
+        // _examList[this.itemIndex].value = this.singleblankOldValue
+        console.log('_blankAnswerInfo[this.data.id]:', _blankAnswerInfo[this.data.id])
+        console.log('_examList: ', _examList)
+        this.setBlankAnswerInfo(_blankAnswerInfo)
+      }
+      this.setExamList(_examList)
       this.showCloudBtn = false
     },
     confirmSave () {
       this.setAllCurrentIndex(this.itemIndex).then(res => {
         this.changeSubjectIndex(this.itemIndex)
+        if (this.data.type === 'singleblank') {
+          this.singleblankOldValue = this.blankAnswerInfo[this.data.id]
+        } else {
+          this.oldValue = JSON.stringify(this.data)
+        }
         this.showCloudBtn = false
       })
-    }
+    },
+    ...mapMutations('depence', {
+      setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO'
+    })
   }
 }
 </script>

@@ -278,10 +278,15 @@ function dealInitExamList ({ list, renderType, id }) {
       let oralData = subject.oral_answer || { score: '', value: null, content: null }
       // 赋值数据
       tempOralAnswerInfo[subject.id] = oralData
-    } else if (['singleblank', 'mulitblank', 'optionblank'].includes(curType)) {
+    } else if (['mulitblank', 'optionblank'].includes(curType)) {
       let answer = subject.options
       // 赋值数据
-      console.log('赋值数据 subject.id:', subject.id)
+      tempBlankAnswerInfo[subject.id] = [...answer]
+    } else if (['singleblank'].includes(curType)) {
+      let answer = subject.options
+      if (subject.value) {
+        answer = subject.value.split(',')
+      }
       tempBlankAnswerInfo[subject.id] = [...answer]
     }
   })
@@ -302,11 +307,11 @@ function dealSaveRecord ({
   sortAnswerInfo,
   blankAnswerInfo
 }, optionFlag) {
+  console.log('%c传入的blankAnswerInfo数据：', 'font-size: 14px;', blankAnswerInfo)
   let dataIsEmpty = false
   if (!subject) {
     subject = {}
   }
-  console.log('dealSaveRecord: ', subject)
   let params = { question_id: subject.hashid }
   // 问答题保存参数和普通题目不同这边需要区分
   if (subject.type === 'essay') {
@@ -345,8 +350,16 @@ function dealSaveRecord ({
     } else {
       dataIsEmpty = true
     }
-    if (['singleblank', 'mulitblank'].includes(subject.type)) params.options_id = curBlankInfo
-    else if (subject.type === 'optionblank') params.value = curBlankInfo
+    if (['mulitblank'].includes(subject.type)) {
+      params.options_id = curBlankInfo
+    } else if (subject.type === 'optionblank') {
+      params.value = curBlankInfo
+    } else if (subject.type === 'singleblank') {
+      console.log('提交前的数据：', curBlankInfo)
+      let _curBlankInfo = curBlankInfo.join(',')
+      params.options_id = _curBlankInfo
+      console.log('填空题处理的提交数据：', params.options_id)
+    }
   } else {
     // 这边针对判断题、单选题、多选题做处理
     let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
@@ -407,13 +420,13 @@ const actions = {
           commit('SET_RENDER_TYPE', renderType)
           // 处理列表的初始化操作
           let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType, id })
+          console.log('%c获取的blankInfo值：', 'color: green;font-size: 15px;', blankInfo)
           // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', examList)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
           commit('SET_BLANK_ANSWER_INFO', blankInfo)
           // 这边初始化调用判断当前题目是否已做
-          // list.forEach(subject => dispatch('CHANGE_SUBJECT_ANSWER_INFO', { subject }))
           list.forEach(subject => {
             if (!subject.id && subject.hashid) {
               subject.id = subject.hashid
@@ -705,8 +718,6 @@ const actions = {
         blankAnswerInfo
       }, optionFlag)
       // 更改状态
-      // console.log('xxxx', result, optionFlag)
-      // commit('SET_ANSWER_LIST', result.params)
       commit('SET_ANSWER_LIST', result.params)
       let { isEmpty, params } = result
       if (!subject) {

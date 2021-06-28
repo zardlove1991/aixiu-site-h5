@@ -18,6 +18,7 @@
         <!--每个题型内容渲染-->
         <subject-content
           v-if="index === currentSubjectIndex"
+          :type="'list'"
           :data="item"
           :mode="renderType"
           :key="item.id">

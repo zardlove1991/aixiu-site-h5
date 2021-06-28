@@ -82,6 +82,7 @@ export default {
     ...mapGetters('depence', ['blankAnswerInfo']),
     curAnswer () {
       let { id } = this.data
+      console.log('%cthis.blankAnswerInfo[id]', 'font-size: 20px;', this.blankAnswerInfo[id])
       return this.blankAnswerInfo[id] || []
     }
   },
@@ -89,15 +90,33 @@ export default {
     this.inputTimer = null
     this.inputElArr = [] // 保存所有的input元素对象
     this.answerArr = [...this.curAnswer] // 回答保存的信息
-    this.initInfo()
+    // this.initInfo()
   },
   mounted () {
-    this.addListener()
+    // this.addListener()
   },
   watch: {
     curAnswer (data) {
       // 当前答案更新的时候更新下保存的答案的数组
       this.answerArr = [...data]
+      this.initInfo()
+    },
+    data: {
+      handler: function (v) {
+        if (v) {
+          let {value} = v
+          if (value) {
+            if (value instanceof Array) {
+              this.answerArr = value
+            } else {
+              this.answerArr = value.split(',')
+            }
+          }
+        }
+        this.initInfo()
+      },
+      deep: true,
+      immediate: true
     }
   },
   filters: {
@@ -112,8 +131,14 @@ export default {
       let mode = this.mode
       // 初始化答案解析
       if (mode === 'analysis') {
-        let tempArr = [...data.extra.answer] // 模拟下分组
-        if (data.type === 'singleblank') tempArr = [ [...data.extra.answer] ]
+        let answer = []
+        if (data.value) {
+          answer = data.value.split(',')
+        } else if (data.extra && data.extra.answer) {
+          answer = data.extra.answer
+        }
+        let tempArr = [...answer] // 模拟下分组
+        if (data.type === 'singleblank') tempArr = [ [...answer] ]
         // 赋值
         this.analysisAnswer = tempArr
       }
@@ -121,18 +146,16 @@ export default {
       this.dealRichTitle()
     },
     dealRichTitle () {
+      // console.log('渲染的内容：', this.data)
       let data = this.data
       let originTitle = data.title
-      let renderStyle = data.extra.style
+      let renderStyle = data.extra_style
       let underlineReg = /_{3,}/g
       let textboxReg = /<img\s?\w+[^>]+>/g
       let matchArr = []
       // 匹配解析的数组
-      // console.log(renderStyle)
-      // console.log(originTitle)
       if (renderStyle === 'underline') matchArr = originTitle.match(underlineReg)
       else matchArr = originTitle.match(textboxReg)
-      // console.log(matchArr, 'textboxReg')
       if (matchArr && matchArr.length) {
         matchArr.forEach((val, index) => {
           let template = ''
@@ -152,8 +175,8 @@ export default {
         })
       }
       // 最终赋值
-      // console.log(originTitle)
       this.newTitle = this._dealHtmlLine(originTitle)
+      this.addListener()
     },
     addListener () {
       this.$nextTick(() => {
@@ -199,8 +222,9 @@ export default {
       let dataset = target.dataset
       let data = this.data
       // 处理输入
-      let renderStyle = data.extra.style
+      let renderStyle = data.extra_style
       let answerArr = this.answerArr
+      console.log('input发生改变：', answerArr)
       // 选择下一个需要聚焦的元素
       // let nextFoucs = (index) => {
       //   let value = target.value
@@ -216,23 +240,26 @@ export default {
       this.inputTimer = setTimeout(() => {
         let index = dataset.index
         let value = target.value
-        if (renderStyle === 'underline') {
-          answerArr[index] = value
-        } else if (renderStyle === 'textbox') {
-          let val = answerArr[0] // 暂时不支持多项填充
-          if (!val) {
-            answerArr[0] = value
-            // nextFoucs(index) // 自动跳转下一个文本框
-          } else if (val[index]) {
-            answerArr[0] = val.replace(val[index], value)
-          } else {
-            answerArr[0] = `${val}${value}`
-            // nextFoucs(index) // 自动跳转下一个文本框
-          }
-        }
+        answerArr[index] = value
+        // if (renderStyle === 'underline') {
+        //   answerArr[index] = value
+        // } else if (renderStyle === 'textbox') {
+        //   let val = answerArr[0] // 暂时不支持多项填充
+        //   if (!val) {
+        //     answerArr[0] = value
+        //     // nextFoucs(index) // 自动跳转下一个文本框
+        //   } else if (val[index]) {
+        //     answerArr[0] = val.replace(val[index], value)
+        //   } else {
+        //     answerArr[0] = `${val}${value}`
+        //     // nextFoucs(index) // 自动跳转下一个文本框
+        //   }
+        // }
         // console.log('xxx 最终传送的值', this.answerArr)
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
+        // blankAnswerInfo[data.id] = [...blankAnswerInfo[data.id], ...answerArr]
+        console.log('blankAnswerInfo:', blankAnswerInfo)
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
         this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
         // this.saveAnswerRecord(data)
@@ -242,12 +269,18 @@ export default {
       let data = this.data
       let mode = this.mode
       let { index } = params // 每个input索引
-      let analysisAnswer = data.extra.answer[index]
-      if (data.extra.answer[index]) {
+      let answer = []
+      if (data.value) {
+        answer = data.value.split(',')
+      } else if (data.extra && data.extra.answer) {
+        answer = data.extra.answer
+      }
+      let analysisAnswer = answer[index] || []
+      if (data.extra_num) {
         let value = this.curAnswer[index] || ''
         // 正常填空状态
         let length = 0
-        if (Array.isArray(analysisAnswer)) length = analysisAnswer[0].length
+        if (data.extra_num) length = data.extra_num
         else length = analysisAnswer.length
         // 计算长度
         let offsetW = length < 3 ? 0 : Math.round((length - 3) * 4 / 2)
@@ -265,8 +298,9 @@ export default {
       let mode = this.mode
       let { index } = params
       // 拿到答案的值
-      let curStr = this.curAnswer[0]
+      let curStr = this.curAnswer
       let value = curStr ? (curStr[index] || '') : ''
+      console.log('%c新的value:', 'color: red;font-size: 20px;', value, this.curAnswer)
       let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: ${StyleConfig.theme};`
       let inputTemp = `<input style="${inputStyle}" class="text-input" data-index="${index}" value="${value}" maxlength="1" />`
       if (mode === 'analysis') {
