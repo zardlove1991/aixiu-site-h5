@@ -9,7 +9,7 @@ var config = {
   CUSTOM_HOST: '-ax-dev.aihoge.com',
   CUSTOM_APPID: 'wx2e98fb1d45a98f73',
   CUSTOM_COMP_APPID: 'wx566758628b7a3fa2',
-  CUSTOM_REDIRECT_URI: '//xzh5.hoge.cn/bridge/index.html',
+  CUSTOM_REDIRECT_URI: '//xzh5-dev.aihoge.com/bridge.html',
   CUSTOM_PLAT: 'dev'
 }
 
