@@ -72,6 +72,8 @@ let wechat = {
     if (compAppid) {
       params['component_appid'] = compAppid
     }
+    console.log('weixin参数：', params)
+    if (params.code) return
     API.getXiuzanUser({
       params
     }).then((res) => {
