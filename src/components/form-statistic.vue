@@ -163,7 +163,10 @@ import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
-import { formatDate, getPlat } from '@/utils/utils'
+import {
+  // formatDate,
+  getPlat
+} from '@/utils/utils'
 import OperateDialog from './exam-components/operate-dialog'
 import mixins from '@/mixins/index'
 
@@ -380,6 +383,7 @@ export default {
           this.raffleUrl = tempUrl
         }
         this.optionData = res
+        console.log('获取的数据：', this.optionData)
         let questions = res.questions
         if (questions) {
           questions.forEach(item => {
@@ -514,56 +518,61 @@ export default {
     shareScore () {
       if (this.shareLoading) return
       let optionData = this.optionData
-      // console.log('shareScore', this.optionData)
-      if (!optionData || !optionData.title) {
+      console.log('optionData: ', optionData)
+      if (!optionData || !this.examInfo.title) {
         return
       }
       this.shareLoading = true
-      let {
-        title,
-        score,
-        use_time: userTime,
-        submit_time: submitTime,
-        total_score: totalScore,
-        correct_num: correntNum,
-        collection_form: collectionForm
-      } = this.optionData
-      userTime = formatDate(userTime, 'mm分ss秒')
-      submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
-      let name = ''
-      if (collectionForm && collectionForm.length) {
-        for (let item of collectionForm) {
-          if (item.unique_name === 'name') {
-            name = item.value
-            break
-          }
-        }
-      }
-      let data = {
-        title,
-        score,
-        total_score: totalScore,
-        question_num: optionData.questions.length,
-        correct_num: correntNum,
-        use_time: userTime,
-        submit_time: submitTime,
-        exam_id: this.$route.params.id
-      }
-      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
-        data.win_integral = this.optionData.integral ? this.optionData.integral.integral : 0
-      }
-      if (name) {
-        data.name = name
-      }
-      API.shareExamination({
-        data
+      // let {
+      //   title,
+      //   score,
+      //   use_time: userTime,
+      //   submit_time: submitTime,
+      //   total_score: totalScore,
+      //   correct_num: correntNum,
+      //   collection_form: collectionForm
+      // } = this.optionData
+      // userTime = formatDate(userTime, 'mm分ss秒')
+      // submitTime = formatDate(submitTime, 'MM/DD hh:mm:ss')
+      // let name = ''
+      // if (collectionForm && collectionForm.length) {
+      //   for (let item of collectionForm) {
+      //     if (item.unique_name === 'name') {
+      //       name = item.value
+      //       break
+      //     }
+      //   }
+      // }
+      // let data = {
+      //   title,
+      //   score,
+      //   total_score: totalScore,
+      //   question_num: optionData.questions.length,
+      //   correct_num: correntNum,
+      //   use_time: userTime,
+      //   submit_time: submitTime,
+      //   exam_id: this.$route.params.id
+      // }
+      // if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
+      //   data.win_integral = this.optionData.integral ? this.optionData.integral.integral : 0
+      // }
+      // if (name) {
+      //   data.name = name
+      // }
+      // API.shareExamination({
+      //   data
+      // }).then(res => {
+      //   console.log(res)
+      //   this.shareLoading = false
+      //   if (res && res.image) {
+      //     this.isShowShare = true
+      //     this.shareUrl = res.image
+      //   }
+      // })
+      API.getPosterInfo({
+        query: {id: this.$route.params.id}
       }).then(res => {
-        console.log(res)
-        this.shareLoading = false
-        if (res && res.image) {
-          this.isShowShare = true
-          this.shareUrl = res.image
-        }
+        console.log('%c海报所需数据：', 'color: red;font-size: 20px;', res)
       })
     },
     pageToLuckDraw () {

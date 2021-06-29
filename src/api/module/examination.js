@@ -47,7 +47,8 @@ let examUrl = {
   setLiveVideoTime: 'client/examination/live/statistics', // 直播答题观看时间
   shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
   getExamRankList: 'client/examination/{id}/source', // 考试排行列表
-  saveIntoCloud: 'client/examination/submit/{id}'
+  saveIntoCloud: 'client/examination/submit/{id}',
+  getPosterInfo: 'client/examination/{id}/poster' // 前端生成海报所需数据
 }
 
 // 投票相关接口
@@ -183,5 +184,6 @@ export default {
 
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
-  saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG)
+  saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
+  getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG)
 }
