@@ -2,7 +2,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-// import wechat from '@/sdk/wechat'
+import wechat from '@/sdk/wechat'
 const env = getEnvironment()
 
 export default {
@@ -50,7 +50,7 @@ export default {
     async initWeixinInfo () {
       // 执行调用
       // let url = window.location.href.split('#')[0]
-      let appid = env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e'
+      let appid = env === 'test' ? 'wx025937621152c396' : 'wx2e98fb1d45a98f73'
       // let res = STORAGE.get('signature')
       let res = STORAGE.get('userinfo')
       // if (!res) {
@@ -65,7 +65,7 @@ export default {
       // }
       // let { appId, timestamp, nonceStr, signature } = res
       if (!res) {
-        // wechat.goRedirect()
+        wechat.goRedirect()
         console.log('wx没有用户信息')
         return
       }
@@ -78,12 +78,12 @@ export default {
       })
       wx.error().catch(err => {
         console.log('微信桥接出错', err)
-        // if (!this.isWxError) {
-        //   this.isWxError = true
-        //   console.log('重新获取微信签名')
-        //   STORAGE.remove('userinfo')
-        //   this.initWeixinInfo()
-        // }
+        if (!this.isWxError) {
+          this.isWxError = true
+          console.log('重新获取微信签名')
+          STORAGE.remove('userinfo')
+          this.initWeixinInfo()
+        }
       })
     },
     getLocation () {
