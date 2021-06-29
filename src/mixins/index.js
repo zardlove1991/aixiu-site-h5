@@ -2,7 +2,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-import wechat from '@/sdk/wechat'
+// import wechat from '@/sdk/wechat'
 const env = getEnvironment()
 
 export default {
