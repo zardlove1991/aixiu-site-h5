@@ -65,7 +65,7 @@ export default {
       // }
       // let { appId, timestamp, nonceStr, signature } = res
       if (!res) {
-        wechat.goRedirect()
+        // wechat.goRedirect()
         console.log('wx没有用户信息')
         return
       }
@@ -81,8 +81,8 @@ export default {
         if (!this.isWxError) {
           this.isWxError = true
           console.log('重新获取微信签名')
-          STORAGE.remove('userinfo')
-          this.initWeixinInfo()
+          // STORAGE.remove('userinfo')
+          // this.initWeixinInfo()
         }
       })
     },
