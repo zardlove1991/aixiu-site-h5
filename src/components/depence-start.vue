@@ -3,7 +3,7 @@
   <div class="depence-start-wrap depence-wrap" v-if="examInfo"
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <div class="header-top"
-      v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result">
+      v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result && examInfo.last_submit">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">已提交</span>

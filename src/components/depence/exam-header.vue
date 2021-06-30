@@ -120,7 +120,8 @@ export default {
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
       'essayAnswerInfo', 'oralAnswerInfo',
-      'subjectAnswerInfo', 'luckDrawLink'
+      'subjectAnswerInfo', 'luckDrawLink',
+      'remainTime'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -151,9 +152,10 @@ export default {
     initCountTime () {
       let limitTime = this.examInfo.limit_time
       // this.duration = this.list[0].remain_time
-      if (this.examInfo.times) {
-        let _nowTime = parseInt(new Date().getTime() / 1000)
-        this.duration = parseInt(new Date(this.examInfo.times).getTime() / 1000) - _nowTime
+      if (this.remainTime) {
+        // let _nowTime = parseInt(new Date().getTime() / 1000)
+        // this.duration = parseInt(new Date(this.examInfo.times).getTime() / 1000) - _nowTime
+        this.duration = this.remainTime
       }
       let timeFun = () => {
         if (this.duration === 2) {

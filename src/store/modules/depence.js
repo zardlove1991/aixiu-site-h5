@@ -22,7 +22,8 @@ const state = {
   sortAnswerInfo: {}, // 保存排序的题目的信息
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
   curSubjectVideos: [], // 当前题目下的所有视频组件信息 用来统一控制视频状态
-  luckDrawLink: null
+  luckDrawLink: null,
+  remainTime: ''
 }
 
 const getters = {
@@ -89,7 +90,8 @@ const getters = {
   sortAnswerInfo: state => state.sortAnswerInfo,
   blankAnswerInfo: state => state.blankAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos,
-  luckDrawLink: state => state.luckDrawLink
+  luckDrawLink: state => state.luckDrawLink,
+  remainTime: state => state.remainTime
 }
 
 const mutations = {
@@ -220,6 +222,9 @@ const mutations = {
   },
   SET_CURSUBJECT_VIDEOS (state, payload) {
     state.curSubjectVideos = payload
+  },
+  SET_REMAINTIME (state, payload) {
+    state.remainTime = payload
   }
 }
 
@@ -411,6 +416,10 @@ const actions = {
         query: {id: id}
       }).then(res => {
         let list = res.data
+        let remainTime = res.remain_time
+        if (remainTime) {
+          commit('SET_REMAINTIME', remainTime)
+        }
         if (list && list.length) {
           commit('SET_EXAMID', id)
           commit('SET_RENDER_TYPE', renderType)
