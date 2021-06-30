@@ -106,7 +106,6 @@ export const setTheme = (id, name, isFirst) => {
     // 测评
     store.dispatch('depence/GET_EXAM_DETAIL', {id}).then(res => {
       let info = res
-      console.log('info 数据：', info)
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
         if (content.bg_color) {
@@ -245,8 +244,8 @@ export const setClick = (id, title, mark) => {
       }]
     }
   }
-  // API.setClick({ params: datas }).then(() => {})
-  console.log('关闭setClick：', datas)
+  API.setClick({ params: datas }).then(() => {})
+  // console.log('关闭setClick：', datas)
 }
 
 /*

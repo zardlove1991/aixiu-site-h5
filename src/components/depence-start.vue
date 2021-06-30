@@ -301,7 +301,6 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
-        console.log('%cexamInfo: ', 'color: red; font-size: 18px;', v)
         v && this.initStartInfo()
       },
       deep: true,
