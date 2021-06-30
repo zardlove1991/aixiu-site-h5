@@ -22,7 +22,7 @@ const routes = [{
     title: '爱秀'
   }
 }, {
-  path: '/depencelist/:id',
+  path: '/exam/depencelist/:id',
   name: 'depencelist',
   component: getComponent('depence-list'),
   props: (route) => ({
@@ -38,7 +38,7 @@ const routes = [{
     title: '加载中...'
   }
 }, {
-  path: '/alllist/:id',
+  path: '/exam/alllist/:id',
   name: 'depencelist',
   component: getComponent('depence-all'),
   props: (route) => ({
@@ -54,7 +54,7 @@ const routes = [{
     title: '加载中...'
   }
 }, {
-  path: '/statistic/:id',
+  path: '/exam/statistic/:id',
   name: 'statistic',
   component: getComponent('form-statistic'),
   props: (route) => ({
@@ -66,7 +66,7 @@ const routes = [{
     title: '测评结果'
   }
 }, {
-  path: '/depencecard/:id',
+  path: '/exam/depencecard/:id',
   name: 'depencecard',
   component: getComponent('depence-card'),
   props: (route) => ({
@@ -90,7 +90,7 @@ const routes = [{
     title: ''
   }
 }, {
-  path: '/depencerank/:id',
+  path: '/exam/depencerank/:id',
   name: 'depencerank',
   component: getComponent('depence-rank'),
   props: (route) => ({
@@ -135,7 +135,7 @@ const routes = [{
       title: '加载中...'
     }
   }, {
-    path: 'statistic',
+    path: 'exam/statistic',
     name: 'livestatistic',
     component: getOtherComponent('live-statistic', 'live-exam'),
     props: (route) => ({

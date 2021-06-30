@@ -48,9 +48,6 @@ instance.interceptors.request.use((config) => {
   if (smartCityConfig && smartCityConfig.access_token) {
     config.headers['X-PLUS-MEMBER'] = `access_token=${smartCityConfig.access_token}&member_id=${smartCityConfig.member_id}`
   }
-  // if (config.url.indexOf('setSubmit') > -1) {
-  //   config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-  // }
   let userInfo = STORAGE.get('userinfo')
   let userStr = ''
   if (userInfo) {

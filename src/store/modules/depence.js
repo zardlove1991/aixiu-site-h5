@@ -247,7 +247,6 @@ function dealInitExamList ({ list, renderType, id }) {
   }
   // 处理列表
   list.forEach((subject, index) => {
-    console.log('%c 处理列表：', 'color: red;', subject)
     if (!subject.id && subject.hashid) { subject.id = subject.hashid }
     let curType = subject.type
     subject.options.forEach((item, itemIdx) => {
@@ -307,7 +306,6 @@ function dealSaveRecord ({
   sortAnswerInfo,
   blankAnswerInfo
 }, optionFlag) {
-  console.log('%c传入的blankAnswerInfo数据：', 'font-size: 14px;', blankAnswerInfo)
   let dataIsEmpty = false
   if (!subject) {
     subject = {}
@@ -355,10 +353,8 @@ function dealSaveRecord ({
     } else if (subject.type === 'optionblank') {
       params.value = curBlankInfo
     } else if (subject.type === 'singleblank') {
-      console.log('提交前的数据：', curBlankInfo)
       let _curBlankInfo = curBlankInfo.join(',')
       params.options_id = _curBlankInfo
-      console.log('填空题处理的提交数据：', params.options_id)
     }
   } else {
     // 这边针对判断题、单选题、多选题做处理
@@ -420,7 +416,6 @@ const actions = {
           commit('SET_RENDER_TYPE', renderType)
           // 处理列表的初始化操作
           let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType, id })
-          console.log('%c获取的blankInfo值：', 'color: green;font-size: 15px;', blankInfo)
           // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', examList)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)

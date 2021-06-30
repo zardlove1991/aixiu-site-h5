@@ -36,7 +36,7 @@ export const DEPENCE = {
     // 如果开始考试出错就直接去答题卡页面
     // if (err.status && err.status === 422) {
     // _this.$router.replace({
-    //   path: `/depencecard/${examId}`,
+    //   path: `/exam/depencecard/${examId}`,
     //   query: redirectParams
     // })
     // }

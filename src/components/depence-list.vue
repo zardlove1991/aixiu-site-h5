@@ -202,7 +202,7 @@ export default {
       setTimeout(() => {
         let examId = this.id
         this.$router.replace({
-          path: `/statistic/${examId}`
+          path: `/exam/statistic/${examId}`
         })
       }, 1000)
     },
@@ -360,7 +360,7 @@ export default {
         await this.endExam()
         // 跳转去往答题卡页面
         this.$router.replace({
-          path: `/depencecard/${examId}`,
+          path: `/exam/depencecard/${examId}`,
           query: { ...redirectParams }
         })
       } catch (err) {
@@ -371,7 +371,7 @@ export default {
       let examId = this.id
       let redirectParams = this.redirectParams
       this.$router.replace({
-        path: `/depencecard/${examId}`,
+        path: `/exam/depencecard/${examId}`,
         query: { ...redirectParams }
       })
     },

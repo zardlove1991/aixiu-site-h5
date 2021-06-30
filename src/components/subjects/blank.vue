@@ -82,8 +82,11 @@ export default {
     ...mapGetters('depence', ['blankAnswerInfo']),
     curAnswer () {
       let { id } = this.data
-      console.log('%cthis.blankAnswerInfo[id]', 'font-size: 20px;', this.blankAnswerInfo[id])
-      return this.blankAnswerInfo[id] || []
+      let _idArr = this.blankAnswerInfo[id] || []
+      if (typeof _idArr === 'string') {
+        _idArr = _idArr.split(',')
+      }
+      return _idArr
     }
   },
   created () {
@@ -300,7 +303,6 @@ export default {
       // 拿到答案的值
       let curStr = this.curAnswer
       let value = curStr ? (curStr[index] || '') : ''
-      console.log('%c新的value:', 'color: red;font-size: 20px;', value, this.curAnswer)
       let inputStyle = `width:30px; height:30px; box-shadow:0px 0px 0px rgba(0,0,0,0); -webkit-appearance:none; border: 1px solid #999999; border-radius:0; outline: none; font-size:14px; line-height: 30px; text-align:center; margin-right:3px;color: ${StyleConfig.theme};`
       let inputTemp = `<input style="${inputStyle}" class="text-input" data-index="${index}" value="${value}" maxlength="1" />`
       if (mode === 'analysis') {
@@ -313,7 +315,6 @@ export default {
     _checkGroupState (groupIndex) {
       let fontColor = '#333333'
       let params = DEPENCE.checkBlankSubject(this.data)
-      console.log('当前解析状态的数据', params)
       let groupState = params.result[groupIndex]
       if (['success', 'warning'].includes(groupState)) fontColor = StyleConfig.theme
       else if (groupState === 'error') fontColor = StyleConfig.error

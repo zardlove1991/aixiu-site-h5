@@ -218,7 +218,7 @@ export default {
             } else if (result) {
               let examId = this.examId
               this.$router.replace({
-                path: `/statistic/${examId}`
+                path: `/exam/statistic/${examId}`
               })
             } else if (pop) {
               this.isPopSubmitSuccess = true
@@ -256,7 +256,7 @@ export default {
       //     } else if (result) {
       //       let examId = this.examId
       //       this.$router.replace({
-      //         path: `/statistic/${examId}`
+      //         path: `/exam/statistic/${examId}`
       //       })
       //     } else if (pop) {
       //       this.isPopSubmitSuccess = true

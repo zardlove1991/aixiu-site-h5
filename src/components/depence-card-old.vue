@@ -154,7 +154,7 @@ export default {
       this.changeSubjectIndex(0)
       // 去往查看考试概况页面
       this.$router.replace({
-        path: `/depencelist/${examId}`,
+        path: `/exam/depencelist/${examId}`,
         query: {
           rtp: 'exam',
           restart: 'need',
@@ -170,7 +170,7 @@ export default {
       this.changeSubjectIndex(0)
       // 去往查看考试概况页面
       this.$router.replace({
-        path: `/depencelist/${examId}`,
+        path: `/exam/depencelist/${examId}`,
         query: {
           rtp: 'analysis',
           listType: jumpType,

@@ -46,7 +46,7 @@ export default {
       }, 1000)
     },
     isExamPage () {
-      const examRoutes = ['depencelist', 'alllist', 'statistic', 'depencecard', 'depencestart', 'depencerank', 'livestart']
+      const examRoutes = ['exam', 'depencestart', 'livestart']
       const currentRoute = this.$route.path
       const flag = examRoutes.some(item => currentRoute.indexOf(item) > -1)
       return flag

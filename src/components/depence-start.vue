@@ -369,7 +369,7 @@ export default {
         } else if (result) {
           let examId = examInfo.id
           this.$router.replace({
-            path: `/statistic/${examId}`
+            path: `/exam/statistic/${examId}`
           })
         } else if (pop) {
           this.isPopSubmitSuccess = true
@@ -410,7 +410,7 @@ export default {
     toStatistic () {
       let examId = this.id
       this.$router.push({
-        path: `/statistic/${examId}`
+        path: `/exam/statistic/${examId}`
       })
     },
     async initStartInfo () {
@@ -594,7 +594,7 @@ export default {
           this.changeSubjectIndex(0)
           // 去往查看考试概况页面
           this.$router.replace({
-            path: `/depencelist/${examId}`,
+            path: `/exam/depencelist/${examId}`,
             query: {
               rtp: 'exam',
               restart: 'need'
@@ -774,12 +774,12 @@ export default {
       const query = { ...params, rtp: 'exam' }
       if (!this.examInfo.limit.is_page_submit) {
         this.$router.replace({
-          path: `/alllist/${examId}`,
+          path: `/exam/alllist/${examId}`,
           query
         })
       } else {
         this.$router.replace({
-          path: `/depencelist/${examId}`,
+          path: `/exam/depencelist/${examId}`,
           query
         })
       }
@@ -789,14 +789,14 @@ export default {
       // let redirectParams = this.redirectParams // mixin中的公共属性
       // 跳转去往答题卡页面
       this.$router.push({
-        path: `/depencecard/${examId}`
+        path: `/exam/depencecard/${examId}`
       })
     },
     jumpRankPage () {
       // 跳转去往排行榜页面
       let examId = this.id
       this.$router.push({
-        path: `/depencerank/${examId}`
+        path: `/exam/depencerank/${examId}`
       })
     },
     _getStarNum (level) {

@@ -67,7 +67,7 @@
           }
         }, 1000);
         (function isExamPage() {
-          var examRoutes = ['depencelist', 'alllist', 'statistic', 'depencecard', 'depencestart', 'depencerank', 'livestart']
+          var examRoutes = ['exam', 'depencestart', 'livestart']
           var currentRoute = window.location.href
           var flag = examRoutes.some(item => currentRoute.indexOf(item) > -1)
           var dom = document.getElementsByClassName('waitting-tips')

@@ -100,7 +100,6 @@ export default {
   watch: {
     data: {
       handler: function (newV) {
-        console.log(this.data)
         if (!this.oldValue) {
           this.oldValue = JSON.parse(JSON.stringify(newV))
         } else {
@@ -108,7 +107,6 @@ export default {
             let newStr = JSON.stringify(newV)
             let oldStr = JSON.stringify(this.oldValue)
             if (newStr !== oldStr) {
-              console.log('%c发生改变：', 'color: green; font-size: 14px;', newV)
               this.showCloudBtn = true
             }
           }
@@ -131,6 +129,9 @@ export default {
               newStr = newStr.join(',')
             }
             let oldStr = this.singleblankOldValue
+            if (oldStr instanceof Array) {
+              oldStr = oldStr.join(',')
+            }
             if (newStr !== oldStr) {
               this.showCloudBtn = true
             }
@@ -145,16 +146,10 @@ export default {
       let _data = JSON.parse(JSON.stringify(this.oldValue))
       _examList[this.itemIndex] = _data
       if (this.data.type === 'singleblank') {
-        let _blankAnswerInfo = JSON.parse(JSON.stringify(this.blankAnswerInfo))
-        _blankAnswerInfo[this.data.id] = this.singleblankOldValue.split(',')
-        _examList[this.itemIndex] = {..._examList[this.itemIndex], value: this.singleblankOldValue}
-        console.log('_examList[this.itemIndex] :', _examList[this.itemIndex])
-        // _examList[this.itemIndex].value = this.singleblankOldValue
-        console.log('_blankAnswerInfo[this.data.id]:', _blankAnswerInfo[this.data.id])
-        console.log('_examList: ', _examList)
-        this.setBlankAnswerInfo(_blankAnswerInfo)
+        this.setSingle()
+      } else {
+        this.setExamList(_examList)
       }
-      this.setExamList(_examList)
       this.showCloudBtn = false
     },
     confirmSave () {
@@ -162,11 +157,29 @@ export default {
         this.changeSubjectIndex(this.itemIndex)
         if (this.data.type === 'singleblank') {
           this.singleblankOldValue = this.blankAnswerInfo[this.data.id]
+          this.setSingle()
         } else {
           this.oldValue = JSON.stringify(this.data)
         }
         this.showCloudBtn = false
       })
+    },
+    setSingle () {
+      let _examList = JSON.parse(JSON.stringify(this.examList))
+      let _data = JSON.parse(JSON.stringify(this.oldValue))
+      _examList[this.itemIndex] = _data
+      let _blankAnswerInfo = JSON.parse(JSON.stringify(this.blankAnswerInfo))
+      let listValue = ''
+      if (this.singleblankOldValue instanceof Array) {
+        _blankAnswerInfo[this.data.id] = this.singleblankOldValue
+        listValue = this.singleblankOldValue.join(',')
+      } else {
+        _blankAnswerInfo[this.data.id] = this.singleblankOldValue.split(',')
+        listValue = this.singleblankOldValue
+      }
+      _examList[this.itemIndex] = {..._examList[this.itemIndex], value: listValue}
+      this.setBlankAnswerInfo(_blankAnswerInfo)
+      this.setExamList(_examList)
     },
     ...mapMutations('depence', {
       setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO'
