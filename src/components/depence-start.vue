@@ -815,9 +815,9 @@ export default {
       let {integral_settings: outIntSet, limit: {integral_setting: intSet}} = this.examInfo
       // const integralSettings = {...this.examInfo.integral_settings, ...this.examInfo.limit.integral_setting}
       const integralSettings = {...outIntSet, ...intSet}
-      if (this.examInfo.mark === 'examination@integral' || this.examInfo.mark === 'examination@rank') {
-        if (this.examInfo.remain_counts === 0 && this.examInfo.limit.is_ip_limit) {
-          return '当前ip提交次数已达上限'
+      if (this.examInfo.mark === 'examination@integral') {
+        if (this.examInfo.remain_counts === 0 && this.examInfo.user_integral_counts === 0) {
+          return '答题次数已用完'
         }
         if ((this.examInfo.remain_counts <= 0 || !this.examInfo.remain_counts) && integralSettings.is_open_reduce) { // 无免费答题，开启积分消耗
           if (this.examInfo.user_integral_counts <= 0 || !this.examInfo.user_integral_counts) { // 无积分消耗次数

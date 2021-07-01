@@ -21,8 +21,8 @@
           <div class="score-wrap">
             <div class="my-text rank-area">答对<span class="static-weight"> {{optionData.correct_num ? optionData.correct_num : 0}} </span>题</div>
             <div class="my-text integral-num">
-              获得
-              <span class="static-weight">{{integralNumber}}</span>
+              {{points >= 0 ? '获得' : '消耗'}}
+              <span class="static-weight">{{points}}</span>
               积分
             </div>
             <div class="tips-wrap" v-if='isLimited'><span class="el-icon-caret-top trangle-icon"></span>积分获取已达今日上限</div>
@@ -222,7 +222,9 @@ export default {
       // 海报信息
       posterInfo: {},
       posterBgLoad: false,
-      posterHeaderLoad: false
+      posterHeaderLoad: false,
+      //
+      points: 0
     }
   },
   computed: {
@@ -361,6 +363,12 @@ export default {
       await this.initPage(id)
       API.getExamDetailsStatistics({query: {id}}).then(res => {
         let correctNum = res.correct_num
+        let { points } = res
+        if (points) {
+          this.points = points
+        } else {
+          this.points = 0
+        }
         let count = res.questions.length
         if (this.statMsgVisible) {
           this.initStatInfo(res.score, correctNum, count)
