@@ -122,7 +122,7 @@ instance.interceptors.response.use((res, xhr) => {
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   if (isTimeout || status === 503 || status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      // window.location.href = `/waitting.html?origin=${url}`
+      window.location.href = `/waitting.html?origin=${url}`
       console.log(url)
     } else {
       store.dispatch('setDialogVisible', true)
@@ -158,7 +158,7 @@ instance.interceptors.response.use((res, xhr) => {
   } else {
     const url = encodeURI(window.location.href)
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      // window.location.href = `/waitting.html?origin=${url}`
+      window.location.href = `/waitting.html?origin=${url}`
       console.log(url)
     } else {
       store.dispatch('setDialogVisible', true)

@@ -459,6 +459,9 @@ const actions = {
       API.getExamDetail({ query: { id } }).then(res => {
         Indicator.close() // 结束
         let info = res
+        if (info.hashid) {
+          info.id = info.hashid
+        }
         commit('SET_EXAM_DETAIL', info)
         resolve(info)
       }).catch(err => {

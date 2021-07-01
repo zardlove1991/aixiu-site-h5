@@ -718,6 +718,7 @@ export default {
     goExamPage (val, obj) {
       if (val && val.collection_status === 1) {
         const data = {...this.examInfo, ...val}
+        if (data.hashid) { data.id = data.hashid }
         this.setExamInfo(data)
       }
       let tmp = this.examInfo.integral_settings ? this.examInfo.integral_settings : {}
