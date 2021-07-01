@@ -23,7 +23,8 @@ const state = {
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
   curSubjectVideos: [], // 当前题目下的所有视频组件信息 用来统一控制视频状态
   luckDrawLink: null,
-  remainTime: ''
+  remainTime: '',
+  actQuestionId: null
 }
 
 const getters = {
@@ -91,7 +92,8 @@ const getters = {
   blankAnswerInfo: state => state.blankAnswerInfo,
   curSubjectVideos: state => state.curSubjectVideos,
   luckDrawLink: state => state.luckDrawLink,
-  remainTime: state => state.remainTime
+  remainTime: state => state.remainTime,
+  actQuestionId: state => state.actQuestionId
 }
 
 const mutations = {
@@ -225,6 +227,9 @@ const mutations = {
   },
   SET_REMAINTIME (state, payload) {
     state.remainTime = payload
+  },
+  SET_ACTION_QUESTION_ID (state, payload) {
+    state.actQuestionId = payload
   }
 }
 

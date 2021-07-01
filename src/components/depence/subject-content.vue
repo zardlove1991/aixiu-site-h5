@@ -39,14 +39,15 @@
       :mode="mode">
     </select-blank-subject>
     <div class="saveIntoCloud" v-if="showCloudBtn && type === 'all'">
-      <div class="confirm-btn" @click="confirmSave()">保存答题信息</div>
+      <div class="confirm-btn" @click="confirmSave()">确认</div>
       <div class="cancel-btn" @click="cancelSave()">取消</div>
     </div>
+    <div class="model" v-if="type === 'all' && actQuestionId && actQuestionId !== data.id"></div>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import VoiceSubject from '@/components/subjects/voice'
 import EssaySubject from '@/components/subjects/essay'
 import SortSubject from '@/components/subjects/sort'
@@ -97,6 +98,11 @@ export default {
       singleblankOldValue: ''
     }
   },
+  computed: {
+    ...mapGetters('depence', [
+      'actQuestionId'
+    ])
+  },
   watch: {
     data: {
       handler: function (newV) {
@@ -104,10 +110,17 @@ export default {
           this.oldValue = JSON.parse(JSON.stringify(newV))
         } else {
           if (newV && this.data.type !== 'singleblank') {
-            let newStr = JSON.stringify(newV)
-            let oldStr = JSON.stringify(this.oldValue)
+            let _oldObj = this.oldValue
+            if (typeof _oldObj === 'string') {
+              _oldObj = JSON.parse(this.oldValue)
+            }
+            let newStr = JSON.stringify(newV.options)
+            let oldStr = JSON.stringify(_oldObj.options)
             if (newStr !== oldStr) {
+              console.log('%cnewStr:', 'color: red;font-size: 13px;', newStr)
+              console.log('%coldStr:', 'color: green;font-size: 13px;', oldStr)
               this.showCloudBtn = true
+              this.setActionQuestionId(_oldObj.id)
             }
           }
         }
@@ -150,6 +163,7 @@ export default {
       } else {
         this.setExamList(_examList)
       }
+      this.setActionQuestionId('')
       this.showCloudBtn = false
     },
     confirmSave () {
@@ -159,8 +173,10 @@ export default {
           this.singleblankOldValue = this.blankAnswerInfo[this.data.id]
           this.setSingle()
         } else {
+          console.log('插入的值：', this.data)
           this.oldValue = JSON.stringify(this.data)
         }
+        this.setActionQuestionId('')
         this.showCloudBtn = false
       })
     },
@@ -182,7 +198,8 @@ export default {
       this.setExamList(_examList)
     },
     ...mapMutations('depence', {
-      setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO'
+      setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO',
+      setActionQuestionId: 'SET_ACTION_QUESTION_ID'
     })
   }
 }
@@ -213,6 +230,14 @@ export default {
       background: rgba(255, 168, 0, 0.12);
       color: #FFA800;
     }
+  }
+  .model {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
   }
 }
 </style>
