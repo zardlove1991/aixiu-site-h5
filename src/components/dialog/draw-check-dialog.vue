@@ -385,7 +385,10 @@ export default {
         data.is_open_check = collectionForm.is_open_check
       }
       API.saveDrawRecord({
-        data
+        data,
+        query: {
+          id: examInfo.id
+        }
       }).then(res => {
         if (res.ErrorCode) {
           // this.getImgCode()

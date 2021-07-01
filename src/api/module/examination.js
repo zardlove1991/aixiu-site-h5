@@ -37,7 +37,7 @@ let examUrl = {
   saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
   getExamDetail: 'client/examination/{id}',
   shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
-  saveDrawRecord: 'collection/form/record', // 投票信息采集
+  saveDrawRecord: 'collection/form/record/{id}', // 投票信息采集
   getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
   setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
   unlockCourse: 'client/examination/submitted', // 解锁课程
