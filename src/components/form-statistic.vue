@@ -544,7 +544,7 @@ export default {
       }).then(res => {
         this.shareLoading = false
         this.posterInfo = res
-        // alert(`${res.image} \n ${res.head}`)
+        alert(`${res.image} \n ${res.head}`)
       })
     },
     // 绘制海报
