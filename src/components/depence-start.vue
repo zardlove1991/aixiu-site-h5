@@ -100,8 +100,8 @@
         <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
         <button v-else
-        :class="[getRadius, examInfo.remain_counts !== 0 || !isNoLimit ? 'start-exambtn':'end-exambtn']"
-        @click.stop="examInfo.remain_counts !== 0 || !isNoLimit ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+        :class="[getRadius, examInfo.remain_counts !== 0 || !isNoLimit || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
+        @click.stop="examInfo.remain_counts !== 0 || !isNoLimit|| examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
@@ -828,6 +828,10 @@ export default {
         }
         if (this.examInfo.remain_counts && this.examInfo.remain_counts > 0) { // 免费答题次数
           return `${this.examInfo.remain_counts}次免费答题机会`
+        }
+      } else {
+        if (this.examInfo.remain_counts === 0) {
+          return '答题次数已用完'
         }
       }
       return ''
