@@ -152,8 +152,8 @@
         :visible.sync="showOperateDialog"
         :dialogConfig="dialogConfig"/>
     </div>
-    <img :src="posterInfo.image" ref="posterBg" alt="" @load="resetPoster(1)" v-show="false">
-    <img :src="posterInfo.head" ref="posterHead" alt="" @load="resetPoster(2)" v-show="false">
+    <img :src="posterInfo.image" ref="posterBg" alt="" @load="resetPoster(1)">
+    <img :src="posterInfo.head" ref="posterHead" alt="" @load="resetPoster(2)">
   </div>
 </template>
 
@@ -544,7 +544,7 @@ export default {
       }).then(res => {
         this.shareLoading = false
         this.posterInfo = res
-        alert(res.image)
+        // alert(`${res.image} \n ${res.head}`)
       })
     },
     // 绘制海报
