@@ -5,6 +5,8 @@ import apiConfig from './config'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
 import wechat from '@/sdk/wechat'
+import 'element-ui/lib/theme-chalk/index.css'
+import { Message } from 'element-ui'
 
 let smartCityConfig = {}
 let userAgent = navigator.userAgent.toLowerCase()
@@ -88,6 +90,8 @@ function dealError ({code, msg}) {
   } else if (code === 'EXPIRE_SIGNATURE' || code === 'NO_LOGIN') {
     // 签名过期 直接去中转页面
     wechat.goRedirect()
+  } else if (code === 422) {
+    Message.error(msg)
   }
 }
 
