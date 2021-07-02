@@ -556,63 +556,66 @@ export default {
       }
       if (this.posterBgLoad && this.posterHeaderLoad) {
         console.log('开始绘制海报！')
-        alert('开始绘制海报')
         this.drawPoster()
       }
     },
     drawPoster () {
-      let posterBg = this.$refs['posterBg']
-      let posterHead = this.$refs['posterHead']
-      let canvas = document.createElement('canvas')
-      // 绘制背景图
-      let bgHeight = parseInt(posterBg.height * 600 / posterBg.width)
-      console.log('bgHeight: ', bgHeight)
-      canvas.width = 600
-      canvas.height = bgHeight
-      canvas.getContext('2d').drawImage(posterBg, 0, 0, canvas.width, bgHeight)
-      canvas.getContext('2d').save()
-      // 绘制头像
-      let ctx = canvas.getContext('2d')
-      ctx.arc(108, 48, 46, 0, Math.PI * 2, false)
-      ctx.clip()
-      ctx.drawImage(posterHead, 62, 0, 92, 92)
-      // 恢复状态
-      ctx.restore()
-      // 绘制文字
-      let name = STORAGE.get('userinfo').nick_name
-      let context = canvas.getContext('2d')
-      context.font = '28px Arial'
-      context.fillStyle = '#fff'
-      context.fillText(name, 180, 80)
-      context.font = '40px Arial'
-      context.fillStyle = '#fff'
-      context.fillText(this.posterInfo.title, 60, 160)
-      context.font = '90px Arial'
-      context.fillStyle = '#fff'
-      context.fillText(this.posterInfo.score, 60, 320)
-      context.font = '28px Arial'
-      context.fillStyle = '#fff'
-      let _x = 70 + (this.posterInfo.score.toString().length) * 40
-      context.fillText('分', _x, 320)
-      context.font = '28px Arial'
-      context.fillStyle = '#fff'
-      context.fillText('姓名', 60, 400)
-      context.fillText(name, 300, 400)
-      context.fillText('答题时间', 60, 450)
-      context.fillText(this.posterInfo.start_time, 300, 450)
-      context.fillText('答对题数', 60, 500)
-      context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, 500)
-      context.fillText('总题数', 60, 550)
-      context.fillText(this.posterInfo.question_num + '题', 300, 550)
-      context.fillText('试卷总分', 60, 600)
-      context.fillText(this.posterInfo.total_score + '分', 300, 600)
-      if (this.posterInfo.use_time) {
-        context.fillText('考试用时', 60, 650)
-        context.fillText(this.posterInfo.use_time, 300, 650)
+      try {
+        let posterBg = this.$refs['posterBg']
+        let posterHead = this.$refs['posterHead']
+        let canvas = document.createElement('canvas')
+        // 绘制背景图
+        let bgHeight = parseInt(posterBg.height * 600 / posterBg.width)
+        console.log('bgHeight: ', bgHeight)
+        canvas.width = 600
+        canvas.height = bgHeight
+        canvas.getContext('2d').drawImage(posterBg, 0, 0, canvas.width, bgHeight)
+        canvas.getContext('2d').save()
+        // 绘制头像
+        let ctx = canvas.getContext('2d')
+        ctx.arc(108, 48, 46, 0, Math.PI * 2, false)
+        ctx.clip()
+        ctx.drawImage(posterHead, 62, 0, 92, 92)
+        // 恢复状态
+        ctx.restore()
+        // 绘制文字
+        let name = STORAGE.get('userinfo').nick_name
+        let context = canvas.getContext('2d')
+        context.font = '28px Arial'
+        context.fillStyle = '#fff'
+        context.fillText(name, 180, 80)
+        context.font = '40px Arial'
+        context.fillStyle = '#fff'
+        context.fillText(this.posterInfo.title, 60, 160)
+        context.font = '90px Arial'
+        context.fillStyle = '#fff'
+        context.fillText(this.posterInfo.score, 60, 320)
+        context.font = '28px Arial'
+        context.fillStyle = '#fff'
+        let _x = 70 + (this.posterInfo.score.toString().length) * 40
+        context.fillText('分', _x, 320)
+        context.font = '28px Arial'
+        context.fillStyle = '#fff'
+        context.fillText('姓名', 60, 400)
+        context.fillText(name, 300, 400)
+        context.fillText('答题时间', 60, 450)
+        context.fillText(this.posterInfo.start_time, 300, 450)
+        context.fillText('答对题数', 60, 500)
+        context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, 500)
+        context.fillText('总题数', 60, 550)
+        context.fillText(this.posterInfo.question_num + '题', 300, 550)
+        context.fillText('试卷总分', 60, 600)
+        context.fillText(this.posterInfo.total_score + '分', 300, 600)
+        if (this.posterInfo.use_time) {
+          context.fillText('考试用时', 60, 650)
+          context.fillText(this.posterInfo.use_time, 300, 650)
+        }
+        // 生成图片地址
+        this.shareUrl = canvas.toDataURL('image/png', 1)
+        this.isShowShare = true
+      } catch (err) {
+        alert(err)
       }
-      // 生成图片地址
-      this.shareUrl = canvas.toDataURL('image/png', 1)
-      this.isShowShare = true
     },
     //
     pageToLuckDraw () {
