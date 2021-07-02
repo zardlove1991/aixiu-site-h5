@@ -86,6 +86,8 @@ import SubjectList from '@/components/depence/subject-list'
 import MyModel from './depence/model'
 import MyRecord from './depence/record'
 import OperateDialog from './exam-components/operate-dialog'
+import 'element-ui/lib/theme-chalk/index.css'
+import { Message } from 'element-ui'
 
 export default {
   name: 'depence-list',
@@ -132,7 +134,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos', 'answerList',
-      'isShowSubjectList', 'subjectAnswerInfo'
+      'isShowSubjectList', 'subjectAnswerInfo', 'actQuestionId'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -311,7 +313,11 @@ export default {
     submitExam () {
       // console.log(this.answerList)
       // this.saveAnswerRecords(this.answerList)
-      this.isShowSubmitModel = true
+      if (this.actQuestionId) {
+        Message.error('题目尚未保存！')
+      } else {
+        this.isShowSubmitModel = true
+      }
     },
     noEndTime () {
       // this.saveAnswerRecords(this.answerList)
