@@ -409,6 +409,7 @@ const actions = {
         return
       }
       STORAGE.remove('answer_record_' + id)
+      commit('SET_EXAMLIST', [])
       // let params = {
       //   examination_id: id,
       //   page: pageNum || 1,
@@ -526,89 +527,12 @@ const actions = {
       })
     })
   },
-  // END_EXAM ({state, commit}, payload) {
-  //   return new Promise((resolve, reject) => {
-  //     let id = state.examId
-  //     let examList = state.answerList
-  //     if (!id) {
-  //       id = payload.id
-  //       examList = payload.answerList
-  //     }
-  //     let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
-  //     // 开始请求数据
-  //     let mark = 'examination'
-  //     let title = ''
-  //     if (state.examInfo) {
-  //       mark = state.examInfo.mark
-  //       title = state.examInfo.title
-  //     }
-  //     let params = {
-  //       data: [{
-  //         id,
-  //         mark,
-  //         title,
-  //         create_time: parseInt((new Date().getTime()) / 1000)
-  //       }],
-  //       member: STORAGE.get('userinfo')
-  //     }
-  //     // console.log('sumbitUV', params)
-  //     API.sumbitUV({ data: params }).then(res => {
-  //       console.log(res)
-  //     })
-  //     Indicator.open({ spinnerType: 'fading-circle' })
-  //     if (examList && examList.length) {
-  //       let data = { params: [] }
-  //       data.params = examList
-  //       API.saveSubjectRecords({ query: { id }, data }).then(res => {
-  //         if (res.success === 1) {
-  //           // 清空
-  //           STORAGE.remove('answer_record_' + id)
-  //           state.answerList = []
-  //           let endParam = {}
-  //           if (mark === 'examination@rank') {
-  //             endParam.activity_mark = mark
-  //           }
-  //           API.submitExam({ query: { id }, params: endParam }).then(res => {
-  //             // 删除本地缓存的单选的ID信息
-  //             if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
-  //             STORAGE.remove('answer_record_' + id)
-  //             state.answerList = []
-  //             commit('SET_BLANK_ANSWER_INFO', {})
-  //             commit('SET_CURRENT_SUBJECT_INDEX', 0)
-  //             // 结束
-  //             Indicator.close()
-  //             if (res.success === 1) {
-  //               let raffle = res.raffle
-  //               if (raffle && raffle.raffle_url) {
-  //                 commit('SET_LUCK_DRAW_LINK', raffle.raffle_url)
-  //               }
-  //               resolve()
-  //             } else {
-  //               throw new Error({error_message: '结束考试出错'})
-  //             }
-  //           }).catch(err => {
-  //             // 结束
-  //             Indicator.close()
-  //             reject(err)
-  //           })
-  //         } else {
-  //           throw new Error('error')
-  //         }
-  //       }).catch(err => {
-  //         Indicator.close()
-  //         reject(err)
-  //       })
-  //     }
-  //   })
-  // },
   END_EXAM ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let storageSingleSelcectInfo = STORAGE.get('examlist-single-selcectid')
       let id = state.examId
-      // let examList = state.answerList
       if (!id) {
         id = payload.id
-        // examList = payload.answerList
       }
       API.submitExam({ query: { id } }).then(res => {
         // 删除本地缓存的单选的ID信息

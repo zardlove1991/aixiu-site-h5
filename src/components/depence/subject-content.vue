@@ -238,6 +238,7 @@ export default {
     top: 0;
     left: 0;
     z-index: 1;
+    background: rgba(255,255,255,0.6);
   }
 }
 </style>

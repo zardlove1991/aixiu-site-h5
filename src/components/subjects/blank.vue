@@ -228,15 +228,6 @@ export default {
       let renderStyle = data.extra_style
       let answerArr = this.answerArr
       console.log('input发生改变：', answerArr)
-      // 选择下一个需要聚焦的元素
-      // let nextFoucs = (index) => {
-      //   let value = target.value
-      //   if (!value) return
-      //   // 跳转
-      //   let inputElArr = this.inputElArr
-      //   let nextEl = inputElArr[Number(index) + 1]
-      //   if (nextEl) nextEl.focus()
-      // }
       // 处理多次操作
       if (this.inputTimer) clearTimeout(this.inputTimer)
       let delayTime = renderStyle === 'underline' ? 800 : 800
@@ -244,27 +235,13 @@ export default {
         let index = dataset.index
         let value = target.value
         answerArr[index] = value
-        // if (renderStyle === 'underline') {
-        //   answerArr[index] = value
-        // } else if (renderStyle === 'textbox') {
-        //   let val = answerArr[0] // 暂时不支持多项填充
-        //   if (!val) {
-        //     answerArr[0] = value
-        //     // nextFoucs(index) // 自动跳转下一个文本框
-        //   } else if (val[index]) {
-        //     answerArr[0] = val.replace(val[index], value)
-        //   } else {
-        //     answerArr[0] = `${val}${value}`
-        //     // nextFoucs(index) // 自动跳转下一个文本框
-        //   }
-        // }
-        // console.log('xxx 最终传送的值', this.answerArr)
         let blankAnswerInfo = this.blankAnswerInfo
         blankAnswerInfo[data.id] = answerArr
         // blankAnswerInfo[data.id] = [...blankAnswerInfo[data.id], ...answerArr]
         console.log('blankAnswerInfo:', blankAnswerInfo)
         this.setBlankAnswerInfo(blankAnswerInfo) // 更新保存的答题信息
         this.changeSubjectAnswerInfo({ subject: data }) // 更新答案数据
+        this.setActionQuestionId(data.id) // 保存当前问题Id
         // this.saveAnswerRecord(data)
       }, delayTime)
     },
@@ -321,7 +298,8 @@ export default {
       return fontColor
     },
     ...mapMutations('depence', {
-      setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO'
+      setBlankAnswerInfo: 'SET_BLANK_ANSWER_INFO',
+      setActionQuestionId: 'SET_ACTION_QUESTION_ID'
     })
   }
 }

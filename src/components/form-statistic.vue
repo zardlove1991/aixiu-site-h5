@@ -152,8 +152,8 @@
         :visible.sync="showOperateDialog"
         :dialogConfig="dialogConfig"/>
     </div>
-    <img :src="posterInfo.image" ref="posterBg" alt="" @load="resetPoster(1)" crossOrigin='anonymous'>
-    <img :src="posterInfo.head" ref="posterHead" alt="" @load="resetPoster(2)" crossOrigin='anonymous'>
+    <img :src="posterInfo.image" ref="posterBg" v-show="false" alt="" @load="resetPoster(1)" crossOrigin='anonymous'>
+    <img :src="posterInfo.head" ref="posterHead" v-show="false" alt="" @load="resetPoster(2)" crossOrigin='anonymous'>
   </div>
 </template>
 
