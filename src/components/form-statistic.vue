@@ -544,7 +544,7 @@ export default {
       }).then(res => {
         this.shareLoading = false
         this.posterInfo = res
-        alert(`${res.image} \n ${res.head}`)
+        // alert(`${res.image} \n ${res.head}`)
       })
     },
     // 绘制海报
@@ -556,6 +556,7 @@ export default {
       }
       if (this.posterBgLoad && this.posterHeaderLoad) {
         console.log('开始绘制海报！')
+        alert('开始绘制海报')
         this.drawPoster()
       }
     },
