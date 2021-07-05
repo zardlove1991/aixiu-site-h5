@@ -440,13 +440,14 @@ export default {
       })
     },
     resetTimeLimit () {
+      console.log('%c进行倒计时!', 'color: red;font-size: 14px;')
       if (this.examInfo.mark === 'examination@exercise') {
         let currentQuestion = this.examList[this.currentSubjectIndex]
-        let qusetionTimers = STORAGE.get('timer_' + this.$route.query.id)
+        let qusetionTimers = STORAGE.get('timer_' + this.examId)
         if (qusetionTimers && qusetionTimers[currentQuestion.hashid]) {
           this.startExerciseCountDown()
         } else {
-          STORAGE.set('timer_' + this.$route.query.id, {
+          STORAGE.set('timer_' + this.examId, {
             [currentQuestion.hashid]: new Date().getTime()
           })
           // 开始倒计时
@@ -457,7 +458,7 @@ export default {
     getEndTime () {
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = currentQuestion.limit_time
-      let qusetionTimers = STORAGE.get('timer_' + this.$route.query.id)
+      let qusetionTimers = STORAGE.get('timer_' + this.examId)
       let startTime = qusetionTimers[currentQuestion.hashid]
       let endTime = parseInt(startTime) + parseInt(limitTime) * 1000
       return endTime
@@ -517,8 +518,11 @@ export default {
       deep: true,
       immediate: true
     },
-    'currentSubjectIndex': function (v) {
-      this.resetTimeLimit()
+    'currentSubjectIndex': {
+      handler: function (v) {
+        this.resetTimeLimit()
+      },
+      immediate: true
     }
   }
 }
