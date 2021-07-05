@@ -193,11 +193,47 @@ export const formatSecByTime = (params) => {
   return timeArr
 }
 
+// 获取增城的UserId
+let _userAgent = ''
+export function getZCUserId () {
+  const userAgentList = _userAgent.split(' ')
+  let isExistUserId = userAgentList.some(item => { return String(item).indexOf('userid/') !== -1 })
+  let userIdStr = ''
+  let userId = ''
+  if (isExistUserId) {
+    // 存在userid
+    for (let i of userAgentList) {
+      if (i.indexOf('userid/') !== -1) {
+        userIdStr = i
+      }
+    }
+    userId = userIdStr.split('/')[1]
+  } else {
+    // 不存在
+    alert('用户不存在，请登录')
+  }
+  console.log('userId', userId)
+  return userId
+
+  // ISO 调用
+  // window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
+  // // eslint-disable-next-line no-unused-vars
+  // function callbackUserInfo (obj) {
+  //   let userId = obj['userId']
+  //   if (userId !== undefined) {
+  //     return userId
+  //   }
+  // }
+}
+
 /*
  * 判断嵌入平台
  * */
 export const getPlat = () => {
-  let userAgent = navigator.userAgent.toLowerCase()
+  // let userAgent = navigator.userAgent.toLowerCase()
+  let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
+  _userAgent = userAgent
+  getZCUserId(userAgent)
   if (/micromessenger/.test(userAgent)) {
     return 'wechat'
   } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
@@ -208,6 +244,10 @@ export const getPlat = () => {
     return 'dingdone'
   } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
     return 'dingding'
+  } else if (/a1b48d214f364785bc5141e5b3908a64/.test(userAgent)) {
+    // 阅增城
+    console.log('进入阅增城的判断')
+    return 'zengcheng'
   }
   return 'browser'
 }
