@@ -15,6 +15,7 @@ let baseUrl = {
   sumbitUV: 'setSubmit', // 提交次数
   getDingdingUser: 'ding/signature', // 钉钉会员
   getSmartCityUser: 'member/signature', // 智慧城市登录
+  getZengChengUser: 'zc/signature', // 阅增城获取人员信息
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
   getWeixinInfo: 'signature', // 获得微信公众号信息
   getCaptchaCode: 'captcha/code', // 图片二维码
@@ -114,6 +115,7 @@ export default {
   setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
+  getZengChengUser: config => creataUser(configUrl.getZengChengUser, 'GET', config, API_FLAG),
   getXiuzanUser: config => creataUser(configUrl.getXiuzanUser, 'GET', config, API_FLAG),
   getTencentToken: config => createAPI(configUrl.getTencentToken, 'GET', config, API_FLAG),
   getTencentVideoToken: config => createAPI(configUrl.getTencentVideoToken, 'GET', config, API_FLAG),

@@ -416,7 +416,7 @@ export default {
         this.setShareData({ sign, invotekey })
       }
       let res = STORAGE.get('detailInfo')
-      if (!res) {
+      if (!res || res.id !== voteId) {
         res = await API.getVodeDetail({
           query: { id: voteId }
         })
