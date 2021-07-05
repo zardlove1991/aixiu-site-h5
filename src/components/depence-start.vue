@@ -157,6 +157,12 @@
       @success="goExamPage"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
+    <party-check-dialog
+      :show="isShowPartyCheck"
+      :checkDraw="checkDraw"
+      @success="goExamPage"
+      @close="isShowPartyCheck = false">
+    </party-check-dialog>
     <OperateDialog
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"
@@ -189,6 +195,7 @@ import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
+import PartyCheckDialog from '@/components/dialog/party-check-dialog'
 import CustomTooltips from './exam-components/custom-tooltips'
 import OperateDialog from './exam-components/operate-dialog'
 import PageRule from '@/components/depence/page-rule'
@@ -241,10 +248,11 @@ export default {
       lotteryEnterType: 'lottery',
       showLotteryEntrance: false,
       lotteryUrl: '',
-      imgUrl: require('@/assets/vote/gift@3x.png')
+      imgUrl: require('@/assets/vote/gift@3x.png'),
+      isShowPartyCheck: false
     }
   },
-  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule },
+  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule, PartyCheckDialog },
   computed: {
     getShowRule () {
       let mark = this.examInfo.mark
@@ -656,6 +664,7 @@ export default {
     isShowCheckDraw () {
       // 判断是否需要信息采集
       let { limit, collection_status: status } = this.examInfo
+      console.log(limit.assign_people_limit)
       if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
@@ -710,6 +719,12 @@ export default {
           this.checkDraw = checkDraw
         } else {
           this.goExamPage()
+        }
+      } else if (limit.assign_people_limit) {
+        if (this.currentPlat !== 'wechat') {
+          this.isShowPartyCheck = true
+        } else {
+          Toast('请在APP中进行答题')
         }
       } else {
         this.goExamPage()

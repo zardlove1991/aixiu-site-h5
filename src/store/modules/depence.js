@@ -23,7 +23,7 @@ const state = {
   blankAnswerInfo: {}, // 保存所有类型的填空题信息
   curSubjectVideos: [], // 当前题目下的所有视频组件信息 用来统一控制视频状态
   luckDrawLink: null,
-  remainTime: '',
+  remainTime: '', // 考试剩余时间
   actQuestionId: null
 }
 
@@ -703,7 +703,6 @@ const actions = {
     })
   },
   async CHANGE_CURRENT_SUBJECT_INDEX ({state, dispatch, commit}, payload) {
-    console.log('修改题目！！！！')
     let index = state.currentSubjectIndex
     let list = state.examList
     // 判断什么操作 加减 还是 直接赋值
@@ -737,14 +736,21 @@ const actions = {
     let data = {
       params: _arr
     }
+    let _cloudData = ''
     await API.saveIntoCloud({
       query: {
         id: state.examId
       },
       data
     }).then(res => {
+      _cloudData = res
       if (res.success === 1) {
         commit('SET_CURRENT_SUBJECT_INDEX', index)
+      }
+    })
+    return new Promise((resolve, reject) => {
+      if (_cloudData) {
+        resolve(_cloudData)
       }
     })
   },

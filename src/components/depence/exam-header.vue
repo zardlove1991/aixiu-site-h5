@@ -157,6 +157,7 @@ export default {
         // this.duration = parseInt(new Date(this.examInfo.times).getTime() / 1000) - _nowTime
         this.duration = this.remainTime
       }
+      console.log('this.duration: ', this.duration)
       let timeFun = () => {
         if (this.duration === 2) {
           this.$emit('notimeup')

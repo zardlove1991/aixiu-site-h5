@@ -3,7 +3,7 @@
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <div class="denpncelist-page">
     <!--头部组件-->
-    <exam-header v-if="renderType === 'exam'"
+    <exam-header v-if="renderType === 'exam' && examInfo.mark !== 'examination@exercise'"
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
       :curIndex="currentSubjectIndex"
@@ -12,6 +12,10 @@
       @showlist="toggetSubjectList">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
+    <!-- 练习题倒计时 -->
+    <div class="exercise-time-limit" v-if="examInfo.mark === 'examination@exercise'">
+      <el-progress type="circle" width="120" :percentage="exerciseCountTime" status="exception" :format="timeFormat"></el-progress>
+    </div>
     <!--主体试题渲染-->
     <div class="qtnlist-wrap">
       <div class="list-item-wrap" v-for="(item,index) in examList" :key="item.id">
@@ -50,11 +54,11 @@
            确认
         </div>
         <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-          {{examInfo.limit.submit_text || '立即交卷'}}
+          {{examInfo.limit.submit_text || '立即交卷'}}111
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" v-show="!isShowSubmitBtn" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -137,6 +141,7 @@ import SubjectList from '@/components/depence/subject-list'
 import MyModel from './depence/model'
 import MyRecord from './depence/record'
 import OperateDialog from './exam-components/operate-dialog'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'depence-list',
@@ -168,7 +173,9 @@ export default {
         showNumber: 1,
         cancelBtnText: '知道了'
       },
-      loadList: false
+      loadList: false,
+      exerciseCountTime: 0,
+      currentTimer: null
     }
   },
   components: {
@@ -192,10 +199,6 @@ export default {
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
     }
   },
-  // created () {
-  //   // 初始化方法
-  //   this.initList()
-  // },
   methods: {
     toStatistic () {
       this.isShowSuspendModels = false
@@ -221,16 +224,6 @@ export default {
       let listType = this.listType
       let redirectParams = this.redirectParams
       try {
-        // // 获取试卷详情
-        // if (!this.examInfo) {
-        //   await this.getExamDetail({ id: examId })
-        // }
-        // let status = this.examInfo.person_status
-        // // 调用考试考试接口
-        // if (this.rtp === 'exam' && status !== 2) {
-        //   let isRestart = this.restart === 'need'
-        //   await this.startExam({ id: examId, restart: isRestart, useIntegral: this.useIntegral })
-        // }
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -376,10 +369,7 @@ export default {
       })
     },
     submitExam () {
-      // this.saveAnswerRecords(this.answerList)
-      console.log(this.currentSubjectIndex)
       this.changeSubjectIndex(this.currentSubjectIndex)
-      // this.saveCloud('add')
       this.isShowSubmitModel = true
     },
     noEndTime () {
@@ -419,7 +409,6 @@ export default {
       if (renderType === 'exam' && answerMaxQuestionId) {
         let list = this.examList
         let index = list.findIndex(item => item.id === answerMaxQuestionId)
-        console.log('插入的index: ', index)
         if (index >= 0) this.changeSubjectIndex(index)
       }
     },
@@ -438,13 +427,71 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     async saveCloud () {
-      this.changeSubjectIndex('add')
-      // this.examList.map(subject => {
-      //   // this.getSubjectAnswerInfo(subject)
-      //   console.log('%c处理提交数据：', 'color: red;font-size: 14px;', subject)
-      // })
-      // // console.log('%c保存到云端的数据：', 'color: red;  font-size: 18px;', )
-      // // await this.saveIntoCloud()
+      await this.changeSubjectIndex('add').then(res => {
+        // 练习题做错误处理
+        if (this.examInfo.mark === 'examination@exercise') {
+          console.log('保存云端的记录：', res)
+          let { success } = res
+          if (success && success !== 1) {
+            // 答题错误
+
+          }
+        }
+      })
+    },
+    resetTimeLimit () {
+      if (this.examInfo.mark === 'examination@exercise') {
+        let currentQuestion = this.examList[this.currentSubjectIndex]
+        let qusetionTimers = STORAGE.get('timer_' + this.$route.query.id)
+        if (qusetionTimers && qusetionTimers[currentQuestion.hashid]) {
+          this.startExerciseCountDown()
+        } else {
+          STORAGE.set('timer_' + this.$route.query.id, {
+            [currentQuestion.hashid]: new Date().getTime()
+          })
+          // 开始倒计时
+          this.startExerciseCountDown()
+        }
+      }
+    },
+    getEndTime () {
+      let currentQuestion = this.examList[this.currentSubjectIndex]
+      let limitTime = currentQuestion.limit_time
+      let qusetionTimers = STORAGE.get('timer_' + this.$route.query.id)
+      let startTime = qusetionTimers[currentQuestion.hashid]
+      let endTime = parseInt(startTime) + parseInt(limitTime) * 1000
+      return endTime
+    },
+    startExerciseCountDown () {
+      let _now = new Date().getTime()
+      let _endTime = this.getEndTime()
+      // 超时
+      if (_endTime < _now) {
+        this.saveCloud()
+      } else {
+        this.refreshTime()
+      }
+    },
+    refreshTime () {
+      let _endTime = this.getEndTime()
+      let _now = new Date().getTime()
+      this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
+      let _this = this
+      if (this.exerciseCountTime > 0) {
+        this.currentTimer = setTimeout(function () {
+          _this.refreshTime()
+        }, 1000)
+      } else {
+        this.clearTimer()
+        this.saveCloud()
+      }
+    },
+    clearTimer () {
+      clearTimeout(this.currentTimer)
+      this.currentTimer = null
+    },
+    timeFormat (percentage) {
+      return this.exerciseCountTime
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -469,6 +516,9 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    'currentSubjectIndex': function (v) {
+      this.resetTimeLimit()
     }
   }
 }
@@ -476,4 +526,13 @@ export default {
 
 <style lang="scss">
 @import "@/styles/components/depence-list.scss";
+.exercise-time-limit{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -50%;
+  z-index: 1;
+  background: #fff;
+  border-radius: 50%;
+}
 </style>

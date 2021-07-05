@@ -48,7 +48,8 @@ let examUrl = {
   shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
   getExamRankList: 'client/examination/{id}/source', // 考试排行列表
   saveIntoCloud: 'client/examination/submit/{id}',
-  getPosterInfo: 'client/examination/{id}/poster' // 前端生成海报所需数据
+  getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
+  getPartyInfo: 'client/examination/{id}/party'
 }
 
 // 投票相关接口
@@ -185,5 +186,6 @@ export default {
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
-  getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG)
+  getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG),
+  getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'post', config, API_FLAG)
 }
