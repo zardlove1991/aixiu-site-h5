@@ -26,7 +26,12 @@
       <my-video v-if="mediaKey=='video' && annexMedia(media)" class="my-video" :poster="annexMedia(media).cover" :src="annexMedia(media).src"></my-video>
     </div>
     <!--每个选择项-->
-    <div class="subject-select-wrap" v-for="(optItem,optIndex) in data.options" :key='optIndex' ref="subjectSelectWrap">
+    <div
+    class="subject-select-wrap"
+    :class="checkAnswerStatus(optItem)"
+    v-for="(optItem,optIndex) in data.options"
+    :key='optIndex'
+    ref="subjectSelectWrap">
       <!--每个选择项描述-->
       <div class="select-tip-wrap" @click.stop="selectTouchEnd(optIndex, data.index)">
         <div class="select-tip" v-if="data.type === 'radio' || data.type === 'pictureRadio'" :class="{active: optItem.active , error: optItem.error, videoActive: isShowVideo}"></div>
@@ -85,10 +90,32 @@ export default {
       default: false
     }
   },
+  methods: {
+    checkAnswerStatus (data) {
+      console.log('%c校验答案1: ', 'color: green;', data)
+      let values = Object.values(this.analysisAnswer)
+      console.log('%c校验答案2: ', 'color: green;', values)
+      let _result = ''
+      if (values && values.length > 0) {
+        if (values.indexOf(data.id) > -1) {
+          _result = 'correct_answer'
+        } else {
+          if (data.active) {
+            console.log('被选中！！')
+            _result = 'wrong_answer'
+          }
+        }
+      } else {
+        console.log('没有值：', _result)
+      }
+      console.log('%c校验结果: ', 'color: green;', _result)
+      return _result
+    }
+  },
   watch: {
     data: {
       handler: function (v) {
-        // console.log('组件数据：', v)
+        console.log('组件数据：', v)
       },
       deep: true,
       immediate: true

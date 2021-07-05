@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="denpncelist-wrap depence-wrap" v-if="examList.length"
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
-    <div class="denpncelist-page">
+    <div class="denpncelist-page" :class="examInfo.mark === 'examination@exercise'?'exercise':''">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam' && examInfo.mark !== 'examination@exercise'"
       :list="examList"
@@ -14,7 +14,16 @@
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!-- 练习题倒计时 -->
     <div class="exercise-time-limit" v-if="examInfo.mark === 'examination@exercise'">
-      <el-progress type="circle" width="120" :percentage="exerciseCountTime" status="exception" :format="timeFormat"></el-progress>
+      <div>
+        <el-progress type="circle" :width="60" :percentage="exerciseCountProgress" :status="timerStatus" :format="timeFormat"></el-progress>
+        <div class="exercise-title-div number-div">{{exerciseCountTime}}</div>
+        <div class="exercise-title-div wrong-div" v-if="successStatus === 2">
+          <img :src="require('@/assets/common/exam/progress-wrong.png')" alt="">
+        </div>
+        <div class="exercise-title-div correct-div" v-if="successStatus === 1">
+          <img :src="require('@/assets/common/exam/progress-correct.png')" alt="">
+        </div>
+      </div>
     </div>
     <!--主体试题渲染-->
     <div class="qtnlist-wrap">
@@ -24,13 +33,17 @@
           v-if="index === currentSubjectIndex"
           :type="'list'"
           :data="item"
+          :analysisData="analysisData"
           :mode="renderType"
           :key="item.id">
         </subject-content>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
+        <div
+          class="prev-wrap"
+          v-if="examInfo.mark !== 'examination@exercise'"
+          v-show="currentSubjectIndex !== 0"
           :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
           @click.stop="changeSubjectIndex('sub')">
           上一题
@@ -48,13 +61,16 @@
           </div>
         </div>
         <div class="next-wrap"
-          v-show="!isShowSubmitBtn"
+          v-show="!isShowSubmitBtn && !nextExerciseBtn && successStatus === 0"
           :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
           @click.stop="saveCloud('add')">
            确认
         </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-          {{examInfo.limit.submit_text || '立即交卷'}}111
+        <div class="next-wrap" v-show="isShowSubmitBtn && !nextExerciseBtn" @click.stop="submitExam">
+          {{examInfo.limit.submit_text || '立即交卷'}}
+        </div>
+        <div class="next-wrap" v-show="nextExerciseBtn" @click.stop="exerciseNext">
+          下一题
         </div>
       </div>
     </div>
@@ -123,12 +139,22 @@
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"/>
     </div>
+    <div class="analysis-div" v-if="analysisData">
+      <div class="item">
+        <span class="title">正确答案：</span>
+        <span></span>
+      </div>
+      <div class="item">
+        <span class="title">答案解析：</span>
+        <span>{{analysisData.analysis}}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import API from '@/api/module/examination'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
@@ -174,8 +200,14 @@ export default {
         cancelBtnText: '知道了'
       },
       loadList: false,
-      exerciseCountTime: 0,
-      currentTimer: null
+      //
+      exerciseCountTime: 30,
+      exerciseCountProgress: 80,
+      currentTimer: null,
+      timerStatus: 'warning',
+      nextExerciseBtn: false,
+      successStatus: 0,
+      analysisData: null
     }
   },
   components: {
@@ -431,16 +463,37 @@ export default {
         // 练习题做错误处理
         if (this.examInfo.mark === 'examination@exercise') {
           console.log('保存云端的记录：', res)
-          let { success } = res
+          let { success, data, raffle } = res
+          this.successStatus = success
           if (success && success !== 1) {
+            this.timerStatus = 'exception'
             // 答题错误
-
+            let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
+            console.log('answerSubmitRules:', answerSubmitRules)
+            if (answerSubmitRules) {
+              // 允许答错
+              if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+                // Toast('已经没有题目了~')
+              } else {
+                this.nextExerciseBtn = true
+              }
+              let currentQuestion = this.examList[this.currentSubjectIndex]
+              this.analysisData = data[currentQuestion.hashid]
+              let { answer } = this.analysisData
+              if (answer) {
+                this.setAnalysisAnswer(answer)
+              }
+            } else {
+              // 答错直接交卷
+              console.log('raffle: ', raffle)
+            }
           }
         }
       })
     },
     resetTimeLimit () {
       console.log('%c进行倒计时!', 'color: red;font-size: 14px;')
+      if (!this.examInfo || this.examList.length < 1) return
       if (this.examInfo.mark === 'examination@exercise') {
         let currentQuestion = this.examList[this.currentSubjectIndex]
         let qusetionTimers = STORAGE.get('timer_' + this.examId)
@@ -468,6 +521,7 @@ export default {
       let _endTime = this.getEndTime()
       // 超时
       if (_endTime < _now) {
+        console.log('已经超时！！')
         this.saveCloud()
       } else {
         this.refreshTime()
@@ -476,7 +530,10 @@ export default {
     refreshTime () {
       let _endTime = this.getEndTime()
       let _now = new Date().getTime()
+      let currentQuestion = this.examList[this.currentSubjectIndex]
+      let limitTime = currentQuestion.limit_time
       this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
+      this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / parseInt(limitTime))
       let _this = this
       if (this.exerciseCountTime > 0) {
         this.currentTimer = setTimeout(function () {
@@ -494,6 +551,11 @@ export default {
     timeFormat (percentage) {
       return this.exerciseCountTime
     },
+    exerciseNext () {
+      let num = this.currentSubjectIndex
+      this.setAnalysisAnswer('')
+      this.setCurrentSubjectIndex(++num)
+    },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
@@ -502,6 +564,10 @@ export default {
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
       getSubjectAnswerInfo: 'GET_SUBJECT_ANSWER_INFO'
+    }),
+    ...mapMutations('depence', {
+      setCurrentSubjectIndex: 'SET_CURRENT_SUBJECT_INDEX',
+      setAnalysisAnswer: 'SET_ANALYSIS_ANSWER'
     })
   },
   watch: {
@@ -512,6 +578,8 @@ export default {
           this.loadList = true
           this.$nextTick(() => {
             this.initList()
+            this.nextExerciseBtn = false
+            this.resetTimeLimit()
           })
         }
       },
@@ -520,7 +588,17 @@ export default {
     },
     'currentSubjectIndex': {
       handler: function (v) {
+        this.nextExerciseBtn = false
         this.resetTimeLimit()
+        this.successStatus = 0
+        this.analysisData = null
+      },
+      immediate: true
+    },
+    'examList': {
+      handler: function (v) {
+        this.resetTimeLimit()
+        console.log('%cexamList: ', 'color: red; font-size: 15px;', v)
       },
       immediate: true
     }
@@ -532,11 +610,75 @@ export default {
 @import "@/styles/components/depence-list.scss";
 .exercise-time-limit{
   position: absolute;
-  top: 0;
+  top: -5vw;
   left: 50%;
-  margin-left: -50%;
+  transform: translateX(-50%);
   z-index: 1;
   background: #fff;
   border-radius: 50%;
+  >div{
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .exercise-title-div{
+    position: absolute;
+    width: 10vw;
+    height: 10vw;
+    z-index: 1;
+    text-align: center;
+    line-height: 10vw;
+    border-radius: 50%;
+    background: #fff;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    img {
+      width: 7vw;
+      height: auto;
+      min-height: auto;
+      vertical-align: middle;
+    }
+    &.wrong-div {
+      background: #E63434;
+      width: 15vw;
+      height: 15vw;
+      line-height: 15vw;
+      top: 48%;
+    }
+    &.correct-div {
+      background: #35B068;
+      width: 15vw;
+      height: 15vw;
+      line-height: 15vw;
+      top: 48%;
+    }
+  }
+}
+.analysis-div {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
+  .item{
+    color: #999;
+    font-size:16px;
+    margin-bottom: 5px;
+    position: relative;
+    padding-left: 4px;
+    &::before{
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 3px;
+      height: 16px;
+      width: 3px;
+      background: #E63434;
+    }
+    .title {
+      color: #333;
+    }
+  }
 }
 </style>

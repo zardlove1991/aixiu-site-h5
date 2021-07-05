@@ -24,7 +24,8 @@ const state = {
   curSubjectVideos: [], // 当前题目下的所有视频组件信息 用来统一控制视频状态
   luckDrawLink: null,
   remainTime: '', // 考试剩余时间
-  actQuestionId: null
+  actQuestionId: null,
+  analysisAnswer: ''
 }
 
 const getters = {
@@ -93,7 +94,8 @@ const getters = {
   curSubjectVideos: state => state.curSubjectVideos,
   luckDrawLink: state => state.luckDrawLink,
   remainTime: state => state.remainTime,
-  actQuestionId: state => state.actQuestionId
+  actQuestionId: state => state.actQuestionId,
+  analysisAnswer: state => state.analysisAnswer
 }
 
 const mutations = {
@@ -230,6 +232,9 @@ const mutations = {
   },
   SET_ACTION_QUESTION_ID (state, payload) {
     state.actQuestionId = payload
+  },
+  SET_ANALYSIS_ANSWER (state, payload) {
+    state.analysisAnswer = payload
   }
 }
 
@@ -410,6 +415,7 @@ const actions = {
       }
       STORAGE.remove('answer_record_' + id)
       commit('SET_EXAMLIST', [])
+      commit('SET_ANALYSIS_ANSWER', '')
       // let params = {
       //   examination_id: id,
       //   page: pageNum || 1,
@@ -745,6 +751,7 @@ const actions = {
     }).then(res => {
       _cloudData = res
       if (res.success === 1) {
+        commit('SET_ANALYSIS_ANSWER', '')
         commit('SET_CURRENT_SUBJECT_INDEX', index)
       }
     })

@@ -47,8 +47,18 @@
   }
   .subject-select-wrap{
     margin-top: px2rem(40px);
-    padding:0 px2rem(30px);
+    // padding:0 px2rem(30px);
+    margin-left: px2rem(30px);
+    margin-right: px2rem(30px);
+    padding: px2rem(15px);
     box-sizing: border-box;
+    border-radius: px2rem(10px);
+    &.correct_answer{
+      background-color: rgba(53, 176, 104, .1)
+    }
+    &.wrong_answer{
+      background-color: rgba(230, 52, 52, .1)
+    }
     .select-tip-wrap{
       display: flex;
       align-items: center;
