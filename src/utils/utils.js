@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 import base64 from '@/lib/base64'
 import utf8 from '@/lib/utf8'
 import {
@@ -7,6 +8,9 @@ import {
 } from '@/config/upload'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import configObj from '@/api/config.js'
+
+import { Toast } from 'mint-ui'
 
 /**
  * [格式化时间戳]
@@ -194,31 +198,31 @@ export const formatSecByTime = (params) => {
 }
 
 // 获取增城的UserId
-let _userAgent = ''
+// let _userAgent = ''
 export function getZCUserId () {
-  const userAgentList = _userAgent.split(' ')
-  console.log('userAgentList', userAgentList)
-  let isExistUserId = userAgentList.some(item => {
-    let _isExist = false
-    _isExist = String(item).indexOf('userid/') !== -1 && String('userid/') !== String(item)
-    return _isExist
-  })
-  let userIdStr = ''
-  let userId = ''
-  if (isExistUserId) {
-    // 存在userid
-    for (let i of userAgentList) {
-      if (i.indexOf('userid/') !== -1) {
-        userIdStr = i
-      }
-    }
-    userId = userIdStr.split('/')[1]
-    return userId
-  } else {
-    // 不存在
-    alert('用户不存在，请登录')
-    return null
-  }
+  // const userAgentList = _userAgent.split(' ')
+  // console.log('userAgentList', userAgentList)
+  // let isExistUserId = userAgentList.some(item => {
+  //   let _isExist = false
+  //   _isExist = String(item).indexOf('userid/') !== -1 && String('userid/') !== String(item)
+  //   return _isExist
+  // })
+  // let userIdStr = ''
+  // let userId = ''
+  // if (isExistUserId) {
+  //   // 存在userid
+  //   for (let i of userAgentList) {
+  //     if (i.indexOf('userid/') !== -1) {
+  //       userIdStr = i
+  //     }
+  //   }
+  //   userId = userIdStr.split('/')[1]
+  //   return userId
+  // } else {
+  //   // 不存在
+  //   alert('用户不存在，请登录')
+  //   return null
+  // }
 
   // ISO 调用
   // window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
@@ -240,8 +244,8 @@ export const getPlat = () => {
   // let userAgent = navigator.userAgent.toLowerCase()
   // console.log('userAgent', userAgent)
   let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
-   _userAgent = userAgent
 
+  console.log('configObj.zengchengSiteId', eval(configObj.zengchengSiteId).test(userAgent))
   if (/micromessenger/.test(userAgent)) {
     return 'wechat'
   } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
@@ -252,9 +256,13 @@ export const getPlat = () => {
     return 'dingdone'
   } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
     return 'dingding'
-  } else if (/78fa6d06b0dd4f27abf341e5efde035a/.test(userAgent)) {
+  } else if (eval(configObj.zengchengSiteId).test(userAgent)) {
     // 阅增城
-    console.log('进入阅增城的判断')
+    Toast({
+      message: '进入阅增城的判断',
+      position: 'bottom',
+      duration: 5000
+    })
     return 'zengcheng'
   }
   return 'browser'
@@ -594,6 +602,8 @@ export const getAppSign = () => {
       }
     })
     return sign
+  } else if (eval(configObj.zengchengSiteId).test(ua)) {
+    return 'zengcheng'
   } else {
     return 'other'
   }

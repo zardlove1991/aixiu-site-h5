@@ -23,17 +23,12 @@ Vue.use(VueClipboard)
 Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()
-console.log(1)
 router.beforeEach((to, from, next) => {
-  console.log(2)
   let name = to.name
   let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
-  console.log(3, allArr.includes(name), !from.name)
   if (allArr.includes(name) && !from.name) {
-    console.log(4)
     // 第一次进入页面
     oauth((res) => {
-      console.log(5, res)
       if (res && res.id) {
         next()
       }
