@@ -14,9 +14,12 @@ let zengChengObj = {
           STORAGE.set('userinfo', res)
           cbk(res)
         }
+
+        if (res.ErrorCode) {
+          alert(res.ErrorText)
+        }
       })
     } catch (err) {
-      console.log('err', err)
       cbk(-1, '阅增城：登录失败', err)
     }
   },

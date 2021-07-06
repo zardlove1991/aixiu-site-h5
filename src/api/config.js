@@ -1,7 +1,7 @@
 import { getEnvironment } from '@/utils/app'
 const protocol = window.location.protocol
 const env = getEnvironment()
-// const env = 'pre' // 先写死
+// const env = 'pre'
 
 // const suffix = env === 'online' ? '' : `-${env}`
 // const v2 = env === 'online' ? '.v2' : ''
