@@ -504,8 +504,10 @@ export default {
           } else {
             this.nextExerciseBtn = true
           }
+          if (!this.examList || this.examList.length < 1 || !data) return
           let currentQuestion = this.examList[this.currentSubjectIndex]
           this.analysisData = data[currentQuestion.hashid]
+          console.log('this.analysisData:', this.analysisData)
           let { answer } = this.analysisData
           if (answer) {
             if (!(answer instanceof Array)) {
