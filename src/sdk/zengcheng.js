@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getZCUserId } from '@/utils/utils'
@@ -51,7 +52,11 @@ export const oauth = (cbk) => {
     STORAGE.remove('location')
     STORAGE.remove('news_weather')
 
-    // 获取用户的信息
-    zengChengObj.getZengChengLoginInfo(cbk)
+    // 判断当前的用户是否已经登录
+    console.log('navigator', navigator)
+    if (getZCUserId() !== null) {
+      // 获取用户的信息
+      zengChengObj.getZengChengLoginInfo(cbk)
+    }
   }
 }

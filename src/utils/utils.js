@@ -213,20 +213,22 @@ export function getZCUserId () {
   //     }
   //   }
   //   userId = userIdStr.split('/')[1]
+  //   return userId
   // } else {
   //   // 不存在
   //   alert('用户不存在，请登录')
+  //   return null
   // }
-  // return userId
 
   // ISO 调用
   window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
   // eslint-disable-next-line no-unused-vars
   function callbackUserInfo (obj) {
     let userId = obj['userId']
-    console.log('获取的userId', userId)
     if (userId !== undefined) {
       return userId
+    } else {
+      return null
     }
   }
 }
@@ -250,7 +252,7 @@ export const getPlat = () => {
     return 'dingdone'
   } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
     return 'dingding'
-  } else if (/a1b48d214f364785bc5141e5b3908a64/.test(userAgent)) {
+  } else if (/78fa6d06b0dd4f27abf341e5efde035a/.test(userAgent)) {
     // 阅增城
     console.log('进入阅增城的判断')
     return 'zengcheng'
