@@ -109,7 +109,8 @@ export default {
       pop: {}, // 弹窗显示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
       isLuckDraw: false, // 是否是有资格抽奖
-      luckDrawTips: [] // 抽奖提示内容
+      luckDrawTips: [], // 抽奖提示内容
+      temporaryData: {}
     }
   },
   components: {
@@ -157,7 +158,6 @@ export default {
         // this.duration = parseInt(new Date(this.examInfo.times).getTime() / 1000) - _nowTime
         this.duration = this.remainTime
       }
-      console.log('this.duration: ', this.duration)
       let timeFun = () => {
         if (this.duration === 2) {
           this.$emit('notimeup')
@@ -185,6 +185,7 @@ export default {
     },
     async confirmSubmitModel () {
       this.toggleSubmitModel()
+      let _id = this.$route.params.id
       // 提交试卷
       let _result = await API.submitExam({
         query: {
@@ -193,88 +194,75 @@ export default {
       })
       clearInterval(this.timer)
       if (_result) {
-        let {success, raffle} = _result
-        if (success) {
-          if (raffle) {
-            let _raffleUrl = raffle.raffle_url
-            let {
-              is_open_raffle: _openRaffle,
-              is_open_jump: _openJump,
-              jump_conditions: _jumpConditions,
-              result,
-              pop
-            } = raffle
-            if (_openRaffle) {
-              if (_raffleUrl) {
-                this.isLuckDraw = true
-                this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-              } else {
-                this.isLuckDraw = false
-                this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-              }
-            } else if (_openJump) {
-              this.isSubmitSuccess = true
-              setTimeout(() => {
-                this.isSubmitSuccess = false
-                window.location.replace(_jumpConditions.value)
-              }, 1000)
-            } else if (result) {
-              let examId = this.examId
-              this.$router.replace({
-                path: `/exam/statistic/${examId}`
-              })
-            } else if (pop) {
-              this.isPopSubmitSuccess = true
-              this.pop = pop
-            } else {
-              console.log('_openRaffle:', _openRaffle, '_openJump:', _openJump, 'result:', result, 'pop:', pop)
+        if (this.examInfo.mark === 'examination@exercise') {
+          console.log('答题结果： ', _result)
+          this.temporaryData = _result
+          // 获取测评结果
+          API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
+            console.log('测评结果：', res)
+            let { correct_num: correctNum, points, score } = res
+            let exerciseResult = {
+              correctNum, points, score
             }
-          }
+            this.$emit('update:showExerciseResult', true)
+            this.$emit('getExerciseStatistics', exerciseResult)
+          })
         } else {
-          console.error('提交失败')
+          this.setResult(_result)
         }
       }
-      // try {
-      //   // await this.endExam() // 提交试卷
-      //   clearInterval(this.timer)
-      //   let rules = this.examInfo.limit.submit_rules
-      //   if (rules) {
-      //     let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-      //     if (isOpenRaffle && isOpenRaffle !== 0) {
-      //       // 抽奖
-      //       this.isLuckSubmitSuccess = true
-      //       if (this.luckDrawLink) {
-      //         this.isLuckDraw = true
-      //         this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-      //       } else {
-      //         this.isLuckDraw = false
-      //         this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-      //       }
-      //     } else if (link) {
-      //       this.isSubmitSuccess = true
-      //       setTimeout(() => {
-      //         this.isSubmitSuccess = false
-      //         window.location.replace(link.url)
-      //       }, 1000)
-      //     } else if (result) {
-      //       let examId = this.examId
-      //       this.$router.replace({
-      //         path: `/exam/statistic/${examId}`
-      //       })
-      //     } else if (pop) {
-      //       this.isPopSubmitSuccess = true
-      //       this.pop = pop
-      //     } else {
-      //       // 跳转去答题卡页面
-      //       this.pageToStart()
-      //     }
-      //   } else {
-      //     // 跳转去答题卡页面
-      //     this.pageToStart()
-      //   }
-      // } catch (err) {
-      //   console.log(err)
-      // }
+    },
+    // 处理结果
+    setResult (_result) {
+      console.log('处理结果')
+      console.log('this.temporaryData：', this.temporaryData)
+      if (!_result) {
+        if (this.temporaryData) {
+          _result = this.temporaryData
+        } else {
+          return
+        }
+      }
+      let {success, raffle} = _result
+      if (success) {
+        if (raffle) {
+          let _raffleUrl = raffle.raffle_url
+          let {
+            is_open_raffle: _openRaffle,
+            is_open_jump: _openJump,
+            jump_conditions: _jumpConditions,
+            result,
+            pop
+          } = raffle
+          if (_openRaffle) {
+            if (_raffleUrl) {
+              this.isLuckDraw = true
+              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+            } else {
+              this.isLuckDraw = false
+              this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+            }
+          } else if (_openJump) {
+            this.isSubmitSuccess = true
+            setTimeout(() => {
+              this.isSubmitSuccess = false
+              window.location.replace(_jumpConditions.value)
+            }, 1000)
+          } else if (result) {
+            let examId = this.examId
+            this.$router.replace({
+              path: `/exam/statistic/${examId}`
+            })
+          } else if (pop) {
+            this.isPopSubmitSuccess = true
+            this.pop = pop
+          } else {
+            console.log('_openRaffle:', _openRaffle, '_openJump:', _openJump, 'result:', result, 'pop:', pop)
+          }
+        }
+      } else {
+        console.error('提交失败')
+      }
     },
     // 获取答题记录
     getAnswerArr () {
@@ -355,7 +343,6 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
-
 .exam-header-wrap{
   width: 100%;
   .time-wrap{

@@ -3,13 +3,17 @@
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <div class="denpncelist-page" :class="examInfo.mark === 'examination@exercise'?'exercise':''">
     <!--头部组件-->
-    <exam-header v-if="renderType === 'exam' && examInfo.mark !== 'examination@exercise'"
+    <exam-header v-if="renderType === 'exam'"
+      v-show="examInfo.mark !== 'examination@exercise'"
+      ref="examHeader"
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
+      :showExerciseResult.sync="showExerciseResult"
       :curIndex="currentSubjectIndex"
       @timeup="endTime"
       @notimeup="noEndTime"
-      @showlist="toggetSubjectList">
+      @showlist="toggetSubjectList"
+      @getExerciseStatistics="getExerciseStatistics">
     </exam-header>
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!-- 练习题倒计时 -->
@@ -69,7 +73,7 @@
         <div class="next-wrap" v-show="isShowSubmitBtn && !nextExerciseBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
-        <div class="next-wrap" v-show="nextExerciseBtn" @click.stop="exerciseNext">
+        <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
           下一题
         </div>
       </div>
@@ -142,13 +146,19 @@
     <div class="analysis-div" v-if="analysisData">
       <div class="item">
         <span class="title">正确答案：</span>
-        <span></span>
+        <span>{{analysisData.pageAnswer}}</span>
       </div>
       <div class="item">
         <span class="title">答案解析：</span>
         <span>{{analysisData.analysis}}</span>
       </div>
     </div>
+    <exercise-result
+    v-if="showExerciseResult"
+    :exerciseResult="exerciseResult"
+    :show.sync="showExerciseResult"
+    @confirmResult="confirmStatistics"
+    ></exercise-result>
   </div>
 </template>
 
@@ -161,6 +171,7 @@ import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
 import SubjectMixin from '@/mixins/subject'
 import ExamHeader from './depence/exam-header'
+import ExerciseResult from './depence/exercise-result'
 import SubjectHeader from './depence/subject-header'
 import SubjectContent from './depence/subject-content'
 import SubjectList from '@/components/depence/subject-list'
@@ -207,7 +218,12 @@ export default {
       timerStatus: 'warning',
       nextExerciseBtn: false,
       successStatus: 0,
-      analysisData: null
+      analysisData: null,
+      //
+      showExerciseResult: false,
+      exerciseResult: {}, // 统计结果
+      exerciseRaffle: {},
+      autoSubmit: false
     }
   },
   components: {
@@ -217,7 +233,8 @@ export default {
     SubjectList,
     MyModel,
     MyRecord,
-    OperateDialog
+    OperateDialog,
+    ExerciseResult
   },
   computed: {
     ...mapGetters('depence', [
@@ -401,8 +418,14 @@ export default {
       })
     },
     submitExam () {
-      this.changeSubjectIndex(this.currentSubjectIndex)
-      this.isShowSubmitModel = true
+      this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
+        // 练习题做错误处理
+        if (this.examInfo.mark === 'examination@exercise') {
+          this.setExerciseResult(res)
+          // 练习题交卷
+          this.$refs.examHeader.confirmSubmitModel()
+        }
+      })
     },
     noEndTime () {
       // this.saveAnswerRecords(this.answerList)
@@ -462,37 +485,60 @@ export default {
       await this.changeSubjectIndex('add').then(res => {
         // 练习题做错误处理
         if (this.examInfo.mark === 'examination@exercise') {
-          console.log('保存云端的记录：', res)
-          let { success, data, raffle } = res
-          this.successStatus = success
-          if (success && success !== 1) {
-            this.timerStatus = 'exception'
-            // 答题错误
-            let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
-            console.log('answerSubmitRules:', answerSubmitRules)
-            if (answerSubmitRules) {
-              // 允许答错
-              if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
-                // Toast('已经没有题目了~')
-              } else {
-                this.nextExerciseBtn = true
-              }
-              let currentQuestion = this.examList[this.currentSubjectIndex]
-              this.analysisData = data[currentQuestion.hashid]
-              let { answer } = this.analysisData
-              if (answer) {
-                this.setAnalysisAnswer(answer)
-              }
-            } else {
-              // 答错直接交卷
-              console.log('raffle: ', raffle)
-            }
-          }
+          this.setExerciseResult(res)
         }
       })
     },
+    setExerciseResult (res) {
+      console.log('保存云端的记录：', res)
+      let { success, data, raffle } = res
+      if (success && success !== 1) {
+        this.successStatus = success
+        this.timerStatus = 'exception'
+        // 答题错误
+        let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
+        if (answerSubmitRules) {
+          // 允许答错
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+            // Toast('已经没有题目了~')
+          } else {
+            this.nextExerciseBtn = true
+          }
+          let currentQuestion = this.examList[this.currentSubjectIndex]
+          this.analysisData = data[currentQuestion.hashid]
+          let { answer } = this.analysisData
+          if (answer) {
+            this.setAnalysisAnswer(answer) // store存储当前解析
+            this.pageShowAnswer(answer)
+          }
+        } else {
+          // 答错直接交卷
+          this.showExerciseResult = true
+          this.exerciseRaffle = raffle
+          this.autoSubmit = true
+          // this.$refs.examHeader.confirmSubmitModel()
+        }
+      }
+    },
+    pageShowAnswer (answer) {
+      let currentQuestion = this.examList[this.currentSubjectIndex]
+      if (currentQuestion.options.length < 1) {
+        this.analysisData.pageAnswer = answer.join(' , ')
+      } else {
+        let _pageAnswer = []
+        currentQuestion.options.map(item => {
+          if (answer.indexOf(item.id) > -1) {
+            _pageAnswer.push(item.selectTip ? item.selectTip + '.' + item.name : item.name)
+          }
+        })
+        if (_pageAnswer.length > 0) {
+          this.analysisData.pageAnswer = _pageAnswer.join(' , ')
+        } else {
+          this.analysisData.pageAnswer = ''
+        }
+      }
+    },
     resetTimeLimit () {
-      console.log('%c进行倒计时!', 'color: red;font-size: 14px;')
       if (!this.examInfo || this.examList.length < 1) return
       if (this.examInfo.mark === 'examination@exercise') {
         let currentQuestion = this.examList[this.currentSubjectIndex]
@@ -552,9 +598,22 @@ export default {
       return this.exerciseCountTime
     },
     exerciseNext () {
+      this.nextExerciseBtn = false
+      this.successStatus = 0
+      this.analysisData = null
       let num = this.currentSubjectIndex
       this.setAnalysisAnswer('')
       this.setCurrentSubjectIndex(++num)
+    },
+    getExerciseStatistics (data) {
+      this.exerciseResult = data
+    },
+    confirmStatistics () {
+      if (this.autoSubmit) {
+        this.$refs.examHeader.setResult(this.exerciseRaffle)
+      } else {
+        this.$refs.examHeader.setResult()
+      }
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -573,7 +632,6 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
-        console.log('answerList:', this.answerList)
         if (v && !this.loadList) {
           this.loadList = true
           this.$nextTick(() => {
@@ -598,7 +656,6 @@ export default {
     'examList': {
       handler: function (v) {
         this.resetTimeLimit()
-        console.log('%cexamList: ', 'color: red; font-size: 15px;', v)
       },
       immediate: true
     }

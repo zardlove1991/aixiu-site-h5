@@ -16,6 +16,9 @@
       min-height: auto;
       margin-top: 6vw;
       padding-top: 7vw;
+      .btn-wrap{
+        padding: 0 px2rem(30px) px2rem(30px);
+      }
     }
 }
   .tip-btn{
@@ -58,7 +61,7 @@
       justify-content: center;
       pointer-events: auto;
       margin-top: px2rem(30px);
-      padding: 0 px2rem(30px) px2rem(30px);
+      padding: 0 px2rem(30px) px2rem(100px);
       box-sizing: border-box;
       background-color:#fff;
       .prev-wrap{

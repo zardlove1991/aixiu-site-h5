@@ -92,33 +92,19 @@ export default {
   },
   methods: {
     checkAnswerStatus (data) {
-      console.log('%c校验答案1: ', 'color: green;', data)
-      let values = Object.values(this.analysisAnswer)
-      console.log('%c校验答案2: ', 'color: green;', values)
+      // let values = Object.values(this.exerciseAnalysisAnswer)
+      let values = this.exerciseAnalysisAnswer
       let _result = ''
       if (values && values.length > 0) {
         if (values.indexOf(data.id) > -1) {
           _result = 'correct_answer'
         } else {
           if (data.active) {
-            console.log('被选中！！')
             _result = 'wrong_answer'
           }
         }
-      } else {
-        console.log('没有值：', _result)
       }
-      console.log('%c校验结果: ', 'color: green;', _result)
       return _result
-    }
-  },
-  watch: {
-    data: {
-      handler: function (v) {
-        console.log('组件数据：', v)
-      },
-      deep: true,
-      immediate: true
     }
   }
 }

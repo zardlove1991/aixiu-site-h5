@@ -25,7 +25,7 @@ const state = {
   luckDrawLink: null,
   remainTime: '', // 考试剩余时间
   actQuestionId: null,
-  analysisAnswer: ''
+  exerciseAnalysisAnswer: ''
 }
 
 const getters = {
@@ -95,7 +95,7 @@ const getters = {
   luckDrawLink: state => state.luckDrawLink,
   remainTime: state => state.remainTime,
   actQuestionId: state => state.actQuestionId,
-  analysisAnswer: state => state.analysisAnswer
+  exerciseAnalysisAnswer: state => state.exerciseAnalysisAnswer
 }
 
 const mutations = {
@@ -234,7 +234,7 @@ const mutations = {
     state.actQuestionId = payload
   },
   SET_ANALYSIS_ANSWER (state, payload) {
-    state.analysisAnswer = payload
+    state.exerciseAnalysisAnswer = payload
   }
 }
 

@@ -39,7 +39,7 @@ export default {
     ...mapGetters('depence', [
       'essayAnswerInfo', 'currentSubjectInfo', 'isShowModelThumb',
       'renderType', 'examList', 'currentSubjectIndex', 'oralAnswerInfo',
-      'subjectAnswerInfo', 'blankAnswerInfo', 'analysisAnswer'
+      'subjectAnswerInfo', 'blankAnswerInfo', 'exerciseAnalysisAnswer'
     ]),
     isDidCurSubject () { // 当前题目是否回答过
       let allAnswerState = this.subjectAnswerInfo

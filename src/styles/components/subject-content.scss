@@ -54,10 +54,38 @@
     box-sizing: border-box;
     border-radius: px2rem(10px);
     &.correct_answer{
-      background-color: rgba(53, 176, 104, .1)
+      background-color: rgba(53, 176, 104, .1);
+      .select-tip-wrap{
+        .select-tip{
+          background-color: rgba(53, 176, 104, 1)!important;
+          &:after{
+            content: '';
+            display: block;
+            width: 100%!important;
+            height: 100%!important;
+            background: url('~@/assets/common/exam/progress-correct.png') no-repeat center;
+            background-size: 60% auto;
+            background-color: transparent!important;
+          }
+        }
+      }
     }
     &.wrong_answer{
-      background-color: rgba(230, 52, 52, .1)
+      background-color: rgba(230, 52, 52, .1);
+      .select-tip-wrap{
+        .select-tip{
+          background-color: rgba(230, 52, 52, 1)!important;
+          &:after{
+            content: '';
+            display: block;
+            width: 100%!important;
+            height: 100%!important;
+            background: url('~@/assets/common/exam/progress-wrong.png') no-repeat center;
+            background-size: 60% auto;
+            background-color: transparent!important;
+          }
+        }
+      }
     }
     .select-tip-wrap{
       display: flex;

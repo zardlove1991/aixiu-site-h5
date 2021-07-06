@@ -316,6 +316,8 @@ export default {
     }
   },
   created () {
+    // 清除练习题计时
+    STORAGE.remove('timer_' + this.$route.params.id)
     this.dialog = {
       title: '分享成功'
     }
