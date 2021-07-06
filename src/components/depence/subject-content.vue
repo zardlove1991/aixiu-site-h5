@@ -117,8 +117,6 @@ export default {
             let newStr = JSON.stringify(newV.options)
             let oldStr = JSON.stringify(_oldObj.options)
             if (newStr !== oldStr) {
-              console.log('%cnewStr:', 'color: red;font-size: 13px;', newStr)
-              console.log('%coldStr:', 'color: green;font-size: 13px;', oldStr)
               this.showCloudBtn = true
               this.setActionQuestionId(_oldObj.id)
             }

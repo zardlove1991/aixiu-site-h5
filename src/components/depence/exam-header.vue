@@ -133,15 +133,12 @@ export default {
     unDoSubjectLength () {
       let subjectAnswerInfo = this.subjectAnswerInfo
       let list = this.list
-      console.log(this.subjectAnswerInfo, 'unDoSubjectLength')
-      console.log(list)
       let count = Object.values(subjectAnswerInfo).filter(state => state).length
       return (list.length - count)
     }
   },
   watch: {
     percent (newVal) {
-      console.log(newVal)
       if (newVal) this._moveProgressBtn()
     }
   },

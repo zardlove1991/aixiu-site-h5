@@ -487,6 +487,7 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     async saveCloud () {
+      if (this.successStatus !== 0) return
       await this.changeSubjectIndex('add').then(res => {
         // 练习题做错误处理
         if (this.examInfo.mark === 'examination@exercise') {
@@ -495,9 +496,9 @@ export default {
       })
     },
     setExerciseResult (res) {
-      console.log('保存云端的记录：', res)
       let { success, data, raffle } = res
       if (success && success !== 1) {
+        this.clearTimer()
         this.successStatus = success
         this.timerStatus = 'exception'
         // 答题错误
@@ -512,7 +513,6 @@ export default {
           if (!this.examList || this.examList.length < 1 || !data) return
           let currentQuestion = this.examList[this.currentSubjectIndex]
           this.analysisData = data[currentQuestion.hashid]
-          console.log('this.analysisData:', this.analysisData)
           let { answer } = this.analysisData
           if (answer) {
             if (!(answer instanceof Array)) {
@@ -584,7 +584,7 @@ export default {
       let _now = new Date().getTime()
       let _endTime = this.getEndTime()
       // 超时
-      if (_endTime < _now) {
+      if (_endTime < _now && this.successStatus === 0) {
         console.log('已经超时！！')
         this.saveCloud()
       } else {
@@ -599,13 +599,15 @@ export default {
       this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
       this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / parseInt(limitTime))
       let _this = this
-      if (this.exerciseCountTime > 0) {
+      if (this.exerciseCountTime > 0 && this.successStatus === 0) {
         this.currentTimer = setTimeout(function () {
           _this.refreshTime()
         }, 1000)
       } else {
         this.clearTimer()
-        this.saveCloud()
+        if (this.successStatus === 0) {
+          this.saveCloud()
+        }
       }
     },
     clearTimer () {
@@ -627,6 +629,9 @@ export default {
       this.exerciseResult = data
     },
     confirmStatistics () {
+      let _id = this.$route.params.id
+      STORAGE.remove('answer_record_' + _id)
+      this.setCurrentSubjectIndex(0)
       if (this.autoSubmit) {
         this.$refs.examHeader.setResult(this.exerciseRaffle)
       } else {
@@ -664,10 +669,12 @@ export default {
     },
     'currentSubjectIndex': {
       handler: function (v) {
-        this.nextExerciseBtn = false
-        this.resetTimeLimit()
-        this.successStatus = 0
-        this.analysisData = null
+        if (v !== 0) {
+          this.nextExerciseBtn = false
+          this.resetTimeLimit()
+          this.successStatus = 0
+          this.analysisData = null
+        }
       },
       immediate: true
     },
