@@ -418,14 +418,19 @@ export default {
       })
     },
     submitExam () {
-      this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
-        // 练习题做错误处理
-        if (this.examInfo.mark === 'examination@exercise') {
-          this.setExerciseResult(res)
-          // 练习题交卷
-          this.$refs.examHeader.confirmSubmitModel()
-        }
-      })
+      if (this.examInfo.mark !== 'examination@exercise') {
+        this.changeSubjectIndex(this.currentSubjectIndex)
+        this.isShowSubmitModel = true
+      } else {
+        this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
+          // 练习题做错误处理
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.setExerciseResult(res)
+            // 练习题交卷
+            this.$refs.examHeader.confirmSubmitModel()
+          }
+        })
+      }
     },
     noEndTime () {
       // this.saveAnswerRecords(this.answerList)
