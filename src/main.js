@@ -17,8 +17,6 @@ import 'videojs-flash'
 import 'videojs-contrib-hls'
 import 'swiper/swiper-bundle.css'
 
-import { Toast } from 'mint-ui'
-
 Vue.use(VideoPlayer)
 Vue.use(VueAwesomeSwiper)
 Vue.use(VueClipboard)
@@ -28,21 +26,9 @@ setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   let name = to.name
   let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
-  console.log(3, allArr.includes(name), !from.name)
   if (allArr.includes(name) && !from.name) {
-    console.log(4)
-    Toast({
-      message: '4',
-      position: 'bottom',
-      duration: 5000
-    })
     // 第一次进入页面
     oauth((res) => {
-      Toast({
-        message: '5',
-        position: 'bottom',
-        duration: 5000
-      })
       if (res && res.id) {
         next()
       }

@@ -1,30 +1,52 @@
 /* eslint-disable no-unused-vars */
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
-import { getZCUserId } from '@/utils/utils'
 import { Toast } from 'mint-ui'
 
+// window.zc_tools = {
+//   userInfo: function (obj) {
+//     let userId = obj['userId']
+//     Toast({
+//       message: 'userId:' + userId,
+//       position: 'top',
+//       duration: 5000
+//     })
+//   }
+// }
 let zengChengObj = {
-  async getZengChengLoginInfo (cbk) { // code换用户登录
+  getZengChengLoginInfo (cbk) { // code换用户登录
     try {
       let params = {}
-      params.userid = getZCUserId()
-      API.getZengChengUser({
-        params
-      }).then((res) => {
-        if (res && res.id) {
-          STORAGE.set('userinfo', res)
-          cbk(res)
-        }
+      window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
 
-        if (res.ErrorCode) {
-          Toast({
-            message: res.ErrorText,
-            position: 'bottom',
-            duration: 5000
-          })
-        }
-      })
+      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-inner-declarations
+      window.callbackUserInfo = function (obj) {
+        let userId = obj['userId']
+        Toast({
+          message: 'userId:' + userId,
+          position: 'top',
+          duration: 5000
+        })
+
+        params.userid = userId
+        API.getZengChengUser({
+          params
+        }).then((res) => {
+          if (res && res.id) {
+            STORAGE.set('userinfo', res)
+            cbk(res)
+          }
+
+          if (res.ErrorCode) {
+            Toast({
+              message: res.ErrorText,
+              position: 'middle',
+              duration: 5000
+            })
+          }
+        })
+      }
     } catch (err) {
       cbk(-1, '阅增城：登录失败', err)
     }
@@ -57,11 +79,7 @@ export const oauth = (cbk) => {
     STORAGE.remove('location')
     STORAGE.remove('news_weather')
 
-    // 判断当前的用户是否已经登录
-    console.log('navigator', navigator)
-    if (getZCUserId() !== null) {
-      // 获取用户的信息
-      zengChengObj.getZengChengLoginInfo(cbk)
-    }
+    // 获取用户的信息
+    zengChengObj.getZengChengLoginInfo(cbk)
   }
 }
