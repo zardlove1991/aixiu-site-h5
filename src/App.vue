@@ -20,6 +20,7 @@ export default {
   },
   components: { errorDialog },
   created () {
+    console.log('app')
     this.goPage()
   },
   methods: {

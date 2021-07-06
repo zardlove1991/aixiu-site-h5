@@ -8,6 +8,8 @@ import {
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
+import { Toast } from 'mint-ui'
+
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -220,11 +222,24 @@ export function getZCUserId () {
   //   return null
   // }
 
+  Toast({
+    message: 'getUserId',
+    position: 'bottom',
+    duration: 5000
+  })
+
   // ISO 调用
   window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
   // eslint-disable-next-line no-unused-vars
   function callbackUserInfo (obj) {
     let userId = obj['userId']
+
+    Toast({
+      message: userId,
+      position: 'bottom',
+      duration: 5000
+    })
+
     if (userId !== undefined) {
       return userId
     } else {
@@ -242,6 +257,12 @@ export const getPlat = () => {
   // let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
   // _userAgent = userAgent
 
+  // Toast({
+  //   message: userAgent,
+  //   position: 'bottom',
+  //   duration: 5000
+  // })
+
   if (/micromessenger/.test(userAgent)) {
     return 'wechat'
   } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
@@ -254,7 +275,11 @@ export const getPlat = () => {
     return 'dingding'
   } else if (/78fa6d06b0dd4f27abf341e5efde035a/.test(userAgent)) {
     // 阅增城
-    console.log('进入阅增城的判断')
+    Toast({
+      message: '进入阅增城的判断',
+      position: 'bottom',
+      duration: 5000
+    })
     return 'zengcheng'
   }
   return 'browser'

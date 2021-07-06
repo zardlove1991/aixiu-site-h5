@@ -2,6 +2,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getZCUserId } from '@/utils/utils'
+import { Toast } from 'mint-ui'
 
 let zengChengObj = {
   async getZengChengLoginInfo (cbk) { // code换用户登录
@@ -17,7 +18,11 @@ let zengChengObj = {
         }
 
         if (res.ErrorCode) {
-          alert(res.ErrorText)
+          Toast({
+            message: res.ErrorText,
+            position: 'bottom',
+            duration: 5000
+          })
         }
       })
     } catch (err) {
