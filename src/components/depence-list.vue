@@ -508,15 +508,26 @@ export default {
           this.analysisData = data[currentQuestion.hashid]
           let { answer } = this.analysisData
           if (answer) {
+            if (!(answer instanceof Array)) {
+              answer = Object.values(answer)
+            }
             this.setAnalysisAnswer(answer) // store存储当前解析
             this.pageShowAnswer(answer)
           }
         } else {
           // 答错直接交卷
-          this.showExerciseResult = true
-          this.exerciseRaffle = raffle
-          this.autoSubmit = true
-          // this.$refs.examHeader.confirmSubmitModel()
+          let _id = this.$route.params.id
+          API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
+            console.log('测评结果：', res)
+            let { correct_num: correctNum, points, score } = res
+            let exerciseResult = {
+              correctNum, points, score
+            }
+            this.exerciseRaffle = raffle
+            this.exerciseResult = exerciseResult
+            this.autoSubmit = true
+            this.showExerciseResult = true
+          })
         }
       }
     },
