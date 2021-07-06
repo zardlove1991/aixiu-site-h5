@@ -213,11 +213,13 @@ export function getZCUserId () {
       }
     }
     userId = userIdStr.split('/')[1]
+    return userId
   } else {
     // 不存在
     alert('用户不存在，请登录')
+    return null
   }
-  return userId
+
 
   // ISO 调用
   // window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
@@ -226,6 +228,8 @@ export function getZCUserId () {
   //   let userId = obj['userId']
   //   if (userId !== undefined) {
   //     return userId
+  //   } else {
+  //     return null
   //   }
   // }
 }
@@ -237,7 +241,6 @@ export const getPlat = () => {
   // let userAgent = navigator.userAgent.toLowerCase()
   let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
   _userAgent = userAgent
-  getZCUserId(userAgent)
   if (/micromessenger/.test(userAgent)) {
     return 'wechat'
   } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
