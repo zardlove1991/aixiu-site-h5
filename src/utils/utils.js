@@ -10,6 +10,8 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import configObj from '@/api/config.js'
 
+// import { Toast } from 'mint-ui'
+
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -239,11 +241,8 @@ export function getZCUserId () {
  * 判断嵌入平台
  * */
 export const getPlat = () => {
-  // let userAgent = navigator.userAgent.toLowerCase()
-  // console.log('userAgent', userAgent)
-  let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
-
-  console.log('configObj.zengchengSiteId', eval(configObj.zengchengSiteId).test(userAgent))
+  let userAgent = navigator.userAgent.toLowerCase()
+  // let userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Scale/2.00 pdmiryun appId/a1b48d214f364785bc5141e5b3908a64 userId/f453c0ab936142f18bc8bd2605a4b727 currentSiteId/78fa6d06b0dd4f27abf341e5efde035a'.toLowerCase()
   if (/micromessenger/.test(userAgent)) {
     return 'wechat'
   } else if (/m2oapp/.test(userAgent) || /m2osmartcity/.test(userAgent)) {
