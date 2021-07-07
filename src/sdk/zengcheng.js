@@ -51,6 +51,7 @@ let zengChengObj = {
           position: 'middle',
           duration: 5000
         })
+        return false
       }
 
       // eslint-disable-next-line no-unused-vars
