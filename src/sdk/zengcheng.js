@@ -4,16 +4,6 @@ import STORAGE from '@/utils/storage'
 import { Toast } from 'mint-ui'
 import { mobileDevice } from '@/utils/utils'
 
-// window.zc_tools = {
-//   userInfo: function (obj) {
-//     let userId = obj['userId']
-//     Toast({
-//       message: 'userId:' + userId,
-//       position: 'top',
-//       duration: 5000
-//     })
-//   }
-// }
 let zengChengObj = {
   getZengChengLoginInfo (cbk) { // code换用户登录
     try {
