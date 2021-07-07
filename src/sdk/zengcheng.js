@@ -45,8 +45,6 @@ let zengChengObj = {
       // eslint-disable-next-line no-inner-declarations
       window.callbackUserInfo = function (obj) {
         let userId = obj['userId']
-        userId = 'f453c0ab936142f18bc8bd2605a4b727'
-
         params.userid = userId
         API.getZengChengUser({
           params
