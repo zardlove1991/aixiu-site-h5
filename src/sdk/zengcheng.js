@@ -16,55 +16,55 @@ import { Toast } from 'mint-ui'
 let zengChengObj = {
   getZengChengLoginInfo (cbk) { // code换用户登录
     try {
-      let params = {}
-      console.log('9999')
-      let userId = 'f453c0ab936142f18bc8bd2605a4b727'
-
-      params.userid = userId
-      API.getZengChengUser({
-        params
-      }).then((res) => {
-        if (res && res.id) {
-          STORAGE.set('userinfo', res)
-          cbk(res)
-        }
-
-        if (res.ErrorCode) {
-          Toast({
-            message: res.ErrorText,
-            position: 'middle',
-            duration: 5000
-          })
-        }
-      })
-      return false
-
       // let params = {}
-      // window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
-      // // eslint-disable-next-line no-unused-vars
-      // // eslint-disable-next-line no-inner-declarations
-      // window.callbackUserInfo = function (obj) {
-      //   let userId = obj['userId']
-      //   userId = 'f453c0ab936142f18bc8bd2605a4b727'
+      // console.log('9999')
+      // let userId = 'f453c0ab936142f18bc8bd2605a4b727'
 
-      //   params.userid = userId
-      //   API.getZengChengUser({
-      //     params
-      //   }).then((res) => {
-      //     if (res && res.id) {
-      //       STORAGE.set('userinfo', res)
-      //       cbk(res)
-      //     }
+      // params.userid = userId
+      // API.getZengChengUser({
+      //   params
+      // }).then((res) => {
+      //   if (res && res.id) {
+      //     STORAGE.set('userinfo', res)
+      //     cbk(res)
+      //   }
 
-      //     if (res.ErrorCode) {
-      //       Toast({
-      //         message: res.ErrorText,
-      //         position: 'middle',
-      //         duration: 5000
-      //       })
-      //     }
-      //   })
-      // }
+      //   if (res.ErrorCode) {
+      //     Toast({
+      //       message: res.ErrorText,
+      //       position: 'middle',
+      //       duration: 5000
+      //     })
+      //   }
+      // })
+      // return false
+
+      let params = {}
+      window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
+      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-inner-declarations
+      window.callbackUserInfo = function (obj) {
+        let userId = obj['userId']
+        userId = 'f453c0ab936142f18bc8bd2605a4b727'
+
+        params.userid = userId
+        API.getZengChengUser({
+          params
+        }).then((res) => {
+          if (res && res.id) {
+            STORAGE.set('userinfo', res)
+            cbk(res)
+          }
+
+          if (res.ErrorCode) {
+            Toast({
+              message: res.ErrorText,
+              position: 'middle',
+              duration: 5000
+            })
+          }
+        })
+      }
     } catch (err) {
       cbk(-1, '阅增城：登录失败', err)
     }
