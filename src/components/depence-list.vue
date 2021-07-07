@@ -4,7 +4,6 @@
     <div class="denpncelist-page" :class="examInfo.mark === 'examination@exercise'?'exercise':''">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
-      v-show="examInfo.mark !== 'examination@exercise'"
       ref="examHeader"
       :list="examList"
       :showSubmitModel.sync="isShowSubmitModel"
@@ -213,7 +212,7 @@ export default {
       loadList: false,
       //
       exerciseCountTime: 30,
-      exerciseCountProgress: 80,
+      exerciseCountProgress: 0,
       currentTimer: null,
       timerStatus: 'warning',
       nextExerciseBtn: false,

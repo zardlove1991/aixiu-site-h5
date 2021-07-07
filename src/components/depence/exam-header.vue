@@ -1,12 +1,12 @@
 <template lang="html">
   <div class="exam-header-wrap">
-    <div class="time-wrap" :class="['time-wrap', isTimeStyle ]">
+    <div class="time-wrap" :class="['time-wrap', isTimeStyle ]" v-show="examInfo.mark !== 'examination@exercise'">
       <div class="time time-flex">
         <div class="time-icon"></div>
         <span>{{timeTip ? timeTip : '初始化...'}}</span>
       </div>
     </div>
-    <div class="header-info-wrap" v-if="type === 'list'">
+    <div class="header-info-wrap" v-if="type === 'list'" v-show="examInfo.mark !== 'examination@exercise'">
       <!--主体内容展示-->
       <div class="header-content">
         <div class="left-wrap">
@@ -191,14 +191,12 @@ export default {
       })
       clearInterval(this.timer)
       if (_result) {
-        console.log('答题结果： ', _result)
         let {success, raffle} = _result
         if (success) {
           this.temporaryData = raffle
           if (this.examInfo.mark === 'examination@exercise') {
             // 获取测评结果
             API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
-              console.log('测评结果：', res)
               let { correct_num: correctNum, points, score } = res
               let exerciseResult = {
                 correctNum, points, score
@@ -230,7 +228,8 @@ export default {
           is_open_jump: _openJump,
           jump_conditions: _jumpConditions,
           result,
-          pop
+          pop,
+          link
         } = raffle
         if (_openRaffle) {
           if (_raffleUrl) {
@@ -240,13 +239,14 @@ export default {
             this.isLuckDraw = false
             this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
           }
-        } else if (_openJump) {
+        } else if (link) {
           this.isSubmitSuccess = true
+          let { url } = link
           setTimeout(() => {
             this.isSubmitSuccess = false
-            window.location.replace(_jumpConditions.value)
+            window.location.replace(url)
           }, 1000)
-        } else if (result) {
+        } else if (result || _jumpConditions) {
           let examId = this.examId
           this.$router.replace({
             path: `/exam/statistic/${examId}`

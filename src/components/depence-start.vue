@@ -8,7 +8,7 @@
         <i class="tips-icon"></i>
         <span class="tips-msg">已提交</span>
       </div>
-      <div class="to-score" @click.stop="toStatistic">查看结果</div>
+      <div class="to-score" @click.stop="toStatistic">我的答题记录</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
@@ -100,8 +100,8 @@
         <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
         <button v-else
-        :class="[getRadius, examInfo.remain_counts !== 0 || !isNoLimit || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
-        @click.stop="examInfo.remain_counts !== 0 || !isNoLimit|| examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+        :class="[getRadius, (examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? 'start-exambtn':'end-exambtn']"
+        @click.stop="(examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
@@ -1230,7 +1230,7 @@ export default {
       text-align: center;
       margin-top: px2rem(30px);
     }
-    .btn-view {width: 100%;}
+    .btn-view {flex: 1;width: 100%;}
     .start-exambtn, .end-exambtn {
       box-sizing: border-box;
       width: 100%;
