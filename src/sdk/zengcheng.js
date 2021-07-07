@@ -2,6 +2,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { Toast } from 'mint-ui'
+import { mobileDevice } from '@/utils/utils'
 
 // window.zc_tools = {
 //   userInfo: function (obj) {
@@ -40,7 +41,18 @@ let zengChengObj = {
       // return false
 
       let params = {}
-      window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
+      if (mobileDevice() === 'iOS') {
+        window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
+      } else if (mobileDevice() === 'Android') {
+        window.jsInterface.getUserInfo(JSON.stringify({callBack: 'callbackUserInfo'}))
+      } else {
+        Toast({
+          message: '平台判断有误',
+          position: 'middle',
+          duration: 5000
+        })
+      }
+
       // eslint-disable-next-line no-unused-vars
       // eslint-disable-next-line no-inner-declarations
       window.callbackUserInfo = function (obj) {
