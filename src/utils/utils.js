@@ -196,47 +196,6 @@ export const formatSecByTime = (params) => {
   }
   return timeArr
 }
-
-// 获取增城的UserId
-// let _userAgent = ''
-export function getZCUserId () {
-  // const userAgentList = _userAgent.split(' ')
-  // console.log('userAgentList', userAgentList)
-  // let isExistUserId = userAgentList.some(item => {
-  //   let _isExist = false
-  //   _isExist = String(item).indexOf('userid/') !== -1 && String('userid/') !== String(item)
-  //   return _isExist
-  // })
-  // let userIdStr = ''
-  // let userId = ''
-  // if (isExistUserId) {
-  //   // 存在userid
-  //   for (let i of userAgentList) {
-  //     if (i.indexOf('userid/') !== -1) {
-  //       userIdStr = i
-  //     }
-  //   }
-  //   userId = userIdStr.split('/')[1]
-  //   return userId
-  // } else {
-  //   // 不存在
-  //   alert('用户不存在，请登录')
-  //   return null
-  // }
-
-  // ISO 调用
-  // window.webkit.messageHandlers.getLoginUserId.postMessage(JSON.stringify({callBack: 'callbackUserInfo'}))
-  // // eslint-disable-next-line no-unused-vars
-  // function callbackUserInfo (obj) {
-  //   let userId = obj['userId']
-  //   if (userId !== undefined) {
-  //     return userId
-  //   } else {
-  //     return null
-  //   }
-  // }
-}
-
 /*
  * 判断嵌入平台
  * */
