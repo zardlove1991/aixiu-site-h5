@@ -713,8 +713,12 @@ const actions = {
     let list = state.examList
     // 判断什么操作 加减 还是 直接赋值
     if (typeof payload === 'string') {
-      if (payload === 'add') index++
+      if (payload === 'add' || payload === 'timeout') index++
       else if (payload === 'sub') index--
+      else if (/to_/.test(payload)) {
+        let num = payload.split('_')[1]
+        index = parseInt(num)
+      }
       // 判断界限
       if (index < 0 || index > list.length - 1) {
         Toast('已经没有题目了~')
@@ -723,43 +727,52 @@ const actions = {
     } else if (typeof payload === 'number') {
       index = payload
     }
-    // 存储到云端
-    let subject = state.examList[state.currentSubjectIndex]
-    let essayAnswerInfo = state.essayAnswerInfo
-    let oralAnswerInfo = state.oralAnswerInfo
-    let sortAnswerInfo = state.sortAnswerInfo
-    let blankAnswerInfo = state.blankAnswerInfo
-    // 通过整理参数的方法判断盖提是否为空
-    let result = dealSaveRecord({
-      subject,
-      essayAnswerInfo,
-      oralAnswerInfo,
-      sortAnswerInfo,
-      blankAnswerInfo
-    }, 'check-answer')
-    let _arr = []
-    _arr.push(result.params)
-    let data = {
-      params: _arr
+    if (!/to_/.test(payload)) {
+      // 存储到云端
+      let subject = state.examList[state.currentSubjectIndex]
+      let essayAnswerInfo = state.essayAnswerInfo
+      let oralAnswerInfo = state.oralAnswerInfo
+      let sortAnswerInfo = state.sortAnswerInfo
+      let blankAnswerInfo = state.blankAnswerInfo
+      // 通过整理参数的方法判断盖提是否为空
+      let result = dealSaveRecord({
+        subject,
+        essayAnswerInfo,
+        oralAnswerInfo,
+        sortAnswerInfo,
+        blankAnswerInfo
+      }, 'check-answer')
+      let _arr = []
+      // 超时答案清空
+      if (payload === 'timeout') {
+        result.params.options_id = ''
+      }
+      _arr.push(result.params)
+      let data = {
+        params: _arr
+      }
+      let _cloudData = ''
+      await API.saveIntoCloud({
+        query: {
+          id: state.examId
+        },
+        data
+      }).then(res => {
+        _cloudData = res
+        if (res.success === 1) {
+          commit('SET_ANALYSIS_ANSWER', '')
+          commit('SET_CURRENT_SUBJECT_INDEX', index)
+        }
+      })
+      return new Promise((resolve, reject) => {
+        if (_cloudData) {
+          resolve(_cloudData)
+        }
+      })
+    } else {
+      commit('SET_ANALYSIS_ANSWER', '')
+      commit('SET_CURRENT_SUBJECT_INDEX', index)
     }
-    let _cloudData = ''
-    await API.saveIntoCloud({
-      query: {
-        id: state.examId
-      },
-      data
-    }).then(res => {
-      _cloudData = res
-      if (res.success === 1) {
-        commit('SET_ANALYSIS_ANSWER', '')
-        commit('SET_CURRENT_SUBJECT_INDEX', index)
-      }
-    })
-    return new Promise((resolve, reject) => {
-      if (_cloudData) {
-        resolve(_cloudData)
-      }
-    })
   },
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
     let selectIndex = payload.selectIndex

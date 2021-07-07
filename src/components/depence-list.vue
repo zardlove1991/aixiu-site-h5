@@ -211,7 +211,7 @@ export default {
       },
       loadList: false,
       //
-      exerciseCountTime: 30,
+      exerciseCountTime: 1,
       exerciseCountProgress: 0,
       currentTimer: null,
       timerStatus: 'warning',
@@ -246,6 +246,9 @@ export default {
       let renderType = this.renderType
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
     }
+  },
+  beforeDestroy () {
+    this.clearTimer()
   },
   methods: {
     toStatistic () {
@@ -461,14 +464,24 @@ export default {
       }
     },
     checkAnswerMaxQuestionId () {
+      console.log('%c校验考试中断', 'color: #666;font-size:15px;')
       let examInfo = this.examInfo
       let answerMaxQuestionId = examInfo.answer_max_question_id
+      console.log('answerMaxQuestionId: ', answerMaxQuestionId)
       let renderType = this.renderType
       // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam' && answerMaxQuestionId) {
+      if (renderType === 'exam') {
         let list = this.examList
-        let index = list.findIndex(item => item.id === answerMaxQuestionId)
-        if (index >= 0) this.changeSubjectIndex(index)
+        if (answerMaxQuestionId) {
+          let index = list.findIndex(item => item.id === answerMaxQuestionId)
+          if (index >= 0) this.changeSubjectIndex('to_' + index)
+        } else {
+          let _lastIndex = 0
+          list.forEach((item, index) => {
+            if (item.value) _lastIndex = index
+          })
+          this.changeSubjectIndex('to_' + _lastIndex)
+        }
       }
     },
     _dealShowBtn (flag) {
@@ -485,12 +498,17 @@ export default {
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
     },
-    async saveCloud () {
+    async saveCloud (status = 'add') {
+      console.log('执行！！！！！！！！！！！！！！！！！！！！')
       if (this.successStatus !== 0) return
-      await this.changeSubjectIndex('add').then(res => {
+      await this.changeSubjectIndex(status).then(res => {
         // 练习题做错误处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
+        }
+      }).catch(err => {
+        if (err.error_code === 422 && err.error_message === '用户已交卷') {
+          this.toStart()
         }
       })
     },
@@ -498,43 +516,45 @@ export default {
       let { success, data, raffle } = res
       if (success && success !== 1) {
         this.clearTimer()
-        this.successStatus = success
-        this.timerStatus = 'exception'
-        // 答题错误
-        let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
-        if (answerSubmitRules) {
-          // 允许答错
-          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
-            // Toast('已经没有题目了~')
+        this.$nextTick(() => {
+          this.successStatus = success
+          this.timerStatus = 'exception'
+          // 答题错误
+          let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
+          if (answerSubmitRules) {
+            // 允许答错
+            if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+              // Toast('已经没有题目了~')
+            } else {
+              this.nextExerciseBtn = true
+            }
+            if (!this.examList || this.examList.length < 1 || !data) return
+            let currentQuestion = this.examList[this.currentSubjectIndex]
+            this.analysisData = data[currentQuestion.hashid]
+            let { answer } = this.analysisData
+            if (answer) {
+              if (!(answer instanceof Array)) {
+                answer = Object.values(answer)
+              }
+              this.setAnalysisAnswer(answer) // store存储当前解析
+              this.pageShowAnswer(answer)
+            }
           } else {
-            this.nextExerciseBtn = true
+            // 答错直接交卷
+            let _id = this.$route.params.id
+            API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
+              console.log('测评结果：', res)
+              let { correct_num: correctNum, points, score } = res
+              let exerciseResult = {
+                correctNum, points, score
+              }
+              this.exerciseRaffle = raffle
+              this.exerciseResult = exerciseResult
+              this.autoSubmit = true
+              this.showExerciseResult = true
+            })
           }
-          if (!this.examList || this.examList.length < 1 || !data) return
-          let currentQuestion = this.examList[this.currentSubjectIndex]
-          this.analysisData = data[currentQuestion.hashid]
-          let { answer } = this.analysisData
-          if (answer) {
-            if (!(answer instanceof Array)) {
-              answer = Object.values(answer)
-            }
-            this.setAnalysisAnswer(answer) // store存储当前解析
-            this.pageShowAnswer(answer)
-          }
-        } else {
-          // 答错直接交卷
-          let _id = this.$route.params.id
-          API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
-            console.log('测评结果：', res)
-            let { correct_num: correctNum, points, score } = res
-            let exerciseResult = {
-              correctNum, points, score
-            }
-            this.exerciseRaffle = raffle
-            this.exerciseResult = exerciseResult
-            this.autoSubmit = true
-            this.showExerciseResult = true
-          })
-        }
+        })
       }
     },
     pageShowAnswer (answer) {
@@ -564,6 +584,7 @@ export default {
           this.startExerciseCountDown()
         } else {
           STORAGE.set('timer_' + this.examId, {
+            ...qusetionTimers,
             [currentQuestion.hashid]: new Date().getTime()
           })
           // 开始倒计时
@@ -571,7 +592,10 @@ export default {
         }
       }
     },
-    getEndTime () {
+    getEndTime (d) {
+      // console.log('getEndTime:', d) // 1
+      // console.log(this.examList)
+      // console.log(this.currentSubjectIndex)
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = currentQuestion.limit_time
       let qusetionTimers = STORAGE.get('timer_' + this.examId)
@@ -581,33 +605,33 @@ export default {
     },
     startExerciseCountDown () {
       let _now = new Date().getTime()
-      let _endTime = this.getEndTime()
+      let _endTime = this.getEndTime(2)
       // 超时
       if (_endTime < _now && this.successStatus === 0) {
         console.log('已经超时！！')
-        this.saveCloud()
+        this.saveCloud('timeout')
       } else {
-        this.refreshTime()
+        this.refreshTime(1)
       }
     },
-    refreshTime () {
-      let _endTime = this.getEndTime()
-      let _now = new Date().getTime()
-      let currentQuestion = this.examList[this.currentSubjectIndex]
-      let limitTime = currentQuestion.limit_time
-      this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
-      this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / parseInt(limitTime))
-      let _this = this
-      if (this.exerciseCountTime > 0 && this.successStatus === 0) {
-        this.currentTimer = setTimeout(function () {
-          _this.refreshTime()
-        }, 1000)
-      } else {
-        this.clearTimer()
-        if (this.successStatus === 0) {
-          this.saveCloud()
+    refreshTime (type) {
+      this.clearTimer()
+      this.$nextTick(() => {
+        let _endTime = this.getEndTime(1)
+        let _now = new Date().getTime()
+        let currentQuestion = this.examList[this.currentSubjectIndex]
+        let limitTime = currentQuestion.limit_time
+        this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
+        this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / parseInt(limitTime))
+        let _this = this
+        if (this.exerciseCountTime > 0 && this.successStatus === 0) {
+          this.currentTimer = setTimeout(function () {
+            _this.refreshTime(2)
+          }, 1000)
+        } else {
+          this.saveCloud('timeout')
         }
-      }
+      })
     },
     clearTimer () {
       clearTimeout(this.currentTimer)
@@ -668,9 +692,12 @@ export default {
     },
     'currentSubjectIndex': {
       handler: function (v) {
+        console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
         if (v !== 0) {
           this.nextExerciseBtn = false
-          this.resetTimeLimit()
+          if (this.examList && this.examList.length > 0) {
+            this.resetTimeLimit()
+          }
           this.successStatus = 0
           this.analysisData = null
         }

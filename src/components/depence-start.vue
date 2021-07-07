@@ -497,7 +497,6 @@ export default {
         '?lotteryEnterType=' + this.lotteryEnterType +
         '&time=' + new Date().getTime() +
         '&backActionUtl=' + originUrl
-        console.log('%c跳转链接!：', 'color:red;font-size: 20px;', jumpUrl)
         window.location.href = jumpUrl
       }
     },

@@ -286,7 +286,7 @@ export default {
       get () {
         let title = '总分排名'
         let mark = this.examInfo.mark
-        if (this.examInfo && (mark === 'examination@random' || mark === 'examination@integral' || mark === 'examination@rank')) {
+        if (this.examInfo && (mark === 'examination@random' || mark === 'examination@integral' || mark === 'examination@rank' || mark === 'examination@exercise')) {
           title = '分数排名'
         }
         return title
@@ -598,8 +598,10 @@ export default {
         context.fillStyle = '#fff'
         context.fillText('姓名', 60, 400)
         context.fillText(name, 300, 400)
-        context.fillText('答题时间', 60, 450)
-        context.fillText(this.posterInfo.start_time, 300, 450)
+        if (this.examInfo.mark !== 'examination@exercise') {
+          context.fillText('答题时间', 60, 450)
+          context.fillText(this.posterInfo.start_time, 300, 450)
+        }
         context.fillText('答对题数', 60, 500)
         context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, 500)
         context.fillText('总题数', 60, 550)
