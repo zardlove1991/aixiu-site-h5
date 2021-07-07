@@ -39,7 +39,6 @@ let zengChengObj = {
               position: 'middle',
               duration: 5000
             })
-            return false
           }
         })
       }
