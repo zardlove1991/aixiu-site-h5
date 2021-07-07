@@ -92,7 +92,7 @@
     }">
       <button
         class="rank-btn"
-        v-if="examInfo.mark === 'examination@rank'"
+        v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@exercise'"
         @click.stop="jumpRankPage()"><i class="rank-icon"></i>排行榜</button>
       <!-- 按钮校验 -->
       <div class="btn-view">
