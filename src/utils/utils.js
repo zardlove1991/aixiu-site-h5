@@ -10,8 +10,6 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import configObj from '@/api/config.js'
 
-import { Toast } from 'mint-ui'
-
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
@@ -258,11 +256,6 @@ export const getPlat = () => {
     return 'dingding'
   } else if (eval(configObj.zengchengSiteId).test(userAgent)) {
     // 阅增城
-    Toast({
-      message: '进入阅增城的判断',
-      position: 'bottom',
-      duration: 5000
-    })
     return 'zengcheng'
   }
   return 'browser'
