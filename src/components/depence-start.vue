@@ -48,7 +48,7 @@
         </div>
         <div class="body-wrap">
           <!--信息展示-->
-          <div class="row">
+          <div class="row" v-if="examInfo.mark !=='examination@exercise'">
             <div class="row-icon row-naozhong"></div>
             <div>
               <div class="desc">{{ _dealLimitTimeTip(examInfo.limit_time) }}</div>
