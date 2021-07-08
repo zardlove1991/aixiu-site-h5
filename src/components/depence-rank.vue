@@ -145,7 +145,7 @@ export default {
         this.getRankList()
       }
     },
-    getRankList () {
+    async getRankList () {
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -169,32 +169,44 @@ export default {
           this.$refs['depence-rank-loadmore'].onBottomLoaded()
         })
       }
-      API.getExamRankList({
-        query: { id: voteId },
-        params: params
-      }).then(res => {
-        let { data, page: pageInfo } = res
-        if (!data || !data.length) {
-          this.loading = false
-          return
-        }
-        data = data.map(item => {
-          let time = item.time ? item.time : 0
-          item.time = this.formatTime(time)
-          return item
+      let res = ''
+      if (this.examInfo.mark === 'examination@exercise') {
+        res = await API.getExerciseRankList({
+          query: { id: voteId },
+          params: params
         })
-        let { total, current_page: page } = pageInfo
-        total = parseInt(total)
-        page = parseInt(page)
-        // 总页数
-        let totalPages = total / count
-        if (total % count !== 0) {
-          totalPages = parseInt(total / count) + 1
-        }
-        this.rankList = this.rankList.concat(data)
-        this.pager = { total, page, count, totalPages }
+      } else {
+        res = await API.getExamRankList({
+          query: { id: voteId },
+          params: params
+        })
+      }
+      // API.getExamRankList({
+      //   query: { id: voteId },
+      //   params: params
+      // }).then(res => {
+      let { data, page: pageInfo } = res
+      if (!data || !data.length) {
         this.loading = false
+        return
+      }
+      data = data.map(item => {
+        let time = item.time ? item.time : 0
+        item.time = this.formatTime(time)
+        return item
       })
+      let { total, current_page: currentPage } = pageInfo
+      total = parseInt(total)
+      currentPage = parseInt(currentPage)
+      // 总页数
+      let totalPages = total / count
+      if (total % count !== 0) {
+        totalPages = parseInt(total / count) + 1
+      }
+      this.rankList = this.rankList.concat(data)
+      this.pager = { total, page: currentPage, count, totalPages }
+      this.loading = false
+      // })
     },
     changeTab (item) {
       if (this.loading) return
