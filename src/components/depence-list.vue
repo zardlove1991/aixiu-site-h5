@@ -464,10 +464,8 @@ export default {
       }
     },
     checkAnswerMaxQuestionId () {
-      console.log('%c校验考试中断', 'color: #666;font-size:15px;')
       let examInfo = this.examInfo
       let answerMaxQuestionId = examInfo.answer_max_question_id
-      console.log('answerMaxQuestionId: ', answerMaxQuestionId)
       let renderType = this.renderType
       // 拿到当前答题的索引当前答题的索引
       if (renderType === 'exam') {
@@ -476,10 +474,14 @@ export default {
           let index = list.findIndex(item => item.id === answerMaxQuestionId)
           if (index >= 0) this.changeSubjectIndex('to_' + index)
         } else {
+          let qusetionTimers = STORAGE.get('timer_' + this.examId)
           let _lastIndex = 0
           list.forEach((item, index) => {
             if (item.value) _lastIndex = index
+            // 本地存储的问题计时权限最高，如果本地有计时，使用本地的序号。否则使用云端会回退到上一题
+            if (qusetionTimers[item.hashid]) _lastIndex = index
           })
+          // 修改题目序号 跳过云端存储，防止直接交卷
           this.changeSubjectIndex('to_' + _lastIndex)
         }
       }
@@ -499,10 +501,9 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     async saveCloud (status = 'add') {
-      console.log('执行！！！！！！！！！！！！！！！！！！！！')
       if (this.successStatus !== 0) return
       await this.changeSubjectIndex(status).then(res => {
-        // 练习题做错误处理
+        // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
         }
@@ -536,14 +537,13 @@ export default {
               if (!(answer instanceof Array)) {
                 answer = Object.values(answer)
               }
-              this.setAnalysisAnswer(answer) // store存储当前解析
+              this.setAnalysisAnswer(answer) // store存储当前解析用于问题选项校对
               this.pageShowAnswer(answer)
             }
           } else {
             // 答错直接交卷
             let _id = this.$route.params.id
             API.getExamDetailsStatistics({query: { id: _id }}).then(res => {
-              console.log('测评结果：', res)
               let { correct_num: correctNum, points, score } = res
               let exerciseResult = {
                 correctNum, points, score
@@ -557,6 +557,7 @@ export default {
         })
       }
     },
+    // 页面展示答案
     pageShowAnswer (answer) {
       let currentQuestion = this.examList[this.currentSubjectIndex]
       if (currentQuestion.options.length < 1) {
@@ -585,7 +586,10 @@ export default {
         } else {
           STORAGE.set('timer_' + this.examId, {
             ...qusetionTimers,
-            [currentQuestion.hashid]: new Date().getTime()
+            [currentQuestion.hashid]: {
+              start_time: new Date().getTime(),
+              limit_time: currentQuestion.limit_time
+            }
           })
           // 开始倒计时
           this.startExerciseCountDown()
@@ -593,31 +597,27 @@ export default {
       }
     },
     getEndTime (d) {
-      // console.log('getEndTime:', d) // 1
-      // console.log(this.examList)
-      // console.log(this.currentSubjectIndex)
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = currentQuestion.limit_time
       let qusetionTimers = STORAGE.get('timer_' + this.examId)
-      let startTime = qusetionTimers[currentQuestion.hashid]
+      let startTime = qusetionTimers[currentQuestion.hashid].start_time
       let endTime = parseInt(startTime) + parseInt(limitTime) * 1000
       return endTime
     },
     startExerciseCountDown () {
       let _now = new Date().getTime()
-      let _endTime = this.getEndTime(2)
+      let _endTime = this.getEndTime()
       // 超时
       if (_endTime < _now && this.successStatus === 0) {
-        console.log('已经超时！！')
         this.saveCloud('timeout')
       } else {
-        this.refreshTime(1)
+        this.refreshTime()
       }
     },
     refreshTime (type) {
       this.clearTimer()
       this.$nextTick(() => {
-        let _endTime = this.getEndTime(1)
+        let _endTime = this.getEndTime()
         let _now = new Date().getTime()
         let currentQuestion = this.examList[this.currentSubjectIndex]
         let limitTime = currentQuestion.limit_time
@@ -660,6 +660,7 @@ export default {
       } else {
         this.$refs.examHeader.setResult()
       }
+      STORAGE.remove('timer_' + _id)
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',

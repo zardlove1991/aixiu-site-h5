@@ -309,15 +309,16 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
-        v && this.initStartInfo()
+        if (v) {
+          this.initStartInfo()
+          this.checkExerciseBreak()
+        }
       },
       deep: true,
       immediate: true
     }
   },
   created () {
-    // 清除练习题计时
-    STORAGE.remove('timer_' + this.$route.params.id)
     this.dialog = {
       title: '分享成功'
     }
@@ -861,6 +862,17 @@ export default {
     },
     goOutlink () {
       window.location.href = this.examInfo.limit.outlink_url
+    },
+    checkExerciseBreak () {
+      // 前端不作处理
+
+      // 判断练习题是否意外中断：
+      // 如果获取到当前练习题的本地计时存储，则判定为意外中断
+      // 循环遍历存储中的时间，如果全部超时则认为试卷超时
+      // 若存在范围内的问题 则认为未超时
+      // 边界bug：卡在答题错误未开始下一题期间中断 （无法处理）
+      // let storageTimers = STORAGE.get('timer_' + this.$route.params.id)
+      // if (this.examInfo.mark === 'examination@exercise') {}
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',

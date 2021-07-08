@@ -96,8 +96,6 @@ export default {
         }).then(res => {
           this.party = {...res, phone: userInfo.telephone}
         })
-      } else {
-        Toast('请在APP中进行答题')
       }
     },
     sureCheckDraw () {
