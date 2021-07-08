@@ -29,7 +29,7 @@ export default {
   'c4': `${protocol}//c4api.kxm.xmtv.cn/`,
   'news': `${protocol}//public.kxm.xmtv.cn/news/`,
   //
-  'timeout': 10000,
+  'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
   'X-CLIENT-VERSION': 1314,
   'X-DEVICE-ID': '000',
