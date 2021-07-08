@@ -201,7 +201,8 @@ export default {
         singleblank: '填空题',
         checkbox: '多选题',
         pictureRadio: '图片单选',
-        pictureMulti: '图片多选'
+        pictureMulti: '图片多选',
+        judge: '判断题'
       },
       statMsg: '',
       statMsgVisible: false,
@@ -631,10 +632,10 @@ export default {
       }
     },
     isCheckBox (val) {
-      return ['checkbox', 'multiple', 'pictureMulti'].includes(val)
+      return ['checkbox', 'multiple', 'pictureMulti', 'judge'].includes(val)
     },
     isChoiceOption (val) {
-      return ['checkbox', 'multiple', 'pictureMulti', 'radio', 'pictureRadio'].includes(val)
+      return ['checkbox', 'multiple', 'pictureMulti', 'radio', 'pictureRadio', 'judge'].includes(val)
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
