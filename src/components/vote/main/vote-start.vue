@@ -1429,10 +1429,10 @@ export default {
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            width: 1px;
-            height: px2rem(28px);
-            background-color: rgba(255, 255, 255, 0.3);
-            content: "";
+            // width: 1px;
+            // height: px2rem(28px);
+            // background-color: rgba(255, 255, 255, 0.3);
+            // content: "";
           }
           &:last-child {
             margin-right: 0;
