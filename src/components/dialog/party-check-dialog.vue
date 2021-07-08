@@ -72,6 +72,9 @@ export default {
       canClick: false
     }
   },
+  mounted () {
+    this.getPartyInfo()
+  },
   methods: {
     closeCheckDraw () {
       this.$emit('close')
