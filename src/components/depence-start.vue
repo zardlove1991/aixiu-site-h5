@@ -100,8 +100,8 @@
         <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
         <button v-else
-        :class="[getRadius, (examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? 'start-exambtn':'end-exambtn']"
-        @click.stop="(examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+        :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
+        @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
@@ -311,7 +311,6 @@ export default {
       handler: function (v) {
         if (v) {
           this.initStartInfo()
-          this.checkExerciseBreak()
         }
       },
       deep: true,
@@ -319,6 +318,7 @@ export default {
     }
   },
   created () {
+    STORAGE.remove('timer_' + this.$route.params.id)
     this.dialog = {
       title: '分享成功'
     }
@@ -862,17 +862,6 @@ export default {
     },
     goOutlink () {
       window.location.href = this.examInfo.limit.outlink_url
-    },
-    checkExerciseBreak () {
-      // 前端不作处理
-
-      // 判断练习题是否意外中断：
-      // 如果获取到当前练习题的本地计时存储，则判定为意外中断
-      // 循环遍历存储中的时间，如果全部超时则认为试卷超时
-      // 若存在范围内的问题 则认为未超时
-      // 边界bug：卡在答题错误未开始下一题期间中断 （无法处理）
-      // let storageTimers = STORAGE.get('timer_' + this.$route.params.id)
-      // if (this.examInfo.mark === 'examination@exercise') {}
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
