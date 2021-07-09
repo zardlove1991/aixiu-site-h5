@@ -49,7 +49,7 @@ let examUrl = {
   getExamRankList: 'client/examination/{id}/source', // 考试排行列表
   saveIntoCloud: 'client/examination/submit/{id}',
   getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
-  getPartyInfo: 'client/examination/{id}/party',
+  getPartyInfo: 'collection/form/record/{id}',
   getExerciseRankList: 'client/examination/{id}/exercise'
 }
 

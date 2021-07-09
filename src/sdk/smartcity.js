@@ -1,7 +1,7 @@
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { getAppSign } from '@/utils/utils'
-const smartCitySign = {'m2osmartcity_367': 1, 'm2osmartcity_381': 1}
+const smartCitySign = {'m2osmartcity_367': 1, 'm2osmartcity_381': 1, 'm2osmartcity_468': 1}
 
 let smartcity = {
   authorize: (cbk) => {
@@ -17,7 +17,7 @@ let smartcity = {
           sdkInfo.userId = `${res.userInfo.m2ouid.split('.').pop()}_${res.userInfo.userid}`
         }
         // sdkInfo.userId = res.userInfo.m2ouid.split('.').pop() + '_' + res.userInfo.userid
-        sdkInfo.avatarUrl = res.userInfo.picurl
+        sdkInfo.avatar_url = res.userInfo.picurl
         sdkInfo.telephone = res.userInfo.telephone
         sdkInfo.accessToken = res.userInfo.userTokenKey
         if (res.userInfo.unit_id) {
