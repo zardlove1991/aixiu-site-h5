@@ -7,7 +7,7 @@
           <el-input :disabled="true" v-model="party.name"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.phone"></el-input>
+          <el-input :disabled="true" v-model="party.mobile"></el-input>
         </div>
         <div class="check-item">
           <el-input :disabled="true" v-model="party.party_name"></el-input>
@@ -86,15 +86,12 @@ export default {
         return
       }
       if (getPlat() !== 'wechat') {
-        await API.getPartyInfo({
+        await API.saveDrawRecord({
           query: {
             id: this.examInfo.id
-          },
-          data: {
-            mobile: userInfo.telephone
           }
         }).then(res => {
-          this.party = {...res, phone: userInfo.telephone}
+          this.party = {...res}
         })
       }
     },

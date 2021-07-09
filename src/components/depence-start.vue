@@ -722,7 +722,7 @@ export default {
         } else {
           this.goExamPage()
         }
-      } else if (limit.assign_people_limit) {
+      } else if (limit.assign_people_limit && status === 0) {
         if (this.currentPlat !== 'wechat') {
           this.isShowPartyCheck = true
         } else {
