@@ -429,7 +429,7 @@ export default {
           if (this.examInfo.mark === 'examination@exercise') {
             this.setExerciseResult(res)
             // 练习题交卷
-            // this.$refs.examHeader.confirmSubmitModel()
+            this.$refs.examHeader.confirmSubmitModel()
           }
         })
       }
