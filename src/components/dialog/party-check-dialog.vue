@@ -72,9 +72,6 @@ export default {
       canClick: false
     }
   },
-  mounted () {
-    this.getPartyInfo()
-  },
   methods: {
     closeCheckDraw () {
       this.$emit('close')
@@ -107,6 +104,15 @@ export default {
       handler: function (v) {
         if (v.party_name) {
           this.canClick = true
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    show: {
+      handler: function (v) {
+        if (v) {
+          this.getPartyInfo()
         }
       },
       deep: true,
