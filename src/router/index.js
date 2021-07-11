@@ -100,6 +100,26 @@ const routes = [{
     title: '排行榜'
   }
 }, {
+  path: '/exam/depencerankfujian/:id',
+  name: 'depencerankfujian',
+  component: getComponent('depence-rank-fujian'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '排行榜'
+  }
+}, {
+  path: '/exam/myAnswerList/:id',
+  name: 'MyAnswerList',
+  component: getComponent('my-answer-list'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '我的答题记录'
+  }
+}, {
   path: '/livestart/:id',
   name: 'liveall',
   redirect: '/livestart/:id/start',

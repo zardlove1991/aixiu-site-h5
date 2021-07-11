@@ -1,14 +1,18 @@
 <template>
   <div class="depence-page-backbtn">
     <i class="back-btn-arrow"></i>
-    <span class="back-btn-text" @click="jumpPage()">返回活动主页</span>
+    <span class="back-btn-text" @click="jumpPage()">{{title}}</span>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    path: String
+    path: String,
+    title: {
+      type: String,
+      default: '返回活动主页'
+    }
   },
   methods: {
     jumpPage () {

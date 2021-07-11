@@ -17,6 +17,11 @@ import 'videojs-flash'
 import 'videojs-contrib-hls'
 import 'swiper/swiper-bundle.css'
 
+import 'vant/lib/index.css'
+import { Icon, Toast } from 'vant'
+Vue.use(Icon)
+Vue.use(Toast)
+
 Vue.use(VideoPlayer)
 Vue.use(VueAwesomeSwiper)
 Vue.use(VueClipboard)

@@ -10,6 +10,7 @@
       </div>
       <div class="to-score" @click.stop="toStatistic">我的答题记录</div>
     </div>
+    <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
       <template>
@@ -422,6 +423,12 @@ export default {
         path: `/exam/statistic/${examId}`
       })
     },
+    goAnswerListPage () {
+      let examId = this.id
+      this.$router.push({
+        path: `/exam/myAnswerList/${examId}`
+      })
+    },
     async initStartInfo () {
       try {
         this.tooltipsStr = this.getTooltipsStr()
@@ -812,7 +819,7 @@ export default {
       // 跳转去往排行榜页面
       let examId = this.id
       this.$router.push({
-        path: `/exam/depencerank/${examId}`
+        path: `/exam/depencerankfujian/${examId}`
       })
     },
     _getStarNum (level) {
