@@ -19,8 +19,8 @@
     </div>
     <div class='main-answer-list'>
       <div class='list-header'>
-        <van-dropdown-menu active-color="#ee0a24" @change='changeTime'>
-          <van-dropdown-item v-model="timeSelectValue" :options="timeOption" />
+        <van-dropdown-menu active-color="#ee0a24" >
+          <van-dropdown-item v-model="timeSelectValue" :options="timeOption" @change='changeTime' />
         </van-dropdown-menu>
       </div>
       <div class='list-wrap'>
@@ -28,7 +28,7 @@
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span>{{item.points}}积分</span>
-          <span><van-icon name="arrow" color='#CCCCCC'/></span>
+          <span><van-icon name="arrow" /></span>
         </div>
       </div>
     </div>
@@ -60,7 +60,8 @@ export default {
       answerInfoList: [],
       number: 0, // 答题总次数
       score_num: 0, // 答题总分数
-      points_num: 0 // 答题总积分
+      points_num: 0, // 答题总积分
+      curTimeType: 1
     }
   },
   components: {
@@ -76,9 +77,9 @@ export default {
       let voteId = this.id
       API.getMyAnswerList({
         params: {
-          week: 1,
+          week: this.curTimeType,
           page: 1,
-          count: 10000
+          count: 1000
         },
         query: { id: voteId }
       }).then(res => {
@@ -91,7 +92,9 @@ export default {
       })
     },
     changeTime (data) {
-      console.log('data', data)
+      // 接口传输值不正确
+      this.curTimeType = data
+      this.initData()
     }
   }
 }
@@ -112,15 +115,15 @@ export default {
       top: 0;
       left: 0;
       width: 100vw;
-      height: px2rem(120px);
+      height: 120px;
       color: #ffffff;
       display: flex;
       flex-direction: row;
-      padding-top: 30px;
+      padding-top: 25px;
       padding-left: 25px;
 
       .single-num-box + .single-num-box{
-        margin-left: 40px;
+        margin-left: 20px;
       }
 
       .single-num-box{

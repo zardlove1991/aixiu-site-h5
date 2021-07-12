@@ -7,7 +7,7 @@
           <el-input :disabled="true" v-model="party.name"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.phone"></el-input>
+          <el-input :disabled="true" v-model="party.mobile"></el-input>
         </div>
         <div class="check-item">
           <el-input :disabled="true" v-model="party.party_name"></el-input>
@@ -72,9 +72,6 @@ export default {
       canClick: false
     }
   },
-  mounted () {
-    this.getPartyInfo()
-  },
   methods: {
     closeCheckDraw () {
       this.$emit('close')
@@ -86,18 +83,13 @@ export default {
         return
       }
       if (getPlat() !== 'wechat') {
-        await API.getPartyInfo({
+        await API.saveDrawRecord({
           query: {
             id: this.examInfo.id
-          },
-          data: {
-            mobile: userInfo.telephone
           }
         }).then(res => {
-          this.party = {...res, phone: userInfo.telephone}
+          this.party = {...res}
         })
-      } else {
-        Toast('请在APP中进行答题')
       }
     },
     sureCheckDraw () {
@@ -112,6 +104,15 @@ export default {
       handler: function (v) {
         if (v.party_name) {
           this.canClick = true
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    show: {
+      handler: function (v) {
+        if (v) {
+          this.getPartyInfo()
         }
       },
       deep: true,

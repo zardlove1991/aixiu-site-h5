@@ -2,15 +2,14 @@
   <!--当前开始考试页面-->
   <div class="depence-start-wrap depence-wrap" v-if="examInfo"
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
-    <div class="header-top"
-      v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result && examInfo.last_submit">
+    <div class="header-top"  v-show="examInfo.last_submit == 1">
       <div class="end-tips">
         <i class="tips-icon"></i>
         <span class="tips-msg">已提交</span>
       </div>
-      <div class="to-score" @click.stop="toStatistic">我的答题记录</div>
+      <!-- <div class="to-score" @click.stop="toStatistic">我的答题记录</div> -->
+      <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     </div>
-    <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
       <template>
@@ -101,8 +100,8 @@
         <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
         <button v-else
-        :class="[getRadius, (examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? 'start-exambtn':'end-exambtn']"
-        @click.stop="(examInfo.remain_counts !== 0 || examInfo.user_integral_counts) && !isNoLimit ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+        :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
+        @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
@@ -310,14 +309,15 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
-        v && this.initStartInfo()
+        if (v) {
+          this.initStartInfo()
+        }
       },
       deep: true,
       immediate: true
     }
   },
   created () {
-    // 清除练习题计时
     STORAGE.remove('timer_' + this.$route.params.id)
     this.dialog = {
       title: '分享成功'
@@ -728,7 +728,7 @@ export default {
         } else {
           this.goExamPage()
         }
-      } else if (limit.assign_people_limit) {
+      } else if (limit.assign_people_limit && status === 0) {
         if (this.currentPlat !== 'wechat') {
           this.isShowPartyCheck = true
         } else {

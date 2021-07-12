@@ -53,8 +53,8 @@ instance.interceptors.request.use((config) => {
   let userInfo = STORAGE.get('userinfo')
   let userStr = ''
   if (userInfo) {
-    let {id, expire, token, source, nick_name: nickName} = userInfo
-    userStr = JSON.stringify({id, expire, token, source, nick_name: encodeURIComponent(nickName)})
+    let {id, expire, token, source, mobile, nick_name: nickName} = userInfo
+    userStr = JSON.stringify({id, expire, token, source, mobile, nick_name: encodeURIComponent(nickName)})
   }
   if (config.url.indexOf('setClick') < 0) {
     // if (STORAGE.get('userinfo')) {
