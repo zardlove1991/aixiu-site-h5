@@ -3,46 +3,46 @@
     <div class="header-bg">
       <img class="header-bg-img" :src="rankPic" />
     </div>
-    <div class="tab-bar-wrap" style='border: 1px solid red;'>
+    <div class="tab-bar-wrap">
       <div class="tab-bar-item"
         v-for="(item, index) in tabBar"
         :key="index"
         :class="{ 'is-active': selTab === item.index}"
         @click="changeTab(item)">{{item.name}}</div>
     </div>
-    <div class='search-group' style='border: 1px solid red;'>
-      <div v-if='!isSearchType' class='search-group-wrap'>
-        <el-select v-model="areaValue" @change='choiceAreaFun'
-          placeholder="请选择"
-          size='small'
-          class='select-wrap'>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.label">
-          </el-option>
-        </el-select>
-        <el-input
-          class='input-wrap'
-          size="small"
-          placeholder="请输入党支部名称"
-          @focus = 'openAllInput'
-          v-model.trim="curPartyAddr">
-          <i slot='suffix'
-            style='font-size: 20px;'
-            class="el-input__icon el-icon-search"></i>
-        </el-input>
-      </div>
-      <div v-if='isSearchType'>
-        <input class='input-all-wrap' type="text"
-          @keyup.13 = "searchFun"
-          placeholder="请输入党支部名称" autofocus
-          v-model="curPartyAddr"/>
-        <span class='cancel-box' @click ='clearInputValue'>取消</span>
-      </div>
-    </div>
     <div class="content-wrap">
+      <div class='search-group'>
+        <div v-if='!isSearchType' class='search-group-wrap'>
+          <el-select v-model="areaValue" @change='choiceAreaFun'
+            placeholder="请选择"
+            size='small'
+            class='select-wrap'>
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+          <el-input
+            class='input-wrap'
+            size="small"
+            placeholder="请输入党支部名称"
+            @focus = 'openAllInput'
+            v-model.trim="curPartyAddr">
+            <i slot='suffix'
+              style='font-size: 20px;'
+              class="el-input__icon el-icon-search"></i>
+          </el-input>
+        </div>
+        <div v-if='isSearchType'>
+          <input class='input-all-wrap' type="text"
+            @keyup.13 = "searchFun"
+            placeholder="请输入党支部名称" autofocus
+            v-model="curPartyAddr"/>
+          <span class='cancel-box' @click ='clearInputValue'>取消</span>
+        </div>
+      </div>
       <div class="tab-two-wrap">
         <div v-for="(name, index) in tabBar2"
           class="tab-two-item"
@@ -182,7 +182,8 @@ export default {
         }
       ],
       partyName: '全部赛区',
-      curPartyAddr: ''
+      curPartyAddr: '',
+      noDataImg: require('@/assets/rankList/no-data-img.png')
     }
   },
   computed: {
@@ -432,6 +433,7 @@ export default {
   flex-direction: row;
   align-items: center;
   padding: px2rem(26px);
+  padding-bottom: 0;
   background: #FFFFFF;
 }
 
@@ -508,8 +510,8 @@ export default {
     position: absolute;
     left: 0;
     right: 0;
-    // top: px2rem(290px);
-    top: px2rem(390px);
+    top: px2rem(290px);
+    //top: px2rem(390px);
     bottom: 0;
     overflow-y: auto;
     background-color: #fff;
