@@ -8,7 +8,7 @@
         v-for="(item, index) in tabBar"
         :key="index"
         :class="{ 'is-active': selTab === item.index}"
-        @click="changeTab(item)">{{item.name}}</div>
+        @click="changeTab(item)">{{item.name}}{{selTab}}{{item.index}}</div>
     </div>
     <div class="content-wrap">
       <div class='search-group'>
@@ -36,21 +36,30 @@
           </el-input>
         </div>
         <div v-if='isSearchType'>
-          <input class='input-all-wrap' type="text"
+          <el-input
+            clearable
+            focus
+            class='input-all-wrap'
+            size="small"
+            @keyup.13 = "searchFun"
+            placeholder="请输入党支部名称"
+            v-model.trim="curPartyAddr">
+          </el-input>
+          <!-- <input class='input-all-wrap' type="text"
             @keyup.13 = "searchFun"
             placeholder="请输入党支部名称" autofocus
-            v-model="curPartyAddr"/>
+            v-model="curPartyAddr"/> -->
           <span class='cancel-box' @click ='clearInputValue'>取消</span>
         </div>
       </div>
-      <div class="tab-two-wrap">
+      <div v-if='!isNullDataType' class="tab-two-wrap">
         <div v-for="(name, index) in tabBar2"
           class="tab-two-item"
           :key="index"
           :class="{ 'is-active': selTab2 === name }"
           @click="changeTab2(name)">{{dateMap[name]}}</div>
       </div>
-      <mt-loadmore ref="depence-rank-loadmore"
+      <mt-loadmore v-show='!isNullDataType' ref="depence-rank-loadmore"
         :bottom-method="getRankList"
         :bottom-all-loaded="noMore"
         :auto-fill="false">
@@ -82,6 +91,10 @@
           <div v-show="noMore && rankList.length > 0 && (id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
+
+      <div v-if='isNullDataType' class='no-img-wrap'>
+        <img :src="noDataImg" alt="" class='no-img-bg'>
+      </div>
     </div>
     <page-back :path="'/depencestart/' + id" />
   </div>
@@ -107,13 +120,14 @@ export default {
   },
   data () {
     return {
+      isNullDataType: false,
       isSearchType: false,
       rankPic: '', // 排行榜头部图
       uniqueName: '', // 唯一标识
       columnName: '', // 列名
       tabBar: [], // 一级目录
       tabBar2: [], // 二级目录
-      selTab: 0, // 一级目录 选中
+      selTab: 2, // 一级目录 选中
       selTab2: '', // 二级目录 选中
       rankList: [], // 排行榜数据
       loading: false,
@@ -243,10 +257,9 @@ export default {
           this.tabBar.push(Object.assign(rankCycle[i], {index: i + 1}))
         }
 
+        this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
         // 默认选择第一个标签
         this.changeTabValue(this.tabBar[0])
-
-        // this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
 
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
@@ -262,12 +275,11 @@ export default {
       this.isSearchType = true
     },
     searchFun () {
-      Toast('点击了')
+      Toast('点了')
       this.getRankList()
     },
     clearInputValue () {
       this.curPartyAddr = ''
-      console.log(999, this.curPartyAddr)
       this.isSearchType = false
       this.getRankList()
     },
@@ -335,6 +347,19 @@ export default {
         totalPages = parseInt(total / count) + 1
       }
       this.rankList = this.rankList.concat(data)
+
+      if (this.rankList.length === 0) {
+        this.isNullDataType = true
+      } else {
+        this.isNullDataType = false
+        // 输入值标红
+        let subStr = '/(' + this.curPartyAddr + ')/g'
+        for (const i of this.rankLis) {
+          // eslint-disable-next-line no-eval
+          i.party_name = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
+        }
+      }
+
       this.pager = { total, page: currentPage, count, totalPages }
       this.loading = false
       // })
@@ -352,6 +377,8 @@ export default {
       }
     },
     changeTabValue (data) {
+      console.log('this.selTab', data, this.selTab, data.index)
+
       this.selTab = data.index
       console.log('data', data)
       this.uniqueName = ''
@@ -428,6 +455,18 @@ export default {
   background: #FFFFFF;
 }
 
+.no-img-wrap{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-img-bg{
+  margin-top: 80px;
+  width: px2rem(320px);
+  height: px2rem(232px);
+}
+
 .search-group{
   display: flex;
   flex-direction: row;
@@ -452,10 +491,10 @@ export default {
 .input-all-wrap{
   width: px2rem(608px);
   height: px2rem(64px);
-  border-radius: 5px;
+  // border-radius: 5px;
   display: inline-block;
-  border: 1px solid #DCDFE6;
-  padding-left: 5px;
+  // border: 1px solid #DCDFE6;
+  // padding-left: 5px;
 }
 
 .cancel-box{
