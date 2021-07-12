@@ -3,14 +3,14 @@
     <div class="header-bg">
       <img class="header-bg-img" :src="rankPic" />
     </div>
-    <div class="tab-bar-wrap">
+    <div class="tab-bar-wrap" style='border: 1px solid red;'>
       <div class="tab-bar-item"
         v-for="(item, index) in tabBar"
         :key="index"
         :class="{ 'is-active': selTab === item.index}"
         @click="changeTab(item)">{{item.name}}</div>
     </div>
-    <div class='search-group'>
+    <div class='search-group' style='border: 1px solid red;'>
       <div v-if='!isSearchType' class='search-group-wrap'>
         <el-select v-model="areaValue" @change='choiceAreaFun'
           placeholder="请选择"
@@ -261,7 +261,6 @@ export default {
       this.isSearchType = true
     },
     searchFun () {
-      console.log(888, this.curPartyAddr)
       Toast('点击了')
       this.getRankList()
     },
