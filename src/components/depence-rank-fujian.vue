@@ -41,7 +41,7 @@
             focus
             class='input-all-wrap'
             size="small"
-            @keyup.13 = "searchFun"
+            @keyup.native.13 = "searchFun"
             placeholder="请输入党支部名称"
             v-model.trim="curPartyAddr">
           </el-input>
