@@ -36,7 +36,7 @@
           </el-input>
         </div>
         <div v-if='isSearchType'>
-          <el-input
+          <!-- <el-input
             clearable
             focus
             class='input-all-wrap'
@@ -44,11 +44,11 @@
             @keyup.native.13 = "searchFun"
             placeholder="请输入党支部名称"
             v-model.trim="curPartyAddr">
-          </el-input>
-          <!-- <input class='input-all-wrap' type="text"
+          </el-input> -->
+          <input class='input-all-wrap' type="text"
             @keyup.13 = "searchFun"
             placeholder="请输入党支部名称" autofocus
-            v-model="curPartyAddr"/> -->
+            v-model="curPartyAddr"/>
           <span class='cancel-box' @click ='clearInputValue'>取消</span>
         </div>
       </div>
@@ -491,10 +491,10 @@ export default {
 .input-all-wrap{
   width: px2rem(608px);
   height: px2rem(64px);
-  // border-radius: 5px;
+  border-radius: 5px;
   display: inline-block;
-  // border: 1px solid #DCDFE6;
-  // padding-left: 5px;
+  border: 1px solid #DCDFE6;
+  padding-left: 5px;
 }
 
 .cancel-box{
