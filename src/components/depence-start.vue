@@ -417,12 +417,12 @@ export default {
       this.App = false
       this.errTips = ''
     },
-    toStatistic () {
-      let examId = this.id
-      this.$router.push({
-        path: `/exam/statistic/${examId}`
-      })
-    },
+    // toStatistic () {
+    //   let examId = this.id
+    //   this.$router.push({
+    //     path: `/exam/statistic/${examId}`
+    //   })
+    // },
     goAnswerListPage () {
       let examId = this.id
       this.$router.push({

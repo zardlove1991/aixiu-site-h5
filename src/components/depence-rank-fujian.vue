@@ -10,6 +10,38 @@
         :class="{ 'is-active': selTab === item.index}"
         @click="changeTab(item)">{{item.name}}</div>
     </div>
+    <div class='search-group'>
+      <div v-if='!isSearchType' class='search-group-wrap'>
+        <el-select v-model="areaValue" @change='choiceAreaFun'
+          placeholder="请选择"
+          size='small'
+          class='select-wrap'>
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label">
+          </el-option>
+        </el-select>
+        <el-input
+          class='input-wrap'
+          size="small"
+          placeholder="请输入党支部名称"
+          @focus = 'openAllInput'
+          v-model.trim="curPartyAddr">
+          <i slot='suffix'
+            style='font-size: 20px;'
+            class="el-input__icon el-icon-search"></i>
+        </el-input>
+      </div>
+      <div v-if='isSearchType'>
+        <input class='input-all-wrap' type="text"
+          @keyup.13 = "searchFun"
+          placeholder="请输入党支部名称" autofocus
+          v-model="curPartyAddr"/>
+        <span class='cancel-box' @click ='clearInputValue'>取消</span>
+      </div>
+    </div>
     <div class="content-wrap">
       <div class="tab-two-wrap">
         <div v-for="(name, index) in tabBar2"
@@ -35,9 +67,9 @@
                 <span v-if="index > 2">{{index + 1}}</span>
                 <span :class="['rank-icon', 'rank-' + index]" v-else></span>
               </div>
-              <div class="flex1 rank-name">{{item.name}}</div>
-              <div class="wd150">{{item.source}}</div>
-              <div class="wd200">{{item.time}}</div>
+              <div class="flex1 rank-name">{{item.party_name}}</div>
+              <div class="wd150">{{item.party_address}}</div>
+              <div class="wd200">{{item.source}}</div>
             </div>
           </template>
         </div>
@@ -57,19 +89,25 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Spinner, Loadmore } from 'mint-ui'
+import { Spinner, Loadmore, Toast } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
+import { Select, Option } from 'element-ui'
 
 export default {
   props: {
     id: String
   },
   components: {
-    Spinner, Loadmore, PageBack
+    Spinner,
+    Loadmore,
+    PageBack,
+    ElSelect: Select,
+    ElOption: Option
   },
   data () {
     return {
+      isSearchType: false,
       rankPic: '', // 排行榜头部图
       uniqueName: '', // 唯一标识
       columnName: '', // 列名
@@ -90,7 +128,61 @@ export default {
         'week': '周榜',
         'month': '月榜',
         'all': '总榜'
-      }
+      },
+      areaValue: '全部赛区',
+      searchValue: '',
+      options: [
+        {
+          label: '全部赛区',
+          value: ''
+        },
+        {
+          label: '省直机关赛区',
+          value: '1'
+        },
+        {
+          label: '福州（非省直）赛区',
+          value: '2'
+        },
+        {
+          label: '莆田赛区',
+          value: '3'
+        },
+        {
+          label: '泉州赛区',
+          value: '4'
+        },
+        {
+          label: '厦门赛区',
+          value: '5'
+        },
+        {
+          label: '漳州赛区',
+          value: '6'
+        },
+        {
+          label: '龙岩赛区',
+          value: '7'
+        },
+        {
+          label: '三明赛区',
+          value: '8'
+        },
+        {
+          label: '南平赛区',
+          value: '9'
+        },
+        {
+          label: '宁德赛区',
+          value: '10'
+        },
+        {
+          label: '平潭赛区',
+          value: '11'
+        }
+      ],
+      partyName: '全部赛区',
+      curPartyAddr: ''
     }
   },
   computed: {
@@ -105,7 +197,6 @@ export default {
     ...mapGetters('depence', ['examInfo'])
   },
   created () {
-    console.log('hello fujian')
     this.initData()
   },
   methods: {
@@ -159,12 +250,29 @@ export default {
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
         this.columnName = first.old_name ? first.old_name : '姓名'
-        this.uniqueName = first.rank_id
+        // this.uniqueName = first.rank_id
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
         this.getRankList()
       }
+    },
+    openAllInput () {
+      this.isSearchType = true
+    },
+    searchFun () {
+      console.log(888, this.curPartyAddr)
+      Toast('点击了')
+      this.getRankList()
+    },
+    clearInputValue () {
+      this.curPartyAddr = ''
+      console.log(999, this.curPartyAddr)
+      this.isSearchType = false
+      this.getRankList()
+    },
+    choiceAreaFun (data) {
+      this.partyName = data
     },
     async getRankList () {
       let voteId = this.id
@@ -182,7 +290,9 @@ export default {
         page: page + 1,
         count,
         unique_name: this.uniqueName,
-        type
+        type,
+        name: this.partyName,
+        party_address: this.curPartyAddr
       }
       // 先临时处理
       if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634' && voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
@@ -244,12 +354,13 @@ export default {
     changeTabValue (data) {
       this.selTab = data.index
       console.log('data', data)
+      this.uniqueName = ''
       if (data.old_name === '党支部晋级榜') {
         this.uniqueName = ''
       } else if (data.old_name === '党支部') {
         this.uniqueName = 'party'
       } else if (data.name === 'IPTV逆袭赛积分榜') {
-
+        this.uniqueName = 'tv'
       }
     },
     changeTab2 (name) {
@@ -309,6 +420,48 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
+.search-group-wrap{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // padding: px2rem(26px);
+  background: #FFFFFF;
+}
+
+.search-group{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: px2rem(26px);
+  background: #FFFFFF;
+}
+
+.select-wrap{
+  width: px2rem(220px);
+  border-radius: px2rem(32px);
+}
+
+.input-wrap{
+  display: inline-block;
+  width: px2rem(458px);
+  margin-left: px2rem(20px);
+  border-radius: px2rem(32px);
+}
+
+.input-all-wrap{
+  width: px2rem(608px);
+  height: px2rem(64px);
+  border-radius: 5px;
+  display: inline-block;
+  border: 1px solid #DCDFE6;
+  padding-left: 5px;
+}
+
+.cancel-box{
+  margin-left: px2rem(10px);
+  color: #333333;
+}
+
 .depence-rank-wrap {
   width: 100vw;
   height: 100vh;
@@ -356,7 +509,8 @@ export default {
     position: absolute;
     left: 0;
     right: 0;
-    top: px2rem(290px);
+    // top: px2rem(290px);
+    top: px2rem(390px);
     bottom: 0;
     overflow-y: auto;
     background-color: #fff;
