@@ -57,10 +57,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Spinner, Loadmore } from 'mint-ui'
+import { Spinner, Loadmore, Indicator } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
-import { Indicator } from 'mint-ui'
 
 export default {
   props: {
