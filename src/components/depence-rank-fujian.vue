@@ -8,7 +8,7 @@
         v-for="(item, index) in tabBar"
         :key="index"
         :class="{ 'is-active': selTab === item.index}"
-        @click="changeTab(item)">{{item.name}}{{selTab}}{{item.index}}</div>
+        @click="changeTab(item)">{{item.name}}</div>
     </div>
     <div class="content-wrap">
       <div class='search-group'>
@@ -24,31 +24,25 @@
               :value="item.label">
             </el-option>
           </el-select>
-          <el-input
-            class='input-wrap'
-            size="small"
-            placeholder="请输入党支部名称"
-            @focus = 'openAllInput'
-            v-model.trim="curPartyAddr">
-            <i slot='suffix'
-              style='font-size: 20px;'
-              class="el-input__icon el-icon-search"></i>
-          </el-input>
+          <div class='input-icon-wrap'>
+            <input class='input-wrap'
+              v-model.trim='curPartyAddr'
+              type="text" name="" id=""
+              @focus = 'openAllInput'
+              placeholder="请输入党支部名称"/>
+              <van-icon name="search"  class='icon-box'/>
+          </div>
         </div>
         <div v-if='isSearchType'>
-          <!-- <el-input
-            clearable
-            focus
-            class='input-all-wrap'
-            size="small"
-            @keyup.native.13 = "searchFun"
-            placeholder="请输入党支部名称"
-            v-model.trim="curPartyAddr">
-          </el-input> -->
-          <input class='input-all-wrap' type="text"
+          <div class='input-cancel-box'>
+            <input class='input-all-wrap' type="text"
+            id='inputCancel'
             @keyup.13 = "searchFun"
-            placeholder="请输入党支部名称" autofocus
+            placeholder="请输入党支部名称"
+            autofocus
             v-model="curPartyAddr"/>
+            <van-icon name="cross"  class='cancel-icon-box' @click="clearInputValueFun"/>
+          </div>
           <span class='cancel-box' @click ='clearInputValue'>取消</span>
         </div>
       </div>
@@ -76,7 +70,7 @@
                 <span v-if="index > 2">{{index + 1}}</span>
                 <span :class="['rank-icon', 'rank-' + index]" v-else></span>
               </div>
-              <div class="flex1 rank-name">{{item.party_name}}</div>
+              <div class="flex1 rank-name" v-html='item.party_name'></div>
               <div class="wd150">{{item.party_address}}</div>
               <div class="wd200">{{item.source}}</div>
             </div>
@@ -273,10 +267,15 @@ export default {
     },
     openAllInput () {
       this.isSearchType = true
+      this.$nextTick(() => {
+        document.querySelector('#inputCancel').focus()
+      })
     },
     searchFun () {
-      Toast('点了')
       this.getRankList()
+    },
+    clearInputValueFun () {
+      this.curPartyAddr = ''
     },
     clearInputValue () {
       this.curPartyAddr = ''
@@ -476,22 +475,54 @@ export default {
   background: #FFFFFF;
 }
 
+.el-select .el-input__inner {
+  border-radius: px2rem(32px);
+}
+
 .select-wrap{
   width: px2rem(220px);
   border-radius: px2rem(32px);
 }
 
+.input-icon-wrap{
+  position: relative;
+}
+
+.icon-box {
+  position: absolute;
+  top: px2rem(10px);
+  right: px2rem(15px);
+  color: #DCDFE6;
+  font-size: px2rem(40px);
+}
+
 .input-wrap{
   display: inline-block;
   width: px2rem(458px);
+  height: px2rem(64px);
   margin-left: px2rem(20px);
   border-radius: px2rem(32px);
+  border: 1px solid #DCDFE6;
+  padding-left: 5px;
+  font-size: px2rem(28px);
+}
+
+.input-cancel-box{
+  position: relative;
+  display: inline-block;
+  .cancel-icon-box{
+    position: absolute;
+    top: px2rem(10px);
+    right: px2rem(15px);
+    color: #DCDFE6;
+    font-size: px2rem(40px);
+  }
 }
 
 .input-all-wrap{
   width: px2rem(608px);
   height: px2rem(64px);
-  border-radius: 5px;
+  border-radius: px2rem(32px);
   display: inline-block;
   border: 1px solid #DCDFE6;
   padding-left: 5px;
