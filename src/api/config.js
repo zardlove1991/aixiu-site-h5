@@ -1,6 +1,7 @@
 import { getEnvironment } from '@/utils/app'
 const protocol = window.location.protocol
 const env = getEnvironment()
+
 // const suffix = env === 'online' ? '' : `-${env}`
 // const v2 = env === 'online' ? '.v2' : ''
 const suffix = env === 'online' ? '' : env === 'pre' ? '-ax-pre' : `-${env}`
@@ -23,5 +24,6 @@ export default {
   'APPID': env === 'test' ? 'wx025937621152c396' : 'wx63a3a30d3880a56e',
   'COMP_APPID': 'wx566758628b7a3fa2',
   'REDIRECT-URI': env === 'test' ? `${window.location.origin}/bridge.html` : `${window.location.origin}/bridge.html`,
-  'OPEN_NEW_PAGE': ['api/client/examination/{id}', 'open/examination/detail', 'h5/signature', 'signature', 'client/voting/base/{id}', 'client/voting/{id}', 'client/order/{id}', 'client/news/{id}/']
+  'OPEN_NEW_PAGE': ['api/client/examination/{id}', 'open/examination/detail', 'h5/signature', 'signature', 'client/voting/base/{id}', 'client/voting/{id}', 'client/order/{id}', 'client/news/{id}/'],
+  'zengchengSiteId': '/78fa6d06b0dd4f27abf341e5efde035a/'
 }

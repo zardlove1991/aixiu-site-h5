@@ -64,7 +64,7 @@
         </div>
       </div>
       <div class="form-item">
-        <div class="form-title">名称</div>
+        <div class="form-title">{{ZCIdType ? '作品名称及朗诵人' : '名称'}}</div>
         <div class="form-content">
           <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
         </div>
@@ -84,13 +84,13 @@
       </div>
       <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>来源</div>
+        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}</div>
         <div class="form-content">
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="showModel !== 'text'">
-        <div class="form-title">描述<span class="form-tips">(选填)</span></div>
+        <div class="form-title">{{ZCIdType ? '作品描述' : '描述'}}<span class="form-tips">{{ZCIdType ? '(必填)' : '(选填)'}}</span></div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
@@ -143,6 +143,8 @@ export default {
   },
   data () {
     return {
+      ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
+      ZCIdType: false,
       showModel: this.flag,
       disabled: false,
       examineData: {
@@ -175,6 +177,13 @@ export default {
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
       fullSceneMap
+    }
+  },
+  mounted () {
+    if (this.id === this.ZCId) {
+      this.ZCIdType = true
+    } else {
+      this.ZCIdType = false
     }
   },
   methods: {
@@ -331,11 +340,19 @@ export default {
         return
       }
       if (!examineData.name || !examineData.name.trim()) {
-        Toast('请输入名称')
+        let _name = '请输入名称'
+        if (this.ZCIdType) {
+          _name = '请输入作品名称及朗诵人'
+        }
+        Toast(_name)
         return
       }
       if (!examineData.source || !examineData.source.trim()) {
-        Toast('请输入来源')
+        let _origin = '请输入来源'
+        if (this.ZCIdType) {
+          _origin = '请输入所属村居'
+        }
+        Toast(_origin)
         return
       }
       if (this.showModel === 'text') {
