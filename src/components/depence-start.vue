@@ -7,7 +7,6 @@
         <i class="tips-icon"></i>
         <span class="tips-msg">已提交</span>
       </div>
-      <!-- <div class="to-score" @click.stop="toStatistic">我的答题记录</div> -->
       <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     </div>
     <!--头部背景 暂时没有先注释掉-->
@@ -818,8 +817,15 @@ export default {
     jumpRankPage () {
       // 跳转去往排行榜页面
       let examId = this.id
+      let _path = ''
+      if (this.examInfo.mark === 'examination@exercise') {
+        _path = `/exam/depencerankfujian/${examId}`
+      } else {
+        _path = `/exam/depencerank/${examId}`
+      }
+
       this.$router.push({
-        path: `/exam/depencerankfujian/${examId}`
+        path: _path
       })
     },
     _getStarNum (level) {
