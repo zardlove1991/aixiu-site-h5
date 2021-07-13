@@ -30,7 +30,7 @@
               type="text" name="" id=""
               @focus = 'openAllInput'
               placeholder="请输入党支部名称"/>
-              <van-icon name="search"  class='icon-box'/>
+            <van-icon name="search"  class='icon-box'/>
           </div>
         </div>
         <div v-if='isSearchType'>
@@ -486,25 +486,24 @@ export default {
 
 .input-icon-wrap{
   position: relative;
-}
+  .icon-box {
+    position: absolute;
+    top: px2rem(10px);
+    right: px2rem(15px);
+    color: #DCDFE6;
+    font-size: px2rem(40px);
+  }
 
-.icon-box {
-  position: absolute;
-  top: px2rem(10px);
-  right: px2rem(15px);
-  color: #DCDFE6;
-  font-size: px2rem(40px);
-}
-
-.input-wrap{
-  display: inline-block;
-  width: px2rem(458px);
-  height: px2rem(64px);
-  margin-left: px2rem(20px);
-  border-radius: px2rem(32px);
-  border: 1px solid #DCDFE6;
-  padding-left: 5px;
-  font-size: px2rem(28px);
+  .input-wrap{
+    display: inline-block;
+    width: px2rem(458px);
+    height: px2rem(64px);
+    margin-left: px2rem(20px);
+    border-radius: px2rem(32px);
+    border: 1px solid #DCDFE6;
+    padding-left: 5px;
+    font-size: px2rem(28px);
+  }
 }
 
 .input-cancel-box{
