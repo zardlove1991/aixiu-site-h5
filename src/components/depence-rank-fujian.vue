@@ -253,15 +253,13 @@ export default {
 
         this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
         // this.uniqueName = this.tabBar[0].unique_name
-        console.log('this.uniqueName', this.tabBar)
         // 默认选择第一个标签
         this.changeTabValue(this.tabBar[0])
 
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
         this.columnName = first.old_name ? first.old_name : '姓名'
-        console.log('first.rank_id', first)
-        this.uniqueName = first.rank_id
+        this.uniqueName = '' // 党支部晋级榜 【福建答题项目】
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
