@@ -47,7 +47,7 @@
             <span class="loading-more-txt">正在加载中</span>
           </div>
           <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
-          <div v-show="noMore && rankList.length > 0 && (id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
+          <div v-show="noMore && rankList.length > 0 && (id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
     </div>
@@ -82,7 +82,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 100,
+        count: 5000,
         totalPages: 0
       },
       dateMap: {
@@ -96,7 +96,7 @@ export default {
   computed: {
     noMore () {
       // 当起始页数大于总页数时停止加载
-      if (this.id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || this.id === '4e9840ada0ed433694218f6cbc5b0572') {
+      if (this.id === '4e9840ada0ed433694218f6cbc5b0572') {
         return true
       }
       let { page, totalPages } = this.pager
@@ -164,7 +164,7 @@ export default {
         type
       }
       // 先临时处理
-      if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634' && voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
+      if (voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
         this.$nextTick(() => {
           this.$refs['depence-rank-loadmore'].onBottomLoaded()
         })
@@ -221,7 +221,7 @@ export default {
       this.pager = {
         total: 0,
         page: 0,
-        count: 100,
+        count: 5000,
         totalPages: 0
       }
       this.getRankList()
