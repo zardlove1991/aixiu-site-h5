@@ -98,9 +98,13 @@
         <!-- 置灰 1：未开始；2：已结束 -->
         <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
+        <!-- <button v-else
+        :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
+        @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button> -->
         <button v-else
         :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
         @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
+
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
@@ -672,6 +676,8 @@ export default {
       // 判断是否需要信息采集
       let { limit, collection_status: status } = this.examInfo
       console.log(limit.assign_people_limit)
+      // Todo
+      // limit.assign_people_limit = 0
       if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
@@ -818,7 +824,8 @@ export default {
       // 跳转去往排行榜页面
       let examId = this.id
       let _path = ''
-      if (this.examInfo.mark === 'examination@exercise') {
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+        // 是练习模板且是党员
         _path = `/exam/depencerankfujian/${examId}`
       } else {
         _path = `/exam/depencerank/${examId}`

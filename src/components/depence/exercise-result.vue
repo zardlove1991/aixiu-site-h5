@@ -29,6 +29,7 @@
     </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   props: {
     exerciseResult: {
@@ -38,10 +39,17 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    ...mapGetters('depence', ['examInfo'])
+  },
   methods: {
     confirmStatistics () {
       this.$emit('confirmResult')
       this.$emit('update:show', false)
+      // 返回首页
+      this.$router.replace({
+        path: `/depencestart/${this.examInfo.id}`
+      })
     }
   },
   watch: {

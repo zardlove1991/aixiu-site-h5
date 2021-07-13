@@ -28,7 +28,7 @@
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span>{{item.points}}积分</span>
-          <span><van-icon name="arrow" /></span>
+          <span @click='goStaticPage'><van-icon name="arrow" /></span>
         </div>
       </div>
     </div>
@@ -89,6 +89,11 @@ export default {
         this.number = res.number
         this.score_num = res.score_num
         this.points_num = res.points_num
+      })
+    },
+    goStaticPage () {
+      this.$router.push({
+        path: `/exam/statistic/${this.id}`
       })
     },
     changeTime (data) {
@@ -175,7 +180,7 @@ export default {
         }
 
         &>span:nth-child(1) {
-          flex: 6;
+          flex: 7;
           color: #999999;
         }
         &>span:nth-child(2) {

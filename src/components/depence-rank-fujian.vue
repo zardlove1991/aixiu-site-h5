@@ -96,7 +96,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Spinner, Loadmore, Toast } from 'mint-ui'
+import { Spinner, Loadmore } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
 import { Select, Option } from 'element-ui'
@@ -252,13 +252,16 @@ export default {
         }
 
         this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
+        // this.uniqueName = this.tabBar[0].unique_name
+        console.log('this.uniqueName', this.tabBar)
         // 默认选择第一个标签
         this.changeTabValue(this.tabBar[0])
 
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
         this.columnName = first.old_name ? first.old_name : '姓名'
-        // this.uniqueName = first.rank_id
+        console.log('first.rank_id', first)
+        this.uniqueName = first.rank_id
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
@@ -376,18 +379,21 @@ export default {
       }
     },
     changeTabValue (data) {
-      console.log('this.selTab', data, this.selTab, data.index)
-
       this.selTab = data.index
       console.log('data', data)
-      this.uniqueName = ''
-      if (data.old_name === '党支部晋级榜') {
-        this.uniqueName = ''
-      } else if (data.old_name === '党支部') {
-        this.uniqueName = 'party'
-      } else if (data.name === 'IPTV逆袭赛积分榜') {
+      if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
+      } else {
+        this.uniqueName = data.rank_id
       }
+      console.log('this.uniqueName', this.uniqueName)
+      // if (data.old_name === '党支部晋级榜') {
+      //   this.uniqueName = ''
+      // } else if (data.old_name === '党支部') {
+      //   this.uniqueName = 'party'
+      // } else if (data.name === 'IPTV逆袭赛积分榜') {
+      //   this.uniqueName = 'tv'
+      // }
     },
     changeTab2 (name) {
       if (this.loading) return
