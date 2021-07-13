@@ -60,6 +60,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { Spinner, Loadmore } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
+import { Indicator } from 'mint-ui'
 
 export default {
   props: {
@@ -82,7 +83,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 5000,
+        count: 1500,
         totalPages: 0
       },
       dateMap: {
@@ -169,13 +170,14 @@ export default {
           this.$refs['depence-rank-loadmore'].onBottomLoaded()
         })
       }
+      Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamRankList({
         query: { id: voteId },
         params: params
       }).then(res => {
         let { data, page: pageInfo } = res
         if (!data || !data.length) {
-          this.loading = false
+          Indicator.close()
           return
         }
         data = data.map(item => {
@@ -193,7 +195,7 @@ export default {
         }
         this.rankList = this.rankList.concat(data)
         this.pager = { total, page, count, totalPages }
-        this.loading = false
+        Indicator.close()
       })
     },
     changeTab (item) {
@@ -221,7 +223,7 @@ export default {
       this.pager = {
         total: 0,
         page: 0,
-        count: 5000,
+        count: 1500,
         totalPages: 0
       }
       this.getRankList()
