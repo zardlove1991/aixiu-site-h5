@@ -24,11 +24,13 @@
         </van-dropdown-menu>
       </div>
       <div class='list-wrap'>
-        <div v-for='(item, index) in answerInfoList' :key='index' class='single-list-wrap'>
+        <div v-for='(item, index) in answerInfoList' :key='index'
+          @click='goStaticPage(item)'
+          class='single-list-wrap'>
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span>{{item.points}}积分</span>
-          <span @click='goStaticPage'><van-icon name="arrow" /></span>
+          <span><van-icon name="arrow" /></span>
         </div>
       </div>
     </div>
@@ -91,9 +93,10 @@ export default {
         this.points_num = res.points_num
       })
     },
-    goStaticPage () {
+    goStaticPage (item) {
       this.$router.push({
-        path: `/exam/statistic/${this.id}`
+        path: `/exam/statistic/${this.id}`,
+        query: {api_person_id: item.api_person_id}
       })
     },
     changeTime (data) {

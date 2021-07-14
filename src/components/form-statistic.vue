@@ -182,6 +182,7 @@ export default {
   props: ['params'],
   data () {
     return {
+      api_person_id: null,
       showType: 'line',
       colorData: ['#00BF97', '#FF8B5F', '#FFBC4F', '#9B5DF5', '#3678f4', '#00ede4',
         '#544beb', '#fa4e49', '#3897ff', '#4bc326', '#00b5ce', '#ca53ff', '#9159ff'],
@@ -308,6 +309,12 @@ export default {
       return num
     }
   },
+  created () {
+    this.getExamList()
+  },
+  mounted () {
+    this.api_person_id = this.$route.query.api_person_id
+  },
   methods: {
     initStatInfo (score, correctNum, total) {
       if (!score || (!correctNum && correctNum !== 0) || !total) {
@@ -362,7 +369,10 @@ export default {
     async getExamList () {
       let id = this.$route.params.id
       await this.initPage(id)
-      API.getExamDetailsStatistics({query: {id}}).then(res => {
+      API.getExamDetailsStatistics({
+        query: {id},
+        params: {api_person_id: this.api_person_id}
+      }).then(res => {
         let correctNum = res.correct_num
         let { points } = res
         if (points) {
@@ -728,9 +738,6 @@ export default {
         })
       }
     }
-  },
-  created () {
-    this.getExamList()
   }
 }
 </script>
