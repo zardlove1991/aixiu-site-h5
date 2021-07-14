@@ -21,7 +21,7 @@
               v-for="item in options"
               :key="item.value"
               :label="item.label"
-              :value="item.label">
+              :value="item.value">
             </el-option>
           </el-select>
           <div class='input-icon-wrap'>
@@ -60,7 +60,7 @@
         <div class="rank-table-wrap">
           <div class="header rank-flex">
             <div class="wd120 item-center">排名</div>
-            <div class="flex1 item-header-name">{{columnName}}</div>
+            <div class="flex1 item-header-name">党支部</div>
             <div class="wd150">赛区</div>
             <div class="wd200">总积分</div>
           </div>
@@ -72,7 +72,7 @@
               </div>
               <div class="flex1 rank-name" v-html='item.party_name'></div>
               <div class="wd150">{{item.party_address}}</div>
-              <div class="wd200">{{item.source}}</div>
+              <div class="wd200">{{item.score}}</div>
             </div>
           </template>
         </div>
@@ -146,47 +146,47 @@ export default {
         },
         {
           label: '省直机关赛区',
-          value: '1'
+          value: '省直机关赛区'
         },
         {
           label: '福州（非省直）赛区',
-          value: '2'
+          value: '福州（非省直）赛区'
         },
         {
           label: '莆田赛区',
-          value: '3'
+          value: '莆田赛区'
         },
         {
           label: '泉州赛区',
-          value: '4'
+          value: '泉州赛区'
         },
         {
           label: '厦门赛区',
-          value: '5'
+          value: '厦门赛区'
         },
         {
           label: '漳州赛区',
-          value: '6'
+          value: '漳州赛区'
         },
         {
           label: '龙岩赛区',
-          value: '7'
+          value: '龙岩赛区'
         },
         {
           label: '三明赛区',
-          value: '8'
+          value: '三明赛区'
         },
         {
           label: '南平赛区',
-          value: '9'
+          value: '南平赛区'
         },
         {
           label: '宁德赛区',
-          value: '10'
+          value: '宁德赛区'
         },
         {
           label: '平潭赛区',
-          value: '11'
+          value: '平潭赛区'
         }
       ],
       partyName: '',
@@ -237,6 +237,25 @@ export default {
         let resArr = this.getTabBar2(first)
         // 福建答题项目
         this.tabBar = []
+        // this.tabBar.push({
+        //   is_all: '1',
+        //   is_day: '0',
+        //   is_month: '0',
+        //   is_week: '0',
+        //   name: 'IPTV逆袭赛积分榜',
+        //   old_name: '',
+        //   rank_id: 'tv',
+        //   index: 0
+        // })
+        // for (let i = 0; i < rankCycle.length; i++) {
+        //   this.tabBar.push(Object.assign(rankCycle[i], {index: i + 1}))
+        // }
+        // this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
+
+        for (let i = 0; i < rankCycle.length; i++) {
+          this.tabBar.push(Object.assign(rankCycle[i], {index: i}))
+        }
+
         this.tabBar.push({
           is_all: '1',
           is_day: '0',
@@ -245,21 +264,18 @@ export default {
           name: 'IPTV逆袭赛积分榜',
           old_name: '',
           rank_id: 'tv',
-          index: 0
+          index: 2
         })
-        for (let i = 0; i < rankCycle.length; i++) {
-          this.tabBar.push(Object.assign(rankCycle[i], {index: i + 1}))
-        }
 
-        this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
         // this.uniqueName = this.tabBar[0].unique_name
         // 默认选择第一个标签
         this.changeTabValue(this.tabBar[0])
 
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
-        this.columnName = first.old_name ? first.old_name : '姓名'
-        this.uniqueName = '' // 党支部晋级榜 【福建答题项目】
+        console.log('first.old_name', first.old_name)
+        // this.columnName = first.old_name ? first.old_name : '姓名'
+        this.uniqueName = 'party' // 党支部晋级榜 【福建答题项目】
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
@@ -299,12 +315,12 @@ export default {
         count = 30
       }
       let params = {
-        page: page + 1,
+        page: Number(page) + 1,
         count,
         unique_name: this.uniqueName,
         type,
-        name: this.partyName,
-        party_address: this.curPartyAddr
+        name: this.curPartyAddr,
+        party_address: this.partyName
       }
       // 先临时处理
       if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634' && voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
@@ -328,10 +344,20 @@ export default {
       //   query: { id: voteId },
       //   params: params
       // }).then(res => {
-      let { data, page: pageInfo } = res
+      let data = res.data
+      let pageInfo = {
+        total: res.total,
+        current_page: res.current_page,
+        last_page: res.last_page
+      }
       if (!data || !data.length) {
+        // 为空清除
+        this.rankList = []
         this.loading = false
+        this.isNullDataType = true
         return
+      } else {
+        this.isNullDataType = false
       }
       data = data.map(item => {
         let time = item.time ? item.time : 0
@@ -346,18 +372,15 @@ export default {
       if (total % count !== 0) {
         totalPages = parseInt(total / count) + 1
       }
+
+      this.rankList = []
       this.rankList = this.rankList.concat(data)
 
-      if (this.rankList.length === 0) {
-        this.isNullDataType = true
-      } else {
-        this.isNullDataType = false
-        // 输入值标红
-        let subStr = '/(' + this.curPartyAddr + ')/g'
-        for (const i of this.rankLis) {
-          // eslint-disable-next-line no-eval
-          i.party_name = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
-        }
+      // 输入值标红
+      let subStr = '/(' + this.curPartyAddr + ')/g'
+      for (const i of this.rankList) {
+        // eslint-disable-next-line no-eval
+        i.party_name = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
       }
 
       this.pager = { total, page: currentPage, count, totalPages }
@@ -370,14 +393,13 @@ export default {
       if (tabBar2 && tabBar2.length) {
         this.changeTabValue(item)
         this.tabBar2 = tabBar2
-        this.columnName = item.old_name ? item.old_name : '姓名'
+        // this.columnName = item.old_name ? item.old_name : '姓名'
         this.selTab2 = tabBar2[0]
         this.getClearRankList()
       }
     },
     changeTabValue (data) {
       this.selTab = data.index
-      console.log('data', data)
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
       } if (data.rank_id === 'party_top') {
@@ -385,14 +407,6 @@ export default {
       } else {
         this.uniqueName = data.rank_id
       }
-      console.log('this.uniqueName', this.uniqueName)
-      // if (data.old_name === '党支部晋级榜') {
-      //   this.uniqueName = ''
-      // } else if (data.old_name === '党支部') {
-      //   this.uniqueName = 'party'
-      // } else if (data.name === 'IPTV逆袭赛积分榜') {
-      //   this.uniqueName = 'tv'
-      // }
     },
     changeTab2 (name) {
       if (this.loading) return

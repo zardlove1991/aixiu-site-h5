@@ -551,7 +551,10 @@ export default {
       this.posterInfo = {}
       this.shareUrl = ''
       API.getPosterInfo({
-        query: {id: this.$route.params.id}
+        query: {id: this.$route.params.id},
+        params: {
+          api_person_id: this.api_person_id
+        }
       }).then(res => {
         this.shareLoading = false
         this.posterInfo = res
@@ -603,25 +606,29 @@ export default {
         context.fillText(this.posterInfo.score, 60, 320)
         context.font = '28px Arial'
         context.fillStyle = '#fff'
-        let _x = 70 + (this.posterInfo.score.toString().length) * 40
+        let _x = 70 + (this.posterInfo.score.toString().length) * 45
         context.fillText('分', _x, 320)
         context.font = '28px Arial'
         context.fillStyle = '#fff'
         context.fillText('姓名', 60, 400)
         context.fillText(name, 300, 400)
+        let _baseHeight = 450
         if (this.examInfo.mark !== 'examination@exercise') {
+          _baseHeight = 450
           context.fillText('答题时间', 60, 450)
           context.fillText(this.posterInfo.start_time, 300, 450)
+        } else {
+          _baseHeight = 400
         }
-        context.fillText('答对题数', 60, 500)
-        context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, 500)
-        context.fillText('总题数', 60, 550)
-        context.fillText(this.posterInfo.question_num + '题', 300, 550)
-        context.fillText('试卷总分', 60, 600)
-        context.fillText(this.posterInfo.total_score + '分', 300, 600)
+        context.fillText('答对题数', 60, _baseHeight + 50)
+        context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, _baseHeight + 50)
+        context.fillText('总题数', 60, _baseHeight + 100)
+        context.fillText(this.posterInfo.question_num + '题', 300, _baseHeight + 100)
+        context.fillText('试卷总分', 60, _baseHeight + 150)
+        context.fillText(this.posterInfo.total_score + '分', 300, _baseHeight + 150)
         if (this.posterInfo.use_time) {
-          context.fillText('考试用时', 60, 650)
-          context.fillText(this.posterInfo.use_time, 300, 650)
+          context.fillText('考试用时', 60, _baseHeight + 200)
+          context.fillText(this.posterInfo.use_time, 300, _baseHeight + 200)
         }
         // 生成图片地址
         this.shareUrl = canvas.toDataURL('image/png', 1)
