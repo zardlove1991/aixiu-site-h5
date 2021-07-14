@@ -609,19 +609,23 @@ export default {
         context.fillStyle = '#fff'
         context.fillText('姓名', 60, 400)
         context.fillText(name, 300, 400)
+        let _baseHeight = 450
         if (this.examInfo.mark !== 'examination@exercise') {
+          _baseHeight = 450
           context.fillText('答题时间', 60, 450)
           context.fillText(this.posterInfo.start_time, 300, 450)
+        } else {
+          _baseHeight = 400
         }
-        context.fillText('答对题数', 60, 500)
-        context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, 500)
-        context.fillText('总题数', 60, 550)
-        context.fillText(this.posterInfo.question_num + '题', 300, 550)
-        context.fillText('试卷总分', 60, 600)
-        context.fillText(this.posterInfo.total_score + '分', 300, 600)
+        context.fillText('答对题数', 60, _baseHeight + 50)
+        context.fillText(`${this.posterInfo.correct_num || 0}题`, 300, _baseHeight + 50)
+        context.fillText('总题数', 60, _baseHeight + 100)
+        context.fillText(this.posterInfo.question_num + '题', 300, _baseHeight + 100)
+        context.fillText('试卷总分', 60, _baseHeight + 150)
+        context.fillText(this.posterInfo.total_score + '分', 300, _baseHeight + 150)
         if (this.posterInfo.use_time) {
-          context.fillText('考试用时', 60, 650)
-          context.fillText(this.posterInfo.use_time, 300, 650)
+          context.fillText('考试用时', 60, _baseHeight + 200)
+          context.fillText(this.posterInfo.use_time, 300, _baseHeight + 200)
         }
         // 生成图片地址
         this.shareUrl = canvas.toDataURL('image/png', 1)
