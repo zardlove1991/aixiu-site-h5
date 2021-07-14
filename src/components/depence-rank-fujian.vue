@@ -355,8 +355,6 @@ export default {
       this.selTab = data.index
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
-      } if (data.rank_id === 'party_top') {
-        this.uniqueName = ''
       } else {
         this.uniqueName = data.rank_id
       }
