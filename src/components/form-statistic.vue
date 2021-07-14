@@ -551,7 +551,10 @@ export default {
       this.posterInfo = {}
       this.shareUrl = ''
       API.getPosterInfo({
-        query: {id: this.$route.params.id}
+        query: {id: this.$route.params.id},
+        params: {
+          api_person_id: this.api_person_id
+        }
       }).then(res => {
         this.shareLoading = false
         this.posterInfo = res
@@ -603,7 +606,7 @@ export default {
         context.fillText(this.posterInfo.score, 60, 320)
         context.font = '28px Arial'
         context.fillStyle = '#fff'
-        let _x = 70 + (this.posterInfo.score.toString().length) * 40
+        let _x = 70 + (this.posterInfo.score.toString().length) * 45
         context.fillText('分', _x, 320)
         context.font = '28px Arial'
         context.fillStyle = '#fff'
