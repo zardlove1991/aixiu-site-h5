@@ -47,7 +47,7 @@
             <span class="loading-more-txt">正在加载中</span>
           </div>
           <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
-          <div v-show="noMore && rankList.length > 0 && (id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
+          <div v-show="noMore && rankList.length > 0 && (id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
       </mt-loadmore>
     </div>
@@ -57,7 +57,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Spinner, Loadmore } from 'mint-ui'
+import { Spinner, Loadmore, Indicator } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
 
@@ -96,9 +96,6 @@ export default {
   computed: {
     noMore () {
       // 当起始页数大于总页数时停止加载
-      if (this.id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || this.id === '4e9840ada0ed433694218f6cbc5b0572') {
-        return true
-      }
       let { page, totalPages } = this.pager
       return page >= totalPages
     },
@@ -147,15 +144,12 @@ export default {
     },
     getRankList () {
       let voteId = this.id
+      if (this.loading) return
       this.loading = true
       let { page, count } = this.pager
       let type = this.selTab2
       if (type === 'all') {
         type = ''
-      }
-      // 先临时处理
-      if (voteId === '4e9840ada0ed433694218f6cbc5b0572') {
-        count = 30
       }
       let params = {
         page: page + 1,
@@ -163,19 +157,18 @@ export default {
         unique_name: this.uniqueName,
         type
       }
-      // 先临时处理
-      if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634' && voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
-        this.$nextTick(() => {
-          this.$refs['depence-rank-loadmore'].onBottomLoaded()
-        })
-      }
+      this.$nextTick(() => {
+        this.$refs['depence-rank-loadmore'].onBottomLoaded()
+      })
+      Indicator.open({ spinnerType: 'fading-circle' })
       API.getExerciseRankList({
         query: { id: voteId },
         params: params
       }).then(res => {
         let { data, page: pageInfo } = res
+        this.loading = false
         if (!data || !data.length) {
-          this.loading = false
+          Indicator.close()
           return
         }
         data = data.map(item => {
@@ -193,7 +186,7 @@ export default {
         }
         this.rankList = this.rankList.concat(data)
         this.pager = { total, page, count, totalPages }
-        this.loading = false
+        Indicator.close()
       })
     },
     changeTab (item) {

@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 import base64 from '@/lib/base64'
 import utf8 from '@/lib/utf8'
 import {
@@ -8,6 +9,8 @@ import {
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import store from '@/store'
+import configObj from '@/api/config.js'
+
 
 /**
  * [格式化时间戳]
@@ -194,7 +197,6 @@ export const formatSecByTime = (params) => {
   }
   return timeArr
 }
-
 /*
  * 判断嵌入平台
  * */
@@ -210,6 +212,9 @@ export const getPlat = () => {
     return 'dingdone'
   } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
     return 'dingding'
+  } else if (eval(configObj.zengchengSiteId).test(userAgent)) {
+    // 阅增城
+    return 'zengcheng'
   }
   return 'browser'
 }
@@ -549,6 +554,8 @@ export const getAppSign = () => {
       }
     })
     return sign
+  } else if (eval(configObj.zengchengSiteId).test(ua)) {
+    return 'zengcheng'
   } else {
     return 'other'
   }
