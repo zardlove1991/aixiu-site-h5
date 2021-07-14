@@ -57,10 +57,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Spinner, Loadmore } from 'mint-ui'
+import { Spinner, Loadmore, Indicator } from 'mint-ui'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
-import { Indicator } from 'mint-ui'
 
 export default {
   props: {
@@ -83,7 +82,7 @@ export default {
       pager: { // 投票列表分页
         total: 0,
         page: 0,
-        count: 1500,
+        count: 100,
         totalPages: 0
       },
       dateMap: {
@@ -97,9 +96,6 @@ export default {
   computed: {
     noMore () {
       // 当起始页数大于总页数时停止加载
-      if (this.id === '4e9840ada0ed433694218f6cbc5b0572') {
-        return true
-      }
       let { page, totalPages } = this.pager
       return page >= totalPages
     },
@@ -148,15 +144,12 @@ export default {
     },
     getRankList () {
       let voteId = this.id
+      if (this.loading) return
       this.loading = true
       let { page, count } = this.pager
       let type = this.selTab2
       if (type === 'all') {
         type = ''
-      }
-      // 先临时处理
-      if (voteId === '4e9840ada0ed433694218f6cbc5b0572') {
-        count = 30
       }
       let params = {
         page: page + 1,
@@ -164,18 +157,16 @@ export default {
         unique_name: this.uniqueName,
         type
       }
-      // 先临时处理
-      if (voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
-        this.$nextTick(() => {
-          this.$refs['depence-rank-loadmore'].onBottomLoaded()
-        })
-      }
+      this.$nextTick(() => {
+        this.$refs['depence-rank-loadmore'].onBottomLoaded()
+      })
       Indicator.open({ spinnerType: 'fading-circle' })
       API.getExamRankList({
         query: { id: voteId },
         params: params
       }).then(res => {
         let { data, page: pageInfo } = res
+        this.loading = false
         if (!data || !data.length) {
           Indicator.close()
           return
@@ -223,7 +214,7 @@ export default {
       this.pager = {
         total: 0,
         page: 0,
-        count: 1500,
+        count: 100,
         totalPages: 0
       }
       this.getRankList()
