@@ -180,8 +180,10 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    async confirmSubmitModel () {
-      this.toggleSubmitModel()
+    async confirmSubmitModel (command) {
+      if (command !== 'noconfirm') {
+        this.toggleSubmitModel()
+      }
       let _id = this.$route.params.id
       // 提交试卷
       let _result = await API.submitExam({
