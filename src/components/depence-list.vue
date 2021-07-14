@@ -20,7 +20,7 @@
       <div>
         <el-progress type="circle" :width="60" :percentage="exerciseCountProgress" :status="timerStatus" :format="timeFormat"></el-progress>
         <div class="exercise-title-div number-div">{{exerciseCountTime}}</div>
-        <div class="exercise-title-div wrong-div" v-if="successStatus === 2">
+        <div class="exercise-title-div wrong-div" v-if="successStatus === 2 || successStatus === 3">
           <img :src="require('@/assets/common/exam/progress-wrong.png')" alt="">
         </div>
         <div class="exercise-title-div correct-div" v-if="successStatus === 1">
@@ -69,7 +69,7 @@
           @click.stop="saveCloud('add')">
            确认
         </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn && !nextExerciseBtn" @click.stop="submitExam">
+        <div class="next-wrap" v-show="isShowSubmitBtn && currentSubjectIndex === examList.length-1" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
         <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
@@ -428,8 +428,9 @@ export default {
           // 练习题做错误处理
           if (this.examInfo.mark === 'examination@exercise') {
             this.setExerciseResult(res)
+            console.log(res, 'res**********练习题做错误处理')
             // 练习题交卷
-            this.$refs.examHeader.confirmSubmitModel()
+            this.$refs.examHeader.confirmSubmitModel('noconfirm')
           }
         })
       }
@@ -515,6 +516,7 @@ export default {
     },
     setExerciseResult (res) {
       let { success, data, raffle } = res
+      console.log('setExerciseResult+******', res)
       if (success && success !== 1) {
         this.clearTimer()
         this.$nextTick(() => {
@@ -526,8 +528,11 @@ export default {
             // 允许答错
             if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
               // Toast('已经没有题目了~')
+              console.log('nextExerciseBtn', '已经没有题目了')
+              this.nextExerciseBtn = false
             } else {
               this.nextExerciseBtn = true
+              console.log('nextExerciseBtn', '还有题目')
             }
             if (!this.examList || this.examList.length < 1 || !data) return
             let currentQuestion = this.examList[this.currentSubjectIndex]
@@ -541,7 +546,7 @@ export default {
               this.pageShowAnswer(answer)
             }
           } else {
-            console.log('res', res)
+            console.log('res答错直接交卷', res)
             // 答错直接交卷
             let _id = this.$route.params.id
             API.getExamDetailsStatistics({
