@@ -192,14 +192,11 @@ export default {
       clearInterval(this.timer)
       if (_result) {
         let {success, raffle} = _result
-        debugger
         if (success) {
           this.temporaryData = raffle
           if (this.examInfo.mark === 'examination@exercise') {
-            let _query = { id: _id, api_person_id: _result.api_person_id }
-            console.log('_query6666666666', _query)
             // 获取测评结果
-            API.getExamDetailsStatistics({query: _query}).then(res => {
+            API.getExamDetailsStatistics({query: {id: _id}, params: {api_person_id: _result.api_person_id}}).then(res => {
               let { correct_num: correctNum, points, score } = res
               let exerciseResult = {
                 correctNum, points, score

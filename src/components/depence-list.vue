@@ -544,7 +544,10 @@ export default {
             console.log('res', res)
             // 答错直接交卷
             let _id = this.$route.params.id
-            API.getExamDetailsStatistics({query: { id: _id, api_person_id: res.api_person_id }}).then(res => {
+            API.getExamDetailsStatistics({
+              query: { id: _id },
+              params: {api_person_id: res.api_person_id}}
+            ).then(res => {
               let { correct_num: correctNum, points, score } = res
               let exerciseResult = {
                 correctNum, points, score

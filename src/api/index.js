@@ -195,12 +195,14 @@ const getUrl = (url, config = {}, api = 'exam') => {
 
 export const createAPI = (url, method, config = {}, api) => {
   api = 'exam'
-  return instance({
-    url: getUrl('api/' + url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
+  return instance(
+    {
+      url: getUrl('api/' + url, config, api),
+      method,
+      withCredentials: true,
+      ...config
+    }
+  )
 }
 
 export const createSumbit = (url, method, config = {}, api) => {
