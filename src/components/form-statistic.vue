@@ -136,11 +136,11 @@
           </div>
         </div>
       </div>
-      <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
+      <!-- <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
         <div class="luck-pop-icon">
           <div class="luck-pop-tips">点击抽奖</div>
         </div>
-      </div>
+      </div> -->
       <share-dialog
         :show="isShowShare"
         :shareUrl="shareUrl"
@@ -638,7 +638,7 @@ export default {
           link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
         }
         let backUrl = location.origin + '/depencestart/' + this.$route.params.id
-        window.location.href = link + '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
+        window.location.href = link + '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl) + '&canDraw=1'
       }
     },
     isCheckBox (val) {

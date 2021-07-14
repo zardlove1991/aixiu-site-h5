@@ -6,7 +6,7 @@
       <div class="tips-logo" :class="`${dialogConfig.type}-logo`"></div>
       <div class="tips-content" v-html="dialogConfig.tips" v-if="dialogConfig.type !== 'share'"></div>
       <div class="share-tips-content" v-if="dialogConfig.type === 'share'">
-        <div class="number-tips">获得<span class="special-text">&nbsp;{{dialogConfig.showNumber}}次&nbsp;</span>免费答题的机会</div>
+        <div class="number-tips">获得<span class="special-text">&nbsp;{{dialogConfig.showNumber}}次&nbsp;</span>答题的机会</div>
         <div>{{dialogConfig.tips}}</div>
       </div>
       <el-checkbox v-if="dialogConfig.type === 'integral'" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
