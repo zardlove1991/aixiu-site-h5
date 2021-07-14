@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 import base64 from '@/lib/base64'
 import utf8 from '@/lib/utf8'
 import {
@@ -7,6 +8,9 @@ import {
 } from '@/config/upload'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import configObj from '@/api/config.js'
+
+// import { Toast } from 'mint-ui'
 
 /**
  * [格式化时间戳]
@@ -192,7 +196,6 @@ export const formatSecByTime = (params) => {
   }
   return timeArr
 }
-
 /*
  * 判断嵌入平台
  * */
@@ -208,6 +211,9 @@ export const getPlat = () => {
     return 'dingdone'
   } else if (/dingtalk/.test(userAgent) || /aliapp/.test(userAgent)) {
     return 'dingding'
+  } else if (eval(configObj.zengchengSiteId).test(userAgent)) {
+    // 阅增城
+    return 'zengcheng'
   }
   return 'browser'
 }
@@ -546,14 +552,17 @@ export const getAppSign = () => {
       }
     })
     return sign
+  } else if (eval(configObj.zengchengSiteId).test(ua)) {
+    return 'zengcheng'
   } else {
     return 'other'
   }
 }
 
 export const getShareUrl = (...args) => {
-  const protocol = window.location.protocol
-  let tmpLink = `${protocol}//xzh5.hoge.cn/bridge/index.html?backUrl=`
+  // const protocol = window.location.protocol
+  // let tmpLink = `${protocol}//xzh5.hoge.cn/bridge/index.html?backUrl=`
+  let tmpLink = `${window.location.origin}/bridge.html?backUrl=`
   let len = args.length
   for (let i = 0; i < len; i += 1) {
     tmpLink += args[i]

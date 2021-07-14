@@ -416,7 +416,7 @@ export default {
         this.setShareData({ sign, invotekey })
       }
       let res = STORAGE.get('detailInfo')
-      if (!res) {
+      if (!res || res.id !== voteId) {
         res = await API.getVodeDetail({
           query: { id: voteId }
         })
@@ -1715,6 +1715,7 @@ export default {
           display: flex;
           .search-input {
             flex: 1;
+            width: 100%;
             padding: px2rem(20px);
             font-size: px2rem(28px);
             @include font-color('fontColor');
@@ -1728,6 +1729,7 @@ export default {
           .search-icon {
             margin-right: px2rem(20px);
             width: px2rem(34px);
+            flex: 0 0 px2rem(34px);
             height: 100%;
             background-repeat: no-repeat;
             background-position: center;
