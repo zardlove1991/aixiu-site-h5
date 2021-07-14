@@ -11,7 +11,6 @@ import STORAGE from '@/utils/storage'
 import store from '@/store'
 import configObj from '@/api/config.js'
 
-
 /**
  * [格式化时间戳]
  * @param  {[number]} utcstr [时间戳]
