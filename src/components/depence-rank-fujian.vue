@@ -137,7 +137,7 @@ export default {
         'month': '月榜',
         'all': '总榜'
       },
-      areaValue: '全部赛区',
+      areaValue: '',
       searchValue: '',
       options: [
         {
@@ -189,7 +189,7 @@ export default {
           value: '11'
         }
       ],
-      partyName: '全部赛区',
+      partyName: '',
       curPartyAddr: '',
       noDataImg: require('@/assets/rankList/no-data-img.png')
     }
@@ -239,12 +239,12 @@ export default {
         this.tabBar = []
         this.tabBar.push({
           is_all: '1',
-          is_day: '1',
-          is_month: '1',
-          is_week: '1',
+          is_day: '0',
+          is_month: '0',
+          is_week: '0',
           name: 'IPTV逆袭赛积分榜',
           old_name: '',
-          rank_id: '',
+          rank_id: 'tv',
           index: 0
         })
         for (let i = 0; i < rankCycle.length; i++) {
@@ -366,7 +366,6 @@ export default {
     },
     changeTab (item) {
       if (this.loading) return
-      // 一级目录切换
       let tabBar2 = this.getTabBar2(item)
       if (tabBar2 && tabBar2.length) {
         this.changeTabValue(item)
@@ -381,6 +380,8 @@ export default {
       console.log('data', data)
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
+      } if (data.rank_id === 'party_top') {
+        this.uniqueName = ''
       } else {
         this.uniqueName = data.rank_id
       }

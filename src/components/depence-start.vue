@@ -677,7 +677,7 @@ export default {
       let { limit, collection_status: status } = this.examInfo
       console.log(limit.assign_people_limit)
       // Todo
-      // limit.assign_people_limit = 0
+      limit.assign_people_limit = 0
       if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
