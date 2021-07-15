@@ -152,7 +152,7 @@ export default {
       this.isShowSuspendModels = false
       let examId = this.id
       this.$router.replace({
-        path: `/exam/statistic/${examId}`
+        path: `/exam/myAnswerList/${examId}`
       })
     },
     toStart () {

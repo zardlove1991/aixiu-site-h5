@@ -258,7 +258,7 @@ export default {
     async getRankList () {
       let voteId = this.id
       this.loading = true
-      let { page, count } = this.pager
+      let { count } = this.pager
       let type = this.selTab2
       if (type === 'all') {
         type = ''

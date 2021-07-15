@@ -382,7 +382,7 @@ export default {
         } else if (result) {
           let examId = examInfo.id
           this.$router.replace({
-            path: `/exam/statistic/${examId}`
+            path: `/exam/myAnswerList/${examId}`
           })
         } else if (pop) {
           this.isPopSubmitSuccess = true
