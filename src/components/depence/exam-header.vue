@@ -207,7 +207,7 @@ export default {
               this.$emit('getExerciseStatistics', exerciseResult)
             })
           } else {
-            this.setResult(raffle)
+            this.setResult(raffle, _result)
           }
         } else {
           console.error('提交失败')
@@ -215,7 +215,7 @@ export default {
       }
     },
     // 处理结果
-    setResult (raffle) {
+    setResult (raffle, res) {
       if (!raffle) {
         if (this.temporaryData) {
           raffle = this.temporaryData
@@ -249,9 +249,11 @@ export default {
             window.location.replace(url)
           }, 1000)
         } else if (result || _jumpConditions) {
+          console.log(result, '答题结果页')
           let examId = this.examId
           this.$router.replace({
-            path: `/exam/statistic/${examId}`
+            path: `/exam/statistic/${examId}`,
+            query: {api_person_id: res.api_person_id}
           })
         } else if (pop) {
           this.isPopSubmitSuccess = true
