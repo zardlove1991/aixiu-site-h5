@@ -713,6 +713,7 @@ const actions = {
     let list = state.examList
     // 判断什么操作 加减 还是 直接赋值
     if (typeof payload === 'string') {
+      console.log('判断什么操作 加减 还是 直接赋值', payload, state.currentSubjectIndex)
       if (payload === 'add' || payload === 'timeout') index++
       else if (payload === 'sub') index--
       else if (/to_/.test(payload)) {
@@ -721,8 +722,8 @@ const actions = {
       }
       // 判断界限
       if (index < 0 || index > list.length - 1) {
-        // Toast('已经没有题目了1~')
-        // return
+        Toast('已经没有题目了~')
+        return
       }
     } else if (typeof payload === 'number') {
       index = payload
@@ -761,7 +762,7 @@ const actions = {
         _cloudData = res
         if (res.success === 1) {
           commit('SET_ANALYSIS_ANSWER', '')
-          commit('SET_CURRENT_SUBJECT_INDEX', index)
+          // commit('SET_CURRENT_SUBJECT_INDEX', index)
         }
       })
       return new Promise((resolve, reject) => {
