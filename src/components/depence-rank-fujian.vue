@@ -70,9 +70,9 @@
                 <span v-if="index > 2">{{index + 1}}</span>
                 <span :class="['rank-icon', 'rank-' + index]" v-else></span>
               </div>
-              <div class="flex1 rank-name" v-html='item.party_name'></div>
+              <div class="flex1 rank-name wd200" v-html='item.party_name'></div>
               <div class="wd150">{{item.party_address}}</div>
-              <div class="wd200">{{item.score}}</div>
+              <div class="wd200">{{item.score != undefined ? item.score : item.avage }}</div>
             </div>
           </template>
         </div>
@@ -139,56 +139,7 @@ export default {
       },
       areaValue: '',
       searchValue: '',
-      options: [
-        {
-          label: '全部赛区',
-          value: ''
-        },
-        {
-          label: '省直机关赛区',
-          value: '省直机关赛区'
-        },
-        {
-          label: '福州（非省直）赛区',
-          value: '福州（非省直）赛区'
-        },
-        {
-          label: '莆田赛区',
-          value: '莆田赛区'
-        },
-        {
-          label: '泉州赛区',
-          value: '泉州赛区'
-        },
-        {
-          label: '厦门赛区',
-          value: '厦门赛区'
-        },
-        {
-          label: '漳州赛区',
-          value: '漳州赛区'
-        },
-        {
-          label: '龙岩赛区',
-          value: '龙岩赛区'
-        },
-        {
-          label: '三明赛区',
-          value: '三明赛区'
-        },
-        {
-          label: '南平赛区',
-          value: '南平赛区'
-        },
-        {
-          label: '宁德赛区',
-          value: '宁德赛区'
-        },
-        {
-          label: '平潭赛区',
-          value: '平潭赛区'
-        }
-      ],
+      options: [],
       partyName: '',
       curPartyAddr: '',
       noDataImg: require('@/assets/rankList/no-data-img.png')
@@ -207,6 +158,7 @@ export default {
   },
   created () {
     this.initData()
+    this.getGameArea()
   },
   methods: {
     async initData () {
@@ -237,21 +189,6 @@ export default {
         let resArr = this.getTabBar2(first)
         // 福建答题项目
         this.tabBar = []
-        // this.tabBar.push({
-        //   is_all: '1',
-        //   is_day: '0',
-        //   is_month: '0',
-        //   is_week: '0',
-        //   name: 'IPTV逆袭赛积分榜',
-        //   old_name: '',
-        //   rank_id: 'tv',
-        //   index: 0
-        // })
-        // for (let i = 0; i < rankCycle.length; i++) {
-        //   this.tabBar.push(Object.assign(rankCycle[i], {index: i + 1}))
-        // }
-        // this.tabBar = this.tabBar.sort((a, b) => b.index - a.index)
-
         for (let i = 0; i < rankCycle.length; i++) {
           this.tabBar.push(Object.assign(rankCycle[i], {index: i}))
         }
@@ -273,7 +210,6 @@ export default {
 
         this.tabBar2 = resArr
         //  this.selTab = first.rank_id ? first.rank_id : 'person'
-        console.log('first.old_name', first.old_name)
         // this.columnName = first.old_name ? first.old_name : '姓名'
         this.uniqueName = 'party' // 党支部晋级榜 【福建答题项目】
         if (resArr && resArr.length) {
@@ -281,6 +217,22 @@ export default {
         }
         this.getRankList()
       }
+    },
+    getGameArea () {
+      API.getPartyGameArea({query: {id: this.id}}).then(res => {
+        console.log('res', res)
+        this.options = [{
+          label: '全部赛区',
+          value: ''
+        }]
+
+        for (let i of res) {
+          this.options.push({
+            label: i,
+            value: i
+          })
+        }
+      })
     },
     openAllInput () {
       this.isSearchType = true
@@ -301,6 +253,7 @@ export default {
     },
     choiceAreaFun (data) {
       this.partyName = data
+      this.getRankList()
     },
     async getRankList () {
       let voteId = this.id
@@ -315,7 +268,7 @@ export default {
         count = 30
       }
       let params = {
-        page: Number(page) + 1,
+        page: 1,
         count,
         unique_name: this.uniqueName,
         type,
@@ -402,8 +355,6 @@ export default {
       this.selTab = data.index
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
-      } if (data.rank_id === 'party_top') {
-        this.uniqueName = ''
       } else {
         this.uniqueName = data.rank_id
       }
