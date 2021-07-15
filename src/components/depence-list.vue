@@ -63,14 +63,17 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
+        <div style="display:none">是否显示提交{{isShowSubmitBtn}}--- 是否显示下一题{{nextExerciseBtn}}</div>
         <div class="next-wrap"
-          v-show="!isShowSubmitBtn && !nextExerciseBtn && successStatus === 0"
-          :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length-1 }"
+          v-show="!nextExerciseBtn && successStatus === 0"
           @click.stop="saveCloud('add')">
            确认
         </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn && currentSubjectIndex === examList.length-1" @click.stop="submitExam">
-          {{examInfo.limit.submit_text || '立即交卷'}}
+        <div class="next-wrap" v-show="isShowSubmitBtn && currentSubjectIndex === examList.length-1 && successStatus !== 0 &&!showExerciseResultBtn" @click.stop="submitExam">
+          {{examInfo.limit.submit_text || examInfo.mark === 'examination@exercise' ? '查看分数' : '立即交卷'}}
+        </div>
+        <div class="next-wrap" v-show="showExerciseResultBtn&&examInfo.mark === 'examination@exercise'" @click.stop="showExamResult">
+          查看分数
         </div>
         <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
           下一题
@@ -131,7 +134,7 @@
     </my-model>
     <!--当前未做答题目弹窗-->
     <transition name="fade" mode="out-in">
-      <div class="answer-ops-model" v-show="isShowOpsModel">
+      <div class="answer-ops-model" v-show="isShowOpsModel&&examInfo.mark !== 'examination@exercise'">
         <div class="ops-bg"></div>
         <div class="ops-tip">跳过本题,可稍后作答</div>
       </div>
@@ -142,12 +145,13 @@
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"/>
     </div>
-    <div class="analysis-div" v-if="analysisData">
-      <div class="item">
+    <div style="display:none">isOpenAnswerAnalysis{{isOpenAnswerAnalysis}}-{{analysisData}}-{{examInfo.limit.answer_process_select}}</div>
+    <div class="analysis-div" v-if="isOpenAnswerAnalysis&&analysisData">
+      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_correctAnswer">
         <span class="title">正确答案：</span>
         <span>{{analysisData.pageAnswer}}</span>
       </div>
-      <div class="item">
+      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_questionAnalysis">
         <span class="title">答案解析：</span>
         <span>{{analysisData.analysis}}</span>
       </div>
@@ -217,6 +221,8 @@ export default {
       timerStatus: 'warning',
       nextExerciseBtn: false,
       successStatus: 0,
+      showExerciseResultBtn: false, // 显示直接查看结果按钮
+      currentPersonIdResult: {}, // 当前场次success：3时候 返回数据
       analysisData: null,
       //
       showExerciseResult: false,
@@ -245,6 +251,11 @@ export default {
       let examList = this.examList
       let renderType = this.renderType
       return (currentSubjectIndex === examList.length - 1) && (renderType === 'exam')
+    },
+    // 是否开启答案解析
+    isOpenAnswerAnalysis () {
+      let { limit: { answer_process_select: answerProcessSelect } } = this.examInfo
+      return answerProcessSelect.is_show_correctAnswer || answerProcessSelect.is_show_questionAnalysis
     }
   },
   beforeDestroy () {
@@ -475,15 +486,15 @@ export default {
           let index = list.findIndex(item => item.id === answerMaxQuestionId)
           if (index >= 0) this.changeSubjectIndex('to_' + index)
         } else {
-          let qusetionTimers = STORAGE.get('timer_' + this.examId)
-          let _lastIndex = 0
-          list.forEach((item, index) => {
-            if (item.value) _lastIndex = index
-            // 本地存储的问题计时权限最高，如果本地有计时，使用本地的序号。否则使用云端会回退到上一题
-            if (qusetionTimers[item.hashid]) _lastIndex = index
-          })
-          // 修改题目序号 跳过云端存储，防止直接交卷
-          this.changeSubjectIndex('to_' + _lastIndex)
+          // let qusetionTimers = STORAGE.get('timer_' + this.examId)
+          // let _lastIndex = 0
+          // list.forEach((item, index) => {
+          //   if (item.value) _lastIndex = index
+          //   // 本地存储的问题计时权限最高，如果本地有计时，使用本地的序号。否则使用云端会回退到上一题
+          //   if (qusetionTimers[item.hashid]) _lastIndex = index
+          // })
+          // // 修改题目序号 跳过云端存储，防止直接交卷
+          // this.changeSubjectIndex('to_' + _lastIndex)
         }
       }
     },
@@ -502,7 +513,11 @@ export default {
       return DEPENCE.dealLimitTimeTip(time)
     },
     async saveCloud (status = 'add') {
+      console.log('saveCloud******', this.successStatus)
       if (this.successStatus !== 0) return
+      if (this.currentSubjectIndex === this.examList.length - 1) {
+        status = this.currentSubjectIndex
+      }
       await this.changeSubjectIndex(status).then(res => {
         // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
@@ -515,17 +530,28 @@ export default {
       })
     },
     setExerciseResult (res) {
-      let { success, data, raffle } = res
+      let { success, data } = res
       console.log('setExerciseResult+******', res)
-      if (success && success !== 1) {
+      if (success) {
         this.clearTimer()
         this.$nextTick(() => {
           this.successStatus = success
           this.timerStatus = 'exception'
-          // 答题错误
-          let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
-          if (answerSubmitRules) {
-            // 允许答错
+          if (success === 3) {
+            // 答错立即交卷
+            console.log('res答错直接交卷', res)
+            let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
+            this.currentPersonIdResult = res
+            // 如果开启答题解析 手动点查看分数
+            if (+isOpenAnswerAnalysis) {
+              this.showExerciseResultBtn = true
+            } else {
+              // 如果未开启答题解析 自动查看分数
+              console.log('未开启答题解析 自动查看分数')
+              this.showExamResult()
+            }
+          } else {
+            // 允许继续答题
             if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
               // Toast('已经没有题目了~')
               console.log('nextExerciseBtn', '已经没有题目了')
@@ -534,37 +560,56 @@ export default {
               this.nextExerciseBtn = true
               console.log('nextExerciseBtn', '还有题目')
             }
-            if (!this.examList || this.examList.length < 1 || !data) return
-            let currentQuestion = this.examList[this.currentSubjectIndex]
-            this.analysisData = data[currentQuestion.hashid]
-            let { answer } = this.analysisData
-            if (answer) {
-              if (!(answer instanceof Array)) {
-                answer = Object.values(answer)
+            // 如果未开启答题解析 自动进入下一题或交卷
+            if (!this.isOpenAnswerAnalysis) {
+              // 如果是最后一题 确认后自动交卷
+              if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
+                console.log('未开启答题解析 最后一题自动交卷中')
+                this.$refs.examHeader.confirmSubmitModel('noconfirm')
               }
-              this.setAnalysisAnswer(answer) // store存储当前解析用于问题选项校对
-              this.pageShowAnswer(answer)
+              // 如果不是最后一题 自动进入下一题
+              if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+                console.log('未开启答题解析 不是最后一题 自动进入下一题中')
+                this.exerciseNext()
+              }
             }
-          } else {
-            console.log('res答错直接交卷', res)
-            // 答错直接交卷
-            let _id = this.$route.params.id
-            API.getExamDetailsStatistics({
-              query: { id: _id },
-              params: {api_person_id: res.api_person_id}}
-            ).then(res => {
-              let { correct_num: correctNum, points, score } = res
-              let exerciseResult = {
-                correctNum, points, score
-              }
-              this.exerciseRaffle = raffle
-              this.exerciseResult = exerciseResult
-              this.autoSubmit = true
-              this.showExerciseResult = true
-            })
+            // 如果未开启答题解析 自动查看分数
+            console.log('未开启答题解析 自动查看分数')
+          }
+          if (!this.examList || this.examList.length < 1 || !data) return
+          let currentQuestion = this.examList[this.currentSubjectIndex]
+          this.analysisData = data[currentQuestion.hashid]
+          console.log('this.analysisData********', this.analysisData, this.examList)
+          let { answer } = this.analysisData
+          console.log(answer, '*****answer***')
+          if (answer) {
+            if (!(answer instanceof Array)) {
+              answer = Object.values(answer)
+            }
+            console.log(answer, '*****answer***if')
+            this.setAnalysisAnswer(answer) // store存储当前解析用于问题选项校对
+            this.pageShowAnswer(answer)
           }
         })
       }
+    },
+    showExamResult () {
+      let _id = this.$route.params.id
+      API.getExamDetailsStatistics({
+        query: { id: _id },
+        params: {api_person_id: this.currentPersonIdResult.api_person_id}}
+      ).then(res => {
+        let { correct_num: correctNum, points, score } = res
+        let exerciseResult = {
+          correctNum, points, score
+        }
+        this.exerciseRaffle = this.currentPersonIdResult.raffle
+        this.exerciseResult = exerciseResult
+        this.autoSubmit = true
+        this.showExerciseResult = true
+        this.showExerciseResultBtn = false
+      })
+      this.setCurrentSubjectIndex(0)
     },
     // 页面展示答案
     pageShowAnswer (answer) {
@@ -659,6 +704,7 @@ export default {
     },
     getExerciseStatistics (data) {
       this.exerciseResult = data
+      this.setCurrentSubjectIndex(0)
     },
     confirmStatistics () {
       let _id = this.$route.params.id
