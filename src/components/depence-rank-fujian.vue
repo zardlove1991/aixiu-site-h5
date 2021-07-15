@@ -65,7 +65,13 @@
               <div class="wd200">赛区</div>
               <div class="wd150">总积分</div>
             </template>
-            <template v-else>
+            <template v-if='selTab === "person" && isFujianProject'>
+              <div class="flex1 item-header-name wd200">姓名</div>
+              <div class="wd250">党支部</div>
+              <div class="wd150">总积分</div>
+            </template>
+            <!-- 非福建答题项目 -->
+            <template v-if='!isFujianProject'>
               <div class="flex1 item-header-name wd250">{{columnName}}</div>
               <div class="wd150">总分</div>
               <div class="wd200">用时</div>
@@ -82,7 +88,13 @@
                 <div class="wd200">{{item.party_address}}</div>
                 <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
               </template>
-              <template v-else>
+              <template v-if='selTab === "person" && isFujianProject'>
+                <div class="flex1 rank-name wd200">{{item.member_name}}</div>
+                <div class="wd250">{{item.party_name}}</div>
+                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+              </template>
+              <!-- 非福建答题项目 -->
+              <template v-if='!isFujianProject'>
                 <div class="flex1 rank-name wd250">{{item.member_name}}</div>
                 <div class="wd150">{{item.score}}</div>
                 <div class="wd200">{{formatTime(item.use_time)}}</div>
