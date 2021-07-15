@@ -182,6 +182,22 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
+    <!-- 未开始 -->
+    <active-start
+      :activeDate="startDate"
+      :show="isShowStart"
+      @close="isShowStart = false">
+    </active-start>
+    <!-- 暂停 -->
+    <active-pause
+      :show="isShowPause"
+      @close="isShowPause = false">
+    </active-pause>
+    <!-- 已结束 -->
+    <active-stop
+      :show="isShowEnd"
+      @close="isShowEnd = false">
+    </active-stop>
   </div>
 </template>
 
@@ -202,6 +218,9 @@ import PartyCheckDialog from '@/components/dialog/party-check-dialog'
 import CustomTooltips from './exam-components/custom-tooltips'
 import OperateDialog from './exam-components/operate-dialog'
 import PageRule from '@/components/depence/page-rule'
+import ActiveStop from '@/components/enroll/global/active-stop'
+import ActivePause from '@/components/enroll/global/active-pause'
+import ActiveStart from '@/components/enroll/global/active-start'
 
 export default {
   mixins: [mixins],
@@ -210,6 +229,10 @@ export default {
   },
   data () {
     return {
+      isShowEnd: false,
+      isShowPause: false,
+      isShowStart: false,
+      startDate: [0, 0, 0, 0],
       App: false,
       appDownloadUrl: '',
       limitSource: '',
@@ -255,7 +278,19 @@ export default {
       isShowPartyCheck: false
     }
   },
-  components: { MyModel, DrawCheckDialog, LinkDialog, PopDialog, LuckDrawDialog, CustomTooltips, OperateDialog, PageRule, PartyCheckDialog },
+  components: {
+    MyModel,
+    DrawCheckDialog,
+    LinkDialog,
+    PopDialog,
+    LuckDrawDialog,
+    CustomTooltips,
+    OperateDialog,
+    PageRule,
+    PartyCheckDialog,
+    ActiveStop,
+    ActivePause,
+    ActiveStart },
   computed: {
     getShowRule () {
       let mark = this.examInfo.mark
@@ -314,6 +349,7 @@ export default {
       handler: function (v) {
         if (v) {
           this.initStartInfo()
+          this.activeStatus(v)
         }
       },
       deep: true,
@@ -327,6 +363,20 @@ export default {
     }
   },
   methods: {
+    activeStatus (data) {
+      // activity_close // 活动暂停
+      // activity_no_start // 活动未开始
+      // activity_end // 活动已结束
+      if (data.activity_vp_status !== undefined) {
+        if (data.activity_vp_status === 'activity_no_start') {
+          this.isShowStart = true
+        } else if (data.activity_vp_status === 'activity_close') {
+          this.isShowPause = true
+        } else if (data.activity_vp_status === 'activity_end') {
+          this.isShowEnd = true
+        }
+      }
+    },
     initFindAll () {
       var oDiv = document.getElementById('exam-rule-info2') || this.$refs['exam-rule-info2']
       if (oDiv && (oDiv.scrollHeight > oDiv.clientHeight)) {
@@ -675,9 +725,6 @@ export default {
     isShowCheckDraw () {
       // 判断是否需要信息采集
       let { limit, collection_status: status } = this.examInfo
-      console.log(limit.assign_people_limit)
-      // Todo
-      // limit.assign_people_limit = 0
       if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
         let obj = limit.collection_form.collection_form_settings
         if (obj && obj.length) {
@@ -738,24 +785,13 @@ export default {
           this.isShowPartyCheck = true
         } else {
           // 打开下载App的弹窗
-          let examId = this.id
-          API.checkPassword({query: { id: examId }}).then((res) => {
-            if (res && (res.limit_source || res.app_download_link)) {
-              this.App = true
-              this.appDownloadUrl = res.app_download_link
-              this.limitSource = res.limit_source
-            }
-          }).catch(err => {
-            console.log(err)
-          })
-
-          // console.log('888', this.examInfo)
-          // let sourceList = []
-          // for (let i of this.examInfo.limit.source_limit.user_app_source) {
-          //   sourceList.push(i.name)
-          // }
-          // this.limitSource = sourceList.join('/')
-          // this.App = true
+          let sourceList = []
+          for (let i of this.examInfo.limit.source_limit.user_app_source) {
+            sourceList.push(i.name)
+          }
+          this.limitSource = sourceList.join('/')
+          this.appDownloadUrl = this.examInfo.limit.source_limit.app_download_link
+          this.App = true
         }
       } else {
         this.goExamPage()
