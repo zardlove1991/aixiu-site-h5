@@ -25,9 +25,9 @@
         <div class="rank-table-wrap">
           <div class="header rank-flex">
             <div class="wd120 item-center">排名</div>
-            <div class="flex1 item-header-name">{{columnName}}</div>
-            <div class="wd150">总分</div>
-            <div class="wd200">用时</div>
+            <div class="flex1 item-header-name">党支部</div>
+            <div class="wd150">姓名</div>
+            <div class="wd200">总分</div>
           </div>
           <template>
             <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">

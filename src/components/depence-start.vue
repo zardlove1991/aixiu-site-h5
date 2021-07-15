@@ -824,13 +824,13 @@ export default {
       // 跳转去往排行榜页面
       let examId = this.id
       let _path = ''
-      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
-        // 是练习模板且是党员
-        _path = `/exam/depencerankfujian/${examId}`
-      } else {
-        _path = `/exam/depencerank/${examId}`
-      }
-
+      _path = `/exam/depencerankfujian/${examId}`
+      // if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+      //   // 是练习模板且是党员
+      //   _path = `/exam/depencerankfujian/${examId}`
+      // } else {
+      //   _path = `/exam/depencerank/${examId}`
+      // }
       this.$router.push({
         path: _path
       })
