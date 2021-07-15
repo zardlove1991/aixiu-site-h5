@@ -737,7 +737,25 @@ export default {
         if (this.currentPlat !== 'wechat') {
           this.isShowPartyCheck = true
         } else {
-          Toast('请在APP中进行答题')
+          // 打开下载App的弹窗
+          let examId = this.id
+          API.checkPassword({query: { id: examId }}).then((res) => {
+            if (res && (res.limit_source || res.app_download_link)) {
+              this.App = true
+              this.appDownloadUrl = res.app_download_link
+              this.limitSource = res.limit_source
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+
+          // console.log('888', this.examInfo)
+          // let sourceList = []
+          // for (let i of this.examInfo.limit.source_limit.user_app_source) {
+          //   sourceList.push(i.name)
+          // }
+          // this.limitSource = sourceList.join('/')
+          // this.App = true
         }
       } else {
         this.goExamPage()
@@ -824,13 +842,13 @@ export default {
       // 跳转去往排行榜页面
       let examId = this.id
       let _path = ''
-      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
-        // 是练习模板且是党员
-        _path = `/exam/depencerankfujian/${examId}`
-      } else {
-        _path = `/exam/depencerank/${examId}`
-      }
-
+      _path = `/exam/depencerankfujian/${examId}`
+      // if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+      //   // 是练习模板且是党员
+      //   _path = `/exam/depencerankfujian/${examId}`
+      // } else {
+      //   _path = `/exam/depencerank/${examId}`
+      // }
       this.$router.push({
         path: _path
       })

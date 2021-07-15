@@ -7,11 +7,11 @@
       <div class="tab-bar-item"
         v-for="(item, index) in tabBar"
         :key="index"
-        :class="{ 'is-active': selTab === item.index}"
+        :class="{ 'is-active': selTab === item.rank_id}"
         @click="changeTab(item)">{{item.name}}</div>
     </div>
     <div class="content-wrap">
-      <div class='search-group'>
+      <div v-show='selTab !== "person" && isFujianProject' class='search-group'>
         <div v-if='!isSearchType' class='search-group-wrap'>
           <el-select v-model="areaValue" @change='choiceAreaFun'
             placeholder="请选择"
@@ -60,9 +60,22 @@
         <div class="rank-table-wrap">
           <div class="header rank-flex">
             <div class="wd120 item-center">排名</div>
-            <div class="flex1 item-header-name">党支部</div>
-            <div class="wd150">赛区</div>
-            <div class="wd200">总积分</div>
+            <template v-if='selTab !== "person" && isFujianProject'>
+              <div class="flex1 item-header-name wd250">党支部</div>
+              <div class="wd200">赛区</div>
+              <div class="wd150">总积分</div>
+            </template>
+            <template v-if='selTab === "person" && isFujianProject'>
+              <div class="flex1 item-header-name wd200">姓名</div>
+              <div class="wd250">党支部</div>
+              <div class="wd150">总积分</div>
+            </template>
+            <!-- 非福建答题项目 -->
+            <template v-if='!isFujianProject'>
+              <div class="flex1 item-header-name wd250">{{columnName}}</div>
+              <div class="wd150">总分</div>
+              <div class="wd200">用时</div>
+            </template>
           </div>
           <template>
             <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
@@ -70,9 +83,22 @@
                 <span v-if="index > 2">{{index + 1}}</span>
                 <span :class="['rank-icon', 'rank-' + index]" v-else></span>
               </div>
-              <div class="flex1 rank-name wd200" v-html='item.party_name'></div>
-              <div class="wd150">{{item.party_address}}</div>
-              <div class="wd200">{{item.score != undefined ? item.score : item.avage }}</div>
+              <template v-if='selTab !== "person" && isFujianProject'>
+                <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
+                <div class="wd200">{{item.party_address}}</div>
+                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+              </template>
+              <template v-if='selTab === "person" && isFujianProject'>
+                <div class="flex1 rank-name wd200">{{item.member_name}}</div>
+                <div class="wd250">{{item.party_name}}</div>
+                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+              </template>
+              <!-- 非福建答题项目 -->
+              <template v-if='!isFujianProject'>
+                <div class="flex1 rank-name wd250">{{item.member_name}}</div>
+                <div class="wd150">{{item.score}}</div>
+                <div class="wd200">{{formatTime(item.use_time)}}</div>
+              </template>
             </div>
           </template>
         </div>
@@ -114,6 +140,7 @@ export default {
   },
   data () {
     return {
+      isFujianProject: false,
       isNullDataType: false,
       isSearchType: false,
       rankPic: '', // 排行榜头部图
@@ -157,6 +184,7 @@ export default {
     ...mapGetters('depence', ['examInfo'])
   },
   created () {
+    this.isFujianProjectFun()
     this.initData()
     this.getGameArea()
   },
@@ -193,29 +221,41 @@ export default {
           this.tabBar.push(Object.assign(rankCycle[i], {index: i}))
         }
 
-        this.tabBar.push({
-          is_all: '1',
-          is_day: '0',
-          is_month: '0',
-          is_week: '0',
-          name: 'IPTV逆袭赛积分榜',
-          old_name: '',
-          rank_id: 'tv',
-          index: 2
-        })
+        // IPTV  => 用于福建答题项目
+        if (this.isFujianProject) {
+          this.tabBar.push({
+            is_all: '1',
+            is_day: '0',
+            is_month: '0',
+            is_week: '0',
+            name: 'IPTV逆袭赛积分榜',
+            old_name: '',
+            rank_id: 'tv',
+            index: 2
+          })
+        }
 
         // this.uniqueName = this.tabBar[0].unique_name
         // 默认选择第一个标签
         this.changeTabValue(this.tabBar[0])
 
         this.tabBar2 = resArr
-        //  this.selTab = first.rank_id ? first.rank_id : 'person'
-        // this.columnName = first.old_name ? first.old_name : '姓名'
-        this.uniqueName = 'party' // 党支部晋级榜 【福建答题项目】
+        this.selTab = this.tabBar[0].rank_id
+        this.uniqueName = this.tabBar[0].rank_id
+        this.columnName = first.old_name === '个人榜' ? '姓名' : first.old_name
+
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
         this.getRankList()
+      }
+    },
+    isFujianProjectFun () {
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+        // 福建答题项目
+        this.isFujianProject = true
+      } else {
+        this.isFujianProject = false
       }
     },
     getGameArea () {
@@ -282,17 +322,21 @@ export default {
         })
       }
       let res = ''
-      if (this.examInfo.mark === 'examination@exercise') {
-        res = await API.getExerciseRankList({
-          query: { id: voteId },
-          params: params
-        })
-      } else {
-        res = await API.getExamRankList({
-          query: { id: voteId },
-          params: params
-        })
-      }
+      res = await API.getExerciseRankList({
+        query: { id: voteId },
+        params: params
+      })
+      // if (this.examInfo.mark === 'examination@exercise') {
+      //   res = await API.getExerciseRankList({
+      //     query: { id: voteId },
+      //     params: params
+      //   })
+      // } else {
+      //   res = await API.getExamRankList({
+      //     query: { id: voteId },
+      //     params: params
+      //   })
+      // }
       // API.getExamRankList({
       //   query: { id: voteId },
       //   params: params
@@ -307,7 +351,12 @@ export default {
         // 为空清除
         this.rankList = []
         this.loading = false
-        this.isNullDataType = true
+        if (!this.isFujianProject) {
+          // 如果是非福建项目就不显示图片
+          this.isNullDataType = false
+        } else {
+          this.isNullDataType = true
+        }
         return
       } else {
         this.isNullDataType = false
@@ -329,11 +378,15 @@ export default {
       this.rankList = []
       this.rankList = this.rankList.concat(data)
 
+      console.log('rankList', this.isNullDataType, this.rankList)
+
       // 输入值标红
       let subStr = '/(' + this.curPartyAddr + ')/g'
       for (const i of this.rankList) {
-        // eslint-disable-next-line no-eval
-        i.party_name = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
+        if (i.party_name !== undefined && this.isFujianProject) {
+          // eslint-disable-next-line no-eval
+          i.party_name_red = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
+        }
       }
 
       this.pager = { total, page: currentPage, count, totalPages }
@@ -346,17 +399,24 @@ export default {
       if (tabBar2 && tabBar2.length) {
         this.changeTabValue(item)
         this.tabBar2 = tabBar2
-        // this.columnName = item.old_name ? item.old_name : '姓名'
+        this.columnName = item.old_name === '个人榜' ? '姓名' : item.old_name
         this.selTab2 = tabBar2[0]
         this.getClearRankList()
       }
     },
     changeTabValue (data) {
-      this.selTab = data.index
+      console.log('data', data)
+      this.selTab = data.rank_id
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
       } else {
         this.uniqueName = data.rank_id
+      }
+      // 点击个人榜清空
+      if (data.rank_id === 'person') {
+        this.curPartyAddr = ''
+        this.partyName = ''
+        this.areaValue = ''
       }
     },
     changeTab2 (name) {
@@ -608,6 +668,10 @@ export default {
       }
       .wd200 {
         width: px2rem(200px);
+      }
+
+      .wd250 {
+        width: px2rem(250px);
       }
       .flex1 {
         padding-left: px2rem(20px);
