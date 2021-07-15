@@ -379,6 +379,12 @@ export default {
       } else {
         this.uniqueName = data.rank_id
       }
+      // 点击个人榜清空
+      if (data.rank_id === 'person') {
+        this.curPartyAddr = ''
+        this.partyName = ''
+        this.areaValue = ''
+      }
     },
     changeTab2 (name) {
       if (this.loading) return
