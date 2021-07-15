@@ -172,9 +172,9 @@ export default {
     ...mapGetters('depence', ['examInfo'])
   },
   created () {
+    this.isFujianProjectFun()
     this.initData()
     this.getGameArea()
-    this.isFujianProjectFun()
   },
   methods: {
     async initData () {
