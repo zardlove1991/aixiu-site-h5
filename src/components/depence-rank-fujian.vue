@@ -11,7 +11,7 @@
         @click="changeTab(item)">{{item.name}}</div>
     </div>
     <div class="content-wrap">
-      <div v-show='selTab !== "person"' class='search-group'>
+      <div v-show='selTab !== "person" && isFujianProject' class='search-group'>
         <div v-if='!isSearchType' class='search-group-wrap'>
           <el-select v-model="areaValue" @change='choiceAreaFun'
             placeholder="请选择"
@@ -60,15 +60,15 @@
         <div class="rank-table-wrap">
           <div class="header rank-flex">
             <div class="wd120 item-center">排名</div>
-            <template v-if='selTab !== "person"'>
+            <template v-if='selTab !== "person" && isFujianProject'>
               <div class="flex1 item-header-name wd250">党支部</div>
               <div class="wd200">赛区</div>
               <div class="wd150">总积分</div>
             </template>
-            <template v-if='selTab === "person"'>
-              <div class="flex1 item-header-name wd200">姓名</div>
-              <div class="wd250">党支部名称</div>
-              <div class="wd150">总积分</div>
+            <template v-else>
+              <div class="flex1 item-header-name wd250">{{columnName}}</div>
+              <div class="wd150">总分</div>
+              <div class="wd200">用时</div>
             </template>
           </div>
           <template>
@@ -77,15 +77,15 @@
                 <span v-if="index > 2">{{index + 1}}</span>
                 <span :class="['rank-icon', 'rank-' + index]" v-else></span>
               </div>
-              <template v-if='selTab !== "person"'>
+              <template v-if='selTab !== "person" && isFujianProject'>
                 <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
                 <div class="wd200">{{item.party_address}}</div>
                 <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
               </template>
-              <template v-if='selTab === "person"'>
-                <div class="flex1 rank-name wd200">{{item.member_name}}</div>
-                <div class="wd250">{{item.party_name}}</div>
-                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+              <template v-else>
+                <div class="flex1 rank-name wd250">{{item.member_name}}</div>
+                <div class="wd150">{{item.score}}</div>
+                <div class="wd200">{{formatTime(item.use_time)}}</div>
               </template>
             </div>
           </template>
@@ -128,6 +128,7 @@ export default {
   },
   data () {
     return {
+      isFujianProject: false,
       isNullDataType: false,
       isSearchType: false,
       rankPic: '', // 排行榜头部图
@@ -173,6 +174,7 @@ export default {
   created () {
     this.initData()
     this.getGameArea()
+    this.isFujianProjectFun()
   },
   methods: {
     async initData () {
@@ -208,7 +210,7 @@ export default {
         }
 
         // IPTV  => 用于福建答题项目
-        if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+        if (this.isFujianProject) {
           this.tabBar.push({
             is_all: '1',
             is_day: '0',
@@ -228,11 +230,20 @@ export default {
         this.tabBar2 = resArr
         this.selTab = this.tabBar[0].rank_id
         this.uniqueName = this.tabBar[0].rank_id
+        this.columnName = first.old_name === '个人榜' ? '姓名' : first.old_name
 
         if (resArr && resArr.length) {
           this.selTab2 = resArr[0]
         }
         this.getRankList()
+      }
+    },
+    isFujianProjectFun () {
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+        // 福建答题项目
+        this.isFujianProject = true
+      } else {
+        this.isFujianProject = false
       }
     },
     getGameArea () {
@@ -328,7 +339,12 @@ export default {
         // 为空清除
         this.rankList = []
         this.loading = false
-        this.isNullDataType = true
+        if (!this.isFujianProject) {
+          // 如果是非福建项目就不显示图片
+          this.isNullDataType = false
+        } else {
+          this.isNullDataType = true
+        }
         return
       } else {
         this.isNullDataType = false
@@ -350,11 +366,15 @@ export default {
       this.rankList = []
       this.rankList = this.rankList.concat(data)
 
+      console.log('rankList', this.isNullDataType, this.rankList)
+
       // 输入值标红
       let subStr = '/(' + this.curPartyAddr + ')/g'
       for (const i of this.rankList) {
-        // eslint-disable-next-line no-eval
-        i.party_name_red = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
+        if (i.party_name !== undefined && this.isFujianProject) {
+          // eslint-disable-next-line no-eval
+          i.party_name_red = i.party_name.replace(eval(subStr), "<span style='color:red;font-weight:bold'>" + this.curPartyAddr + '</span>')
+        }
       }
 
       this.pager = { total, page: currentPage, count, totalPages }
@@ -367,12 +387,13 @@ export default {
       if (tabBar2 && tabBar2.length) {
         this.changeTabValue(item)
         this.tabBar2 = tabBar2
-        // this.columnName = item.old_name ? item.old_name : '姓名'
+        this.columnName = item.old_name === '个人榜' ? '姓名' : item.old_name
         this.selTab2 = tabBar2[0]
         this.getClearRankList()
       }
     },
     changeTabValue (data) {
+      console.log('data', data)
       this.selTab = data.rank_id
       if (data.name === 'IPTV逆袭赛积分榜') {
         this.uniqueName = 'tv'
