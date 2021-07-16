@@ -22,6 +22,11 @@
       </div>
     </div>
 
+    <div v-if='noPhoneType || noAuthType' class='party-member-dialog'>
+      <div><van-icon name="warning-o" style='font-size: 20px;'/></div>
+      <div v-if='noPhoneType' class='title-box'>您的账号暂未绑定手机号，请前往App [个人中心] 先绑 定手机号后再参与活动</div>
+      <div v-if='noAuthType'>您绑定的手机号暂无参赛资格，请前往App [个人中心] 更换手机号，或可联系活动方更改党员信息</div>
+    </div>
   </div>
 </template>
 
@@ -69,11 +74,14 @@ export default {
   data () {
     return {
       party: {},
-      canClick: false
+      canClick: false,
+      noPhoneType: false,
+      noAuthType: false
     }
   },
   methods: {
     closeCheckDraw () {
+      this.initStatus()
       this.$emit('close')
     },
     async getPartyInfo () {
@@ -82,6 +90,11 @@ export default {
         Toast('获取用户信息失败')
         return
       }
+      // 没有手机号 => 未绑定手机
+      if (userInfo.mobile === '') {
+        this.noPhoneType = true
+        return false
+      }
       if (getPlat() !== 'wechat') {
         await API.saveDrawRecord({
           query: {
@@ -89,11 +102,19 @@ export default {
           }
         }).then(res => {
           this.party = {...res}
+          if (res.error_code !== undefined && res.error_code === 'collect_mobile_fail') {
+            this.noAuthType = true
+          }
         })
       }
     },
+    initStatus () {
+      this.noPhoneType = false
+      this.noAuthType = false
+    },
     sureCheckDraw () {
       if (this.canClick) {
+        this.initStatus()
         this.$emit('close')
         this.$emit('success')
       }
@@ -112,6 +133,7 @@ export default {
     show: {
       handler: function (v) {
         if (v) {
+          console.log('8989')
           this.getPartyInfo()
         }
       },
@@ -124,6 +146,22 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+
+  .party-member-dialog{
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: px2rem(112px);
+    color: #D85F40;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 px2rem(30px);
+    .title-box{
+      margin-left: px2rem(10px);
+    }
+  }
   .check-dialog-wrap {
     position: fixed;
     top: 0;

@@ -951,7 +951,6 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
-
 .depence-start-wrap{
   align-items: center;
   position:relative;
