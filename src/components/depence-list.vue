@@ -129,7 +129,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-bg"></div>
         <div class="tip">Ops，考试中断了</div>
-        <div class="desc">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
+        <div class="desc" v-if="examInfo.mark !== 'examination@exercise'">考试题数：{{examList.length}}题，考试时间：{{_dealLimitTimeTip(examInfo.limit_time)}}</div>
       </div>
     </my-model>
     <!--当前未做答题目弹窗-->
@@ -294,6 +294,8 @@ export default {
           renderType: rtp,
           listType
         })
+        // 初始化重置索引
+        this.setCurrentSubjectIndex(0)
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
         this.sharePage()
@@ -548,7 +550,9 @@ export default {
             } else {
               // 如果未开启答题解析 自动查看分数
               console.log('未开启答题解析 自动查看分数')
-              this.showExamResult()
+              setTimeout(() => {
+                this.showExamResult()
+              }, 1000)
             }
           } else {
             // 允许继续答题
@@ -562,16 +566,18 @@ export default {
             }
             // 如果未开启答题解析 自动进入下一题或交卷
             if (!this.isOpenAnswerAnalysis) {
-              // 如果是最后一题 确认后自动交卷
-              if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
-                console.log('未开启答题解析 最后一题自动交卷中')
-                this.$refs.examHeader.confirmSubmitModel('noconfirm')
-              }
-              // 如果不是最后一题 自动进入下一题
-              if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
-                console.log('未开启答题解析 不是最后一题 自动进入下一题中')
-                this.exerciseNext()
-              }
+              setTimeout(() => {
+                // 如果是最后一题 确认后自动交卷
+                if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
+                  console.log('未开启答题解析 最后一题自动交卷中')
+                  this.$refs.examHeader.confirmSubmitModel('noconfirm')
+                }
+                // 如果不是最后一题 自动进入下一题
+                if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+                  console.log('未开启答题解析 不是最后一题 自动进入下一题中')
+                  this.exerciseNext()
+                }
+              }, 1000)
             }
             // 如果未开启答题解析 自动查看分数
             console.log('未开启答题解析 自动查看分数')
@@ -609,7 +615,7 @@ export default {
         this.showExerciseResult = true
         this.showExerciseResultBtn = false
       })
-      this.setCurrentSubjectIndex(0)
+      // this.setCurrentSubjectIndex(0)
     },
     // 页面展示答案
     pageShowAnswer (answer) {
@@ -704,18 +710,20 @@ export default {
     },
     getExerciseStatistics (data) {
       this.exerciseResult = data
-      this.setCurrentSubjectIndex(0)
+      // this.setCurrentSubjectIndex(0)
     },
     confirmStatistics () {
       let _id = this.$route.params.id
+      let mark = this.examInfo.mark
       STORAGE.remove('answer_record_' + _id)
-      this.setCurrentSubjectIndex(0)
+      // this.setCurrentSubjectIndex(0)
+      STORAGE.remove('timer_' + _id)
+      if (mark === 'examination@exercise') return
       if (this.autoSubmit) {
         this.$refs.examHeader.setResult(this.exerciseRaffle)
       } else {
         this.$refs.examHeader.setResult()
       }
-      STORAGE.remove('timer_' + _id)
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -752,6 +760,7 @@ export default {
         if (v !== 0) {
           this.nextExerciseBtn = false
           if (this.examList && this.examList.length > 0) {
+            console.log('********重置倒计时*********')
             this.resetTimeLimit()
           }
           this.successStatus = 0

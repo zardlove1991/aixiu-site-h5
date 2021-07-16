@@ -253,7 +253,7 @@ export default {
           let examId = this.examId
           this.$router.replace({
             path: `/exam/statistic/${examId}`,
-            query: {api_person_id: res.api_person_id}
+            query: {api_person_id: res ? res.api_person_id : ''}
           })
         } else if (pop) {
           this.isPopSubmitSuccess = true
