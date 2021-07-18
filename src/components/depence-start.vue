@@ -362,6 +362,9 @@ export default {
       title: '分享成功'
     }
   },
+  mounted () {
+    this.isShowBreak = false
+  },
   methods: {
     activeStatus (data) {
       // activity_close // 活动暂停
