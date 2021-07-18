@@ -746,7 +746,7 @@ const actions = {
       let _arr = []
       // 超时答案清空
       if (payload === 'timeout') {
-        result.params.options_id = ''
+        // result.params.options_id = ''
       }
       _arr.push(result.params)
       let data = {

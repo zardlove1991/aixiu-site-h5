@@ -214,10 +214,9 @@ export default {
         cancelBtnText: '知道了'
       },
       loadList: false,
-      //
       exerciseCountTime: 1,
       exerciseCountProgress: 0,
-      currentTimer: null,
+      timeInterval: null,
       timerStatus: 'warning',
       nextExerciseBtn: false,
       successStatus: 0,
@@ -294,8 +293,11 @@ export default {
           renderType: rtp,
           listType
         })
-        // 初始化重置索引
-        this.setCurrentSubjectIndex(0)
+        console.log('获取到了试卷列表', this.examList.length)
+        if (this.examInfo.mark === 'examination@exercise') {
+          // 首次自动开启倒计时
+          this.resetTimeLimit()
+        }
         // 检查是否存在中断考试的情况
         this.checkAnswerMaxQuestionId()
         this.sharePage()
@@ -478,27 +480,7 @@ export default {
       }
     },
     checkAnswerMaxQuestionId () {
-      let examInfo = this.examInfo
-      let answerMaxQuestionId = examInfo.answer_max_question_id
-      let renderType = this.renderType
       // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam') {
-        let list = this.examList
-        if (answerMaxQuestionId) {
-          let index = list.findIndex(item => item.id === answerMaxQuestionId)
-          if (index >= 0) this.changeSubjectIndex('to_' + index)
-        } else {
-          // let qusetionTimers = STORAGE.get('timer_' + this.examId)
-          // let _lastIndex = 0
-          // list.forEach((item, index) => {
-          //   if (item.value) _lastIndex = index
-          //   // 本地存储的问题计时权限最高，如果本地有计时，使用本地的序号。否则使用云端会回退到上一题
-          //   if (qusetionTimers[item.hashid]) _lastIndex = index
-          // })
-          // // 修改题目序号 跳过云端存储，防止直接交卷
-          // this.changeSubjectIndex('to_' + _lastIndex)
-        }
-      }
     },
     _dealShowBtn (flag) {
       let renderType = this.renderType
@@ -538,7 +520,6 @@ export default {
         this.clearTimer()
         this.$nextTick(() => {
           this.successStatus = success
-          this.timerStatus = 'exception'
           if (success === 3) {
             // 答错立即交卷
             console.log('res答错直接交卷', res)
@@ -615,7 +596,6 @@ export default {
         this.showExerciseResult = true
         this.showExerciseResultBtn = false
       })
-      // this.setCurrentSubjectIndex(0)
     },
     // 页面展示答案
     pageShowAnswer (answer) {
@@ -639,21 +619,7 @@ export default {
     resetTimeLimit () {
       if (!this.examInfo || this.examList.length < 1) return
       if (this.examInfo.mark === 'examination@exercise') {
-        let currentQuestion = this.examList[this.currentSubjectIndex]
-        let qusetionTimers = STORAGE.get('timer_' + this.examId)
-        if (qusetionTimers && qusetionTimers[currentQuestion.hashid]) {
-          this.startExerciseCountDown()
-        } else {
-          STORAGE.set('timer_' + this.examId, {
-            ...qusetionTimers,
-            [currentQuestion.hashid]: {
-              start_time: new Date().getTime(),
-              limit_time: currentQuestion.limit_time
-            }
-          })
-          // 开始倒计时
-          this.startExerciseCountDown()
-        }
+        this.startCountDown()
       }
     },
     getEndTime (d) {
@@ -664,38 +630,30 @@ export default {
       let endTime = parseInt(startTime) + parseInt(limitTime) * 1000
       return endTime
     },
-    startExerciseCountDown () {
-      let _now = new Date().getTime()
-      let _endTime = this.getEndTime()
-      // 超时
-      if (_endTime < _now && this.successStatus === 0) {
-        this.saveCloud('timeout')
-      } else {
-        this.refreshTime()
-      }
-    },
-    refreshTime (type) {
+    // 启动倒计时
+    startCountDown () {
+      console.log('*****启动倒计时****', 'startCountDown')
+      let currentQuestion = this.examList[this.currentSubjectIndex]
+      let limitTime = parseInt(currentQuestion.limit_time)
+      this.exerciseCountTime = limitTime
       this.clearTimer()
-      this.$nextTick(() => {
-        let _endTime = this.getEndTime()
-        let _now = new Date().getTime()
-        let currentQuestion = this.examList[this.currentSubjectIndex]
-        let limitTime = currentQuestion.limit_time
-        this.exerciseCountTime = parseInt((_endTime - _now) / 1000)
-        this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / parseInt(limitTime))
-        let _this = this
-        if (this.exerciseCountTime > 0 && this.successStatus === 0) {
-          this.currentTimer = setTimeout(function () {
-            _this.refreshTime(2)
-          }, 1000)
-        } else {
+      this.timeInterval = window.setInterval(() => {
+        console.log(this.exerciseCountTime, 'this.exerciseCountTime')
+        if (this.exerciseCountTime <= 0) {
+          this.clearTimer()
+          console.log('*****倒计时时间已到****')
           this.saveCloud('timeout')
+        } else {
+          this.exerciseCountTime--
+          this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / limitTime)
+          console.log('倒计时中')
         }
-      })
+      }, 1000)
     },
     clearTimer () {
-      clearTimeout(this.currentTimer)
-      this.currentTimer = null
+      window.clearInterval(this.timeInterval)
+      this.timeInterval = null
+      console.log('******清除定时器*******')
     },
     timeFormat (percentage) {
       return this.exerciseCountTime
@@ -742,12 +700,13 @@ export default {
   watch: {
     'examInfo': {
       handler: function (v) {
+        console.log(v, '监听examInfo')
         if (v && !this.loadList) {
+          this.setCurrentSubjectIndex(0)
           this.loadList = true
           this.$nextTick(() => {
             this.initList()
             this.nextExerciseBtn = false
-            this.resetTimeLimit()
           })
         }
       },
@@ -759,8 +718,9 @@ export default {
         console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
         if (v !== 0) {
           this.nextExerciseBtn = false
+          console.log(this.examList && this.examList.length > 0, 'this.examList && this.examList.length > 0')
           if (this.examList && this.examList.length > 0) {
-            console.log('********重置倒计时*********')
+            console.log('调用-resetTimeLimit 启动定时器')
             this.resetTimeLimit()
           }
           this.successStatus = 0
@@ -771,7 +731,8 @@ export default {
     },
     'examList': {
       handler: function (v) {
-        this.resetTimeLimit()
+        console.log(v, '监听examList')
+        // this.resetTimeLimit()
       },
       immediate: true
     }
