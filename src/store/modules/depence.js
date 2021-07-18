@@ -8,6 +8,7 @@ import { getEnglishChar, dealAnnexObject } from '@/utils/utils'
 const state = {
   renderType: null, // 试卷渲染的类型 exam:考试 analysis: 解析
   examId: null, // 试卷Id
+  apiPersonId: null, // 场次id
   examList: [], // 试卷列表
   redirectParams: null, // 小程序和H5中的传参
   examInfo: null, // 试卷信息
@@ -79,6 +80,7 @@ const getters = {
   },
   examInfo: state => state.examInfo,
   examId: state => state.examId,
+  apiPersonId: state => state.apiPersonId,
   redirectParams: state => state.redirectParams,
   renderType: state => state.renderType,
   subjectAnswerInfo: state => state.subjectAnswerInfo,
@@ -139,6 +141,9 @@ const mutations = {
   },
   SET_EXAMID (state, payload) {
     state.examId = payload
+  },
+  SET_APIPERSONId (state, payload) {
+    state.apiPersonId = payload
   },
   SET_EXAMLIST (state, payload) {
     state.examList = payload
@@ -428,6 +433,7 @@ const actions = {
         query: {id: id}
       }).then(res => {
         let list = res.data
+        let apiPersonId = res.api_person_id
         let remainTime = res.remain_time
         if (remainTime) {
           commit('SET_REMAINTIME', remainTime)
@@ -439,6 +445,7 @@ const actions = {
           let { examList, eassyInfo, oralInfo, blankInfo } = dealInitExamList({ list, renderType, id })
           // 设置列表和问答题的出事对象
           commit('SET_EXAMLIST', examList)
+          commit('SET_APIPERSONId', apiPersonId)
           commit('SET_ESSAY_ANSWER_INFO', eassyInfo)
           commit('SET_ORAL_ANSWER_INFO', oralInfo)
           commit('SET_BLANK_ANSWER_INFO', blankInfo)
@@ -544,6 +551,7 @@ const actions = {
         // 删除本地缓存的单选的ID信息
         if (storageSingleSelcectInfo) STORAGE.remove('examlist-single-selcectid')
         STORAGE.remove('answer_record_' + id)
+        STORAGE.remove(res.api_person_id + '_time')
         state.answerList = []
         commit('SET_BLANK_ANSWER_INFO', {})
         commit('SET_CURRENT_SUBJECT_INDEX', 0)

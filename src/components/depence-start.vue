@@ -386,18 +386,24 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      // let answerRecord = STORAGE.get('answer_record_' + examId)
-      try {
-        await this.endExam({
-          id: examId
-          // answerList: answerRecord
+      if (this.examInfo.mark === 'examination@exercise') {
+        this.$router.replace({
+          path: `/exam/depencelist/${examId}`,
+          query: {'directlySubmit': '1'}
         })
-      } catch (err) {
-        Toast(err.error_message)
-      } finally {
-        this.initStartInfo()
-        this.isShowBreak = false
-        this.breakDoAction()
+      } else {
+        try {
+          await this.endExam({
+            id: examId
+            // answerList: answerRecord
+          })
+        } catch (err) {
+          Toast(err.error_message)
+        } finally {
+          this.initStartInfo()
+          this.isShowBreak = false
+          this.breakDoAction()
+        }
       }
     },
     cancelBreakModel () {
@@ -495,9 +501,12 @@ export default {
         if (getPlat() === 'smartcity') {
           this.initAppShare()
         }
-        if (info.person_status === 2) {
+        // submit_status0未交卷 1 已交卷 2 超时交卷
+        if (info.submit_status === 0) {
           // 考试中
           this.isShowBreak = true
+        } else {
+          this.isShowBreak = false
         }
         if (info.limit) {
           let {
