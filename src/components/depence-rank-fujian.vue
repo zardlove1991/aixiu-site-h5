@@ -549,7 +549,7 @@ export default {
 }
 
 .input-all-wrap{
-  width: px2rem(608px);
+  width: px2rem(590px);
   height: px2rem(64px);
   border-radius: px2rem(32px);
   display: inline-block;

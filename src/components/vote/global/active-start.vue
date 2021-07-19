@@ -5,8 +5,8 @@
     <!--弹窗模块-->
     <div class="active-start-content">
       <div class="title">活动未开始，请耐心等待</div>
-      <div class="tips">倒计时</div>
-      <div class="time-count-wrap">
+      <div v-if='isShowTime' class="tips">倒计时</div>
+      <div v-if='isShowTime' class="time-count-wrap">
         <p class="day-tip">
           <span class="time-num">{{voteDate[0]}}</span>
         </p>
@@ -48,6 +48,10 @@ export default {
       default: () => {
         return [0, 0, 0, 0]
       }
+    },
+    isShowTime: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -132,6 +136,7 @@ export default {
         @include img-retina('~@/assets/vote/active-start@2x.png', '~@/assets/vote/active-start@3x.png', px2rem(575px), px2rem(245px));
         background-repeat: no-repeat;
         background-position: bottom;
+        border-radius: px2rem(8px);
       }
       .close-icon {
         position: absolute;

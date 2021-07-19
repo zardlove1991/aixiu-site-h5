@@ -9,6 +9,7 @@
       </div>
       <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     </div>
+    <!-- <button @click='goVoteRank' style='margin-top: 30px;'>投票排行榜</button> -->
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
       <template>
@@ -58,7 +59,7 @@
             <div class="row-icon row-juanzi"></div>
             <div>
               <div class="desc">{{`${examInfo.question_num}题`}}</div>
-              <div class="title">试题</div>
+              <div class="title">测评试题</div>
             </div>
           </div>
           <div class="row">
@@ -96,12 +97,13 @@
       <!-- 按钮校验 -->
       <div class="btn-view">
         <!-- 置灰 1：未开始；2：已结束 -->
-        <button v-if ="examInfo.timeStatus > 0" class="end-exambtn" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
+        <button v-if ="examInfo.timeStatus > 0" class="end-exambtn btn-submit-box" :class="getRadius">{{examInfo.timeStatus > 1?'答题已结束':'答题未开始'}}</button>
         <!-- v-if="examInfo.mark === 'examination@rank' || examInfo.mark === 'examination@integral'" -->
         <!-- <button v-else
         :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
         @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button> -->
         <button v-else
+        class='btn-submit-box'
         :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
         @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
 
@@ -184,8 +186,9 @@
     </div>
     <!-- 未开始 -->
     <active-start
-      :activeDate="startDate"
+      :voteDate="startDate"
       :show="isShowStart"
+      :isShowTime='false'
       @close="isShowStart = false">
     </active-start>
     <!-- 暂停 -->
@@ -220,7 +223,7 @@ import OperateDialog from './exam-components/operate-dialog'
 import PageRule from '@/components/depence/page-rule'
 import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
-import ActiveStart from '@/components/enroll/global/active-start'
+import ActiveStart from '@/components/vote/global/active-start'
 
 export default {
   mixins: [mixins],
@@ -363,6 +366,11 @@ export default {
     }
   },
   methods: {
+    goVoteRank () {
+      this.$router.replace({
+        path: `/exam/voteRank/${this.id}`
+      })
+    },
     activeStatus (data) {
       // activity_close // 活动暂停
       // activity_no_start // 活动未开始
@@ -951,6 +959,9 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
+.btn-submit-box {
+  border-radius: px2rem(45px);
+}
 .depence-start-wrap{
   align-items: center;
   position:relative;
@@ -1036,7 +1047,7 @@ export default {
       height:px2rem(54px);
       line-height:px2rem(54px);
       text-align:center;
-      width:px2rem(180px);
+      width:px2rem(210px);
       border:1px solid #FF6A45;
       border-radius: 27px;
     }
@@ -1185,6 +1196,9 @@ export default {
         overflow: hidden;
         display:flex;
         margin-top: px2rem(50px);
+        .row + .row {
+          margin-left: px2rem(40px);
+        }
         .row{
           flex: 1;
           display: flex;
@@ -1198,7 +1212,7 @@ export default {
           border-radius: px2rem(12px);
           @include font-dpr(15px);
           &:nth-child(2){
-            margin:0 px2rem(21px);
+           // margin:0 px2rem(21px);
           }
           .title{
             @include font-dpr(14px);
@@ -1266,7 +1280,7 @@ export default {
     width:100%;
     position: fixed;
     left:0;
-    bottom: px2rem(100px);
+    bottom:px2rem(40px);
     padding:0 px2rem(30px);
     display: flex;
     .rank-btn {
@@ -1306,7 +1320,6 @@ export default {
     .start-exambtn, .end-exambtn {
       box-sizing: border-box;
       width: 100%;
-      border-radius: px2rem(8px);
       height: px2rem(90px);
       line-height: px2rem(90px);
       text-align: center;
