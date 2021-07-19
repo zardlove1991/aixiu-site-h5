@@ -377,9 +377,7 @@ export default {
 
       this.rankList = []
       this.rankList = this.rankList.concat(data)
-
-      console.log('rankList', this.isNullDataType, this.rankList)
-
+      // console.log('rankList', this.isNullDataType, this.rankList)
       // 输入值标红
       let subStr = '/(' + this.curPartyAddr + ')/g'
       for (const i of this.rankList) {
