@@ -22,7 +22,7 @@
             @keyup.13 = "searchFun"
             type="text" name="" id=""
             placeholder="请输入党支部名称"/>
-          <van-icon name="search"  class='icon-box'/>
+          <!-- <van-icon name="search"  class='icon-box'/> -->
         </div>
       </div>
     </div>
@@ -117,13 +117,33 @@ export default {
   }
 }
 </script>
-
 <style lang='scss' scoped>
 @import "@/styles/index.scss";
 /deep/ .el-select .el-input__inner{
   background: #F8EBD8;
   color: #E2C59A;
   border: #F8EBD8;
+}
+
+/deep/ .select-wrap{
+  border-radius: 5px;
+}
+
+/deep/ .el-icon-arrow-up:before{
+  color: #E2C59A;
+}
+
+.el-select-dropdown__item.selected{
+  color: #E2C59A !important;
+}
+
+.el-select-dropdown__item{
+  padding-left: 10px;
+}
+
+input::-webkit-input-placeholder {
+  /* placeholder颜色 */
+  color: #E2C59A;
 }
 
 .vote-rank-wrap {

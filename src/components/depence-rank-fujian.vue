@@ -476,6 +476,14 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
+.el-select-dropdown__item.selected{
+  color: #be0000 !important;
+}
+
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: #be0000;
+}
+
 .search-group-wrap{
   display: flex;
   flex-direction: row;
@@ -528,6 +536,7 @@ export default {
     display: inline-block;
     width: px2rem(458px);
     height: px2rem(64px);
+    outline: none;
     margin-left: px2rem(20px);
     border-radius: px2rem(32px);
     border: 1px solid #DCDFE6;
@@ -549,12 +558,18 @@ export default {
 }
 
 .input-all-wrap{
-  width: px2rem(590px);
+  width: px2rem(400px);
+  // width: px2rem(590px);
   height: px2rem(64px);
   border-radius: px2rem(32px);
   display: inline-block;
   border: 1px solid #DCDFE6;
   padding-left: 5px;
+  transition: width 0.3s ease 0s;
+}
+
+.input-all-wrap:focus {
+  width: px2rem(590px);
 }
 
 .cancel-box{
