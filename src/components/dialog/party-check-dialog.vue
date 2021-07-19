@@ -102,7 +102,7 @@ export default {
           }
         }).then(res => {
           this.party = {...res}
-          if (res.error_code !== undefined && res.error_code === 'collect_mobile_fail') {
+          if (res.error_code !== undefined && res.error_code === 'collect_member_fail') {
             this.noAuthType = true
           }
         })

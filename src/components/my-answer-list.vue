@@ -11,7 +11,7 @@
           <div>{{score_num}}</div>
           <div>总分</div>
         </div>
-        <div class='single-num-box'>
+        <div v-if='isIntegralType' class='single-num-box'>
           <div>{{points_num}}</div>
           <div>总积分</div>
         </div>
@@ -29,7 +29,7 @@
           class='single-list-wrap'>
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
-          <span>{{item.points}}积分</span>
+          <span v-if='isIntegralType'>{{item.points}}积分</span>
           <span><van-icon name="arrow" /></span>
         </div>
       </div>
@@ -40,6 +40,7 @@
 
 <script>
 import { DropdownMenu, DropdownItem } from 'vant'
+import { mapGetters } from 'vuex'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
 export default {
@@ -63,7 +64,8 @@ export default {
       number: 0, // 答题总次数
       score_num: 0, // 答题总分数
       points_num: 0, // 答题总积分
-      curTimeType: 1
+      curTimeType: 1,
+      isIntegralType: false
     }
   },
   components: {
@@ -71,8 +73,18 @@ export default {
     VanDropdownItem: DropdownItem,
     PageBack
   },
+  computed: {
+    ...mapGetters('depence', ['examInfo'])
+  },
   mounted () {
+    console.log('examInfo', this.examInfo)
     this.initData()
+    if (this.examInfo.limit.random.score_conversion === 1) {
+      // 存在积分
+      this.isIntegralType = true
+    } else {
+      this.isIntegralType = false
+    }
   },
   methods: {
     initData () {

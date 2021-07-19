@@ -110,7 +110,19 @@ const routes = [{
   meta: {
     title: '排行榜'
   }
-}, {
+},
+{
+  path: '/exam/voteRank/:id',
+  name: 'VoteRank',
+  component: getComponent('VoteRank'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '投票排行榜'
+  }
+},
+{
   path: '/exam/myAnswerList/:id',
   name: 'MyAnswerList',
   component: getComponent('my-answer-list'),

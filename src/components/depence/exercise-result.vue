@@ -14,7 +14,8 @@
                 <p>答对题数</p>
                 <span class="num">{{exerciseResult.correctNum}}</span>
               </div>
-              <div class="item" v-if="exerciseResult.points === 0 || exerciseResult.points">
+              <div class="item"
+                v-if="isIntegralType && exerciseResult.points === 0 || exerciseResult.points">
                 <p>获得积分</p>
                 <span class="num">{{exerciseResult.points}}</span>
               </div>
@@ -39,8 +40,21 @@ export default {
       type: Boolean
     }
   },
+  data () {
+    return {
+      isIntegralType: true
+    }
+  },
   computed: {
     ...mapGetters('depence', ['examInfo'])
+  },
+  mounted () {
+    if (this.examInfo.limit.random.score_conversion === 1) {
+      // 存在积分
+      this.isIntegralType = true
+    } else {
+      this.isIntegralType = false
+    }
   },
   methods: {
     confirmStatistics () {
