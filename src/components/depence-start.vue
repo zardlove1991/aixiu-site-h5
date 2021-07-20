@@ -139,6 +139,20 @@
         <div class="tip tip-center">考试意外中断了</div>
       </div>
     </my-model>
+    <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip-btn"
+          v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
+          @click.stop="toStatistic">查看分数</div>
+        <div class="tip-btn" v-else @click.stop="closeSuspendModels">知道了</div>
+      </div>
+    </my-model>
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
       <div class="password-limit-wrap" @click.stop>
         <div class="password-limit-title">请输入密码参与答题</div>
@@ -249,6 +263,7 @@ export default {
       passwordTips: '',
       errTips: '',
       isShowBreak: false,
+      isShowSuspendModels: false,
       isShowDrawCheck: false,
       checkDraw: [],
       isNoLimit: false,
@@ -367,8 +382,21 @@ export default {
   },
   mounted () {
     this.isShowBreak = false
+    this.isShowSuspendModels = false
   },
   methods: {
+    toStatistic () {
+      this.closeSuspendModels()
+      this.goAnswerListPage()
+    },
+    closeSuspendModels () {
+      let apiPersonId = this.examInfo.api_person_id
+      this.isShowSuspendModels = false
+      if (apiPersonId) {
+        STORAGE.set(apiPersonId + 'timeout_tip', 1)
+      }
+      console.error('closeSuspendModels' + apiPersonId + STORAGE.get(apiPersonId + 'timeout_tip'))
+    },
     goVoteRank () {
       this.$router.replace({
         path: `/exam/voteRank/${this.id}`
@@ -518,6 +546,12 @@ export default {
           this.isShowBreak = true
         } else {
           this.isShowBreak = false
+        }
+        if (info.submit_status === 2) {
+          if (info.api_person_id) {
+            let isTimeoutTip = STORAGE.get(info.api_person_id + 'timeout_tip')
+            this.isShowSuspendModels = !isTimeoutTip
+          }
         }
         if (info.limit) {
           let {
