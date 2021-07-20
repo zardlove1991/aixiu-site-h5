@@ -40,6 +40,7 @@
           :mode="renderType"
           :key="item.id">
         </subject-content>
+        <div class="shadow" v-if="item.isAnswer && examInfo.mark === 'examination@exercise'"></div>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
@@ -685,6 +686,7 @@ export default {
           }
           if (!this.examList || this.examList.length < 1 || !data) return
           let currentQuestion = this.examList[this.currentSubjectIndex]
+          currentQuestion.isAnswer = true
           this.analysisData = data[currentQuestion.hashid]
           console.log('this.analysisData********', this.analysisData, this.examList)
           let { answer } = this.analysisData
@@ -941,5 +943,19 @@ export default {
       color: #333;
     }
   }
+}
+.qtnlist-wrap {
+  .list-item-wrap {
+    position:relative;
+      .shadow {
+      width:100%;
+      height:100%;
+      position:absolute;
+      z-index:1;
+      top:0;
+      left:0;
+    }
+  }
+  
 }
 </style>
