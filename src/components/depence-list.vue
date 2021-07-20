@@ -218,6 +218,7 @@ export default {
       exerciseCountTime: 1,
       exerciseCountProgress: 0,
       timeInterval: null,
+      lastestTimestampInterval: null,
       timerStatus: 'warning',
       nextExerciseBtn: false,
       exerciseTotalTimeOut: false, // 倒计时答题总时间超时
@@ -244,7 +245,7 @@ export default {
   },
   computed: {
     ...mapGetters('depence', [
-      'examId', 'examInfo', 'curSubjectVideos', 'answerList', 'apiPersonId',
+      'examId', 'examInfo', 'curSubjectVideos', 'answerList', 'apiPersonInfo',
       'isShowSubjectList'
     ]),
     isShowSubmitBtn () {
@@ -261,13 +262,14 @@ export default {
   },
   beforeDestroy () {
     this.clearTimer()
+    this.clearLastestTimestampInterval()
   },
   methods: {
     toStatistic () {
       this.isShowSuspendModels = false
       if (this.examInfo.mark === 'examination@exercise') {
         this.clearTimer()
-        if (this.exerciseTotalTimeOut && this.examInfo.submit_status === 0) {
+        if (this.exerciseTotalTimeOut && this.apiPersonInfo.submit_status === 0) {
           this.$refs.examHeader.confirmSubmitModel('noconfirm')
         } else {
           this.showExamResult()
@@ -313,36 +315,6 @@ export default {
           // 首次自动开启倒计时
           this.resetTimeLimit()
           this.exerciseTotalTimeOut = false
-          if (this.examInfo.submit_status !== 2) {
-            let apiPersonId = this.apiPersonId
-            let totalTime = this.getExerciseTotalTime()
-            let lastestTime = STORAGE.get(apiPersonId + '_time')
-            console.error('++++获取上一次答题记录时间戳:+++', lastestTime, totalTime, apiPersonId)
-            if (lastestTime) {
-              let _now = new Date().getTime()
-              let usedTime = parseInt((_now - lastestTime) / 1000)
-              console.log('++++已用时', usedTime, totalTime)
-              if (usedTime >= totalTime) {
-                console.log('已经答题超时,需要自动交卷')
-                this.exerciseTotalTimeOut = true
-                this.isShowSuspendModels = true
-                this.clearTimer()
-                return false
-              } else {
-                let lastestIndex = this.getLastestAnswerRecordIndex()
-                let currentQuestion = this.examList[lastestIndex]
-                let remianTime = totalTime - usedTime
-                currentQuestion.remianTime = remianTime <= currentQuestion.limit_time ? remianTime : currentQuestion.limit_time
-                console.error('******继续上一次倒计时时间*****remianTime', currentQuestion.remianTime)
-              }
-            } else {
-              // 记录本地答题时间戳
-              let _last = new Date().getTime()
-              let apiPersonId = this.apiPersonId
-              STORAGE.set(apiPersonId + '_time', _last)
-              console.error('+++记录本地答题时间戳this.apiPersonId+++', this.apiPersonId, _last)
-            }
-          }
           console.error('检测是否有答题中断并自动定位到未答题上', 'this.checkExamBreak')
           // 检测是否有答题中断并自动定位到未答题上
           this.checkExamBreak()
@@ -529,11 +501,19 @@ export default {
       }
     },
     // 获取每倒计时题目总时长
-    getExerciseTotalTime () {
+    getExerciseTotalTime (_lastIndex) {
       let list = this.examList
       let totalTime = 0
       list.forEach((item, index) => {
-        if (item.limit_time) totalTime = totalTime + parseInt(item.limit_time)
+        if (item.limit_time) {
+          if (_lastIndex !== undefined) {
+            if (index <= _lastIndex) {
+              totalTime = totalTime + parseInt(item.limit_time)
+            }
+          } else {
+            totalTime = totalTime + parseInt(item.limit_time)
+          }
+        }
       })
       return totalTime
     },
@@ -552,19 +532,71 @@ export default {
       }
       return _lastIndex
     },
+    initLastestTimesInterval () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
+      let temp = {}
+      this.lastestTimestampInterval = window.setInterval(() => {
+        let timestamp = new Date().getTime()
+        let tempStore = STORAGE.get(apiPersonId)
+        let _index = 'index_' + this.currentSubjectIndex
+        temp[_index] = timestamp
+        if (!tempStore || !tempStore[_index]) {
+          STORAGE.set(apiPersonId, temp)
+        }
+      }, 1000)
+    },
     // 检测存在答题中断进行处理
     checkExamBreak () {
       // submit_status0未交卷 1 已交卷 2 超时交卷
-      if (this.examInfo.submit_status === 0) {
+      if (this.apiPersonInfo.submit_status === 0) {
         // 如果检测考试未交卷 自动跳转到上次答题位置
+        let apiPersonId = this.apiPersonInfo.api_person_id
+        let totalTime = this.getExerciseTotalTime()
         let _lastIndex = this.getLastestAnswerRecordIndex()
+        let _index = 'index_' + _lastIndex
+        let currentQuestion = this.examList[_lastIndex]
+        let lastestPerson = STORAGE.get(apiPersonId)
+        let firstTime = this.apiPersonInfo.first_time
+        let _now = parseInt(new Date().getTime() / 1000)
+        console.error(lastestPerson)
+        if (firstTime) {
+          let usedTime = parseInt((_now - firstTime))
+          console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
+          if (usedTime >= totalTime) {
+            console.error('已经答题超时,需要自动交卷')
+            this.exerciseTimeOut()
+            return false
+          }
+        }
+        if (lastestPerson && lastestPerson[_index]) {
+          let usedTime = _now - parseInt(lastestPerson[_index] / 1000)
+          let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
+          currentQuestion.remianTime = usedTime >= currentQuestion.limit_time ? 0 : currentQuestion.limit_time - usedTime
+          console.error('******继续上一次倒计时时间*****remianTime', currentQuestion.remianTime)
+          this.clearTimer()
+          this.resetTimeLimit()
+          if (currentQuestion.remianTime === 0 && answerSubmitRules === 0) {
+            console.error('answerSubmitRules已经答题超时,需要自动交卷')
+            this.exerciseTimeOut()
+            return false
+          }
+        }
+        STORAGE.remove(apiPersonId)
+        this.initLastestTimesInterval()
         this.changeSubjectIndex('to_' + _lastIndex)
       }
       // 如果试卷超时自动交卷
-      if (this.examInfo.submit_status === 2) {
+      if (this.apiPersonInfo.submit_status === 2) {
         this.isShowSuspendModels = true
         this.clearTimer()
       }
+    },
+    // 异常中断进入检测超时自动打开超时弹窗
+    exerciseTimeOut () {
+      this.exerciseTotalTimeOut = true
+      this.isShowSuspendModels = true
+      this.clearTimer()
+      this.clearLastestTimestampInterval()
     },
     _dealShowBtn (flag) {
       let renderType = this.renderType
@@ -740,6 +772,11 @@ export default {
       window.clearInterval(this.timeInterval)
       this.timeInterval = null
       console.log('******清除定时器*******')
+    },
+    clearLastestTimestampInterval () {
+      window.clearInterval(this.lastestTimestampInterval)
+      this.lastestTimestampInterval = null
+      console.log('******清除时间戳定时器*******')
     },
     timeFormat (percentage) {
       return this.exerciseCountTime
