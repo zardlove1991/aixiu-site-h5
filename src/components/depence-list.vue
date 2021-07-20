@@ -575,13 +575,17 @@ export default {
           console.error('******继续上一次倒计时时间*****remianTime', currentQuestion.remianTime)
           this.clearTimer()
           this.resetTimeLimit()
-          if (currentQuestion.remianTime === 0 && answerSubmitRules === 0) {
-            console.error('answerSubmitRules已经答题超时,需要自动交卷')
-            this.exerciseTimeOut()
+          if (currentQuestion.remianTime === 0) {
+            if (answerSubmitRules === 0) {
+              console.error('answerSubmitRules已经答题超时,需要自动交卷')
+              this.exerciseTimeOut()
+            } else {
+              console.error('未开启答错交卷，当前题目答题时间已经超时')
+            }
             return false
           }
+          console.error('********此流程结束**********')
         }
-        STORAGE.remove(apiPersonId)
         this.initLastestTimesInterval()
         this.changeSubjectIndex('to_' + _lastIndex)
       }
@@ -624,8 +628,8 @@ export default {
           this.setExerciseResult(res)
         }
       }).catch(err => {
-        if (err.error_code === 422 && err.error_message === '用户已交卷') {
-          this.toStart()
+        if (err.error_code === 'member_submit' && err.error_message === '用户已交卷') {
+          this.showExamResult()
         }
       })
     },
@@ -751,7 +755,7 @@ export default {
       console.log('*****启动倒计时****', 'startCountDown')
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = parseInt(currentQuestion.limit_time)
-      this.exerciseCountTime = currentQuestion.remianTime ? currentQuestion.remianTime : limitTime
+      this.exerciseCountTime = currentQuestion.remianTime !== undefined ? currentQuestion.remianTime : limitTime
       this.clearTimer()
       console.error('startCountDown******倒计时时间剩余*****exerciseCountTime', this.exerciseCountTime)
       this.timeInterval = window.setInterval(() => {

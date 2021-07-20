@@ -731,7 +731,7 @@ const actions = {
       }
       // 判断界限
       if (index < 0 || index > list.length - 1) {
-        Toast('已经没有题目了~')
+        // Toast('已经没有题目了~')
         return
       }
     } else if (typeof payload === 'number') {
