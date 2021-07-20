@@ -20,7 +20,7 @@
                 <span class="num">{{exerciseResult.points}}</span>
               </div>
             </div>
-            <p v-if="exerciseResult.tips">{{exerciseResult.tips}}</p>
+            <p style='color: #666666;' v-if="examInfo.limit.random.score_exchange_set === 1">{{examInfo.limit.random.score_exchange_title}}</p>
             <div class="confirm-btn next-wrap" @click="confirmStatistics">
               返回
             </div>
@@ -49,6 +49,7 @@ export default {
     ...mapGetters('depence', ['examInfo'])
   },
   mounted () {
+    console.log('examInfo.limit.random', this.examInfo.limit.random.score_exchange_set)
     if (this.examInfo.limit.random.score_conversion === 1) {
       // 存在积分
       this.isIntegralType = true
