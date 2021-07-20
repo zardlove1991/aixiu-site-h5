@@ -10,8 +10,11 @@ var config = {
   CUSTOM_APPID: 'wx2e98fb1d45a98f73',
   CUSTOM_COMP_APPID: 'wx566758628b7a3fa2',
   CUSTOM_REDIRECT_URI: '//axh5.aihoge.com/bridge.html',
-  CUSTOM_PLAT: 'online'
+  CUSTOM_PLAT: 'online',
+  PROJECT_PlATFORM: 'fujian-answer'
 }
+
+window.$axGlobalConfig = config
 
 console.log('settingConfig-------', config)
 

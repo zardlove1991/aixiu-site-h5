@@ -50,7 +50,7 @@ export default {
   data () {
     return {
       imgs: {
-        defBgImg: require('@/assets/voteRank/def-bg-img.png'),
+        defBgImg: require('@/assets/voteRank/def-bg-img.jpg'),
         rank1: require('@/assets/voteRank/rank1.png'),
         rank2: require('@/assets/voteRank/rank2.png'),
         rank3: require('@/assets/voteRank/rank3.png')
@@ -149,7 +149,7 @@ input::-webkit-input-placeholder {
 .vote-rank-wrap {
   width: 100vw;
   height: 100vh;
-  background:url('~@/assets/voteRank/def-bg-img.png') no-repeat center center;
+  background:url('~@/assets/voteRank/def-bg-img.jpg') no-repeat center center;
   background-size: 100vw 100vh;
   padding: 0 px2rem(30px) px2rem(30px);
   border: 1px solid transparent;

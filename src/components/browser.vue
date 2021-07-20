@@ -1,7 +1,7 @@
 <template>
   <div class="browser-wrap">
     <div :class="['browser-body', isMobile ? 'mobile' : 'pc']">
-      <div :class="['top-bg', isMobile ? 'mobile' : 'pc']">
+      <div v-if='curProjectPlatform !== "fujian-answer"' :class="['top-bg', isMobile ? 'mobile' : 'pc']">
         <div class="top-logo"></div>
       </div>
       <!-- 移动端 -->
@@ -36,13 +36,15 @@ export default {
   data () {
     return {
       isMobile: true,
-      activeUrl: ''
+      activeUrl: '',
+      curProjectPlatform: ''
     }
   },
   created () {
     this.initPage()
     this.crateQrcode()
     this.hiddenDom()
+    this.curProjectPlatform = window.$axGlobalConfig.PROJECT_PlATFORM
   },
   methods: {
     initPage () {
