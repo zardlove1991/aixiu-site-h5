@@ -205,6 +205,7 @@ export default {
               }
               this.$emit('update:showExerciseResult', true)
               this.$emit('getExerciseStatistics', exerciseResult)
+              STORAGE.remove(_result.api_person_id)
             })
           } else {
             this.setResult(raffle, _result)
