@@ -1318,7 +1318,7 @@ export default {
     }
     .tooltip-style {
       top: px2rem(-72px);
-      left: px2rem(400px);
+      left: px2rem(390px);
     }
     .integral-number {
       color: #fff;
