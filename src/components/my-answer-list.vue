@@ -106,6 +106,7 @@ export default {
       })
     },
     goStaticPage (item) {
+      if (this.examInfo.mark === 'examination@exercise') return
       this.$router.push({
         path: `/exam/statistic/${this.id}`,
         query: {api_person_id: item.api_person_id}
