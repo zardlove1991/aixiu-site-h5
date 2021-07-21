@@ -17,7 +17,7 @@ let baseUrl = {
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getZengChengUser: 'zc/signature', // 阅增城获取人员信息
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
-  getWeixinInfo: 'signature', // 获得微信公众号信息
+  getWeixinInfo: 'h5/js/signature', // 调用微信jssdk获取签名校验
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
