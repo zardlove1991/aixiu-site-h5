@@ -15,7 +15,7 @@
           </el-option>
         </el-select>
       </div>
-      <div>
+      <div class='search-group-2'>
         <div class='input-icon-wrap'>
           <input class='input-wrap'
             v-model.trim='curPartyName'
@@ -154,7 +154,7 @@ input::-webkit-input-placeholder {
   padding: 0 px2rem(30px) px2rem(30px);
   border: 1px solid transparent;
   .vote-rank-main{
-    width: px2rem(690px);
+    // width: px2rem(690px);
     min-height: px2rem(800px);
     max-height: px2rem(1080px);
     overflow-y: auto;
@@ -172,6 +172,10 @@ input::-webkit-input-placeholder {
         width: px2rem(240px);
         height: px2rem(68px);
         background: #F8EBD8;
+      }
+
+      .search-group-2{
+        flex: 1;
       }
     }
 
@@ -237,7 +241,8 @@ input::-webkit-input-placeholder {
 
     .input-wrap{
       display: inline-block;
-      width: px2rem(390px);
+      // width: px2rem(390px);
+      width: 95%;
       height: px2rem(68px);
       margin-left: px2rem(20px);
       border-radius: px2rem(8px);
