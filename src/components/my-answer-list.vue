@@ -53,12 +53,12 @@ export default {
         bgImg: require('@/assets/myAnswerList/imgBg.png')
       },
       timeTitle: '近一周',
-      timeSelectValue: 0,
+      timeSelectValue: 1,
       timeOption: [
-        { text: '近一周', value: 0 },
-        { text: '近一个月', value: 1 },
-        { text: '近三个月', value: 2 },
-        { text: '全部', value: 3 }
+        { text: '近一周', value: 1 },
+        { text: '近一个月', value: 2 },
+        { text: '近三个月', value: 3 },
+        { text: '全部', value: 0 }
       ],
       answerInfoList: [],
       number: 0, // 答题总次数
@@ -91,7 +91,7 @@ export default {
       let voteId = this.id
       API.getMyAnswerList({
         params: {
-          week: this.curTimeType,
+          type: this.curTimeType,
           page: 1,
           count: 1000
         },
