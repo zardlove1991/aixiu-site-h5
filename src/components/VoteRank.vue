@@ -96,16 +96,17 @@ export default {
       this.getVoteList()
     },
     getGameArea () {
-      API.getPartyGameArea({query: {id: this.id}}).then(res => {
+      API.getPartyGameArea({query: {id: this.id}, params: {type: 'voting'}}).then(res => {
         this.options = [{
           label: '全部赛区',
           value: ''
         }]
 
-        for (let i of res) {
+        // eslint-disable-next-line no-unused-vars
+        for (let [i, item] of Object.entries(res)) {
           this.options.push({
-            label: i,
-            value: i
+            label: item,
+            value: item
           })
         }
       })

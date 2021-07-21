@@ -169,7 +169,10 @@ export default {
       options: [],
       partyName: '',
       curPartyAddr: '',
-      noDataImg: require('@/assets/rankList/no-data-img.png')
+      noDataImg: require('@/assets/rankList/no-data-img.png'),
+      areaRequestObj: {
+        type: null
+      }
     }
   },
   computed: {
@@ -259,18 +262,27 @@ export default {
       }
     },
     getGameArea () {
-      API.getPartyGameArea({query: {id: this.id}}).then(res => {
-        console.log('res', res)
+      API.getPartyGameArea({query: {id: this.id}, params: this.areaRequestObj}).then(res => {
         this.options = [{
           label: '全部赛区',
           value: ''
         }]
 
-        for (let i of res) {
-          this.options.push({
-            label: i,
-            value: i
-          })
+        if (Array.isArray(res)) {
+          for (let i of res) {
+            this.options.push({
+              label: i,
+              value: i
+            })
+          }
+        } else {
+          // eslint-disable-next-line no-unused-vars
+          for (let [i, item] of res) {
+            this.options.push({
+              label: item,
+              value: item
+            })
+          }
         }
       })
     },
@@ -393,6 +405,17 @@ export default {
     },
     changeTab (item) {
       if (this.loading) return
+
+      console.log('item', item)
+      if (item.rank_id === 'tv') {
+        this.areaRequestObj.type = 'tv'
+      } else if (item.rank_id === 'voting') {
+        this.areaRequestObj.type = 'voting'
+      } else {
+        this.areaRequestObj.type = null
+      }
+      this.getGameArea()
+
       let tabBar2 = this.getTabBar2(item)
       if (tabBar2 && tabBar2.length) {
         this.changeTabValue(item)
