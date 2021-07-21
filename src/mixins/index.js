@@ -1,9 +1,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { isIOSsystem, isWeixnBrowser, getEnvironment } from '@/utils/app'
+import { isIOSsystem, isWeixnBrowser } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
 // import wechat from '@/sdk/wechat'
-const env = getEnvironment()
 
 export default {
   props: {
@@ -50,7 +49,7 @@ export default {
     async initWeixinInfo () {
       // 执行调用
       // let url = window.location.href.split('#')[0]
-      let appid = env === 'test' ? 'wx025937621152c396' : 'wx2e98fb1d45a98f73'
+      let appId = window.$axGlobalConfig.CUSTOM_APPID
       // let res = STORAGE.get('signature')
       let res = STORAGE.get('userinfo')
       // if (!res) {
@@ -71,7 +70,7 @@ export default {
       }
       let { timestamp, randomstr: nonceStr, signature } = res
       wx.config({
-        appid,
+        appId,
         timestamp,
         nonceStr,
         signature
