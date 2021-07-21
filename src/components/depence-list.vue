@@ -267,13 +267,16 @@ export default {
   },
   methods: {
     toStatistic () {
-      this.isShowSuspendModels = false
       if (this.examInfo.mark === 'examination@exercise') {
+        let submitStatus = this.apiPersonInfo.submit_status
         this.clearTimer()
-        if (this.exerciseTotalTimeOut && this.apiPersonInfo.submit_status === 0) {
-          this.$refs.examHeader.confirmSubmitModel('noconfirm')
-        } else {
-          this.showExamResult()
+        if (this.exerciseTotalTimeOut) {
+          if (submitStatus === 0) {
+            this.$refs.examHeader.confirmSubmitModel('noconfirm')
+          }
+          if (submitStatus === 2) {
+            this.showExamResult()
+          }
         }
       } else {
         setTimeout(() => {
@@ -283,9 +286,18 @@ export default {
           })
         }, 1000)
       }
+      this.closeSuspendModels()
+    },
+    closeSuspendModels () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
+      this.isShowSuspendModels = false
+      if (apiPersonId) {
+        STORAGE.set(apiPersonId + 'timeout_tip', 1)
+      }
+      console.error('closeSuspendModels' + apiPersonId + STORAGE.get(apiPersonId + 'timeout_tip'))
     },
     toStart () {
-      this.isShowSuspendModels = false
+      this.closeSuspendModels()
       setTimeout(() => {
         let examId = this.examId
         this.$router.replace({
@@ -592,14 +604,19 @@ export default {
       }
       // 如果试卷超时自动交卷
       if (this.apiPersonInfo.submit_status === 2) {
-        this.isShowSuspendModels = true
+        this.isShowexerciseTimeOut()
         this.clearTimer()
       }
+    },
+    // 是否展示本场次超时交卷提示
+    isShowexerciseTimeOut (apiPersonId) {
+      let isTimeoutTip = STORAGE.get(apiPersonId + 'timeout_tip')
+      this.isShowSuspendModels = !isTimeoutTip
     },
     // 异常中断进入检测超时自动打开超时弹窗
     exerciseTimeOut () {
       this.exerciseTotalTimeOut = true
-      this.isShowSuspendModels = true
+      this.isShowexerciseTimeOut()
       this.clearTimer()
       this.clearLastestTimestampInterval()
     },

@@ -30,7 +30,7 @@
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span v-if='isIntegralType'>{{item.points}}积分</span>
-          <span><van-icon name="arrow" /></span>
+          <span><van-icon name="arrow" v-if="examInfo.mark !== 'examination@exercise'" /></span>
         </div>
       </div>
     </div>
