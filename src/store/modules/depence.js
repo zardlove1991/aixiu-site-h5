@@ -433,8 +433,8 @@ const actions = {
         query: {id: id}
       }).then(res => {
         let list = res.data
-        let {api_person_id: apiPersonId, submit_status: submitStatus, first_time: firstTime} = res
-        let apiPersonInfo = {api_person_id: apiPersonId, submit_status: submitStatus, first_time: firstTime}
+        let {api_person_id: apiPersonId, submit_status: submitStatus, first_time: firstTime, question_time: questionTime} = res
+        let apiPersonInfo = {api_person_id: apiPersonId, submit_status: submitStatus, first_time: firstTime, question_time: questionTime}
         let remainTime = res.remain_time
         if (remainTime) {
           commit('SET_REMAINTIME', remainTime)
@@ -783,6 +783,22 @@ const actions = {
       commit('SET_ANALYSIS_ANSWER', '')
       commit('SET_CURRENT_SUBJECT_INDEX', index)
     }
+  },
+  async SET_QUESTION_TIME ({state}) {
+    let index = state.currentSubjectIndex
+    let apiPersonId = state.apiPersonInfo.api_person_id
+    let currentQuestion = state.examList[index]
+    // 记录进入题目时间当前只针对练习题
+    let toQuestionData = {
+      api_person_id: apiPersonId,
+      question_id: currentQuestion['hashid']
+    }
+    await API.saveToQuestionTime({
+      query: {
+        id: state.examId
+      },
+      data: toQuestionData
+    })
   },
   ADD_SELECT_ACTIVE_FLAG ({state, commit}, payload) {
     let selectIndex = payload.selectIndex

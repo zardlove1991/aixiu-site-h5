@@ -49,6 +49,7 @@ let examUrl = {
   shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
   getExamRankList: 'client/examination/{id}/source', // 考试排行列表(废弃)
   saveIntoCloud: 'client/examination/submit/{id}',
+  saveToQuestionTime: 'client/examination/{id}/question/time', // 保存进入题目的时间
   getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
   getPartyInfo: 'collection/form/record/{id}',
   getExerciseRankList: 'client/examination/{id}/exercise',
@@ -191,6 +192,7 @@ export default {
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
+  saveToQuestionTime: config => createAPI(configUrl.saveToQuestionTime, 'post', config, API_FLAG),
   getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG),
   getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'post', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),
