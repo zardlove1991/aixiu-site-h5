@@ -86,7 +86,6 @@ export default {
         query: { id: this.id },
         params: this.voteRequestObj
       }).then(res => {
-        console.log('res', res)
         this.voteList = []
         this.voteList = res.data
       })
