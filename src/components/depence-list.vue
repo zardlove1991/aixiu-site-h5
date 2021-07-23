@@ -263,7 +263,6 @@ export default {
   },
   beforeDestroy () {
     this.clearTimer()
-    this.clearLastestTimestampInterval()
   },
   methods: {
     toStatistic () {
@@ -327,6 +326,8 @@ export default {
         if (this.examInfo.mark === 'examination@exercise') {
           // 首次自动开启倒计时
           this.resetTimeLimit()
+          // 首次记录第0道题进入时间
+          this.setQusetionTimeToCloud()
           this.exerciseTotalTimeOut = false
           console.error('检测是否有答题中断并自动定位到未答题上', 'this.checkExamBreak')
           // 检测是否有答题中断并自动定位到未答题上
@@ -545,33 +546,17 @@ export default {
       }
       return _lastIndex
     },
-    initLastestTimesInterval () {
-      let apiPersonId = this.apiPersonInfo.api_person_id
-      let temp = {}
-      this.lastestTimestampInterval = window.setInterval(() => {
-        let timestamp = new Date().getTime()
-        let tempStore = STORAGE.get(apiPersonId)
-        let _index = 'index_' + this.currentSubjectIndex
-        temp[_index] = timestamp
-        if (!tempStore || !tempStore[_index]) {
-          STORAGE.set(apiPersonId, temp)
-        }
-      }, 1000)
-    },
     // 检测存在答题中断进行处理
     checkExamBreak () {
       // submit_status0未交卷 1 已交卷 2 超时交卷
       if (this.apiPersonInfo.submit_status === 0) {
         // 如果检测考试未交卷 自动跳转到上次答题位置
-        let apiPersonId = this.apiPersonInfo.api_person_id
         let totalTime = this.getExerciseTotalTime()
         let _lastIndex = this.getLastestAnswerRecordIndex()
-        let _index = 'index_' + _lastIndex
         let currentQuestion = this.examList[_lastIndex]
-        let lastestPerson = STORAGE.get(apiPersonId)
-        let firstTime = this.apiPersonInfo.first_time
+        let firstTime = this.apiPersonInfo.first_time // 从云端拿到当前场次第一次进入的时间
+        let currentQuestionFirstTime = this.apiPersonInfo.question_time[currentQuestion.hashid] // 从云端拿到当前场次当前题目第一次进入的时间
         let _now = parseInt(new Date().getTime() / 1000)
-        console.error(lastestPerson)
         if (firstTime) {
           let usedTime = parseInt((_now - firstTime))
           console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
@@ -581,8 +566,9 @@ export default {
             return false
           }
         }
-        if (lastestPerson && lastestPerson[_index]) {
-          let usedTime = _now - parseInt(lastestPerson[_index] / 1000)
+        console.error('本道题上一次进入时间戳', currentQuestionFirstTime)
+        if (currentQuestionFirstTime) {
+          let usedTime = _now - parseInt(currentQuestionFirstTime)
           let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
           currentQuestion.remianTime = usedTime >= currentQuestion.limit_time ? 0 : currentQuestion.limit_time - usedTime
           console.error('******继续上一次倒计时时间*****remianTime', currentQuestion.remianTime)
@@ -599,7 +585,6 @@ export default {
           }
           console.error('********此流程结束**********')
         }
-        this.initLastestTimesInterval()
         this.changeSubjectIndex('to_' + _lastIndex)
       }
       // 如果试卷超时自动交卷
@@ -618,7 +603,6 @@ export default {
       this.exerciseTotalTimeOut = true
       this.isShowexerciseTimeOut()
       this.clearTimer()
-      this.clearLastestTimestampInterval()
     },
     _dealShowBtn (flag) {
       let renderType = this.renderType
@@ -646,7 +630,8 @@ export default {
           this.setExerciseResult(res)
         }
       }).catch(err => {
-        if (err.error_code === 'member_submit' && err.error_message === '用户已交卷') {
+        if (err.error_code === 'member_submit') {
+          console.error('用户已交卷')
           this.showExamResult()
         }
       })
@@ -654,6 +639,11 @@ export default {
     setExerciseResult (res) {
       let { success, data } = res
       console.log('setExerciseResult+******', res)
+      if (res && res.error_code === 'member_submit') {
+        console.error('用户已交卷')
+        this.showExamResult()
+        return false
+      }
       if (success) {
         this.clearTimer()
         this.$nextTick(() => {
@@ -796,11 +786,6 @@ export default {
       this.timeInterval = null
       console.log('******清除定时器*******')
     },
-    clearLastestTimestampInterval () {
-      window.clearInterval(this.lastestTimestampInterval)
-      this.lastestTimestampInterval = null
-      console.log('******清除时间戳定时器*******')
-    },
     timeFormat (percentage) {
       return this.exerciseCountTime
     },
@@ -829,6 +814,11 @@ export default {
         this.$refs.examHeader.setResult()
       }
     },
+    setQusetionTimeToCloud () {
+      if (this.examInfo && this.examInfo.mark === 'examination@exercise') {
+        this.setQuestionTime()
+      }
+    },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
@@ -836,7 +826,8 @@ export default {
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE',
-      getSubjectAnswerInfo: 'GET_SUBJECT_ANSWER_INFO'
+      getSubjectAnswerInfo: 'GET_SUBJECT_ANSWER_INFO',
+      setQuestionTime: 'SET_QUESTION_TIME'
     }),
     ...mapMutations('depence', {
       setCurrentSubjectIndex: 'SET_CURRENT_SUBJECT_INDEX',
@@ -868,6 +859,8 @@ export default {
           if (this.examList && this.examList.length > 0) {
             console.log('调用-resetTimeLimit 启动定时器')
             this.resetTimeLimit()
+            // 记录云端时间
+            this.setQusetionTimeToCloud()
           }
           this.successStatus = 0
           this.analysisData = null

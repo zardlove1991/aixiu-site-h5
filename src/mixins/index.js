@@ -2,7 +2,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { isIOSsystem, isWeixnBrowser } from '@/utils/app'
 import STORAGE from '@/utils/storage'
 import wx from '@/config/weixin-js-sdk'
-// import wechat from '@/sdk/wechat'
 
 export default {
   props: {
@@ -39,8 +38,10 @@ export default {
       }
     }
   },
-  mounted () {
+  created () {
+    // this.$wx = wx// 初始化通用weixin变量
     this.initWeixinInfo() // 初始化微信配置信息
+    // this.initReirectParams() // 判断是否有全局参数
   },
   computed: {
     ...mapGetters('depence', ['redirectParams'])
@@ -48,27 +49,23 @@ export default {
   methods: {
     async initWeixinInfo () {
       // 执行调用
-      // let url = window.location.href.split('#')[0]
-      let appId = window.$axGlobalConfig.CUSTOM_APPID
-      // let res = STORAGE.get('signature')
-      let res = STORAGE.get('userinfo')
-      // if (!res) {
-      //   res = await this.getWeixinInfo({
-      //     url,
-      //     sign: 'wechat',
-      //     appid
-      //   })
-      //   if (res) {
-      //     STORAGE.set('signature', res)
-      //   }
-      // }
-      // let { appId, timestamp, nonceStr, signature } = res
+      let url = window.location.href.split('#')[0]
+      // encodeURIComponent(location.href.split('#')[0])
+      // let appid = STORAGE.get('appid') ? STORAGE.get('appid') : globalConfig['APPID']
+      // let appid = globalConfig['APPID'] // 微信公众号使用自己的签名
+      let appid = window.$axGlobalConfig.CUSTOM_APPID
+      let res = STORAGE.get('signature')
       if (!res) {
-        // wechat.goRedirect()
-        console.log('wx没有用户信息')
-        return
+        res = await this.getWeixinInfo({
+          url,
+          sign: 'wechat',
+          appid
+        })
+        if (res) {
+          STORAGE.set('signature', res)
+        }
       }
-      let { timestamp, randomstr: nonceStr, signature } = res
+      let { appId, timestamp, nonceStr, signature } = res
       wx.config({
         appId,
         timestamp,
@@ -80,8 +77,8 @@ export default {
         if (!this.isWxError) {
           this.isWxError = true
           console.log('重新获取微信签名')
-          // STORAGE.remove('userinfo')
-          // this.initWeixinInfo()
+          STORAGE.remove('signature')
+          this.initWeixinInfo()
         }
       })
     },
@@ -138,6 +135,7 @@ export default {
             // 用户取消分享后执行的回调函数
           }
         }
+        // console.log('执行了分享参数调用', params)
         // 执行调用
         wx.execute('shareQQZone', params)
         wx.execute('shareQQFriends', params)

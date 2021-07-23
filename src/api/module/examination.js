@@ -17,7 +17,7 @@ let baseUrl = {
   getSmartCityUser: 'member/signature', // 智慧城市登录
   getZengChengUser: 'zc/signature', // 阅增城获取人员信息
   getXiuzanUser: 'h5/signature', // 微信登录换取秀赞用户信息
-  getWeixinInfo: 'signature', // 获得微信公众号信息
+  getWeixinInfo: 'h5/js/signature', // 调用微信jssdk获取签名校验
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
@@ -49,6 +49,7 @@ let examUrl = {
   shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
   getExamRankList: 'client/examination/{id}/source', // 考试排行列表(废弃)
   saveIntoCloud: 'client/examination/submit/{id}',
+  saveToQuestionTime: 'client/examination/{id}/question/time', // 保存进入题目的时间
   getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
   getPartyInfo: 'collection/form/record/{id}',
   getExerciseRankList: 'client/examination/{id}/exercise',
@@ -191,6 +192,7 @@ export default {
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
+  saveToQuestionTime: config => createAPI(configUrl.saveToQuestionTime, 'post', config, API_FLAG),
   getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG),
   getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'post', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),

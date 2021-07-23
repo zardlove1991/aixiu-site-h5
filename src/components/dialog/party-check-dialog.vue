@@ -1,6 +1,6 @@
 <template>
   <div :class="['check-dialog-wrap', isScroll]" v-if="show">
-    <div class="check-dialog-content" :class="isShowVideo ? 'show-video' : ''">
+    <div class="check-dialog-content" :class="isShowVideo ? 'show-video' : ''" v-if='!noPhoneType || !noAuthType'>
       <div class="check-dialog-main">
         <div class="check-header">党员信息验证</div>
         <div class="check-item">
