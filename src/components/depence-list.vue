@@ -639,6 +639,11 @@ export default {
     setExerciseResult (res) {
       let { success, data } = res
       console.log('setExerciseResult+******', res)
+      if (res && res.error_code === 'member_submit') {
+        console.error('用户已交卷')
+        this.showExamResult()
+        return false
+      }
       if (success) {
         this.clearTimer()
         this.$nextTick(() => {
