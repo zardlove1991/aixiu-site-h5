@@ -4,16 +4,16 @@
       <div class="check-dialog-main">
         <div class="check-header">党员信息验证</div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.name"></el-input>
+          <el-input :readonly="true" v-model="party.name"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.mobile"></el-input>
+          <el-input :readonly="true" v-model="party.mobile"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.party_name"></el-input>
+          <el-input :readonly="true" v-model="party.party_name"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.party_address"></el-input>
+          <el-input :readonly="true" v-model="party.party_address"></el-input>
         </div>
         <div class="submit-btn-wrap color-button_color party" :class="canClick?'canClick':''"  @click.stop="sureCheckDraw()">确认</div>
       </div>
@@ -146,7 +146,6 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
-
   .party-member-dialog{
     position: fixed;
     top: 0;
@@ -211,7 +210,7 @@ export default {
             border-radius: px2rem(4px);
             padding: px2rem(20px);
             @include font-dpr(14px);
-            color: #333;
+            color: #999999;
             border: 1px solid #dadada;
             &::placeholder {
               @include font-dpr(14px);

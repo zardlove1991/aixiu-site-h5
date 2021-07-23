@@ -156,10 +156,6 @@ input::-webkit-input-placeholder {
   border: 1px solid transparent;
   .vote-rank-main{
     // width: px2rem(690px);
-    min-height: px2rem(800px);
-    max-height: px2rem(1080px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     background: #FFF8ED;
     border-radius: px2rem(16px);
     padding: px2rem(20px);
@@ -181,6 +177,11 @@ input::-webkit-input-placeholder {
     }
 
     .list-wrap{
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 10px;
+      min-height: px2rem(700px);
+      max-height: px2rem(980px);
       .single-list-wrap{
         padding-top: px2rem(70px);
         display: flex;
