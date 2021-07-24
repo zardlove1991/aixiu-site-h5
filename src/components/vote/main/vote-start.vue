@@ -1132,6 +1132,7 @@ export default {
       }
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
+      if (this.loading) return false
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
