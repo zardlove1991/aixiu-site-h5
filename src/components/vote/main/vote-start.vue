@@ -247,6 +247,12 @@
       :downloadLink="downloadLink"
       :activeTips="activeTips">
     </active-vote>
+    <area-vote
+      :show="isShowArea"
+      :limitArea="limitArea"
+      :curApp="curApp"
+      @close="isShowArea = false">
+    </area-vote>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
@@ -286,6 +292,7 @@ import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } f
 import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
+import AreaVote from '@/components/vote/global/vote-area'
 
 export default {
   mixins: [mixins],
@@ -310,10 +317,14 @@ export default {
     VoteClassifyList,
     Spinner,
     Loadmore,
-    LotteryVote
+    LotteryVote,
+    AreaVote
   },
   data () {
     return {
+      curApp: '',
+      isShowArea: false,
+      limitArea: [],
       interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
@@ -402,7 +413,13 @@ export default {
     },
     allWorkList () {
       if (this.myWork.id) {
-        return [this.myWork, ...this.workList]
+        let _index = this.workList.findIndex(item => item.id === this.myWork.id)
+        if (_index !== -1) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.workList.splice(_index, 1)
+          // console.log('6666', _index, this.workList, this.myWork)
+          return [this.myWork, ...this.workList]
+        }
       } else {
         return this.workList
       }
@@ -720,6 +737,20 @@ export default {
         window.SmartCity.getLocation((res) => {
           if (res) {
             let { latitude, longitude } = res
+
+            let detailInfo = STORAGE.get('detailInfo')
+            let _area = []
+            _area = detailInfo.rule.area_limit.is_area_limit
+            if (_area === 0) {
+              return false
+            } else {
+              // 判断是否能获取经纬度
+              if (latitude === '' || longitude === '') {
+                this.positionTips()
+                return false
+              }
+            }
+
             let location = {
               lat: latitude,
               lng: longitude
@@ -728,8 +759,34 @@ export default {
           }
         })
       } else if (plat === 'wechat') {
-        this.getLocation()
+        let detailInfo = STORAGE.get('detailInfo')
+        let _area = []
+        _area = detailInfo.rule.area_limit.is_area_limit
+        if (_area === 0) {
+          return false
+        } else {
+          this.getLocation().then(res => {
+            // if (Object.keys(res).length === 0) {
+            //   this.positionTips()
+            // }
+          }).catch(e => {
+            this.positionTips()
+          })
+        }
       }
+    },
+    positionTips () {
+      let detailInfo = STORAGE.get('detailInfo')
+      this.limitArea = detailInfo.rule.area_limit.area
+      this.curApp = ''
+      let appSign = getAppSign()
+      const _userAppSource = detailInfo.rule.limit.source_limit.user_app_source
+      for (let i of _userAppSource) {
+        if (i.sign === appSign) {
+          this.curApp = i.name
+        }
+      }
+      this.isShowArea = true
     },
     initVoteReportTime () {
       let detailInfo = this.detailInfo

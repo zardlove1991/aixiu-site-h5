@@ -84,7 +84,7 @@
       </div>
       <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}</div>
+        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}<span class="form-tips">{{ZCIdType ? '' : '(选填)'}}</span></div>
         <div class="form-content">
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
@@ -347,14 +347,14 @@ export default {
         Toast(_name)
         return
       }
-      if (!examineData.source || !examineData.source.trim()) {
-        let _origin = '请输入来源'
-        if (this.ZCIdType) {
-          _origin = '请输入所属村居'
-        }
-        Toast(_origin)
-        return
-      }
+      // if (!examineData.source || !examineData.source.trim()) {
+      //   let _origin = '请输入来源'
+      //   if (this.ZCIdType) {
+      //     _origin = '请输入所属村居'
+      //   }
+      //   Toast(_origin)
+      //   return
+      // }
       if (this.showModel === 'text') {
         if (!examineData.introduce || !examineData.introduce.trim()) {
           Toast('请输入文字内容')
