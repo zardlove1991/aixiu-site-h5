@@ -215,6 +215,26 @@ export default {
         }
       }
     },
+    async autoExamSubmit () {
+      // 提交试卷
+      let _result = await API.submitExam({
+        query: {
+          id: this.examId
+        }
+      })
+      clearInterval(this.timer)
+      if (_result) {
+        let {success} = _result
+        if (success) {
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.$emit('exerciseTimeOut')
+            console.error('autoExamSubmit-超时自动交卷exerciseTimeOut')
+          }
+        }
+      } else {
+        console.error('提交失败')
+      }
+    },
     // 处理结果
     setResult (raffle, res) {
       if (!raffle) {

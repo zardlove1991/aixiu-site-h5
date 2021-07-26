@@ -11,6 +11,7 @@
       :curIndex="currentSubjectIndex"
       @timeup="endTime"
       @notimeup="noEndTime"
+      @exerciseTimeOut="exerciseTimeOut"
       @showlist="toggetSubjectList"
       @getExerciseStatistics="getExerciseStatistics">
     </exam-header>
@@ -267,15 +268,9 @@ export default {
   methods: {
     toStatistic () {
       if (this.examInfo.mark === 'examination@exercise') {
-        let submitStatus = this.apiPersonInfo.submit_status
         this.clearTimer()
         if (this.exerciseTotalTimeOut) {
-          if (submitStatus === 0) {
-            this.$refs.examHeader.confirmSubmitModel('noconfirm')
-          }
-          if (submitStatus === 2) {
-            this.showExamResult()
-          }
+          this.showExamResult()
         }
       } else {
         setTimeout(() => {
@@ -562,7 +557,7 @@ export default {
           console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
           if (usedTime >= totalTime) {
             console.error('已经答题超时,需要自动交卷')
-            this.exerciseTimeOut()
+            this.$refs.examHeader.autoExamSubmit()
             return false
           }
         }
@@ -577,7 +572,7 @@ export default {
           if (currentQuestion.remianTime === 0) {
             if (answerSubmitRules === 0) {
               console.error('answerSubmitRules已经答题超时,需要自动交卷')
-              this.exerciseTimeOut()
+              this.$refs.examHeader.autoExamSubmit()
             } else {
               console.error('未开启答错交卷，当前题目答题时间已经超时')
             }
@@ -589,8 +584,7 @@ export default {
       }
       // 如果试卷超时自动交卷
       if (this.apiPersonInfo.submit_status === 2) {
-        this.isShowexerciseTimeOut()
-        this.clearTimer()
+        this.$refs.examHeader.autoExamSubmit()
       }
     },
     // 是否展示本场次超时交卷提示
@@ -650,7 +644,7 @@ export default {
           this.successStatus = success
           if (success === 3) {
             // 答错立即交卷
-            console.log('res答错直接交卷', res)
+            console.log('res超时/答错直接交卷', res)
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
             // 如果开启答题解析 手动点查看分数

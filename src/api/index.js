@@ -123,16 +123,21 @@ instance.interceptors.response.use((res, xhr) => {
 }, (error) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
-  const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  if (isTimeout || status === 503 || status === 429 || status === 499) {
+  // const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  // isTimeout || status === 503
+  if (isTimeout || status === 503) {
+    window.location.href = `/error.html?origin=${url}`
+  }
+  if (status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
       window.location.href = `/waitting.html?origin=${url}`
       console.log(url)
     } else {
-      store.dispatch('setDialogVisible', true)
+      // store.dispatch('setDialogVisible', true)
       return
     }
-  } else if (status >= 500) {
+  }
+  if (status >= 500) {
     // window.location.href = `/error.html?origin=${url}`
     // window.location.href = `/waitting.html?origin=${url}`
   }
