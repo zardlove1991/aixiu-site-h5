@@ -30,7 +30,7 @@
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span v-if='isIntegralType'>{{item.points}}积分</span>
-          <span><van-icon name="arrow" v-if="examInfo.mark !== 'examination@exercise'" /></span>
+          <span v-if="examInfo.mark !== 'examination@exercise'"><van-icon name="arrow"  /></span>
         </div>
       </div>
     </div>
@@ -144,7 +144,7 @@ export default {
       padding-left: 25px;
 
       .single-num-box + .single-num-box{
-        margin-left: 20px;
+        margin-left: 50px;
       }
 
       .single-num-box{
@@ -165,7 +165,7 @@ export default {
   }
 
   .main-answer-list{
-    padding: 20px 25px;
+    padding: 0 25px 20px;
     position: absolute;
     top: 100px;
     border-top-left-radius: 16px;
@@ -198,12 +198,14 @@ export default {
         &>span:nth-child(1) {
           flex: 7;
           color: #999999;
+          text-align:left;
         }
         &>span:nth-child(2) {
           flex: 3;
         }
         &>span:nth-child(3) {
           flex: 3;
+          text-align:right;
         }
         &>span:nth-child(4) {
           flex: 1;
