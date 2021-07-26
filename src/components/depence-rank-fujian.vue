@@ -46,71 +46,73 @@
           <span class='cancel-box' @click ='clearInputValue'>取消</span>
         </div>
       </div>
-      <div v-if='!isNullDataType' class="tab-two-wrap">
-        <div v-for="(name, index) in tabBar2"
-          class="tab-two-item"
-          :key="index"
-          :class="{ 'is-active': selTab2 === name }"
-          @click="changeTab2(name)">{{dateMap[name]}}</div>
-      </div>
-      <mt-loadmore v-show='!isNullDataType' ref="depence-rank-loadmore"
-        :bottom-method="getRankList"
-        :bottom-all-loaded="noMore"
-        :auto-fill="false">
-        <div class="rank-table-wrap">
-          <div class="header rank-flex">
-            <div class="wd120 item-center">排名</div>
-            <template v-if='selTab !== "person" && isFujianProject'>
-              <div class="flex1 item-header-name wd250">党支部</div>
-              <div class="wd200">赛区</div>
-              <div class="wd150">总积分</div>
-            </template>
-            <template v-if='selTab === "person" && isFujianProject'>
-              <div class="flex1 item-header-name wd200">姓名</div>
-              <div class="wd250">党支部</div>
-              <div class="wd150">总积分</div>
-            </template>
-            <!-- 非福建答题项目 -->
-            <template v-if='!isFujianProject'>
-              <div class="flex1 item-header-name wd250">{{columnName}}</div>
-              <div class="wd150">总分</div>
-              <div class="wd200">用时</div>
-            </template>
-          </div>
-          <template>
-            <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
-              <div class="wd120 item-center">
-                <span v-if="index > 2">{{index + 1}}</span>
-                <span :class="['rank-icon', 'rank-' + index]" v-else></span>
-              </div>
+      <div v-if='!isNullDataType' class='list-box'>
+        <div v-if='!isNullDataType' class="tab-two-wrap">
+          <div v-for="(name, index) in tabBar2"
+            class="tab-two-item"
+            :key="index"
+            :class="{ 'is-active': selTab2 === name }"
+            @click="changeTab2(name)">{{dateMap[name]}}</div>
+        </div>
+        <mt-loadmore v-show='!isNullDataType' ref="depence-rank-loadmore"
+          :bottom-method="getRankList"
+          :bottom-all-loaded="noMore"
+          :auto-fill="false">
+          <div class="rank-table-wrap">
+            <div class="header rank-flex">
+              <div class="wd120 item-center">排名</div>
               <template v-if='selTab !== "person" && isFujianProject'>
-                <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
-                <div class="wd200">{{item.party_address}}</div>
-                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                <div class="flex1 item-header-name wd250">党支部</div>
+                <div class="wd200">赛区</div>
+                <div class="wd150">总积分</div>
               </template>
               <template v-if='selTab === "person" && isFujianProject'>
-                <div class="flex1 rank-name wd200">{{item.member_name}}</div>
-                <div class="wd250">{{item.party_name}}</div>
-                <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                <div class="flex1 item-header-name wd200">姓名</div>
+                <div class="wd250">党支部</div>
+                <div class="wd150">总积分</div>
               </template>
               <!-- 非福建答题项目 -->
               <template v-if='!isFujianProject'>
-                <div class="flex1 rank-name wd250">{{item.member_name}}</div>
-                <div class="wd150">{{item.score}}</div>
-                <div class="wd200">{{formatTime(item.use_time)}}</div>
+                <div class="flex1 item-header-name wd250">{{columnName}}</div>
+                <div class="wd150">总分</div>
+                <div class="wd200">用时</div>
               </template>
             </div>
-          </template>
-        </div>
-        <div slot="bottom" class="mint-loadmore-top">
-          <div class="loading-box" v-if="!noMore && loading">
-            <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
-            <span class="loading-more-txt">正在加载中</span>
+            <template>
+              <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
+                <div class="wd120 item-center">
+                  <span v-if="index > 2">{{index + 1}}</span>
+                  <span :class="['rank-icon', 'rank-' + index]" v-else></span>
+                </div>
+                <template v-if='selTab !== "person" && isFujianProject'>
+                  <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
+                  <div class="wd200">{{item.party_address}}</div>
+                  <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                </template>
+                <template v-if='selTab === "person" && isFujianProject'>
+                  <div class="flex1 rank-name wd200">{{item.member_name}}</div>
+                  <div class="wd250">{{item.party_name}}</div>
+                  <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                </template>
+                <!-- 非福建答题项目 -->
+                <template v-if='!isFujianProject'>
+                  <div class="flex1 rank-name wd250">{{item.member_name}}</div>
+                  <div class="wd150">{{item.score}}</div>
+                  <div class="wd200">{{formatTime(item.use_time)}}</div>
+                </template>
+              </div>
+            </template>
           </div>
-          <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
-          <div v-show="noMore && rankList.length > 0 && (id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
-        </div>
-      </mt-loadmore>
+          <div slot="bottom" class="mint-loadmore-top">
+            <div class="loading-box" v-if="!noMore && loading">
+              <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+              <span class="loading-more-txt">正在加载中</span>
+            </div>
+            <div v-show="!loading && noMore && pager.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+            <div v-show="noMore && rankList.length > 0 && (id === 'b6de24ff7c8a4024a50ae8a6ff7ae634' || id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
+          </div>
+        </mt-loadmore>
+      </div>
 
       <div v-if='isNullDataType' class='no-img-wrap'>
         <img :src="noDataImg" alt="" class='no-img-bg'>
@@ -501,6 +503,10 @@ export default {
   color: #be0000 !important;
 }
 
+.el-select .el-input__inner:focus {
+  border-color: #be0000;
+}
+
 .el-select .el-input.is-focus .el-input__inner {
   border-color: #be0000;
 }
@@ -511,6 +517,12 @@ export default {
   align-items: center;
   // padding: px2rem(26px);
   background: #FFFFFF;
+}
+
+.list-box{
+  -webkit-overflow-scrolling: touch;
+  height: calc(100% - 45px);
+  overflow-y: auto;
 }
 
 .no-img-wrap{
@@ -648,7 +660,7 @@ export default {
     top: px2rem(290px);
     //top: px2rem(390px);
     bottom: 0;
-    overflow-y: auto;
+    // overflow-y: auto;
     background-color: #fff;
     .tab-two-wrap {
       padding: 0 px2rem(18px);
