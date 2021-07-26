@@ -310,7 +310,7 @@ export default {
           height: px2rem(90px);
           line-height: px2rem(90px);
           text-align: center;
-          border-radius: px2rem(12px);
+          border-radius: px2rem(12px)!important;
           @include font-dpr(16px);
           color: #fff;
           &.party{
@@ -347,6 +347,7 @@ export default {
           .cancle-btn {
             width: px2rem(220px);
             margin-top: px2rem(50px);
+            margin-left: px2rem(20px);
             height: px2rem(80px);
             line-height: px2rem(80px);
             text-align: center;
@@ -357,7 +358,7 @@ export default {
           }
           .submit-btn {
             width: px2rem(220px);
-            margin-top: px2rem(60px);
+            margin-top: px2rem(50px);
             margin-left:px2rem(40px);
             height: px2rem(80px);
             line-height: px2rem(80px);
