@@ -390,6 +390,7 @@ export default {
       this.isShowRuleDialog = true
       this.$nextTick(res => {
         this.fixedBody()
+      //  this.iosScrollFixn(document.querySelect('#pageRule'))
       })
     },
     fixedBody () {
@@ -399,6 +400,30 @@ export default {
     closePageRule () {
       this.isShowRuleDialog = false
       this.looseBody()
+    },
+    iosScrollFixn (className) {
+      var startY, startTopScroll
+      var ua = navigator.userAgent.toLowerCase()
+      if (/iphone|ipad|ipod/.test(ua)) {
+        var temp = document.querySelectorAll(className)
+        var tempLen = temp.length
+        for (var i = 0; i < tempLen; ++i) {
+          let j = i
+          temp[j].addEventListener('touchstart', function (event) {
+            startY = event.touches[0].pageY
+            startTopScroll = temp[j].scrollTop
+          }, false)
+          temp[i].addEventListener('touchmove', function (event) {
+            var startY2 = event.touches[0].pageY
+            if (startTopScroll <= 0 && startY2 - startY > 0) {
+              event.preventDefault()
+            }
+            if (startTopScroll + temp[j].offsetHeight >= temp[j].scrollHeight && startY2 - startY < 0) {
+              event.preventDefault()
+            }
+          })
+        }
+      }
     },
     looseBody () {
       let body = document.body
@@ -1027,13 +1052,6 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
-// .page-dialog-wrap{
-//   pointer-events: none;
-// }
-// .page-dialog-wrap .rule-dialog2 .rule-dialog-main .rule-content {
-//   color: red !important;
-//   pointer-events: auto;
-// }
 .btn-submit-box {
   border-radius: px2rem(45px);
 }

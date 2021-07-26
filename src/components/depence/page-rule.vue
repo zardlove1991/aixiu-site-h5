@@ -67,7 +67,8 @@ export default {
         position: relative;
         margin: 0 auto;
         background-color: #fff;
-        width: px2rem(630px);
+        // width: px2rem(630px);
+        width: 95vw;
         border-radius: px2rem(16px);
         padding: px2rem(48px) px2rem(38px) px2rem(58px) px2rem(38px);
         display: flex;
