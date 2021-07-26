@@ -499,6 +499,12 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
+.el-scrollbar {
+    > .el-scrollbar__bar {
+        opacity: 1 !important;
+    }
+}
+
 .el-select-dropdown__item.selected{
   color: #be0000 !important;
 }

@@ -77,7 +77,7 @@
     <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random' && examInfo.mark !== 'examination'">
       <div class="depence-rule-item"
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
-        @click="isShowRuleDialog = true">活动介绍</div>
+        @click="openActIntroduce">活动介绍</div>
       <div class="depence-rule-item"
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
@@ -187,8 +187,9 @@
       :dialogConfig="dialogConfig"
       @handelConfirm="goExamPage(1)"/>
     <page-rule
+      id='pageRule'
       :show="isShowRuleDialog"
-      @close="isShowRuleDialog = false"
+      @close="closePageRule"
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
     <!-- 抽奖历史入口图标 -->
@@ -385,6 +386,27 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    openActIntroduce () {
+      this.isShowRuleDialog = true
+      this.$nextTick(res => {
+        this.fixedBody()
+      })
+    },
+    fixedBody () {
+      let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+      document.body.style.cssText += 'position:fixed;width:100%;top:-' + scrollTop + 'px;'
+    },
+    closePageRule () {
+      this.isShowRuleDialog = false
+      this.looseBody()
+    },
+    looseBody () {
+      let body = document.body
+      body.style.position = ''
+      let top = body.style.top
+      document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top)
+      body.style.top = ''
+    },
     toStatistic () {
       this.closeSuspendModels()
       this.goAnswerListPage()
@@ -1005,6 +1027,13 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
+// .page-dialog-wrap{
+//   pointer-events: none;
+// }
+// .page-dialog-wrap .rule-dialog2 .rule-dialog-main .rule-content {
+//   color: red !important;
+//   pointer-events: auto;
+// }
 .btn-submit-box {
   border-radius: px2rem(45px);
 }
