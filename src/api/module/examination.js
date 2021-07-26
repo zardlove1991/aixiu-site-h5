@@ -51,7 +51,7 @@ let examUrl = {
   saveIntoCloud: 'client/examination/submit/{id}',
   saveToQuestionTime: 'client/examination/{id}/question/time', // 保存进入题目的时间
   getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
-  getPartyInfo: 'collection/form/record/{id}',
+  getPartyInfo: 'client/examination/{id}/Party/info', // 获取党员信息
   getExerciseRankList: 'client/examination/{id}/exercise',
   getAnswerList: 'client/examination/{id}/grade', // 获取我的答题列表
   getGameArea: 'client/examination/{id}/party/address' // 获取党支部赛区
@@ -194,7 +194,7 @@ export default {
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
   saveToQuestionTime: config => createAPI(configUrl.saveToQuestionTime, 'post', config, API_FLAG),
   getPosterInfo: config => createAPI(configUrl.getPosterInfo, 'get', config, API_FLAG),
-  getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'post', config, API_FLAG),
+  getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'GET', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),
   getMyAnswerList: config => createAPI(configUrl.getAnswerList, 'GET', config, API_FLAG),
   getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG)
