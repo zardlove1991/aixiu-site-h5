@@ -39,7 +39,7 @@
           <div class="cancle-btn" @click.stop="calcelConfirm()">取消</div>
           <div class="submit-btn" @click.stop="sureConfirm()">确认</div>
         </div>
-        <div class="close-btn" @click.stop="close()"></div>
+        <div class="close-btn" @click.stop="calcelConfirm()"></div>
       </div>
     </div>
   </div>
@@ -305,7 +305,7 @@ export default {
           }
         }
         .submit-btn-wrap {
-          width: px2rem(305px);
+          width: px2rem(305px)!important;
           margin-top: px2rem(44px);
           height: px2rem(90px);
           line-height: px2rem(90px);
@@ -335,7 +335,7 @@ export default {
   }
   .party-confirm-dialog {
     .check-dialog-main {
-        width: px2rem(590px);
+        width: px2rem(500px);
         .confirm-content {
           font-size:px2rem(28px);
         }
@@ -343,10 +343,10 @@ export default {
           display:flex;
           width:100%!important;
           height: px2rem(80px);
-          margin-bottom:px2rem(40px);
+          margin-bottom:px2rem(60px);
           .cancle-btn {
             width: px2rem(220px);
-            margin-top: px2rem(44px);
+            margin-top: px2rem(50px);
             height: px2rem(80px);
             line-height: px2rem(80px);
             text-align: center;
@@ -357,7 +357,7 @@ export default {
           }
           .submit-btn {
             width: px2rem(220px);
-            margin-top: px2rem(44px);
+            margin-top: px2rem(60px);
             margin-left:px2rem(40px);
             height: px2rem(80px);
             line-height: px2rem(80px);
