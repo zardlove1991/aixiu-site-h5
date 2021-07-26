@@ -569,7 +569,11 @@ export default {
     display: inline-block;
     width: px2rem(458px);
     height: px2rem(64px);
+
     outline: none;
+    -webkit-appearance: none; /*去除系统默认的样式*/
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* 点击高亮的颜色*/
+
     margin-left: px2rem(20px);
     border-radius: px2rem(32px);
     border: 1px solid #DCDFE6;
@@ -591,6 +595,10 @@ export default {
 }
 
 .input-all-wrap{
+  outline: none;
+  -webkit-appearance: none; /*去除系统默认的样式*/
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* 点击高亮的颜色*/
+
   //width: px2rem(400px);
   width: px2rem(590px);
   height: px2rem(64px);

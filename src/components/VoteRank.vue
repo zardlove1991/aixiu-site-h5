@@ -50,7 +50,6 @@ export default {
   data () {
     return {
       imgs: {
-        defBgImg: require('@/assets/voteRank/def-bg-img.jpg'),
         rank1: require('@/assets/voteRank/rank1.png'),
         rank2: require('@/assets/voteRank/rank2.png'),
         rank3: require('@/assets/voteRank/rank3.png')
@@ -149,7 +148,7 @@ input::-webkit-input-placeholder {
 .vote-rank-wrap {
   width: 100vw;
   height: 100vh;
-  background:url('~@/assets/voteRank/def-bg-img.jpg') no-repeat center center;
+  background:url('~@/assets/voteRank/def-bg-img.png') no-repeat center center;
   background-size: 100vw 100vh;
   padding: 0 px2rem(30px) px2rem(30px);
   border: 1px solid transparent;
@@ -193,7 +192,7 @@ input::-webkit-input-placeholder {
           font-size: px2rem(34px);
           color: #DF0000;
           font-weight: 500;
-          text-align: center;
+          text-align: left;
           .rank-img{
             width: px2rem(42px);
             height: px2rem(50px);
@@ -207,7 +206,7 @@ input::-webkit-input-placeholder {
             color: #000000;
             font-size: px2rem(30px);
             font-weight: 500;
-            line-height: px2rem(30px);
+            line-height: px2rem(38px);
           }
 
           &>div:nth-child(2) {
@@ -241,6 +240,9 @@ input::-webkit-input-placeholder {
     }
 
     .input-wrap{
+      outline: none;
+      -webkit-appearance: none; /*去除系统默认的样式*/
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* 点击高亮的颜色*/
       display: inline-block;
       // width: px2rem(390px);
       width: 95%;
