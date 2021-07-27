@@ -94,10 +94,9 @@ export default {
 
       this.initPageShareInfo({
         id: '',
-        title: '投票排行榜',
-        desc: '投票排行榜',
+        title: 'IPTV投票积分排行榜',
+        desc: 'IPTV投票积分排行榜',
         indexpic: imgUrl,
-        link: '',
         mark: 'examination'
       }, this.shareAddTimes)
     },
