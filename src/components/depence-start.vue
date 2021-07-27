@@ -1373,7 +1373,7 @@ export default {
     width:100%;
     position: fixed;
     left:0;
-    bottom:px2rem(80px);
+    bottom:px2rem(90px);
     padding:0 px2rem(30px);
     display: flex;
     .rank-btn {
