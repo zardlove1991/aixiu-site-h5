@@ -96,13 +96,23 @@ export default {
 
       let imgUrl = this.imgs.bgImg
 
-      this.initPageShareInfo({
-        id: this.examInfo.id,
-        title: 'IPTV投票积分排行榜',
-        desc: 'IPTV投票积分排行榜',
-        indexpic: imgUrl,
-        mark: 'examination'
-      }, this.shareAddTimes)
+      setTimeout(() => {
+        this.initPageShareInfo({
+          id: this.examInfo.id,
+          title: 'IPTV投票积分排行榜',
+          desc: 'IPTV投票积分排行榜',
+          indexpic: imgUrl,
+          mark: 'examination'
+        }, this.shareAddTimes)
+      }, 3000)
+
+      // this.initPageShareInfo({
+      //   id: this.examInfo.id,
+      //   title: 'IPTV投票积分排行榜',
+      //   desc: 'IPTV投票积分排行榜',
+      //   indexpic: imgUrl,
+      //   mark: 'examination'
+      // }, this.shareAddTimes)
     },
     shareAddTimes () { // 分享成功回调
       // const examId = this.examInfo.id
