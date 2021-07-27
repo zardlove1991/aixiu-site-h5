@@ -8,7 +8,7 @@
           <el-input v-model="party.name" placeholder="姓名"></el-input>
         </div>
         <div class="check-item">
-          <el-input :disabled="true" v-model="party.mobile" placeholder="手机号"></el-input>
+          <el-input readonly v-model="party.mobile" placeholder="手机号"></el-input>
         </div>
         <div class="check-item">
           <el-input v-model="party.party_name" placeholder="党支部"></el-input>
@@ -286,6 +286,9 @@ export default {
               @include font-dpr(14px);
               color: #999;
             }
+          }
+          .el-input .el-input__inner[readonly] {
+            color: #333333!important;
           }
           .el-input .el-input__inner {
             height: px2rem(90px);
