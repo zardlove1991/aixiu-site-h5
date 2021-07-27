@@ -123,7 +123,7 @@ instance.interceptors.response.use((res, xhr) => {
 }, (error) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
-  // const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
   // isTimeout || status === 503
   if (isTimeout || status === 503) {
     window.location.href = `/error.html?origin=${url}`
