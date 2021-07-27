@@ -50,6 +50,7 @@ export default {
   data () {
     return {
       imgs: {
+        bgImg: require('@/assets/voteRank/def-bg-img.png'),
         rank1: require('@/assets/voteRank/rank1.png'),
         rank2: require('@/assets/voteRank/rank2.png'),
         rank3: require('@/assets/voteRank/rank3.png')
@@ -88,6 +89,32 @@ export default {
         this.voteList = []
         this.voteList = res.data
       })
+
+      let imgUrl = this.imgs.bgImg
+
+      this.initPageShareInfo({
+        id: '',
+        title: 'IPTV投票积分排行榜',
+        desc: 'IPTV投票积分排行榜',
+        indexpic: imgUrl,
+        mark: 'examination'
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      // const examId = this.examInfo.id
+      // if (this.examInfo.limit.is_open_share) {
+      //   API.shareAddTimes({
+      //     query: {
+      //       id: examId
+      //     }
+      //   }).then(res => {
+      //     if (res.code === 1) {
+      //       this.showOperateDialog = true
+      //     } else {
+      //       // 已经分享过
+      //     }
+      //   })
+      // }
     },
     choiceAreaFun () {
       this.voteRequestObj.party_address = this.areaValue

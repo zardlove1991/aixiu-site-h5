@@ -116,8 +116,8 @@ export default {
           top: px2rem(50px);
           right: px2rem(50px);
           display: inline-block;
-          width: px2rem(28px);
-          height: px2rem(28px);
+          width: px2rem(40px);
+          height: px2rem(40px);
           background-size: px2rem(80px);
           @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
         }

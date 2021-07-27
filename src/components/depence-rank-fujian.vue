@@ -227,18 +227,18 @@ export default {
         }
 
         // IPTV  => 用于福建答题项目
-        if (this.isFujianProject) {
-          this.tabBar.push({
-            is_all: '1',
-            is_day: '0',
-            is_month: '0',
-            is_week: '0',
-            name: 'IPTV逆袭赛积分榜',
-            old_name: '',
-            rank_id: 'tv',
-            index: 2
-          })
-        }
+        // if (this.isFujianProject) {
+        //   this.tabBar.push({
+        //     is_all: '1',
+        //     is_day: '0',
+        //     is_month: '0',
+        //     is_week: '0',
+        //     name: 'IPTV逆袭赛积分榜',
+        //     old_name: '',
+        //     rank_id: 'tv',
+        //     index: 2
+        //   })
+        // }
 
         // this.uniqueName = this.tabBar[0].unique_name
         // 默认选择第一个标签
