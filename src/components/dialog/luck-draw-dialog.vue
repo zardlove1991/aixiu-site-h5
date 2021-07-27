@@ -75,7 +75,6 @@ export default {
       .luck-title {
         color: #FFF0C3;
         font-size: px2rem(40px);
-        display: none;
       }
       .luck-base-icon {
         display: inline-block;

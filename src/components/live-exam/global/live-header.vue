@@ -197,7 +197,7 @@ export default {
             this.isLuckSubmitSuccess = true
             if (this.luckDrawLink) {
               this.isLuckDraw = true
-              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+              this.luckDrawTips = ['恭喜你,', '获得抽奖机会']
             } else {
               this.isLuckDraw = false
               this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
