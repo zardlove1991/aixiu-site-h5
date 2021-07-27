@@ -14,7 +14,13 @@
           <el-input v-model="party.party_name" placeholder="党支部"></el-input>
         </div>
         <div class="check-item">
-          <el-input v-model="party.party_address" placeholder="赛区"></el-input>
+          <el-select v-model="party.party_address" placeholder="赛区">
+            <el-option
+              v-for="item in partyAddressList"
+              :key="item"
+              :value="item">
+            </el-option>
+          </el-select>
         </div>
         <div class="tips">姓名、党支部、赛区仅支持修改一次</div>
         <div class="submit-btn-wrap color-button_color party" :class="canClick?'canClick':''"  @click.stop="sureCheckDraw()">确认</div>
@@ -48,6 +54,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Select, Option } from 'element-ui'
 import API from '@/api/module/examination'
 import { Toast } from 'mint-ui'
 import { getPlat } from '@/utils/utils'
@@ -66,6 +73,10 @@ export default {
       }
     }
   },
+  components: {
+    ElSelect: Select,
+    ElOption: Option
+  },
   computed: {
     isScroll () {
       if (this.isShowSelect || this.isShowDateSelect || this.isShowCitySelect) {
@@ -82,13 +93,26 @@ export default {
       noPhoneType: false,
       noAuthType: false,
       isShowParty: false,
-      isShowpartyConfirm: false
+      isShowpartyConfirm: false,
+      partyAddressList: []
     }
   },
   methods: {
     closeCheckDraw () {
       this.initStatus()
       this.$emit('close')
+    },
+    async getPartyAddress () {
+      await API.getPartyGameArea({
+        query: {
+          id: this.examInfo.id
+        }
+      }).then(res => {
+        if (res) {
+          this.partyAddressList = res
+          console.log(res, '********9999999')
+        }
+      })
     },
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
@@ -104,6 +128,7 @@ export default {
       }
       console.log(getPlat(), '****')
       if (getPlat() !== 'wechat') {
+        this.getPartyAddress()
         await API.getPartyInfo({
           query: {
             id: this.examInfo.id
@@ -119,7 +144,6 @@ export default {
       }
     },
     async savePartyInfo () {
-      console.log('savePartyInfo', this.party)
       await API.saveDrawRecord({
         query: {
           id: this.examInfo.id
@@ -247,6 +271,9 @@ export default {
           width: 100%;
           margin-bottom: px2rem(30px);
           position: relative;
+          .el-select {
+            width:100%!important;
+          }
           .el-input__inner, .el-textarea__inner {
             -webkit-appearance: none;
             background-color: rgba(255, 255, 255, 0.2);
@@ -265,7 +292,7 @@ export default {
             line-height: px2rem(90px);
           }
           .el-input.is-disabled .el-input__inner {
-            color: #999;
+            color: #333333!important;
             border: 1px solid #DBDBDB;
             background-color: #FBFBFB;
           }
