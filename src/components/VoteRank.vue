@@ -45,6 +45,7 @@
 
 <script>
 import API from '@/api/module/examination'
+import { mapGetters } from 'vuex'
 import { Select, Option } from 'element-ui'
 export default {
   data () {
@@ -68,6 +69,9 @@ export default {
       },
       voteList: []
     }
+  },
+  computed: {
+    ...mapGetters('depence', ['examInfo'])
   },
   props: {
     id: String
@@ -93,7 +97,7 @@ export default {
       let imgUrl = this.imgs.bgImg
 
       this.initPageShareInfo({
-        id: '',
+        id: this.examInfo.id,
         title: 'IPTV投票积分排行榜',
         desc: 'IPTV投票积分排行榜',
         indexpic: imgUrl,
