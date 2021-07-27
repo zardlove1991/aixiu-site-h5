@@ -77,7 +77,7 @@
     <div class="depence-rule-wrap" v-if="examInfo.mark !== 'examination@random' && examInfo.mark !== 'examination'">
       <div class="depence-rule-item"
         :class="colorName ? colorName + (examInfo.mark === 'examination@rank' ? checkOutLink() ? '-top' : '': '') : ''"
-        @click="isShowRuleDialog = true">活动介绍</div>
+        @click="openActIntroduce">活动介绍</div>
       <div class="depence-rule-item"
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
@@ -187,8 +187,9 @@
       :dialogConfig="dialogConfig"
       @handelConfirm="goExamPage(1)"/>
     <page-rule
+      id='pageRule'
       :show="isShowRuleDialog"
-      @close="isShowRuleDialog = false"
+      @close="closePageRule"
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
     <!-- 抽奖历史入口图标 -->
@@ -385,6 +386,52 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    openActIntroduce () {
+      this.isShowRuleDialog = true
+      this.$nextTick(res => {
+        this.fixedBody()
+      //  this.iosScrollFixn(document.querySelect('#pageRule'))
+      })
+    },
+    fixedBody () {
+      let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+      document.body.style.cssText += 'position:fixed;width:100%;top:-' + scrollTop + 'px;'
+    },
+    closePageRule () {
+      this.isShowRuleDialog = false
+      this.looseBody()
+    },
+    iosScrollFixn (className) {
+      var startY, startTopScroll
+      var ua = navigator.userAgent.toLowerCase()
+      if (/iphone|ipad|ipod/.test(ua)) {
+        var temp = document.querySelectorAll(className)
+        var tempLen = temp.length
+        for (var i = 0; i < tempLen; ++i) {
+          let j = i
+          temp[j].addEventListener('touchstart', function (event) {
+            startY = event.touches[0].pageY
+            startTopScroll = temp[j].scrollTop
+          }, false)
+          temp[i].addEventListener('touchmove', function (event) {
+            var startY2 = event.touches[0].pageY
+            if (startTopScroll <= 0 && startY2 - startY > 0) {
+              event.preventDefault()
+            }
+            if (startTopScroll + temp[j].offsetHeight >= temp[j].scrollHeight && startY2 - startY < 0) {
+              event.preventDefault()
+            }
+          })
+        }
+      }
+    },
+    looseBody () {
+      let body = document.body
+      body.style.position = ''
+      let top = body.style.top
+      document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top)
+      body.style.top = ''
+    },
     toStatistic () {
       this.closeSuspendModels()
       this.goAnswerListPage()
