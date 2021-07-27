@@ -47,6 +47,7 @@
 import API from '@/api/module/examination'
 import { mapGetters } from 'vuex'
 import { Select, Option } from 'element-ui'
+import wx from '@/config/weixin-js-sdk'
 export default {
   data () {
     return {
@@ -95,7 +96,6 @@ export default {
       })
 
       let imgUrl = this.imgs.bgImg
-
       setTimeout(() => {
         this.initPageShareInfo({
           id: this.examInfo.id,
@@ -103,32 +103,52 @@ export default {
           desc: 'IPTV投票积分排行榜',
           indexpic: imgUrl,
           mark: 'examination'
-        }, this.shareAddTimes)
+        }, this.shareAddTimes())
       }, 3000)
-
-      // this.initPageShareInfo({
-      //   id: this.examInfo.id,
-      //   title: 'IPTV投票积分排行榜',
-      //   desc: 'IPTV投票积分排行榜',
-      //   indexpic: imgUrl,
-      //   mark: 'examination'
-      // }, this.shareAddTimes)
     },
     shareAddTimes () { // 分享成功回调
-      // const examId = this.examInfo.id
-      // if (this.examInfo.limit.is_open_share) {
-      //   API.shareAddTimes({
-      //     query: {
-      //       id: examId
-      //     }
-      //   }).then(res => {
-      //     if (res.code === 1) {
-      //       this.showOperateDialog = true
-      //     } else {
-      //       // 已经分享过
-      //     }
-      //   })
-      // }
+
+    },
+    initPageShareInfo (data, callback) {
+      let auth = () => {
+        let params = {
+          title: data.title, // 分享标题
+          desc: data.desc, // 分享描述
+          imgUrl: data.indexpic, // 分享图标
+          link: data.link, // 分享链接
+          success: () => {
+            // 用户确认分享后执行的回调函数
+            console.log('setShare', data)
+            // this.setShare({
+            //   id: data.id,
+            //   title: params.title,
+            //   from: params.from,
+            //   mark: data.mark
+            // })
+            // 回调函数
+            if (callback && typeof callback === 'function') {
+              callback()
+            }
+          },
+          fail: function (err) {
+            console.log(err)
+          },
+          cancel: function () {
+            // 用户取消分享后执行的回调函数
+          }
+        }
+        // console.log('执行了分享参数调用', params)
+        // 执行调用
+        wx.execute('shareQQZone', params)
+        wx.execute('shareQQFriends', params)
+        wx.execute('shareWeChatZone', params)
+        wx.execute('shareFriends', params)
+        wx.execute('shareWeibo', params)
+      }
+      // 执行分享SDK调用
+      setTimeout(() => {
+        auth()
+      }, 1000)
     },
     choiceAreaFun () {
       this.voteRequestObj.party_address = this.areaValue
