@@ -739,11 +739,9 @@ export default {
             let { latitude, longitude } = res
 
             let detailInfo = STORAGE.get('detailInfo')
-            let _area = []
+            let _area = ''
             _area = detailInfo.rule.area_limit.is_area_limit
-            if (_area === 0) {
-              return false
-            } else {
+            if (_area !== 0) {
               // 判断是否能获取经纬度
               if (latitude === '' || longitude === '') {
                 this.positionTips()
