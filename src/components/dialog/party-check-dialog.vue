@@ -289,6 +289,8 @@ export default {
           }
           .el-input .el-input__inner[readonly] {
             color: #333333!important;
+            background-color: #FBFBFB;
+            border: 1px solid #DBDBDB;
           }
           .el-input .el-input__inner {
             height: px2rem(90px);
