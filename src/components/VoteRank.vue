@@ -98,74 +98,19 @@ export default {
       })
 
       // let _imgUrl = this.imgs.bgImg
-      // setTimeout(() => {
-      //   console.log('2', this.examInfo.id)
-      //   this.initPageShareInfoFun({
-      //     id: this.examInfo.id,
-      //     title: 'IPTV投票积分排行榜',
-      //     desc: 'IPTV投票积分排行榜',
-      //     indexpic: _imgUrl,
-      //     mark: 'examination'
-      //   }, this.shareAddTimes())
-      // }, 3000)
-
-      let _imgUrl = this.imgs.bgImg
       console.log('77-----------', this.initPageShareInfo)
 
       setTimeout(() => {
-        console.log('999')
         this.initPageShareInfo({
           id: this.examInfo.id,
           title: 'IPTV投票积分排行榜',
-          desc: 'IPTV投票积分排行榜',
-          indexpic: _imgUrl,
+          desc: this.examInfo.brief,
           mark: 'examination'
         }, this.shareAddTimes())
       }, 3000)
     },
     shareAddTimes () { // 分享成功回调
 
-    },
-    initPageShareInfoFun (data, callback) {
-      let auth = () => {
-        let params = {
-          title: data.title, // 分享标题
-          desc: data.desc, // 分享描述
-          imgUrl: data.indexpic, // 分享图标
-          link: data.link, // 分享链接
-          success: () => {
-            // 用户确认分享后执行的回调函数
-            console.log('setShare', data)
-            // this.setShare({
-            //   id: data.id,
-            //   title: params.title,
-            //   from: params.from,
-            //   mark: data.mark
-            // })
-            // 回调函数
-            if (callback && typeof callback === 'function') {
-              callback()
-            }
-          },
-          fail: function (err) {
-            console.log(err)
-          },
-          cancel: function () {
-            // 用户取消分享后执行的回调函数
-          }
-        }
-        // console.log('执行了分享参数调用', params)
-        // 执行调用
-        wx.execute('shareQQZone', params)
-        wx.execute('shareQQFriends', params)
-        wx.execute('shareWeChatZone', params)
-        wx.execute('shareFriends', params)
-        wx.execute('shareWeibo', params)
-      }
-      // 执行分享SDK调用
-      setTimeout(() => {
-        auth()
-      }, 1000)
     },
     choiceAreaFun () {
       this.voteRequestObj.party_address = this.areaValue
