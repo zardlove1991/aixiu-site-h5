@@ -95,16 +95,14 @@ export default {
         this.voteList = res.data
       })
 
-      let imgUrl = this.imgs.bgImg
-      setTimeout(() => {
-        this.initPageShareInfo({
-          id: this.examInfo.id,
-          title: 'IPTV投票积分排行榜',
-          desc: 'IPTV投票积分排行榜',
-          indexpic: imgUrl,
-          mark: 'examination'
-        }, this.shareAddTimes())
-      }, 3000)
+      let _imgUrl = this.imgs.bgImg
+      this.initPageShareInfo({
+        id: this.examInfo.id,
+        title: 'IPTV投票积分排行榜',
+        desc: this.examInfo.brief,
+        indexpic: _imgUrl,
+        mark: 'examination'
+      }, this.shareAddTimes())
     },
     shareAddTimes () { // 分享成功回调
 
