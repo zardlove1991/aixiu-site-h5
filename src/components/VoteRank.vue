@@ -47,8 +47,10 @@
 import API from '@/api/module/examination'
 import { mapGetters } from 'vuex'
 import { Select, Option } from 'element-ui'
+import mixins from '@/mixins/index'
 import wx from '@/config/weixin-js-sdk'
 export default {
+  mixins: [mixins],
   data () {
     return {
       imgs: {
@@ -95,7 +97,7 @@ export default {
         this.voteList = res.data
       })
 
-      let _imgUrl = this.imgs.bgImg
+      // let _imgUrl = this.imgs.bgImg
       // setTimeout(() => {
       //   console.log('2', this.examInfo.id)
       //   this.initPageShareInfoFun({
@@ -107,6 +109,8 @@ export default {
       //   }, this.shareAddTimes())
       // }, 3000)
 
+      let _imgUrl = this.imgs.bgImg
+      console.log('77-----------', this.initPageShareInfo)
       this.initPageShareInfo({
         id: this.examInfo.id,
         title: 'IPTV投票积分排行榜',
@@ -114,6 +118,10 @@ export default {
         indexpic: _imgUrl,
         mark: 'examination'
       }, this.shareAddTimes())
+      // setTimeout(() => {
+      //   console.log('33')
+
+      // }, 3000)
     },
     shareAddTimes () { // 分享成功回调
 

@@ -708,6 +708,7 @@ export default {
       if (imgUrl && !/^http/.test(imgUrl)) {
         imgUrl = location.protocol + imgUrl
       }
+      console.log('this.initPageShareInfo9999-------------', this.initPageShareInfo)
       this.initPageShareInfo({
         id: examInfo.id,
         title,
