@@ -100,20 +100,16 @@ export default {
       })
 
       let _examInfo = await this.getExamDetail({id: this.id})
-      // console.log('999', _examInfo)
-
-      // let _imgUrl = this.imgs.bgImg
-      console.log('77-----------', this.examInfo)
       let limit = _examInfo.limit
       // let title = ''
       // let link = ''
-      // let desc = ''
+      let desc = ''
       let imgUrl = ''
       if (limit.share_settings) {
         let share = limit.share_settings
         // title = share.share_title ? share.share_title : this.examInfo.title
         // link = share.share_url
-        // desc = share.share_brief ? share.share_brief : this.examInfo.brief
+        desc = share.share_brief ? share.share_brief : this.examInfo.brief
         let picObj = share.share_indexpic
         let indexObj = _examInfo.indexpic
         if (picObj) {
@@ -144,11 +140,10 @@ export default {
       }
 
       setTimeout(() => {
-        console.log('imgUrl', imgUrl)
         this.initPageShareInfo({
-          id: this.examInfo.id,
+          id: _examInfo.id,
           title: 'IPTV投票积分排行榜',
-          desc: 'IPTV投票积分排行',
+          desc: desc,
           indexpic: imgUrl,
           mark: 'examination'
         }, this.shareAddTimes())
