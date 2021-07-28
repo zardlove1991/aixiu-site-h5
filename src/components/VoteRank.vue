@@ -96,13 +96,15 @@ export default {
       })
 
       let _imgUrl = this.imgs.bgImg
-      this.initPageShareInfoFun({
-        id: this.examInfo.id,
-        title: 'IPTV投票积分排行榜',
-        desc: 'IPTV投票积分排行榜',
-        indexpic: _imgUrl,
-        mark: 'examination'
-      }, this.shareAddTimes())
+      setTimeout(() => {
+        this.initPageShareInfoFun({
+          id: this.examInfo.id,
+          title: 'IPTV投票积分排行榜',
+          desc: 'IPTV投票积分排行榜',
+          indexpic: _imgUrl,
+          mark: 'examination'
+        }, this.shareAddTimes())
+      }, 8000)
     },
     shareAddTimes () { // 分享成功回调
 
