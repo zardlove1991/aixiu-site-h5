@@ -45,10 +45,9 @@
 
 <script>
 import API from '@/api/module/examination'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { Select, Option } from 'element-ui'
 import mixins from '@/mixins/index'
-import wx from '@/config/weixin-js-sdk'
 export default {
   mixins: [mixins],
   data () {
@@ -88,7 +87,10 @@ export default {
     this.getVoteList()
   },
   methods: {
-    getVoteList () {
+    ...mapActions('depence', {
+      getExamDetail: 'GET_EXAM_DETAIL'
+    }),
+    async getVoteList () {
       API.getExerciseRankList({
         query: { id: this.id },
         params: this.voteRequestObj
@@ -97,14 +99,57 @@ export default {
         this.voteList = res.data
       })
 
+      let _examInfo = await this.getExamDetail({id: this.id})
+      // console.log('999', _examInfo)
+
       // let _imgUrl = this.imgs.bgImg
-      console.log('77-----------', this.initPageShareInfo)
+      console.log('77-----------', this.examInfo)
+      let limit = _examInfo.limit
+      // let title = ''
+      // let link = ''
+      // let desc = ''
+      let imgUrl = ''
+      if (limit.share_settings) {
+        let share = limit.share_settings
+        // title = share.share_title ? share.share_title : this.examInfo.title
+        // link = share.share_url
+        // desc = share.share_brief ? share.share_brief : this.examInfo.brief
+        let picObj = share.share_indexpic
+        let indexObj = _examInfo.indexpic
+        if (picObj) {
+          if (picObj.constructor === Object && picObj.host && picObj.filename) {
+            if (/http/.test(picObj.host)) {
+              imgUrl = picObj.host + picObj.filename
+            } else {
+              imgUrl = location.protocol + picObj.host + picObj.filename
+            }
+          } else if (picObj.constructor === String) {
+            imgUrl = picObj
+          }
+        } else if (indexObj) {
+          if (indexObj.host && indexObj.filename) {
+            if (/http/.test(indexObj.host)) {
+              imgUrl = indexObj.host + indexObj.filename
+            } else {
+              imgUrl = location.protocol + indexObj.host + indexObj.filename
+            }
+          } else if (indexObj.url) {
+            imgUrl = indexObj.url
+          }
+        }
+      }
+
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
 
       setTimeout(() => {
+        console.log('imgUrl', imgUrl)
         this.initPageShareInfo({
           id: this.examInfo.id,
           title: 'IPTV投票积分排行榜',
-          desc: this.examInfo.brief,
+          desc: 'IPTV投票积分排行',
+          indexpic: imgUrl,
           mark: 'examination'
         }, this.shareAddTimes())
       }, 3000)
