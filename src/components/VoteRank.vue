@@ -147,7 +147,7 @@ export default {
           indexpic: imgUrl,
           mark: 'examination'
         }, this.shareAddTimes())
-      }, 3000)
+      }, 1000)
     },
     shareAddTimes () { // 分享成功回调
 
