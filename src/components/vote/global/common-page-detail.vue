@@ -49,7 +49,7 @@ import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
 import { mapGetters } from 'vuex'
 import ActiveVote from '@/components/vote/global/vote-active'
-import { getAppSign } from '@/utils/utils'
+import { getAppSign, setBrowserTitle } from '@/utils/utils'
 
 export default {
   props: {
@@ -90,6 +90,9 @@ export default {
   },
   watch: {
     info: 'getVoteList'
+  },
+  mounted () {
+    setBrowserTitle(this.info.name)
   },
   beforeDestroy () {
     // 清除定时器
