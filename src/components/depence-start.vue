@@ -9,7 +9,7 @@
       </div>
       <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
     </div>
-    <button @click='goVoteRank' style='margin-top: 30px;'>投票排行榜</button>
+    <!-- <button @click='goVoteRank' style='margin-top: 30px;'>投票排行榜</button> -->
     <!--头部背景 暂时没有先注释掉-->
     <div class="header-wrap">
       <template>

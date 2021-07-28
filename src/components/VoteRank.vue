@@ -99,7 +99,7 @@ export default {
       this.initPageShareInfo({
         id: this.examInfo.id,
         title: 'IPTV投票积分排行榜',
-        desc: this.examInfo.brief,
+        desc: 'IPTV投票积分排行榜',
         indexpic: _imgUrl,
         mark: 'examination'
       }, this.shareAddTimes())
