@@ -1,7 +1,7 @@
 <template>
 <div>
   <div :class="['check-dialog-wrap', isScroll]" v-if="show">
-    <div class="check-dialog-content" :class="isShowParty ? 'show' : ''">
+    <div class="check-dialog-content party-dialog-content" :class="isShowParty ? 'show' : ''">
       <div class="check-dialog-main">
         <div class="check-header">党员信息验证</div>
         <div class="check-item">
@@ -35,7 +35,7 @@
     </div>
   </div>
   <div :class="['check-dialog-wrap', isScroll]" v-if="isShowpartyConfirm" class="party-confirm-dialog">
-    <div class="check-dialog-content" :class="isShowParty ? 'show' : ''">
+    <div class="check-dialog-content party-dialog-content" :class="isShowParty ? 'show' : ''">
       <div class="check-dialog-main">
         <div class="check-header">操作提示</div>
         <div class="confirm-content">
@@ -234,7 +234,9 @@ export default {
       overflow: hidden;
     }
     .check-dialog-content {
-      display:none;
+      &.party-dialog-content {
+        display:none;
+      }
       max-height: 100vh;
       position: relative;
       top: 50%;
@@ -242,7 +244,7 @@ export default {
       width: 100%;
       padding-top: px2rem(30px);
       &.show {
-        display:block;
+        display:block!important;
       }
       .check-dialog-main {
         position:relative;
