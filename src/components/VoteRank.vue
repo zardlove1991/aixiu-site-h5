@@ -47,6 +47,7 @@
 import API from '@/api/module/examination'
 import { mapGetters, mapActions } from 'vuex'
 import { Select, Option } from 'element-ui'
+import { Indicator } from 'mint-ui'
 import mixins from '@/mixins/index'
 export default {
   mixins: [mixins],
@@ -84,21 +85,15 @@ export default {
   },
   mounted () {
     this.getGameArea()
+    this.getShareInfo()
     this.getVoteList()
   },
   methods: {
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL'
     }),
-    async getVoteList () {
-      API.getExerciseRankList({
-        query: { id: this.id },
-        params: this.voteRequestObj
-      }).then(res => {
-        this.voteList = []
-        this.voteList = res.data
-      })
-
+    async getShareInfo () {
+      Indicator.open()
       let _examInfo = await this.getExamDetail({id: this.id})
       let limit = _examInfo.limit
       // let title = ''
@@ -139,15 +134,28 @@ export default {
         imgUrl = location.protocol + imgUrl
       }
 
-      setTimeout(() => {
-        this.initPageShareInfo({
-          id: _examInfo.id,
-          title: 'IPTV投票积分排行榜',
-          desc: desc,
-          indexpic: imgUrl,
-          mark: 'examination'
-        }, this.shareAddTimes())
-      }, 1000)
+      Indicator.close()
+
+      // setTimeout(() => {
+      this.initPageShareInfo({
+        id: _examInfo.id,
+        title: 'IPTV投票积分排行榜',
+        desc: desc,
+        indexpic: imgUrl,
+        mark: 'examination'
+      }, this.shareAddTimes())
+      // }, 1000)
+    },
+    getVoteList () {
+      console.log(1)
+      API.getExerciseRankList({
+        query: { id: this.id },
+        params: this.voteRequestObj
+      }).then(res => {
+        console.log(2)
+        this.voteList = []
+        this.voteList = res.data
+      })
     },
     shareAddTimes () { // 分享成功回调
 
