@@ -111,17 +111,17 @@ export default {
 
       let _imgUrl = this.imgs.bgImg
       console.log('77-----------', this.initPageShareInfo)
-      this.initPageShareInfo({
-        id: this.examInfo.id,
-        title: 'IPTV投票积分排行榜',
-        desc: 'IPTV投票积分排行榜',
-        indexpic: _imgUrl,
-        mark: 'examination'
-      }, this.shareAddTimes())
-      // setTimeout(() => {
-      //   console.log('33')
 
-      // }, 3000)
+      setTimeout(() => {
+        console.log('999')
+        this.initPageShareInfo({
+          id: this.examInfo.id,
+          title: 'IPTV投票积分排行榜',
+          desc: 'IPTV投票积分排行榜',
+          indexpic: _imgUrl,
+          mark: 'examination'
+        }, this.shareAddTimes())
+      }, 3000)
     },
     shareAddTimes () { // 分享成功回调
 
