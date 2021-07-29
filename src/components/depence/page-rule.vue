@@ -3,7 +3,7 @@
     <div class="rule-dialog2">
       <div :class="['rule-dialog-main', themeColorName]">
         <div class="rule-header">活动介绍</div>
-        <div class="rule-content" v-html="introduce"></div>
+        <div class="rule-content" ref="wrapper" v-html="introduce"></div>
         <div class="close-btn" @click.stop="close()"></div>
       </div>
     </div>
@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
 import { mapMutations } from 'vuex'
 
 export default {
@@ -33,6 +34,15 @@ export default {
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
     }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.scroll = new BScroll(this.$refs.wrapper, {
+        pullUpLoad: true,
+        scrollbar: true,
+        pullDownRefresh: true
+      })
+    })
   },
   methods: {
     close () {
@@ -101,6 +111,11 @@ export default {
           font-weight: bold;
         }
         .rule-content {
+          // p {
+          //   min-height: px2rem(721px);
+          // }
+          // position: static;
+          // z-index: 9999;
           width: 100%;
           height: px2rem(720px);
           overflow-y: auto;

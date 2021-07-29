@@ -16,6 +16,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "better-scroll": "^2.4.1",
     "cos-js-sdk-v4": "^1.2.0",
     "echarts": "^4.2.1",
     "element-ui": "^2.9.1",
