@@ -126,7 +126,8 @@ instance.interceptors.response.use((res, xhr) => {
   // }
 
   if (isTimeout || status === 503) {
-    window.location.href = `/error.html?origin=${url}`
+    // 临时注销掉
+    // window.location.href = `/error.html?origin=${url}`
   }
   if (status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
