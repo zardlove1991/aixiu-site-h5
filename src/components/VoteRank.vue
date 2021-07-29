@@ -27,17 +27,30 @@
       </div>
     </div>
     <div class='list-wrap'>
-      <div v-for='(item, index) in voteList' :key='index' class='single-list-wrap'>
-        <div class='single-list-1'>
-          <img v-if='index <= 2' :src="imgs['rank' + (index + 1)]" alt="" class='rank-img'>
-          <span v-if='index > 2'>{{index + 1}}</span>
+      <mt-loadmore ref="depence-rank-loadmore"
+        :bottom-method="getVoteList"
+        :bottom-all-loaded="noMore"
+        :auto-fill="false">
+        <div v-for='(item, index) in voteList' :key='index' class='single-list-wrap'>
+          <div class='single-list-1'>
+            <img v-if='index <= 2' :src="imgs['rank' + (index + 1)]" alt="" class='rank-img'>
+            <span v-if='index > 2'>{{index + 1}}</span>
+          </div>
+          <div class='single-list-2'>
+            <div>{{item.party_name}}</div>
+            <div>{{item.party_address}}</div>
+          </div>
+          <div class='single-list-3'>{{item.num}}分</div>
         </div>
-        <div class='single-list-2'>
-          <div>{{item.party_name}}</div>
-          <div>{{item.party_address}}</div>
+        <div slot="bottom" class="mint-loadmore-top">
+          <div class="loading-box" v-if="!noMore && loading">
+            <mt-spinner type="fading-circle" class="loading-more"></mt-spinner>
+            <span class="loading-more-txt">正在加载中</span>
+          </div>
+          <div v-show="!loading && noMore && pagerObj.page > 1" class="scroll-tips">—— 底都被你看完啦 ——</div>
+          <div v-show="noMore && voteList.length > 0 && (id === '4e9840ada0ed433694218f6cbc5b0572')" class="scroll-tips">—— 底都被你看完啦 ——</div>
         </div>
-        <div class='single-list-3'>{{item.num}}分</div>
-      </div>
+      </mt-loadmore>
     </div>
   </div>
 </div>
@@ -64,16 +77,28 @@ export default {
       curPartyName: '',
       voteRequestObj: {
         page: 1, // 当前的页数
-        count: 1000, // 每页显示多少条
+        count: 100, // 每页显示多少条
         unique_name: 'voting',
         type: '',
         name: '', // 需要搜索的党支部名称
         party_address: '' // 下拉选择的赛区名称
       },
-      voteList: []
+      voteList: [],
+      pagerObj: { // 投票列表分页
+        total: 0,
+        page: 0,
+        count: 100,
+        totalPages: 0
+      },
+      loading: false
     }
   },
   computed: {
+    noMore () {
+      // 当起始页数大于总页数时停止加载
+      let { page, totalPages } = this.pagerObj
+      return page >= totalPages
+    },
     ...mapGetters('depence', ['examInfo'])
   },
   props: {
@@ -136,7 +161,6 @@ export default {
 
       Indicator.close()
 
-      // setTimeout(() => {
       this.initPageShareInfo({
         id: _examInfo.id,
         title: 'IPTV投票积分排行榜',
@@ -144,17 +168,37 @@ export default {
         indexpic: imgUrl,
         mark: 'examination'
       }, this.shareAddTimes())
-      // }, 1000)
     },
     getVoteList () {
-      console.log(1)
+      if (this.loading) return false
+      this.loading = true
+
+      let { page, count } = this.pagerObj
+      this.voteRequestObj.page = page + 1
+      this.$nextTick(() => {
+        this.$refs['depence-rank-loadmore'].onBottomLoaded()
+      })
       API.getExerciseRankList({
         query: { id: this.id },
         params: this.voteRequestObj
       }).then(res => {
-        console.log(2)
-        this.voteList = []
-        this.voteList = res.data
+        // this.voteList = []
+        // this.voteList = res.data
+
+        let { data, page, total } = res
+        this.loading = false
+        total = parseInt(total)
+        page = parseInt(page)
+        // 总页数
+        let totalPages = total / count
+        if (total % count !== 0) {
+          totalPages = parseInt(total / count) + 1
+        }
+
+        this.voteList = this.voteList.concat(data)
+        this.pagerObj = { total, page, count, totalPages }
+      }).catch(() => {
+        this.loading = false
       })
     },
     shareAddTimes () { // 分享成功回调
@@ -325,6 +369,22 @@ input::-webkit-input-placeholder {
       font-size: px2rem(28px);
       background: #F8EBD8;
     }
+  }
+}
+
+.mint-loadmore-top {
+  margin-top: 0;
+}
+
+.loading-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .loading-more-txt {
+    display: inline-block;
+    margin-left: px2rem(20px);
+    @include font-dpr(14px);
+    color:#ccc;
   }
 }
 </style>
