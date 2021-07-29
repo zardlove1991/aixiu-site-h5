@@ -740,8 +740,8 @@ export default {
 
             let detailInfo = STORAGE.get('detailInfo')
             let _area = ''
-            _area = detailInfo.rule.area_limit.is_area_limit
-            if (_area !== 0) {
+            _area = detailInfo.rule.area_limit.area
+            if (_area !== undefined && _area.length !== 0) {
               // 判断是否能获取经纬度
               if (latitude === '' || longitude === '') {
                 this.positionTips()
@@ -759,10 +759,9 @@ export default {
       } else if (plat === 'wechat') {
         let detailInfo = STORAGE.get('detailInfo')
         let _area = []
-        _area = detailInfo.rule.area_limit.is_area_limit
-        if (_area === 0) {
-          return false
-        } else {
+        _area = detailInfo.rule.area_limit.area
+        console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
+        if (_area !== undefined && _area.length !== 0) {
           this.getLocation().then(res => {
             // if (Object.keys(res).length === 0) {
             //   this.positionTips()
@@ -770,7 +769,10 @@ export default {
           }).catch(e => {
             this.positionTips()
           })
+          return false
         }
+
+        this.getLocation()
       }
     },
     positionTips () {
@@ -784,6 +786,7 @@ export default {
           this.curApp = i.name
         }
       }
+      console.log('curApp', this.curApp)
       this.isShowArea = true
     },
     initVoteReportTime () {

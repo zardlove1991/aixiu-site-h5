@@ -65,6 +65,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import { fullSceneMap } from '@/utils/config'
+import { setBrowserTitle } from '@/utils/utils'
 
 export default {
   components: {
@@ -182,6 +183,8 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         this.workDetail = res
+
+        setBrowserTitle(this.workDetail.name)
       })
     },
     getDetail () {
