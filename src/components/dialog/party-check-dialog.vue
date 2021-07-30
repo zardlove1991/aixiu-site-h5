@@ -22,7 +22,7 @@
             </el-option>
           </el-select>
         </div>
-        <div class="tips">姓名、党支部、赛区仅支持修改一次</div>
+        <div class="tips">以上信息如有错误可直接修改（注意：仅有一次修改机会，所有参赛党员所在党支部名称必须完全一致！否则将视为不同党支部参赛，影响最终积分）</div>
         <div class="submit-btn-wrap color-button_color party" :class="canClick?'canClick':''"  @click.stop="sureCheckDraw()">确认</div>
         <div class="close-btn" @click.stop="closeCheckDraw()"></div>
       </div>
