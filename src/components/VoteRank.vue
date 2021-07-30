@@ -205,6 +205,8 @@ export default {
 
     },
     choiceAreaFun () {
+      this.pagerObj.page = 0
+      this.voteList = []
       this.voteRequestObj.party_address = this.areaValue
       this.getVoteList()
     },
@@ -225,6 +227,8 @@ export default {
       })
     },
     searchFun () {
+      this.pagerObj.page = 0
+      this.voteList = []
       this.voteRequestObj.name = this.curPartyName
       this.getVoteList()
     }
