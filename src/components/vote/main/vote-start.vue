@@ -414,12 +414,11 @@ export default {
     allWorkList () {
       if (this.myWork.id) {
         let _index = this.workList.findIndex(item => item.id === this.myWork.id)
-        if (_index !== -1) {
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          this.workList.splice(_index, 1)
-          // console.log('6666', _index, this.workList, this.myWork)
-          return [this.myWork, ...this.workList]
-        }
+        console.log('_index', _index, this.workList, this.myWork.id)
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.workList[_index] = Object.assign(this.workList[_index], this.myWork)
+        console.log('listValue', this.workList[_index], this.workList)
+        return this.workList
       } else {
         return this.workList
       }
