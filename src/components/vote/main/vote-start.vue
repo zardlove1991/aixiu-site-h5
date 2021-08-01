@@ -60,7 +60,8 @@
         </div>
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
           <div class="vote-cols-wrap signup-icon">
-            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <!-- <span class="vote-count">{{detailInfo.report_count}}</span> -->
+            <span class="vote-count">{{detailInfo.works_count}}</span>
             <span class="vote-desc">报名次数</span>
           </div>
           <div class="vote-cols-wrap examine-icon">
