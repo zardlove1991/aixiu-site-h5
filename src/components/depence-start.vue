@@ -82,6 +82,10 @@
         v-if="examInfo.mark === 'examination@rank' && checkOutLink()"
         @click="goOutlink()"
         :class="colorName ? colorName + '-bottom' : ''">{{examInfo.limit.outlink_title}}</div>
+      <div class="depence-rule-item"
+        v-if="examInfo.mark === 'examination@exercise' && examInfo.limit.assign_people_limit === 1 && examInfo.limit.assign_people_edit_limit === 0"
+        @click="showPartyDialog()"
+        :class="colorName ? colorName + '-bottom' : ''">党员信息</div>
     </div>
     <!--底部按钮-->
     <div class="btn-area"
@@ -178,9 +182,10 @@
     </draw-check-dialog>
     <party-check-dialog
       :show="isShowPartyCheck"
+      :isShowPartyCheckClick="isShowPartyCheckClick"
       :checkDraw="checkDraw"
       @success="goExamPage"
-      @close="isShowPartyCheck = false">
+      @close="isShowPartyCheck = false, isShowPartyCheckClick = false">
     </party-check-dialog>
     <OperateDialog
       :visible.sync="showOperateDialog"
@@ -294,7 +299,8 @@ export default {
       showLotteryEntrance: false,
       lotteryUrl: '',
       imgUrl: require('@/assets/vote/gift@3x.png'),
-      isShowPartyCheck: false
+      isShowPartyCheck: false,
+      isShowPartyCheckClick: false
     }
   },
   components: {
@@ -386,6 +392,10 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    showPartyDialog () {
+      this.isShowPartyCheck = true
+      this.isShowPartyCheckClick = true
+    },
     openActIntroduce () {
       this.isShowRuleDialog = true
       this.$nextTick(res => {

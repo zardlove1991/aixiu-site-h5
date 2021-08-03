@@ -39,7 +39,7 @@
       <div class="check-dialog-main">
         <div class="check-header">操作提示</div>
         <div class="confirm-content">
-        确认现在提交您的党员信息吗， 点击“确认”会直接进入答题流程， 开始答题后党员信息不可更改。
+        {{ isShowPartyCheckClick ? '确认现在提交您的党员信息吗，仅有一次修改机会， 确认后党员信息不可更改。' : '确认现在提交您的党员信息吗， 点击“确认”会直接进入答题流程， 开始答题后党员信息不可更改。' }}
         </div>
         <div class="confirm-btn-wrap">
           <div class="cancle-btn" @click.stop="calcelConfirm()">取消</div>
@@ -63,6 +63,10 @@ import STORAGE from '@/utils/storage'
 export default {
   props: {
     show: {
+      type: Boolean,
+      default: false
+    },
+    isShowPartyCheckClick: {
       type: Boolean,
       default: false
     },
@@ -156,7 +160,9 @@ export default {
       }).then(res => {
         if (res.success) {
           this.closeCheckDraw()
-          this.$emit('success')
+          if (!this.isShowPartyCheckClick) {
+            this.$emit('success')
+          }
         }
       })
     },
