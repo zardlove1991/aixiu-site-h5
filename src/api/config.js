@@ -7,7 +7,7 @@ export default {
   'submit': `${host}/result/`,
   'user': `${host}/memberhy/`,
   'exam': `${host}/examinationhy/`,
-  'vote': `${host}/voteapi/`,
+  'vote': `${host}/votinghy/`,
   'mlink': `${host}/m/`,
   'reserve': `${host}/reserve/`,
   'public': `${host}/publichy/`,
