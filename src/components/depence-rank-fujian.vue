@@ -81,8 +81,8 @@
             <template>
               <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
                 <div class="wd120 item-center">
-                  <span v-if="index > 2">{{index + 1}}</span>
-                  <span :class="['rank-icon', 'rank-' + index]" v-else></span>
+                  <span v-if="item.rank_id > 3">{{item.rank_id}}</span>
+                  <span :class="['rank-icon', 'rank-' + item.rank_id]" v-else></span>
                 </div>
                 <template v-if='selTab !== "person" && isFujianProject'>
                   <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
@@ -766,13 +766,13 @@ export default {
           background-repeat: no-repeat;
           background-position: left center;
           background-size: px2rem(42px) px2rem(50px);
-          &.rank-0 {
+          &.rank-1 {
             background-image: url('~@/assets/vote/commvote_rank_1.png');
           }
-          &.rank-1{
+          &.rank-2{
             background-image: url('~@/assets/vote/commvote_rank_2.png');
           }
-          &.rank-2{
+          &.rank-3{
             background-image: url('~@/assets/vote/commvote_rank_3.png');
           }
         }

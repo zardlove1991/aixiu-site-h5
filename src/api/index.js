@@ -1,5 +1,4 @@
 import axios from 'axios'
-import store from '@/store/index'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
@@ -121,6 +120,7 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return data.response || data.result || data
 }, (error) => {
+  console.error(error + '******************')
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
