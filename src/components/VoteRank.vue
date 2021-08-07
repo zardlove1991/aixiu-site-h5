@@ -33,8 +33,8 @@
         :auto-fill="false">
         <div v-for='(item, index) in voteList' :key='index' class='single-list-wrap'>
           <div class='single-list-1'>
-            <img v-if='index <= 2' :src="imgs['rank' + (index + 1)]" alt="" class='rank-img'>
-            <span v-if='index > 2'>{{index + 1}}</span>
+            <img v-if='item.rank_id <= 3' :src="imgs['rank' + item.rank_id]" alt="" class='rank-img'>
+            <span v-if='item.rank_id > 3'>{{item.rank_id}}</span>
           </div>
           <div class='single-list-2'>
             <div>{{item.party_name}}</div>

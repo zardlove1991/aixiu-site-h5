@@ -1,5 +1,4 @@
 import axios from 'axios'
-import store from '@/store/index'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
@@ -121,6 +120,7 @@ instance.interceptors.response.use((res, xhr) => {
   }
   return data.response || data.result || data
 }, (error) => {
+  console.error(error + '******************')
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
@@ -167,15 +167,15 @@ instance.interceptors.response.use((res, xhr) => {
   } else {
     const url = encodeURI(window.location.href)
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-      window.location.href = `/waitting.html?origin=${url}`
+      window.location.href = `/error.html?origin=${url}`
       console.log(url)
     } else {
-      store.dispatch('setDialogVisible', true)
+      // store.dispatch('setDialogVisible', true)
       return
     }
     rej = {
       error_code: 'AJAX_ERROR',
-      error_message: '活动太火爆了',
+      error_message: '请检查网络服务是否正常',
       status: 500
     }
   }
