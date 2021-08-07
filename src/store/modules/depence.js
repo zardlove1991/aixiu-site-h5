@@ -474,9 +474,15 @@ const actions = {
   GET_EXAM_DETAIL ({state, commit}, payload) {
     return new Promise((resolve, reject) => {
       let { id } = payload
+      let _requestObj = { query: { id } }
+      if (payload.isFirstType !== undefined && payload.isFirstType) {
+        _requestObj.params = { remark: 1 }
+      }
+
+      console.log('_requestObj', _requestObj, payload)
       // 开始请求数据
       Indicator.open({ spinnerType: 'fading-circle' })
-      API.getExamDetail({ query: { id } }).then(res => {
+      API.getExamDetail(_requestObj).then(res => {
         Indicator.close() // 结束
         let info = res
         if (info.hashid) {

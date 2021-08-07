@@ -106,7 +106,8 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else {
     // 测评
-    store.dispatch('depence/GET_EXAM_DETAIL', {id}).then(res => {
+    console.log('isFirst', isFirst)
+    store.dispatch('depence/GET_EXAM_DETAIL', {id, isFirstType: isFirst}).then(res => {
       let info = res
       if (info.limit && info.limit.color_scheme && info.limit.color_scheme.content) {
         let content = info.limit.color_scheme.content
