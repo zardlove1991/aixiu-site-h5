@@ -1,9 +1,11 @@
 <template>
-  <div class="page-dialog-wrap" v-if="show">
+  <div class="page-dialog-wrap" v-show="show">
     <div class="rule-dialog2">
       <div :class="['rule-dialog-main', themeColorName]">
         <div class="rule-header">活动介绍</div>
-        <div class="rule-content" ref="wrapper" v-html="introduce"></div>
+        <div ref="wrapper">
+          <div class="rule-content"  v-html="introduce"></div>
+        </div>
         <div class="close-btn" @click.stop="close()"></div>
       </div>
     </div>
@@ -37,6 +39,7 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
+      console.log('this.$refs.wrapper', this.$refs.wrapper)
       this.scroll = new BScroll(this.$refs.wrapper, {
         pullUpLoad: true,
         scrollbar: true,
