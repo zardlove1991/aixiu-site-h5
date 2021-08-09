@@ -107,7 +107,10 @@
         @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button> -->
         <button v-else
         class='btn-submit-box'
-        :class="[getRadius, examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn']"
+        :class="[getRadius,
+        examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? 'start-exambtn':'end-exambtn',
+        isBtnForbid ? 'btn-forbid' : ''
+        ]"
         @click.stop="examInfo.remain_counts !== 0 || examInfo.user_integral_counts ? isShowPassword() : ''">{{examInfo.limit.button || '开始答题'}}</button>
 
         <div class="integral-number" v-if="examInfo.all_credits >= 0 && examInfo.mark === 'examination@integral' && currentPlat !== 'wechat'">我的积分&nbsp;{{examInfo.all_credits || 0}}</div>
@@ -180,9 +183,11 @@
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
     <party-check-dialog
+      :isInitType='isInitType'
       :show="isShowPartyCheck"
       :isShowPartyCheckClick="isShowPartyCheckClick"
       :checkDraw="checkDraw"
+      @isBtnForbidFun='isBtnForbidFun'
       @success="goExamPage"
       @close="isShowPartyCheck = false, isShowPartyCheckClick = false">
     </party-check-dialog>
@@ -224,7 +229,6 @@
 </template>
 
 <script>
-import { Dialog } from 'vant'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
@@ -244,7 +248,6 @@ import PageRule from '@/components/depence/page-rule'
 import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
-import PartyNoAuth from '@/components/dialog/PartyNoAuth.vue'
 
 export default {
   mixins: [mixins],
@@ -302,7 +305,9 @@ export default {
       lotteryUrl: '',
       imgUrl: require('@/assets/vote/gift@3x.png'),
       isShowPartyCheck: false,
-      isShowPartyCheckClick: false
+      isShowPartyCheckClick: false,
+      isBtnForbid: false,
+      isInitType: false
     }
   },
   components: {
@@ -317,8 +322,7 @@ export default {
     PartyCheckDialog,
     ActiveStop,
     ActivePause,
-    ActiveStart,
-    PartyNoAuth
+    ActiveStart
   },
   computed: {
     getShowRule () {
@@ -397,53 +401,23 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    isBtnForbidFun (data) {
+      this.isBtnForbid = data
+    },
     isShowPartyAuth () {
-      // 判断党员信息
-      // Dialog.alert({
-      //   title: '提示',
-      //   message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑 定手机号后再参与活动'
-      // })
       if (this.isPartyFlage()) {
-        this.getPartyInfo()
+        if (this.currentPlat !== 'wechat') {
+          this.isInitType = true
+          this.isShowPartyCheck = true
+        }
       }
     },
     isPartyFlage () {
-      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
+      let { collection_status: collectionStatus } = this.examInfo
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1 && collectionStatus === 0) {
         return true
       }
       return false
-    },
-    async getPartyInfo () {
-      let userInfo = STORAGE.get('userinfo')
-      if (!userInfo) {
-        Toast('获取用户信息失败')
-        return
-      }
-      // 没有手机号 => 未绑定手机
-      if (userInfo.mobile === '') {
-        Dialog.alert({
-          title: '提示',
-          message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑定手机号后再参与活动'
-        })
-        return false
-      }
-
-      if (getPlat() !== 'wechat') {
-        await API.getPartyInfo({
-          query: {
-            id: this.examInfo.id
-          }
-        }).then(res => {
-          if (res && res.mobile) {
-            // 暂不处理
-          } else {
-            Dialog.alert({
-              title: '提示',
-              message: '您绑定的手机号暂无参赛资格，请前往App[个人中心]更换手机号，或可联系活动方更改党员信息'
-            })
-          }
-        })
-      }
     },
     showPartyDialog () {
       this.isShowPartyCheck = true
@@ -844,11 +818,11 @@ export default {
     },
     isShowPassword () {
       if (this.disabledStartExam) return
+      this.isInitType = false // 判断点击
       let limit = this.examInfo.limit.visit_password_limit
       if (limit) {
         this.visitPasswordLimit = true
       } else {
-        // check
         let examId = this.id
         API.checkPassword({query: { id: examId }}).then((res) => {
           if (res && (res.limit_source || res.app_download_link)) {
@@ -1118,6 +1092,14 @@ export default {
 .btn-submit-box {
   border-radius: px2rem(45px);
 }
+
+.btn-forbid{
+  color: #ffffff !important;
+  background: #cccccc !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
 .depence-start-wrap{
   align-items: center;
   position:relative;

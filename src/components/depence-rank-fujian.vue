@@ -79,7 +79,7 @@
               </template>
             </div>
             <template>
-              <div class="body rank-flex" v-for="(item, index) in rankList" :key="index">
+              <div v-for="(item, index) in rankList" :key="index" class="body rank-flex single-rank-wrap">
                 <div class="wd120 item-center">
                   <span v-if="item.rank_id > 3">{{item.rank_id}}</span>
                   <span :class="['rank-icon', 'rank-' + item.rank_id]" v-else></span>
@@ -407,7 +407,6 @@ export default {
     },
     changeTab (item) {
       if (this.loading) return
-
       console.log('item', item)
       if (item.rank_id === 'tv') {
         this.areaRequestObj.type = 'tv'
@@ -515,6 +514,10 @@ export default {
 
 .el-select .el-input.is-focus .el-input__inner {
   border-color: #be0000;
+}
+
+.single-rank-wrap + .single-rank-wrap{
+  margin-top: px2rem(20px);
 }
 
 .search-group-wrap{

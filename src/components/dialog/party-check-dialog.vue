@@ -1,7 +1,13 @@
 <template>
 <div>
-  <div :class="['check-dialog-wrap', isScroll]" v-if="show">
-    <div class="check-dialog-content party-dialog-content" :class="isShowParty ? 'show' : ''">
+  <div v-if="show"
+    :class="[
+      'check-dialog-wrap',
+      isScroll,
+      isBtnForbid ? 'forbid-btn-wrap' : '']"
+      :style="{height : !isShowParty ? '0px' : '100vh'}">
+    <div class="check-dialog-content party-dialog-content"
+      :class="isShowParty ? 'show' : ''">
       <div class="check-dialog-main">
         <div class="check-header">党员信息验证</div>
         <div class="check-item">
@@ -75,6 +81,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    isInitType: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -98,7 +108,8 @@ export default {
       noAuthType: false,
       isShowParty: false,
       isShowpartyConfirm: false,
-      partyAddressList: []
+      partyAddressList: [],
+      isBtnForbid: false
     }
   },
   methods: {
@@ -119,6 +130,7 @@ export default {
     },
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
+      // userInfo.mobile = '13701583498'
       if (!userInfo) {
         Toast('获取用户信息失败')
         return
@@ -126,6 +138,8 @@ export default {
       // 没有手机号 => 未绑定手机
       if (userInfo.mobile === '') {
         this.noPhoneType = true
+        this.$emit('isBtnForbidFun', true)
+        this.isBtnForbid = true
         return false
       }
 
@@ -137,9 +151,15 @@ export default {
           }
         }).then(res => {
           if (res && res.mobile) {
-            this.isShowParty = true
+            // console.log('isInitType', this.isInitType)
+            if (!this.isInitType) {
+              // 初始进入 不需要党员弹窗
+              this.isShowParty = true
+            }
             this.party = {...res}
           } else {
+            this.$emit('isBtnForbidFun', true)
+            this.isBtnForbid = true
             this.noAuthType = true
           }
         })
@@ -210,6 +230,14 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .forbid-btn-wrap{
+    height: px2rem(112px) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .disabled-dialog-wrap {
+    height: 0
+  }
   .party-member-dialog{
     position: fixed;
     top: 0;
