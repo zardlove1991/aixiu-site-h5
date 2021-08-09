@@ -399,16 +399,16 @@ export default {
   methods: {
     isShowPartyAuth () {
       // 判断党员信息
-      Dialog.alert({
-        title: '提示',
-        message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑 定手机号后再参与活动'
-      })
+      // Dialog.alert({
+      //   title: '提示',
+      //   message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑 定手机号后再参与活动'
+      // })
       if (this.isPartyFlage()) {
         this.getPartyInfo()
       }
     },
     isPartyFlage () {
-      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1 && this.examInfo.limit.assign_people_edit_limit === 0) {
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1) {
         return true
       }
       return false
