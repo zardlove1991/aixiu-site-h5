@@ -64,7 +64,7 @@
         </div>
       </div>
       <div class="form-item">
-        <div class="form-title">{{ZCIdType ? '作品名称及朗诵人' : '名称'}}</div>
+        <div class="form-title">{{nameStr}}</div>
         <div class="form-content">
           <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
         </div>
@@ -90,7 +90,7 @@
         </div>
       </div>
       <div class="form-item" v-if="showModel !== 'text'">
-        <div class="form-title">{{ZCIdType ? '作品描述' : '描述'}}<span class="form-tips">{{ZCIdType ? '(必填)' : '(选填)'}}</span></div>
+        <div class="form-title">{{describeStr}}<span class="form-tips">{{describeSuffix}}</span></div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
@@ -144,6 +144,7 @@ export default {
   data () {
     return {
       ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
+      ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -176,7 +177,10 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap
+      fullSceneMap,
+      nameStr: '名称',
+      describeStr: '描述',
+      describeSuffix: '(选填)'
     }
   },
   mounted () {
@@ -184,6 +188,16 @@ export default {
       this.ZCIdType = true
     } else {
       this.ZCIdType = false
+    }
+
+    if (this.id === this.ZCId) {
+      this.nameStr = '作品名称及朗诵人'
+      this.describeStr = '作品描述'
+      this.describeSuffix = '(必填)'
+    } else if (this.id === this.ZCIdIndex1) {
+      this.nameStr = '照片主题'
+      this.describeStr = '照片描述'
+      this.describeSuffix = ''
     }
   },
   methods: {
@@ -341,8 +355,10 @@ export default {
       }
       if (!examineData.name || !examineData.name.trim()) {
         let _name = '请输入名称'
-        if (this.ZCIdType) {
+        if (this.id === this.ZCId) {
           _name = '请输入作品名称及朗诵人'
+        } else {
+          _name = '请输入照片主题'
         }
         Toast(_name)
         return
