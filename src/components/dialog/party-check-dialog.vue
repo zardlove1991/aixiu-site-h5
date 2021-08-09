@@ -114,13 +114,11 @@ export default {
       }).then(res => {
         if (res) {
           this.partyAddressList = res
-          console.log(res, '********9999999')
         }
       })
     },
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
-      console.log(getPlat(), '****', userInfo)
       if (!userInfo) {
         Toast('获取用户信息失败')
         return
@@ -130,7 +128,7 @@ export default {
         this.noPhoneType = true
         return false
       }
-      console.log(getPlat(), '****')
+
       if (getPlat() !== 'wechat') {
         this.getPartyAddress()
         await API.getPartyInfo({

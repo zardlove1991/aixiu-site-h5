@@ -224,6 +224,7 @@
 </template>
 
 <script>
+import { Dialog } from 'vant'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters } from 'vuex'
 import { Toast, Indicator } from 'mint-ui'
@@ -243,6 +244,7 @@ import PageRule from '@/components/depence/page-rule'
 import ActiveStop from '@/components/enroll/global/active-stop'
 import ActivePause from '@/components/enroll/global/active-pause'
 import ActiveStart from '@/components/vote/global/active-start'
+import PartyNoAuth from '@/components/dialog/PartyNoAuth.vue'
 
 export default {
   mixins: [mixins],
@@ -251,6 +253,7 @@ export default {
   },
   data () {
     return {
+      partyNoAuthShow: true,
       isShowEnd: false,
       isShowPause: false,
       isShowStart: false,
@@ -314,7 +317,9 @@ export default {
     PartyCheckDialog,
     ActiveStop,
     ActivePause,
-    ActiveStart },
+    ActiveStart,
+    PartyNoAuth
+  },
   computed: {
     getShowRule () {
       let mark = this.examInfo.mark
@@ -374,6 +379,7 @@ export default {
         if (v) {
           this.initStartInfo()
           this.activeStatus(v)
+          this.isShowPartyAuth()
         }
       },
       deep: true,
@@ -391,6 +397,54 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    isShowPartyAuth () {
+      // 判断党员信息
+      Dialog.alert({
+        title: '提示',
+        message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑 定手机号后再参与活动'
+      })
+      if (this.isPartyFlage()) {
+        this.getPartyInfo()
+      }
+    },
+    isPartyFlage () {
+      if (this.examInfo.mark === 'examination@exercise' && this.examInfo.limit.assign_people_limit === 1 && this.examInfo.limit.assign_people_edit_limit === 0) {
+        return true
+      }
+      return false
+    },
+    async getPartyInfo () {
+      let userInfo = STORAGE.get('userinfo')
+      if (!userInfo) {
+        Toast('获取用户信息失败')
+        return
+      }
+      // 没有手机号 => 未绑定手机
+      if (userInfo.mobile === '') {
+        Dialog.alert({
+          title: '提示',
+          message: '您的账号暂未绑定手机号，请前往App [个人中心] 先绑定手机号后再参与活动'
+        })
+        return false
+      }
+
+      if (getPlat() !== 'wechat') {
+        await API.getPartyInfo({
+          query: {
+            id: this.examInfo.id
+          }
+        }).then(res => {
+          if (res && res.mobile) {
+            // 暂不处理
+          } else {
+            Dialog.alert({
+              title: '提示',
+              message: '您绑定的手机号暂无参赛资格，请前往App[个人中心]更换手机号，或可联系活动方更改党员信息'
+            })
+          }
+        })
+      }
+    },
     showPartyDialog () {
       this.isShowPartyCheck = true
       this.isShowPartyCheckClick = true
