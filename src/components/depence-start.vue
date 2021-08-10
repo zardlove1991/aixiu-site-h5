@@ -404,6 +404,7 @@ export default {
     closePartyFun () {
       this.isShowPartyCheck = false
       this.isShowPartyCheckClick = false
+      this.isBtnForbid = false
     },
     isBtnForbidFun (data) {
       this.isBtnForbid = data
