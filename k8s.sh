@@ -14,3 +14,28 @@ function fileReplaceConf(){
   done
 }
 fileReplaceConf /m2odata/www/setting.js
+
+echo '{
+         listen       80;
+         index index.html index.htm;
+         root  /m2odata/www/;
+         charset utf-8;
+         server_tokens off;
+         location /
+         {
+            try_files $uri $uri/ /index.html =404;
+            add_header Cache-Control "private, no-store, no-cache, must-revalidate, proxy-revalidate";
+         }
+         location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+         {
+            expires      1d;
+         }
+         location ~ .*\.(js|css)?$
+         {
+            expires      1d;
+         }
+
+         location ~ /\. {
+            deny  all;
+         }
+}' > /etc/nginx/conf.d/default.conf
