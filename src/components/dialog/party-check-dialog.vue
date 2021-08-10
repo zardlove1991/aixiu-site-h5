@@ -1,10 +1,10 @@
 <template>
 <div>
+  <!-- isBtnForbid ? 'forbid-btn-wrap' : '' -->
   <div v-if="show"
     :class="[
       'check-dialog-wrap',
-      isScroll,
-      isBtnForbid ? 'forbid-btn-wrap' : '']">
+      isScroll]">
     <div class="check-dialog-content party-dialog-content"
       :class="isShowParty ? 'show' : ''">
       <div class="check-dialog-main">
