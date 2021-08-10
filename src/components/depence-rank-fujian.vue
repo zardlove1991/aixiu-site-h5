@@ -502,8 +502,8 @@ export default {
 @import "@/styles/index.scss";
 
 .line-box-wrap{
-  display: inline-block;
-  vertical-align: top;
+  // display: inline-block;
+  // vertical-align: top;
 }
 
 .el-scrollbar {
