@@ -719,8 +719,9 @@ export default {
       .rank-flex {
         display: flex;
         flex-wrap: nowrap;
-        align-items: flex-start !important;
-        justify-content: center;
+       // align-items: flex-start !important;
+        //justify-content: flex-start;
+        // color: red;
       }
       .item-center {
         text-align: center;
