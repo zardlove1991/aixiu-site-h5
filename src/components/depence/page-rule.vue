@@ -3,9 +3,7 @@
     <div class="rule-dialog2">
       <div :class="['rule-dialog-main', themeColorName]">
         <div class="rule-header">活动介绍</div>
-        <div ref="wrapper">
-          <div class="rule-content"  v-html="introduce"></div>
-        </div>
+        <div class="rule-content" ref="wrapper" v-html="introduce"></div>
         <div class="close-btn" @click.stop="close()"></div>
       </div>
     </div>
