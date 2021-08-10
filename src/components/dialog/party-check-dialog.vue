@@ -1,5 +1,6 @@
 <template>
 <div>
+  {{curIndex}}
   <div v-if="show"
     :class="[
       'check-dialog-wrap',
@@ -102,6 +103,7 @@ export default {
   },
   data () {
     return {
+      curIndex: '---',
       party: {},
       canClick: false,
       noPhoneType: false,
@@ -131,11 +133,14 @@ export default {
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
       if (!userInfo) {
+        this.curIndex = '1-1'
         Toast('获取用户信息失败')
         return
       }
+      // this.curMobile = userInfo.mobile
       // 没有手机号 => 未绑定手机
       if (userInfo.mobile === '') {
+        this.curIndex = '1-2'
         this.noPhoneType = true
         this.$emit('isBtnForbidFun', true)
         this.isBtnForbid = true
@@ -143,6 +148,7 @@ export default {
       }
 
       if (getPlat() !== 'wechat') {
+        this.curIndex = '1-3'
         this.getPartyAddress()
         await API.getPartyInfo({
           query: {
@@ -151,11 +157,14 @@ export default {
         }).then(res => {
           if (res && res.mobile) {
             if (!this.isInitType) {
+              this.curIndex = 1
               // 初始进入 不需要党员弹窗
               this.isShowParty = true
             }
+            this.curIndex = '1-5'
             this.party = {...res}
           } else {
+            this.curIndex = '1-4'
             this.$emit('isBtnForbidFun', true)
             this.isBtnForbid = true
             this.noAuthType = true

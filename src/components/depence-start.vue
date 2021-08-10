@@ -405,7 +405,10 @@ export default {
       this.isBtnForbid = data
     },
     isShowPartyAuth () {
+      console.log('this.isPartyFlage()', this.isPartyFlage())
       if (this.isPartyFlage()) {
+        // this.isInitType = true
+        // this.isShowPartyCheck = true
         if (this.currentPlat !== 'wechat') {
           this.isInitType = true
           this.isShowPartyCheck = true
