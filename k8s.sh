@@ -15,7 +15,8 @@ function fileReplaceConf(){
 }
 fileReplaceConf /m2odata/www/setting.js
 
-echo '{
+echo 'server
+{
          listen       80;
          index index.html index.htm;
          root  /m2odata/www/;
