@@ -143,6 +143,7 @@ export default {
     isInitType: {
       handler: function (data) {
         this.curdata = data
+        this.getPartyInfo()
         console.log('888', data)
       },
       deep: true,
