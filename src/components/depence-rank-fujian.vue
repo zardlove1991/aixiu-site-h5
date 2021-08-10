@@ -330,11 +330,14 @@ export default {
         party_address: this.partyName
       }
       // 先临时处理
-      if (voteId !== 'b6de24ff7c8a4024a50ae8a6ff7ae634' && voteId !== '4e9840ada0ed433694218f6cbc5b0572') {
+      try {
         this.$nextTick(() => {
           this.$refs['depence-rank-loadmore'].onBottomLoaded()
         })
+      } catch (e) {
+        console.log('e', e)
       }
+
       let res = ''
       res = await API.getExerciseRankList({
         query: { id: voteId },
@@ -407,7 +410,6 @@ export default {
     },
     changeTab (item) {
       if (this.loading) return
-      console.log('item', item)
       if (item.rank_id === 'tv') {
         this.areaRequestObj.type = 'tv'
       } else if (item.rank_id === 'voting') {
@@ -499,8 +501,9 @@ export default {
 <style lang="scss">
 @import "@/styles/index.scss";
 .line-box-wrap{
-  // border: 1px solid red;
-  // text-align: left;
+  // border: 1px solid green;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .el-scrollbar {
@@ -721,13 +724,13 @@ export default {
     .rank-flex {
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
       align-items: flex-start;
       -webkit-align-items:flex-start;
       box-align:flex-start;
       -moz-box-align:flex-start;
       -webkit-box-align:flex-start;
       justify-content: center;
+      flex-wrap: nowrap;
     }
     .rank-table-wrap {
       padding: 0 px2rem(20px) px2rem(25px);
