@@ -923,6 +923,7 @@ export default {
         }
       } else if (limit.assign_people_limit && status === 0) {
         if (this.currentPlat !== 'wechat') {
+          this.isInitType = false
           this.isShowPartyCheck = true
         } else {
           // 打开下载App的弹窗

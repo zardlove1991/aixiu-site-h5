@@ -161,7 +161,7 @@ export default {
               // 初始进入 不需要党员弹窗
               this.isShowParty = true
             }
-            this.curIndex = '1-5'
+            this.curIndex = '1-5' + this.isInitType
             this.party = {...res}
           } else {
             this.curIndex = '1-4'
