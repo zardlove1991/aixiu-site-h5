@@ -62,14 +62,14 @@
             <div class="header rank-flex">
               <div class="wd120 item-center">排名</div>
               <template v-if='selTab !== "person" && isFujianProject'>
-                <div class="flex1 item-header-name wd250">党支部</div>
+                <div class="flex1 item-header-name wd300">党支部</div>
                 <div class="wd200">赛区</div>
-                <div class="wd150">总积分</div>
+                <div class="wd100">总积分</div>
               </template>
               <template v-if='selTab === "person" && isFujianProject'>
                 <div class="flex1 item-header-name wd200">姓名</div>
-                <div class="wd250">党支部</div>
-                <div class="wd150">总积分</div>
+                <div class="wd300">党支部</div>
+                <div class="wd100">总积分</div>
               </template>
               <!-- 非福建答题项目 -->
               <template v-if='!isFujianProject'>
@@ -85,14 +85,14 @@
                   <span :class="['rank-icon', 'rank-' + item.rank_id]" v-else></span>
                 </div>
                 <template v-if='selTab !== "person" && isFujianProject'>
-                  <div class="flex1 rank-name wd250" v-html='item.party_name_red'></div>
+                  <div class="flex1 rank-name wd300" v-html='item.party_name_red'></div>
                   <div class="wd200">{{item.party_address}}</div>
-                  <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                  <div class="wd100">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
                 <template v-if='selTab === "person" && isFujianProject'>
                   <div class="flex1 rank-name wd200">{{item.member_name}}</div>
-                  <div class="wd250">{{item.party_name}}</div>
-                  <div class="wd150">{{item.score != undefined ? item.score : item.avage }}</div>
+                  <div class="wd300">{{item.party_name}}</div>
+                  <div class="wd100">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
                 <!-- 非福建答题项目 -->
                 <template v-if='!isFujianProject'>
@@ -719,11 +719,15 @@ export default {
       .rank-flex {
         display: flex;
         flex-wrap: nowrap;
-        align-items: flex-start;
-        justify-content: center;
+       // align-items: flex-start !important;
+        //justify-content: flex-start;
+        // color: red;
       }
       .item-center {
         text-align: center;
+      }
+      .wd100 {
+        width: px2rem(100px);
       }
       .wd120 {
         width: px2rem(120px);
@@ -737,6 +741,9 @@ export default {
 
       .wd250 {
         width: px2rem(250px);
+      }
+      .wd300 {
+        width: px2rem(300px);
       }
       .flex1 {
         padding-left: px2rem(20px);
