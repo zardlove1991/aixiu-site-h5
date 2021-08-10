@@ -130,25 +130,20 @@ export default {
     show: {
       handler: function (v) {
         if (v) {
-          console.log('8989')
           this.getPartyInfo()
         }
       },
       deep: true,
       immediate: true
-    },
-    isInitType: {
-      handler: function (data) {
-        // this.curdata = data
-        this.getPartyInfo()
-        console.log('888', data)
-      },
-      deep: true,
-      immediate: true
     }
-  },
-  mounted () {
-    console.log('isInitType', this.isInitType)
+    // isInitType: {
+    //   handler: function (data) {
+    //     // this.curdata = data
+    //     this.getPartyInfo()
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
   },
   methods: {
     closeCheckDraw () {
@@ -189,11 +184,12 @@ export default {
           }
         }).then(res => {
           if (res && res.mobile) {
+            this.party = {...res}
             if (!this.isInitType) {
               // 初始进入 不需要党员弹窗
               this.isShowParty = true
+              this.closeCheckDraw()
             }
-            this.party = {...res}
           } else {
             this.$emit('isBtnForbidFun', true)
             this.isBtnForbid = true
