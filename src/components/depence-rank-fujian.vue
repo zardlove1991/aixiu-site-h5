@@ -80,25 +80,25 @@
             </div>
             <template>
               <div v-for="(item, index) in rankList" :key="index" class="body rank-flex single-rank-wrap">
-                <div class="wd120 item-center line-box-wrap">
+                <div class="wd120 item-center">
                   <span v-if="item.rank_id > 3">{{item.rank_id}}</span>
                   <span :class="['rank-icon', 'rank-' + item.rank_id]" v-else></span>
                 </div>
                 <template v-if='selTab !== "person" && isFujianProject'>
-                  <div class="flex1 rank-name wd300 line-box-wrap" v-html='item.party_name_red'></div>
-                  <div class="wd200 line-box-wrap">{{item.party_address}}</div>
-                  <div class="wd100 line-box-wrap">{{item.score != undefined ? item.score : item.avage }}</div>
+                  <div class="flex1 rank-name wd300" v-html='item.party_name_red'></div>
+                  <div class="wd200">{{item.party_address}}</div>
+                  <div class="wd100">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
                 <template v-if='selTab === "person" && isFujianProject'>
-                  <div class="flex1 rank-name wd200 line-box-wrap">{{item.member_name}}</div>
-                  <div class="wd300 line-box-wrap">{{item.party_name}}</div>
-                  <div class="wd100 line-box-wrap">{{item.score != undefined ? item.score : item.avage }}</div>
+                  <div class="flex1 rank-name wd200">{{item.member_name}}</div>
+                  <div class="wd300">{{item.party_name}}</div>
+                  <div class="wd100">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
                 <!-- 非福建答题项目 -->
                 <template v-if='!isFujianProject'>
-                  <div class="flex1 rank-name wd250 line-box-wrap">{{item.member_name}}</div>
-                  <div class="wd150 line-box-wrap">{{item.score}}</div>
-                  <div class="wd200 line-box-wrap">{{formatTime(item.use_time)}}</div>
+                  <div class="flex1 rank-name wd250">{{item.member_name}}</div>
+                  <div class="wd150">{{item.score}}</div>
+                  <div class="wd200">{{formatTime(item.use_time)}}</div>
                 </template>
               </div>
             </template>
@@ -500,12 +500,6 @@ export default {
 
 <style lang="scss">
 @import "@/styles/index.scss";
-
-.line-box-wrap{
-  // display: inline-block;
-  // vertical-align: top;
-}
-
 .el-scrollbar {
     > .el-scrollbar__bar {
         opacity: 1 !important;
