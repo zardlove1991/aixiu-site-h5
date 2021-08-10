@@ -719,7 +719,7 @@ export default {
       .rank-flex {
         display: flex;
         flex-wrap: nowrap;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
       }
       .item-center {

@@ -130,7 +130,7 @@ export default {
     },
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
-      // userInfo.mobile = '13701583498'
+      userInfo.mobile = '13701583498'
       if (!userInfo) {
         Toast('获取用户信息失败')
         return

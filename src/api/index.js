@@ -52,7 +52,7 @@ instance.interceptors.request.use((config) => {
   let userInfo = STORAGE.get('userinfo')
   let userStr = ''
   if (userInfo) {
-    // userInfo.mobile = '13701583498'
+    userInfo.mobile = '13701583498'
     let {id, expire, token, source, mobile, nick_name: nickName} = userInfo
     userStr = JSON.stringify({id, expire, token, source, mobile, nick_name: encodeURIComponent(nickName)})
   }
