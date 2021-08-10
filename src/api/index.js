@@ -90,6 +90,8 @@ function dealError ({code, msg}) {
   } else if (code === 'EXPIRE_SIGNATURE' || code === 'NO_LOGIN') {
     // 签名过期 直接去中转页面
     wechat.goRedirect()
+  } else if (code === 'collect_member_fail') {
+    Message.error(msg)
   } else if (code === 422) {
     Message.error(msg)
   }
