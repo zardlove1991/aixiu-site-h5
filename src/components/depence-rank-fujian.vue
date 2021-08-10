@@ -517,7 +517,7 @@ export default {
 }
 
 .single-rank-wrap + .single-rank-wrap{
-  margin-top: px2rem(20px);
+  margin-top: px2rem(30px);
 }
 
 .search-group-wrap{
