@@ -216,6 +216,10 @@ export default {
             this.$emit('success')
           }
         }
+      }).catch(err => {
+        if (err.error_code === 'collect_member_fail') {
+          Toast('手机号验证失败,请联系管理员!')
+        }
       })
     },
     initStatus () {
