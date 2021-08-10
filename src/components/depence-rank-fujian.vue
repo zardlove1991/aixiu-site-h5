@@ -713,16 +713,16 @@ export default {
         }
       }
     }
+    .rank-flex {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      min-height: 1px;
+      justify-content: center;
+    }
     .rank-table-wrap {
       padding: 0 px2rem(20px) px2rem(25px);
       width: 100%;
-      .rank-flex {
-        display: flex;
-        flex-wrap: nowrap;
-       // align-items: flex-start !important;
-        //justify-content: flex-start;
-        // color: red;
-      }
       .item-center {
         text-align: center;
       }
