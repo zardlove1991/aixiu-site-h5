@@ -715,6 +715,7 @@ export default {
     }
     .rank-flex {
       display: flex;
+      flex-direction: row;
       flex-wrap: nowrap;
       align-items: flex-start;
       min-height: 1px;
