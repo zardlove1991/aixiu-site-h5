@@ -1,6 +1,8 @@
 <template>
 <div>
   {{curIndex}}
+  {{curdata}}
+  ---{{isInitType}}---
   <div v-if="show"
     :class="[
       'check-dialog-wrap',
@@ -104,6 +106,7 @@ export default {
   data () {
     return {
       curIndex: '---',
+      curdata: '000',
       party: {},
       canClick: false,
       noPhoneType: false,
@@ -113,6 +116,41 @@ export default {
       partyAddressList: [],
       isBtnForbid: false
     }
+  },
+  watch: {
+    party: {
+      handler: function (v) {
+        console.log(v, 'party-handler')
+        if (v.party_name && v.name && v.party_address) {
+          this.canClick = true
+        } else {
+          this.canClick = false
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    show: {
+      handler: function (v) {
+        if (v) {
+          console.log('8989')
+          this.getPartyInfo()
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    isInitType: {
+      handler: function (data) {
+        this.curdata = data
+        console.log('888', data)
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  mounted () {
+    console.log('isInitType', this.isInitType)
   },
   methods: {
     closeCheckDraw () {
@@ -206,30 +244,6 @@ export default {
     },
     sureConfirm () {
       this.savePartyInfo()
-    }
-  },
-  watch: {
-    party: {
-      handler: function (v) {
-        console.log(v, 'party-handler')
-        if (v.party_name && v.name && v.party_address) {
-          this.canClick = true
-        } else {
-          this.canClick = false
-        }
-      },
-      deep: true,
-      immediate: true
-    },
-    show: {
-      handler: function (v) {
-        if (v) {
-          console.log('8989')
-          this.getPartyInfo()
-        }
-      },
-      deep: true,
-      immediate: true
     }
   }
 }
