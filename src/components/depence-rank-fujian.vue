@@ -63,11 +63,11 @@
               <div class="wd120 item-center">排名</div>
               <template v-if='selTab !== "person" && isFujianProject'>
                 <div class="flex1 item-header-name wd300">党支部</div>
-                <div class="wd180">赛区</div>
+                <div class="wd200">赛区</div>
                 <div class="wd100">总积分</div>
               </template>
               <template v-if='selTab === "person" && isFujianProject'>
-                <div class="flex1 item-header-name wd180">姓名</div>
+                <div class="flex1 item-header-name wd200">姓名</div>
                 <div class="wd300">党支部</div>
                 <div class="wd100">总积分</div>
               </template>
@@ -75,23 +75,22 @@
               <template v-if='!isFujianProject'>
                 <div class="flex1 item-header-name wd250">{{columnName}}</div>
                 <div class="wd150">总分</div>
-                <div class="wd180">用时</div>
+                <div class="wd200">用时</div>
               </template>
             </div>
             <template>
-              <!-- rank-flex -->
-              <div v-for="(item, index) in rankList" :key="index" class="body single-rank-wrap">
+              <div v-for="(item, index) in rankList" :key="index" class="body rank-flex single-rank-wrap">
                 <div class="wd120 item-center line-box-wrap">
                   <span v-if="item.rank_id > 3">{{item.rank_id}}</span>
                   <span :class="['rank-icon', 'rank-' + item.rank_id]" v-else></span>
                 </div>
                 <template v-if='selTab !== "person" && isFujianProject'>
                   <div class="flex1 rank-name wd300 line-box-wrap" v-html='item.party_name_red'></div>
-                  <div class="wd180 line-box-wrap" style='padding-left: 3px;'>{{item.party_address}}</div>
+                  <div class="wd200 line-box-wrap">{{item.party_address}}</div>
                   <div class="wd100 line-box-wrap">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
                 <template v-if='selTab === "person" && isFujianProject'>
-                  <div class="flex1 rank-name wd180 line-box-wrap">{{item.member_name}}</div>
+                  <div class="flex1 rank-name wd200 line-box-wrap">{{item.member_name}}</div>
                   <div class="wd300 line-box-wrap">{{item.party_name}}</div>
                   <div class="wd100 line-box-wrap">{{item.score != undefined ? item.score : item.avage }}</div>
                 </template>
@@ -99,7 +98,7 @@
                 <template v-if='!isFujianProject'>
                   <div class="flex1 rank-name wd250 line-box-wrap">{{item.member_name}}</div>
                   <div class="wd150 line-box-wrap">{{item.score}}</div>
-                  <div class="wd180 line-box-wrap">{{formatTime(item.use_time)}}</div>
+                  <div class="wd200 line-box-wrap">{{formatTime(item.use_time)}}</div>
                 </template>
               </div>
             </template>
@@ -505,11 +504,6 @@ export default {
 .line-box-wrap{
   display: inline-block;
   vertical-align: top;
-  // border: 1px solid red;
-}
-
-.line-box-wrap + .line-box-wrap{
-  margin-left: -5px;
 }
 
 .el-scrollbar {
@@ -752,9 +746,6 @@ export default {
       }
       .wd150 {
         width: px2rem(150px);
-      }
-      .wd180 {
-        width: px2rem(180px);
       }
       .wd200 {
         width: px2rem(200px);
