@@ -719,6 +719,7 @@ export default {
       align-items: flex-start;
       min-height: 1px;
       justify-content: center;
+      vertical-align: top;
     }
     .rank-table-wrap {
       padding: 0 px2rem(20px) px2rem(25px);
