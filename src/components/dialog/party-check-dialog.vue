@@ -130,7 +130,6 @@ export default {
     },
     async getPartyInfo () {
       let userInfo = STORAGE.get('userinfo')
-      userInfo.mobile = '13701583498'
       if (!userInfo) {
         Toast('获取用户信息失败')
         return
@@ -151,7 +150,6 @@ export default {
           }
         }).then(res => {
           if (res && res.mobile) {
-            // console.log('isInitType', this.isInitType)
             if (!this.isInitType) {
               // 初始进入 不需要党员弹窗
               this.isShowParty = true
