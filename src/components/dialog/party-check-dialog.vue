@@ -187,6 +187,8 @@ export default {
             if (!this.isInitType) {
               // 初始进入 不需要党员弹窗
               this.isShowParty = true
+            } else {
+              // 初次 关闭弹窗
               this.closeCheckDraw()
             }
           } else {

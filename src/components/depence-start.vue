@@ -189,7 +189,7 @@
       :checkDraw="checkDraw"
       @isBtnForbidFun='isBtnForbidFun'
       @success="goExamPage"
-      @close="isShowPartyCheck = false, isShowPartyCheckClick = false">
+      @close="closePartyFun">
     </party-check-dialog>
     <OperateDialog
       :visible.sync="showOperateDialog"
@@ -401,6 +401,10 @@ export default {
     this.isShowSuspendModels = false
   },
   methods: {
+    closePartyFun () {
+      this.isShowPartyCheck = false
+      this.isShowPartyCheckClick = false
+    },
     isBtnForbidFun (data) {
       this.isBtnForbid = data
     },
