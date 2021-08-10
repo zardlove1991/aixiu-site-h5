@@ -4,8 +4,7 @@
     :class="[
       'check-dialog-wrap',
       isScroll,
-      isBtnForbid ? 'forbid-btn-wrap' : '']"
-      :style="{height : !isShowParty ? '0px' : '100vh'}">
+      isBtnForbid ? 'forbid-btn-wrap' : '']">
     <div class="check-dialog-content party-dialog-content"
       :class="isShowParty ? 'show' : ''">
       <div class="check-dialog-main">
@@ -221,6 +220,10 @@ export default {
       this.noPhoneType = false
       this.noAuthType = false
       this.isShowpartyConfirm = false
+
+      this.isBtnForbid = false
+      this.isInitType = false
+      this.isShowParty = false
     },
     sureCheckDraw () {
       if (this.canClick) {
