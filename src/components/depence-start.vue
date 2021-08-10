@@ -430,6 +430,8 @@ export default {
     showPartyDialog () {
       this.isShowPartyCheck = true
       this.isShowPartyCheckClick = true
+
+      this.isInitType = false // 判断点击
     },
     openActIntroduce () {
       this.isShowRuleDialog = true
