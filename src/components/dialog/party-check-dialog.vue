@@ -16,7 +16,7 @@
           <el-input readonly v-model="party.mobile" placeholder="手机号"></el-input>
         </div>
         <div class="check-item">
-          <el-input v-model="party.party_name" placeholder="党支部"></el-input>
+          <el-input v-model.trim="party.party_name" placeholder="党支部"></el-input>
         </div>
         <div class="check-item">
           <el-select v-model="party.party_address" placeholder="赛区">
@@ -229,7 +229,36 @@ export default {
     },
     sureCheckDraw () {
       if (this.canClick) {
+        if (this.checkPartInputModel()) return false
         this.isShowpartyConfirm = true
+      }
+    },
+    checkPartInputModel () {
+      // 校验党支部（）是否使用中文键盘输入
+      let _bracketsBefore = '（'
+      let _bracketsAfter = '）'
+      let _bracketsBeforeEnglish = '('
+      let _bracketsAfterEnglish = ')'
+
+      let _partyName = this.party.party_name
+      let _bracketsList = ['（', '）', '(', ')']
+      let isExist = false
+      isExist = _bracketsList.some(item => _partyName.indexOf(item) !== -1)
+      if (isExist) {
+        // 存在括弧
+        if (_partyName.indexOf(_bracketsBeforeEnglish) !== -1 || _partyName.indexOf(_bracketsAfterEnglish)) {
+        // 包含英文输入大括号
+          Toast('请使用中文键盘输入大括弧（）')
+          return true
+        } else if (!(_partyName.indexOf(_bracketsBefore) !== -1 && _partyName.indexOf(_bracketsAfter) !== -1)) {
+          // 保证中文键盘输入大括号的完整
+          Toast('请使用中文键盘输入完整的大括弧（）')
+          return true
+        }
+        return false
+      } else {
+        // 普通的党支部不包含（）
+        return false
       }
     },
     calcelConfirm () {
