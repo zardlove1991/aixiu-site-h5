@@ -101,8 +101,6 @@ export default {
   },
   data () {
     return {
-      curIndex: '---',
-      curdata: '000',
       party: {},
       canClick: false,
       noPhoneType: false,
@@ -135,14 +133,6 @@ export default {
       deep: true,
       immediate: true
     }
-    // isInitType: {
-    //   handler: function (data) {
-    //     // this.curdata = data
-    //     this.getPartyInfo()
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // }
   },
   methods: {
     closeCheckDraw () {
@@ -237,6 +227,8 @@ export default {
       // 校验党支部（）是否使用中文键盘输入
       let _bracketsBefore = '（'
       let _bracketsAfter = '）'
+      let _bracketsBeforeEnglish = '('
+      let _bracketsAfterEnglish = ')'
 
       let _partyName = this.party.party_name
       let _bracketsList = ['（', '）', '(', ')']
@@ -245,11 +237,22 @@ export default {
 
       let isBracketsType = _partyName.indexOf(_bracketsBefore) !== -1 && _partyName.indexOf(_bracketsAfter) !== -1
       if (isBracketsType) {
-        // 包含大括号且正确
+        // 包含括号且正确
         return false
       } else if (isExist) {
-        Toast('请使用中文键盘输入完整的大括弧（）')
-        return true
+        if (_partyName.indexOf(_bracketsBeforeEnglish) !== -1 && _partyName.indexOf(_bracketsAfterEnglish) !== -1) {
+          // 英文状态括弧两边都存在 => 自动替换
+          this.party.party_name = _partyName.replace(/\(/, '（').replace(/\)/, '）')
+        } else if (_partyName.indexOf(_bracketsBeforeEnglish) !== -1 || _partyName.indexOf(_bracketsAfterEnglish) !== -1) {
+          // 存在一个英文括号
+          Toast('请将党支部名称内的括号补充完整')
+          return true
+        } else if (_partyName.indexOf(_bracketsBefore) !== -1 || _partyName.indexOf(_bracketsAfter) !== -1) {
+          // 存在一个中文括弧
+          Toast('请将党支部名称内的括号补充完整')
+          return true
+        }
+        return false
       } else {
         // 普通的党支部不包含（）
         return false
