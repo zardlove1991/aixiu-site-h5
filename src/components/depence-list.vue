@@ -882,6 +882,7 @@ export default {
   z-index: 1;
   background: #fff;
   border-radius: 50%;
+  margin-left:-7vw;
   .circle{
     position: relative;
     width:15vw;

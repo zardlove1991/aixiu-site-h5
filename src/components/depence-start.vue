@@ -142,7 +142,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip tip-center">本场答题进行中,可以继续答题！</div>
       </div>
     </my-model>
     <my-model
