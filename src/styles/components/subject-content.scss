@@ -57,8 +57,10 @@
       background-color: rgba(53, 176, 104, .1);
       .select-tip-wrap{
         .select-tip{
-          background-color: rgba(53, 176, 104, 1)!important;
-          &:after{
+          &.active {
+            background-color: rgba(53, 176, 104, 1)!important;
+          }
+          &.active:after{
             content: '';
             display: block;
             width: 100%!important;

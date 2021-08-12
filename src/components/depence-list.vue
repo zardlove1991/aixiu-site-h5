@@ -18,8 +18,7 @@
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!-- 练习题倒计时 -->
     <div class="exercise-time-limit" v-if="examInfo.mark === 'examination@exercise'">
-      <div>
-        <el-progress type="circle" :width="60" :percentage="exerciseCountProgress" :status="timerStatus" :format="timeFormat"></el-progress>
+      <div class="circle">
         <div class="exercise-title-div number-div">{{exerciseCountTime}}</div>
         <div class="exercise-title-div wrong-div" v-if="successStatus === 2 || successStatus === 3">
           <img :src="require('@/assets/common/exam/progress-wrong.png')" alt="">
@@ -688,6 +687,7 @@ export default {
           if (!this.examList || this.examList.length < 1 || !data) return
           let currentQuestion = this.examList[this.currentSubjectIndex]
           currentQuestion.isAnswer = true
+          currentQuestion.answerOption = data[currentQuestion.hashid]
           this.analysisData = data[currentQuestion.hashid]
           console.log('this.analysisData********', this.analysisData, this.examList)
           let { answer } = this.analysisData
@@ -879,27 +879,38 @@ export default {
   position: absolute;
   top: -5vw;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 1;
   background: #fff;
   border-radius: 50%;
-  >div{
+  .circle{
     position: relative;
-    width: 100%;
-    height: 100%;
+    width:15vw;
+    height:15vw;
+    border-radius: 50%;
+    background: #FFA800;
   }
   .exercise-title-div{
-    position: absolute;
-    width: 10vw;
-    height: 10vw;
+    width: 15vw;
+    height: 15vw;
     z-index: 1;
     text-align: center;
-    line-height: 10vw;
+    line-height: 15vw;
     border-radius: 50%;
     background: #fff;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    position:absolute;
+    top:0;
+    left:0;
+    &.number-div {
+      width: 13vw;
+      height: 13vw;
+      z-index: 1;
+      text-align: center;
+      line-height: 13vw;
+      border-radius: 50%;
+      background: #fff;
+      margin-left:1vw;
+      margin-top:1vw;
+    }
     img {
       width: 7vw;
       height: auto;
@@ -911,14 +922,12 @@ export default {
       width: 15vw;
       height: 15vw;
       line-height: 15vw;
-      top: 48%;
     }
     &.correct-div {
       background: #35B068;
       width: 15vw;
       height: 15vw;
       line-height: 15vw;
-      top: 48%;
     }
   }
 }
