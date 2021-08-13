@@ -726,6 +726,7 @@ const actions = {
   async CHANGE_CURRENT_SUBJECT_INDEX ({state, dispatch, commit}, payload) {
     let index = state.currentSubjectIndex
     let list = state.examList
+    let isLastIndex = false
     // 判断什么操作 加减 还是 直接赋值
     if (typeof payload === 'string') {
       console.log('判断什么操作 加减 还是 直接赋值', payload, state.currentSubjectIndex)
@@ -742,6 +743,7 @@ const actions = {
       }
     } else if (typeof payload === 'number') {
       index = payload
+      isLastIndex = index === list.length - 1
     }
     if (!/to_/.test(payload)) {
       // 存储到云端
@@ -768,8 +770,8 @@ const actions = {
         params: _arr
       }
       let _cloudData = ''
-      console.log(result.params, '****************云端存储提交的数据***********')
-      if (result.params && !result.params.options_id.length && payload !== 'timeout' && index !== list.length - 1) {
+      console.log(result.params, '****************云端存储提交的数据***********', index, list.length)
+      if (result.params && !result.params.options_id.length && payload !== 'timeout' && !isLastIndex) {
         Toast('当前题目你还没有作答，请先选择答案')
         return false
       }
