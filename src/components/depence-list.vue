@@ -792,12 +792,17 @@ export default {
       return this.exerciseCountTime
     },
     exerciseNext () {
-      this.nextExerciseBtn = false
-      this.successStatus = 0
-      this.analysisData = null
-      let num = this.currentSubjectIndex
-      this.setAnalysisAnswer('')
-      this.setCurrentSubjectIndex(++num)
+      if (this.exerciseNextIng) return
+      this.exerciseNextIng = true
+      setTimeout(() => {
+        this.exerciseNextIng = false
+        this.nextExerciseBtn = false
+        this.successStatus = 0
+        this.analysisData = null
+        let num = this.currentSubjectIndex
+        this.setAnalysisAnswer('')
+        this.setCurrentSubjectIndex(++num)
+      }, 500)
     },
     getExerciseStatistics (data) {
       this.exerciseResult = data
