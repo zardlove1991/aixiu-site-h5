@@ -40,7 +40,7 @@
           :mode="renderType"
           :key="item.id">
         </subject-content>
-        <div class="shadow" v-if="item.isAnswer && examInfo.mark === 'examination@exercise'"></div>
+        <div class="shadow" v-if="exerciseCountTime < 1 && examInfo.mark === 'examination@exercise'"></div>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
@@ -167,6 +167,7 @@
 </template>
 
 <script>
+import { Indicator } from 'mint-ui'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
@@ -613,16 +614,23 @@ export default {
     },
     async saveCloud (status = 'add') {
       console.log('saveCloud******', this.successStatus)
+      if (this.saveClouding) return
       if (this.successStatus !== 0) return
       if (this.currentSubjectIndex === this.examList.length - 1) {
         status = this.currentSubjectIndex
       }
+      this.saveClouding = true
+      Indicator.open({ spinnerType: 'fading-circle' })
       await this.changeSubjectIndex(status).then(res => {
         // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
         }
+        this.saveClouding = false
+        Indicator.close()
       }).catch(err => {
+        this.saveClouding = false
+        Indicator.close()
         if (err.error_code === 'member_submit') {
           console.error('用户已交卷')
           this.showExamResult()

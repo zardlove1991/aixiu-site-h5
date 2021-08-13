@@ -769,7 +769,7 @@ const actions = {
       }
       let _cloudData = ''
       console.log(result.params, '****************云端存储提交的数据***********')
-      if (result.params && !result.params.options_id.length && payload !== 'timeout') {
+      if (result.params && !result.params.options_id.length && payload !== 'timeout' && index !== list.length - 1) {
         Toast('当前题目你还没有作答，请先选择答案')
         return false
       }
