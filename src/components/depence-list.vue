@@ -167,7 +167,7 @@
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
+import { Indicator, Toast } from 'mint-ui'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
@@ -319,6 +319,8 @@ export default {
         }
         console.log('获取到了试卷列表', this.examList.length)
         if (this.examInfo.mark === 'examination@exercise') {
+          // 首次进入清空定时器
+          this.clearTimer()
           // 首次自动开启倒计时
           this.resetTimeLimit()
           // 首次记录第0道题进入时间
@@ -640,11 +642,13 @@ export default {
     setExerciseResult (res) {
       let { success, data } = res
       console.log('setExerciseResult+******', res)
+      Toast(res)
       if (res && res.error_code === 'member_submit') {
         console.error('用户已交卷')
         this.showExamResult()
         return false
       }
+      Toast(success)
       if (success) {
         this.clearTimer()
         this.$nextTick(() => {
@@ -652,6 +656,7 @@ export default {
           if (success === 3) {
             // 答错立即交卷
             console.log('res超时/答错直接交卷', res)
+            Toast('答错直接交卷')
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
             // 如果开启答题解析 手动点查看分数
