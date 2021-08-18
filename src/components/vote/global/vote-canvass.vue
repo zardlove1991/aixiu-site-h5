@@ -78,7 +78,6 @@ export default {
         if (!res) {
           return
         }
-        // console.log('拉票数据：', res)
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
@@ -158,14 +157,19 @@ export default {
             params.source = res.type_name + ' | ' + params.source
           }
         }
-        API.shareMake({
-          data: params
-        }).then(res => {
-          if (!res || !res.image) {
-            return
-          }
-          this.sharePoster = res.image
-        })
+
+        console.log('params', params)
+        this.renderPlaybill(params, voteTip)
+
+        // API.shareMake({
+        //   data: params
+        // }).then(res => {
+        //   if (!res || !res.image) {
+        //     return
+        //   }
+        //   this.sharePoster = res.image
+        // })
+
         // 拉票抽奖
         // let lottery = res.lottery
         // if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
@@ -177,6 +181,69 @@ export default {
         // this.$emit('updateCard')
         // }
       })
+    },
+    renderPlaybill (data) {
+      console.log('99', data)
+      let canvas = document.createElement('canvas')
+      let ctx = canvas.getContext('2d')
+      // 绘制背景图
+      canvas.width = 640
+      canvas.height = 897
+
+      var grd = ctx.createLinearGradient(0, 0, 0, 897)
+      grd.addColorStop(0, '#FFF2E2')
+      grd.addColorStop(1, '#FFF8EF')
+
+      // 填充渐变
+      ctx.fillStyle = grd
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      ctx.font = '26px Arial'
+      ctx.fillStyle = '#333333'
+      ctx.textAlign = 'right'
+      ctx.fillText(data.lastvotes, 160, 80)
+
+      ctx.font = '26px Arial'
+      ctx.fillStyle = '#333333'
+      ctx.textAlign = 'center'
+      ctx.fillText(data.numbering, 180, 120)
+
+
+      // ctx.save()
+
+      // const imgUpload = new Image()
+      // imgUpload.src = data.qrcode
+      // imgUpload.onload = function () {
+      //   ctx.drawImage('red', 0, 0, canvas.width, canvas.height)
+      // }
+
+
+      // 绘制头像
+      // let ctx = canvas.getContext('2d')
+      // ctx.arc(108, 48, 46, 0, Math.PI * 2, false)
+      // ctx.clip()
+      // ctx.drawImage(posterHead, 62, 0, 92, 92)
+      // 恢复状态
+      // ctx.restore()
+
+      // let name = STORAGE.get('userinfo').nick_name
+      // let context = canvas.getContext('2d')
+      // context.font = '28px Arial'
+      // context.fillStyle = '#fff'
+      // context.fillText(name, 180, 80)
+      // context.font = '40px Arial'
+      // context.fillStyle = '#fff'
+      // context.fillText('XXX', 60, 160)
+      // context.font = '90px Arial'
+      // context.fillStyle = '#fff'
+      // context.fillText('XXX', 60, 320)
+      // context.font = '28px Arial'
+      // context.fillStyle = '#fff'
+      // context.fillText('姓名', 60, 400)
+      // context.fillText(name, 300, 400)
+      // context.fillText('答题时间', 60, 450)
+      // 生成图片地址
+      this.sharePoster = canvas.toDataURL('image/png', 1)
     },
     dealUrlConcat (params, detailInfo) {
       let location = window.location
