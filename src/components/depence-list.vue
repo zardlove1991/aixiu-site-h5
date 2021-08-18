@@ -782,8 +782,14 @@ export default {
           // console.log('倒计时中')
         }
       }, 1000)
+      STORAGE.set('timeInterval', this.timeInterval)
     },
     clearTimer () {
+      let timeIntervalStorage = STORAGE.get('timeInterval')
+      if (timeIntervalStorage) {
+        window.clearInterval(timeIntervalStorage)
+        STORAGE.remove('timeInterval')
+      }
       window.clearInterval(this.timeInterval)
       this.timeInterval = null
       console.log('******清除定时器*******')
