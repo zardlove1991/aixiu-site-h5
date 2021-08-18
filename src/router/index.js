@@ -33,7 +33,8 @@ const routes = [{
     delta: route.query.delta, // 小程序需要回退的页面层级
     listType: route.query.listType, // 列表渲染类型 list: 正常列表  errorlist: 错题列表
     useIntegral: route.query.use_integral,
-    directlySubmit: route.query.directlySubmit
+    directlySubmit: route.query.directlySubmit,
+    isabort: route.query.isabort
   }),
   meta: {
     title: '加载中...'

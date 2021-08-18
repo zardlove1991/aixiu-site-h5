@@ -167,10 +167,10 @@
 </template>
 
 <script>
-import { Indicator, Toast } from 'mint-ui'
+import { Indicator } from 'mint-ui'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { setBrowserTitle, getPlat } from '@/utils/utils'
+import { setBrowserTitle, getPlat, mobileDevice } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
@@ -191,6 +191,7 @@ export default {
   props: {
     id: String,
     rtp: String,
+    isabort: String,
     useIntegral: [Number, String],
     directlySubmit: String,
     restart: {
@@ -264,7 +265,7 @@ export default {
   },
   beforeDestroy () {
     this.clearTimer()
-    Toast('页面销毁事件，清理定时器!')
+    // Toast('页面销毁事件，清理定时器!')
   },
   methods: {
     toStatistic () {
@@ -301,6 +302,13 @@ export default {
       }, 1000)
     },
     async initList () {
+      // 如果是异常交卷进来 二次加载
+      if (this.examInfo.mark === 'examination@exercise') {
+        if (this.isabort) {
+          this.reload()
+          return false
+        }
+      }
       let examId = this.id
       let rtp = this.rtp
       let listType = this.listType
@@ -320,8 +328,6 @@ export default {
         }
         console.log('获取到了试卷列表', this.examList.length)
         if (this.examInfo.mark === 'examination@exercise') {
-          // 首次进入清空定时器
-          this.clearTimer()
           // 首次自动开启倒计时
           this.resetTimeLimit()
           // 首次记录第0道题进入时间
@@ -340,6 +346,15 @@ export default {
       } catch (err) {
         console.log(err)
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
+      }
+    },
+    reload () {
+      let mobilePlat = mobileDevice()
+      let origin = window.location.origin
+      let pathname = window.location.pathname
+      let url = origin + pathname + '?rtp=exam'
+      if (mobilePlat === 'iOS') {
+        window.location.href = url
       }
     },
     sharePage () {
@@ -655,7 +670,7 @@ export default {
           if (success === 3) {
             // 答错立即交卷
             console.log('res超时/答错直接交卷', res)
-            Toast('答错直接交卷')
+            // Toast('答错直接交卷')
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
             // 如果开启答题解析 手动点查看分数

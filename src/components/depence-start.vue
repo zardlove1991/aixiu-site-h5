@@ -539,7 +539,7 @@ export default {
     cancelBreakModel () {
       // 继续答题
       this.isShowBreak = false
-      this.goExamPage(null, {special_status: 1})
+      this.goExamPage(null, {special_status: 1}, 1)
     },
     breakDoAction () {
       let examInfo = this.examInfo
@@ -943,7 +943,7 @@ export default {
         this.goExamPage()
       }
     },
-    goExamPage (val, obj) {
+    goExamPage (val, obj, isabort) {
       if (val && val.collection_status === 1) {
         const data = {...this.examInfo, ...val}
         if (data.hashid) { data.id = data.hashid }
@@ -1000,6 +1000,9 @@ export default {
       // let redirectParams = this.redirectParams
       // 去往查看考试概况页面
       const query = { ...params, rtp: 'exam' }
+      if (isabort) {
+        query.isabort = isabort
+      }
       if (!this.examInfo.limit.is_page_submit) {
         this.$router.replace({
           path: `/exam/alllist/${examId}`,
