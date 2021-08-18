@@ -264,6 +264,7 @@ export default {
   },
   beforeDestroy () {
     this.clearTimer()
+    Toast('页面销毁事件，清理定时器!')
   },
   methods: {
     toStatistic () {
@@ -642,13 +643,11 @@ export default {
     setExerciseResult (res) {
       let { success, data } = res
       console.log('setExerciseResult+******', res)
-      Toast(res)
       if (res && res.error_code === 'member_submit') {
         console.error('用户已交卷')
         this.showExamResult()
         return false
       }
-      Toast(success)
       if (success) {
         this.clearTimer()
         this.$nextTick(() => {
@@ -769,10 +768,10 @@ export default {
     // 启动倒计时
     startCountDown () {
       console.log('*****启动倒计时****', 'startCountDown')
+      this.clearTimer()
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = parseInt(currentQuestion.limit_time)
       this.exerciseCountTime = currentQuestion.remianTime !== undefined ? currentQuestion.remianTime : limitTime
-      this.clearTimer()
       console.error('startCountDown******倒计时时间剩余*****exerciseCountTime', this.exerciseCountTime)
       this.timeInterval = window.setInterval(() => {
         // console.log(this.exerciseCountTime, 'this.exerciseCountTime')
