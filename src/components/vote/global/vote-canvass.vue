@@ -204,7 +204,6 @@ export default {
       })
     },
     async renderPlaybill (data) {
-      console.log('L-L', data)
       try {
         let canvas = document.createElement('canvas')
         let ctx = canvas.getContext('2d')
