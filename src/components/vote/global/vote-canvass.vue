@@ -4,13 +4,15 @@
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
-    <img class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop />
+    <img class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop crossOrigin='anonymous' />
     <div class="poster-tips" v-if="sharePoster">长按图片保存或转发朋友圈</div>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
       :textSetting="{sign: '拉票'}"
       @close="isShowLottery = false"></lottery-vote>
+    <div v-show='false' id='qrcode'></div>
+    <!-- <img :src="posterInfo.image" ref="posterBg" alt="" @load="resetPoster(1)" v-show="false"> -->
   </div>
 </template>
 
@@ -19,6 +21,8 @@ import { mapMutations } from 'vuex'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import LotteryVote from '@/components/vote/global/vote-lottery'
+import QRCode from 'qrcode'
+import { Toast } from 'mint-ui'
 
 export default {
   props: {
@@ -31,6 +35,9 @@ export default {
   components: { LotteryVote },
   data () {
     return {
+      imgs: {
+        bgImg: require('@/assets/vote/vote-bg.png')
+      },
       sharePoster: '',
       show: false,
       isShowLottery: false,
@@ -158,7 +165,6 @@ export default {
           }
         }
 
-        console.log('params', params)
         this.renderPlaybill(params, voteTip)
 
         // API.shareMake({
@@ -182,68 +188,106 @@ export default {
         // }
       })
     },
-    renderPlaybill (data) {
-      console.log('99', data)
-      let canvas = document.createElement('canvas')
-      let ctx = canvas.getContext('2d')
-      // 绘制背景图
-      canvas.width = 640
-      canvas.height = 897
+    loadImg (data) {
+      return new Promise((resolve, reject) => {
+        const _img = new Image()
+        // _img.crossOrigin = 'anonymous'
+        _img.src = data
+        _img.onload = () => {
+          resolve(_img)
+        }
+        _img.onerror = () => {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject({status: 'error', title: '解析图片失败'})
+          Toast('解析图片失败')
+        }
+      })
+    },
+    async renderPlaybill (data) {
+      console.log('L-L', data)
+      try {
+        let canvas = document.createElement('canvas')
+        let ctx = canvas.getContext('2d')
+        // 绘制背景图
+        canvas.width = 640
+        canvas.height = 897
 
-      var grd = ctx.createLinearGradient(0, 0, 0, 897)
-      grd.addColorStop(0, '#FFF2E2')
-      grd.addColorStop(1, '#FFF8EF')
+        let bgImg = await this.loadImg(this.imgs.bgImg)
+        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
 
-      // 填充渐变
-      ctx.fillStyle = grd
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.font = '26px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.textAlign = 'center'
+        ctx.fillText(data.lastvotes, 300, 80)
 
-      ctx.font = '26px Arial'
-      ctx.fillStyle = '#333333'
-      ctx.textAlign = 'right'
-      ctx.fillText(data.lastvotes, 160, 80)
+        ctx.font = '26px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.textAlign = 'center'
+        ctx.fillText(data.numbering, 300, 120)
+       // ctx.save()
+        // 绘制作品图片
+        let imgObj = await this.loadImg(data.cover)
+        ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+        // ctx.restore()
+        // ctx.save()
 
-      ctx.font = '26px Arial'
-      ctx.fillStyle = '#333333'
-      ctx.textAlign = 'center'
-      ctx.fillText(data.numbering, 180, 120)
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#666666'
+        ctx.fillText(data.source, 130, 540)
 
+        ctx.font = 'bold 30px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText(data.title, 135, 590)
 
-      // ctx.save()
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText('来自', 70, 640)
+        // ctx.save()
 
-      // const imgUpload = new Image()
-      // imgUpload.src = data.qrcode
-      // imgUpload.onload = function () {
-      //   ctx.drawImage('red', 0, 0, canvas.width, canvas.height)
-      // }
+        const userInfo = STORAGE.get('userinfo')
+        console.log('userInfo', userInfo)
+        let offwidthNum = '270'
+        if (data.avatar === '') {
+          offwidthNum = '215'
+        } else {
+          // 用户头像
+          let iconUrl = data.avatar
+          let userIcon = await this.loadImg(iconUrl)
+          ctx.arc(120, 635, 20, 0, 2 * Math.PI)
+          ctx.clip()
+          ctx.drawImage(userIcon, 100, 615, 40, 40)
+          ctx.restore()
+        }
 
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
+        const generateQR = async text => {
+          try {
+            let qrcodeURL = await QRCode.toDataURL(text)
+            let _qrcodeImg = await this.loadImg(qrcodeURL)
+            return _qrcodeImg
+          } catch (e) {
+            console.error(e)
+          }
+        }
 
-      // 绘制头像
-      // let ctx = canvas.getContext('2d')
-      // ctx.arc(108, 48, 46, 0, Math.PI * 2, false)
-      // ctx.clip()
-      // ctx.drawImage(posterHead, 62, 0, 92, 92)
-      // 恢复状态
-      // ctx.restore()
+        let qrcodeImg = await generateQR(data.qrcode)
+        ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
-      // let name = STORAGE.get('userinfo').nick_name
-      // let context = canvas.getContext('2d')
-      // context.font = '28px Arial'
-      // context.fillStyle = '#fff'
-      // context.fillText(name, 180, 80)
-      // context.font = '40px Arial'
-      // context.fillStyle = '#fff'
-      // context.fillText('XXX', 60, 160)
-      // context.font = '90px Arial'
-      // context.fillStyle = '#fff'
-      // context.fillText('XXX', 60, 320)
-      // context.font = '28px Arial'
-      // context.fillStyle = '#fff'
-      // context.fillText('姓名', 60, 400)
-      // context.fillText(name, 300, 400)
-      // context.fillText('答题时间', 60, 450)
-      // 生成图片地址
-      this.sharePoster = canvas.toDataURL('image/png', 1)
+        ctx.font = '20px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText('长按识别二维码', 220, 730)
+
+        ctx.font = '20px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText('查看作品详情', 220, 760)
+
+        this.sharePoster = canvas.toDataURL('image/png', 0.8)
+      } catch (e) {
+        Toast('生成分享图片失败')
+        console.error(e)
+      }
     },
     dealUrlConcat (params, detailInfo) {
       let location = window.location

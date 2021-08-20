@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>加载中...</title>
     <link rel="icon" href="data:;base64,=">
+    <script
+    src="<%=htmlWebpackPlugin.options.projectPath%>/static/DevTools/vconsole.min.js">
+    </script>
     <style>
       .watting-wrap {
         position: relative;
@@ -76,6 +79,11 @@
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/smartCity_sdk.js" charset="utf-8"></script>
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/aliyun/aliyun-oss-sdk-5.3.1.min.js"></script>
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/aliyun/aliyun-upload-sdk-1.5.0.min.js"></script>
+
+    <script>
+      // 微信开发工具
+      let vConsole = new VConsole()
+    </script>
   </body>
 </html>
 
