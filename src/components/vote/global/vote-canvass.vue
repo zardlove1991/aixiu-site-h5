@@ -223,7 +223,7 @@ export default {
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
         ctx.fillText(data.numbering, 300, 120)
-       // ctx.save()
+        // ctx.save()
         // 绘制作品图片
         let imgObj = await this.loadImg(data.cover)
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
