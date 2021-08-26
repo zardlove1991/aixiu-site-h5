@@ -18,7 +18,7 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList.sync="fileList" @changeFile="changeFile"></video-upload>
+          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList.sync="fileList" :isALiyun="false"></video-upload>
         </div>
       </div>
       <div v-if="showModel === 'video'" class="form-item">
@@ -32,21 +32,27 @@
             flag="videoCover"
             :imageRatio="videoMode === '3' ? 1 : 0"
             :fileList.sync="videoCoverList"
+            :isALiyun="false"
             @changeFile="changeVideoCoverFile">
           </file-upload>
         </div>
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div" v-if="imageRatio">小于10M；图片最多上传3张；支持PNG、JPG格式</div>
+        <div class="form-tips-div" v-if="imageRatio && !imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸），小于10M;图片最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else-if="imageRatio && imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸,小于10M；图片最少上传{{imageUpload_min_num}}张,最多上传9张；支持PNG、JPG、GIF格式</div>
+         <div class="form-tips-div" v-else-if="!imageRatio && imageUpload_min_num">建议比例：1:1，小于10M;图片最少上传{{imageUpload_min_num}}张,最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else>建议比例：1:1，小于10M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
             :imageRatio="imageRatio"
             :loading.sync="loading"
             :flag="showModel"
+            :isALiyun="false"
             :fileList.sync="fileList"
-            @changeFile="changeFile">
+            :maxNum="9"
+           >
           </file-upload>
         </div>
       </div>
@@ -173,7 +179,8 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap
+      fullSceneMap,
+      imageUpload_min_num: ''
     }
   },
   methods: {
@@ -190,6 +197,10 @@ export default {
         }
         if (limit.show_mode) {
           this.videoMode = limit.show_mode
+        }
+        // 控制图片上传最小上传张数
+        if (limit.report_image && limit.image_upload_limitMinNum) {
+          this.imageUpload_min_num = limit.image_upload_limitMinNum
         }
         let pageSetup = rule.page_setup
         if (pageSetup) {
@@ -329,6 +340,10 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
+      if (this.showModel === 'picture' && this.imageUpload_min_num) {
+        Toast(`请至少上传${this.imageUpload_min_num}张图片`)
+        return
+      }
       if (!examineData.name || !examineData.name.trim()) {
         Toast('请输入名称')
         return
@@ -387,25 +402,26 @@ export default {
         })
       })
     },
-    changeFile (data) {
-      this.fileList = JSON.parse(JSON.stringify(data))
-      let fileList = this.fileList
-      if (!fileList || fileList.length <= 0) {
-        this.material = {...this.material}
-      }
-      if (this.showModel === 'video') {
-        if (this.videoCover) {
-          fileList.forEach(item => {
-            item.cover_image = this.videoCover
-          })
-        }
-        this.material = {...this.material, video: [...fileList]}
-      } else if (this.showModel === 'picture') {
-        this.material = {...this.material, image: [...fileList]}
-      } else if (this.showModel === 'audio') {
-        this.material = {...this.material, audio: [...fileList]}
-      }
-    },
+    // changeFile (data) {
+    //   console.log(data)
+    //   this.fileList = JSON.parse(JSON.stringify(data))
+    //   let fileList = this.fileList
+    //   if (!fileList || fileList.length <= 0) {
+    //     this.material = {...this.material}
+    //   }
+    //   if (this.showModel === 'video') {
+    //     if (this.videoCover) {
+    //       fileList.forEach(item => {
+    //         item.cover_image = this.videoCover
+    //       })
+    //     }
+    //     this.material = {...this.material, video: [...fileList]}
+    //   } else if (this.showModel === 'picture') {
+    //     this.material = {...this.material, image: [...fileList]}
+    //   } else if (this.showModel === 'audio') {
+    //     this.material = {...this.material, audio: [...fileList]}
+    //   }
+    // },
     changeVideoCoverFile () {
       let videoCoverList = this.videoCoverList
       let material = this.material

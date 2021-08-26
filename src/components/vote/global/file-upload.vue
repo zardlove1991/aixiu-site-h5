@@ -23,15 +23,33 @@
       @deleteFile="handleRemove">
     </vote-audio>
     <el-upload
-      v-if="!$wx"
+      v-if="isALiyun &&!$wx"
       :style="uploadStyle"
       ref="vote-file-upload"
-      :class="{ hide: fileList.length >= settings[flag].limit }"
+      :class="{ hide: fileList.length >= settings[flag].maxLimit }"
       list-type="picture-card"
       :action="uploadUrl"
       :data="extraData"
-      :limit="settings[flag].limit"
-      :multiple="settings[flag].limit > 1"
+      :limit="settings[flag].maxLimit"
+      :multiple="settings[flag].maxLimit > 1"
+      :show-file-list="false"
+      :before-upload="beforeUpload"
+      :on-success="onSuccess"
+      :on-exceed="handleExceed"
+      v-loading="loading"
+      :accept="settings[flag].accept">
+      <i class="el-icon-plus"></i>
+    </el-upload>
+    <el-upload
+      v-if="!isALiyun &&!$wx"
+      ref="vote-file-upload"
+      :class="{ hide: fileList.length >= settings[flag].maxLimit }"
+      list-type="picture-card"
+      :action="uploadUrl"
+      :http-request="uploadImage"
+      :data="localParam"
+      :limit="settings[flag].maxLimit"
+      :multiple="settings[flag].maxLimit > 1"
       :show-file-list="false"
       :before-upload="beforeUpload"
       :on-success="onSuccess"
@@ -46,7 +64,7 @@
       class="android-upload"
       v-loading="loading"
       @click.stop='wxChoseImg'
-      :class="{ hide: fileList.length >= settings[flag].limit }">
+      :class="{ hide: fileList.length >= settings[flag].maxLimit }">
       <i class="el-icon-plus"></i>
     </div>
   </div>
@@ -56,6 +74,7 @@
 import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 import { Toast } from 'mint-ui'
 import SubjectMixin from '@/mixins/subject'
 import mixins from '@/mixins/index'
@@ -85,6 +104,16 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    isALiyun: {
+      type: Boolean,
+      default: true
+    },
+    maxNum: {
+      type: Number,
+      default: () => {
+        return 1
+      }
     }
   },
   components: {
@@ -94,16 +123,16 @@ export default {
     return {
       settings: {
         videoCover: {
-          limit: 1,
+          maxLimit: this.maxNum,
           accept: 'image/*'
         },
         picture: {
-          limit: 3,
+          maxLimit: this.maxNum,
           // accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
           accept: 'image/*'
         },
         audio: {
-          limit: 1,
+          maxLimit: this.maxNum,
           accept: '.mp3,.MP3'
         }
       },
@@ -114,7 +143,8 @@ export default {
       androidImgs: [],
       $wx: '',
       copyFileList: [],
-      maxSize: 20971520
+      maxSize: 20971520,
+      localParam: {} // 本地上传参数
     }
   },
   created () {
@@ -130,12 +160,15 @@ export default {
     }
     // if (!this.$wx) this.$wx = wx
   },
+  mounted () {
+    console.log(this.settings)
+  },
   watch: {
     fileList: {
       handler: function (val) {
         if (val) {
           console.log('%c文件列表：', 'color: red;', val)
-          this.currentLimit = this.settings[this.flag].limit - val.length
+          this.currentLimit = this.settings[this.flag].maxLimit - val.length
           let len = val.length
           switch (len) {
             case 4: this.uploadStyle = { position: 'absolute', left: '7.1875rem', top: '7.03125rem' }; break
@@ -173,27 +206,67 @@ export default {
   },
   methods: {
     // 文件上传前准备签名
-    beforeUpload (file) {
+    async beforeUpload (file) {
+      // console.log('beforeUpload', file)
       if (/image/.test(file.type) && file.size > this.maxSize) {
         Toast(`图片大小超出限制`)
         this.clearFile()
         return
       }
+      const param = new FormData()
+      param.append('appid', 'm2ohvecbng7leb8ixo')
+      param.append('appkey', '45920796f66247395069ee6f45d99c5e')
+      param.append('file', file)
       this.$emit('update:loading', true)
       let flag = this.flag
-      return new Promise((resolve, reject) => {
-        API.getUploadSign({
-          params: {
-            source: 2,
-            type: flag
-          }
-        }).then(signature => {
-          this.signature = signature
-          this.uploadUrl = signature.host
-          this.file = file
-          resolve()
+      if (this.isALiyun) {
+        return new Promise((resolve, reject) => {
+          API.getUploadSign({
+            params: {
+              source: 2,
+              type: flag
+            }
+          }).then(signature => {
+            this.signature = signature
+            this.uploadUrl = signature.host
+            this.file = file
+            resolve()
+          })
         })
-      })
+      } else {
+        await API.imageUpload({
+          data: param
+        }).then((res) => {
+          this.localParam.name = file.name
+          this.localParam.filename = res.filename
+          this.localParam.host = res.host
+          this.localParam.user_id = STORAGE.get('userinfo').id
+          this.localParam.user_name = STORAGE.get('userinfo').nick_name
+          this.localParam.height = res.imgheight || 0
+          this.localParam.width = res.imgwidth || 0
+          this.localParam.filesize = file.size
+          this.localParam.source = 2
+          this.localParam.format = res.filename.split('.')[1]
+          this.localParam.ip = 0
+          let tmp = {
+            name: file.name,
+            filename: file.name,
+            url: res.host + res.filepath + res.filename,
+            uid: file.uid,
+            size: file.size,
+            width: res.imgwidth,
+            height: res.imgheight
+          }
+          this.fileList.push(tmp)
+          this.$emit('update:fileList', this.fileList)
+          this.$emit('update:loading', false)
+        })
+      }
+    },
+    uploadImage () {
+      API.localImageUpload({
+        data: this.localParam
+      }).then((res) => {})
     },
     handleRemove (file) {
       this.$refs['vote-file-upload'] && this.$refs['vote-file-upload'].clearFiles()
@@ -210,7 +283,7 @@ export default {
     },
     // 文件超出个数
     handleExceed () {
-      Toast(`最多只能选择${this.settings[this.flag].limit}个文件`)
+      Toast(`最多只能选择${this.settings[this.flag].maxLimit}个文件`)
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
@@ -223,7 +296,7 @@ export default {
         }
         return
       }
-      let limit = this.settings[this.flag].limit
+      let limit = this.settings[this.flag].maxLimit
       let fileSize = this.copyFileList.length
       if (fileSize >= limit) {
         return
@@ -253,7 +326,7 @@ export default {
     wxChoseImg () {
       let _this = this
       wx.execute('chooseImage', {
-        count: this.settings[this.flag].limit,
+        count: this.settings[this.flag].maxLimit,
         sizeType: ['original', 'compressed'],
         sourceType: ['album', 'camera'],
         success: function (res) {

@@ -143,6 +143,9 @@ export default {
       API.getReportDetail({
         query: {
           id: this.id
+        },
+        params: {
+          works_id: this.$route.query.worksId
         }
       }).then(res => {
         if (!res) {

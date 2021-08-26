@@ -213,6 +213,17 @@ const routes = [{
     title: '我的作品'
   }
 }, {
+  path: '/voteList/:flag/:id',
+  name: 'voteList',
+  component: getOtherComponent('vote-list', 'vote'),
+  props: (route) => ({
+    id: route.params.id,
+    flag: route.params.flag
+  }),
+  meta: {
+    title: '我的作品'
+  }
+}, {
   path: '/enrollstart/:id',
   name: 'enrollstart',
   component: getOtherComponent('enroll-start', 'enroll'),

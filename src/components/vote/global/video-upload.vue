@@ -30,7 +30,7 @@
 <script>
 import VoteVideo from '@/components/vote/global/vote-video'
 import API from '@/api/module/examination'
-
+import STORAGE from '@/utils/storage'
 export default {
   props: {
     fileList: {
@@ -46,6 +46,10 @@ export default {
     videoMode: {
       type: String,
       default: '1'
+    },
+    isALiyun: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -136,8 +140,42 @@ export default {
     },
     uploadFile (obj) {
       let file = obj.file
-      this.upload(file)
+      this.isALiyun ? this.upload(file) : this.commonUpload(file)
     },
+    // 本地上传
+    async commonUpload (file) {
+      this.$emit('update:loading', true)
+      const param = new FormData()
+      const localParam = {}
+      param.append('appid', 'm2ohvecbng7leb8ixo')
+      param.append('appkey', '45920796f66247395069ee6f45d99c5e')
+      param.append('file', file)
+      await API.videoUpload({
+        data: param
+      }).then((res) => {
+        localParam.name = file.name
+        localParam.url = res.host + res.dir + res.file_name + '.' + res.type
+        localParam.cover = res.img.host + res.img.filepath + res.img.filename
+        localParam.user_id = STORAGE.get('userinfo').id
+        localParam.height = res.img.imgheight || 0
+        localParam.width = res.img.imgwidth || 0
+        localParam.size = file.size
+        localParam.source = 'local'
+        this.fileList.push({
+          fileid: res.id,
+          url: localParam.url,
+          cover: localParam.cover
+        })
+        this.$emit('update:fileList', this.fileList)
+        this.$emit('update:loading', false)
+      }).catch(error => {
+        this.$toast({ message: error.error_message, type: 'error' })
+      })
+      await API.localVideoUpload({
+        data: localParam
+      }).then((res) => {})
+    },
+    // 阿里云上传
     async upload (file) {
       this.$emit('update:loading', true)
       await this.getCredential(file)
@@ -150,7 +188,7 @@ export default {
           this.fileList.splice(i, 1)
         }
       }
-      this.$emit('changeFile')
+      this.$emit('update:fileList', this.fileList)
     },
     // 上传成功
     onSuccess () {
@@ -196,7 +234,7 @@ export default {
         this.lastTime = 0
         this.ajaxTime = 0
         // console.log(this.fileList)
-        this.$emit('changeFile')
+        this.$emit('update:fileList', this.fileList)
         this.$emit('update:loading', false)
       })
     }

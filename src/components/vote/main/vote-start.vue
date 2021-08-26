@@ -19,7 +19,8 @@
           <div class="report-msg" v-if="myWorkStatus === 2">
             <i class="vote-no"></i><div class="tips">作品审核被打回</div>
           </div>
-          <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div>
+          <!-- <div class="report-btn" @click="jumpPage('voteoneself')">查看我的作品</div> -->
+          <div class="report-btn" @click="jumpPage('voteList')">查看我的作品</div>
         </div>
       </template>
       <div :class="['vote-swipe-wrap', indexRadio]" v-if="swipeList && swipeList.length">
@@ -86,7 +87,7 @@
         <div class="overview-menus-wrap"
           v-if="!isOpenVoteReport && status === statusCode.signUpStatus && isReportAuth === 1">
           <div class="menu-wrap"
-            @click="jumpPage( isExamine ? 'voteoneself' : 'votesubmit')">
+            @click="jumpPage( isExamine ? 'voteList' : 'votesubmit')">
             <span class="menu-text" v-if="isExamine === 1">查看我的作品</span>
             <span class="menu-text" v-if="isExamine === 0">立即报名</span>
           </div>

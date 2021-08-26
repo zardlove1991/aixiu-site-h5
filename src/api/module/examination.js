@@ -73,7 +73,11 @@ let voteUrl = {
   getVoteTypeFid: '/client/voting/{id}/type/{worksId}', // 根据分类的id获取fid
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/', // 获取用户抽奖记录
-  submitBase64: 'share/img' // 上传base64图片
+  submitBase64: 'share/img', // 上传base64图片
+  videoUpload: 'api/open/xiamen/aixiu/video/upload/', // plus视频上传
+  localVideoUpload: 'video/plus/uploadvideo/', // 本地视频上传
+  imageUpload: 'api/open/xiamen/aixiu/image/upload/', // plus图片上传
+  localImageUpload: 'video/plus/uploadpic/'
 }
 
 // 预约报名
@@ -166,6 +170,11 @@ export default {
   getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
   shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
   getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
+  videoUpload: config => createBase(configUrl.videoUpload, 'POST', config, 'plus'),
+  localVideoUpload: config => createBase(configUrl.localVideoUpload, 'POST', config, 'mlink'),
+  imageUpload: config => createBase(configUrl.imageUpload, 'POST', config, 'plus'),
+  localImageUpload: config => createBase(configUrl.localImageUpload, 'POST', config, 'mlink'),
+
   // 预约报名
   getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
