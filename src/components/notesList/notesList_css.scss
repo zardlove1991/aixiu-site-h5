@@ -80,8 +80,8 @@
           justify-content: flex-start;
           align-items: center;
           .img-style{
-            width: px2rem(160px);
-            height: px2rem(160px);
+            // min-width: px2rem(160px);
+            // min-height: px2rem(160px);
             border-radius: px2rem(8px);
           }
 
@@ -111,8 +111,15 @@
   .no-data-img-wrap{
     height:80vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    .no-data-title{
+      color: #999999;
+      font-size: px2rem(32px);
+      line-height: px2rem(32px);
+      margin-top: px2rem(-90px);
+    }
   }
 
   .no-data-img{
@@ -145,6 +152,7 @@
 .scroll-tips {
   width: 100%;
   @include font-dpr(14px);
+  margin-top: px2rem(20px);
   color:#666;
   text-align: center;
 }

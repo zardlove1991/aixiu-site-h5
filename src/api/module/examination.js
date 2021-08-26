@@ -99,8 +99,8 @@ let drawUrl = {
 
 // 我的报名  我的投票
 let jiluObj = {
-  enrollUrl: 'client/voting/myrecords',
-  voteUrl: 'client/voting/myworks'
+  voteUrl: 'client/voting/myrecords',
+  enrollUrl: 'client/voting/myworks'
 }
 
 // 不带GUID
@@ -189,6 +189,8 @@ export default {
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
-  // 获取报名记录
+  // 获取投票记录
+  getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
+  // 获取报名数据
   getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG)
 }
