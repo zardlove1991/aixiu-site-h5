@@ -92,7 +92,7 @@ const WX_API = {
     })
   },
   /* 带有promise的执行微信方法 */
-  normalExecute (name, params) {
+  normalExecute(name, params) {
     console.log(`准备调用微信 ${name} 接口`)
     return new Promise((resolve, reject) => {
       let options = {

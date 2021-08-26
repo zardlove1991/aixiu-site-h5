@@ -167,6 +167,7 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
+    keepAlive: true,
     title: '首页'
   }
 }, {

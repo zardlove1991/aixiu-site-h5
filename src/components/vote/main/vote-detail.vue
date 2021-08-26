@@ -223,7 +223,15 @@ export default {
             params: { id: this.id }
           })
         } else {
-          window.history.back()
+          let { checkFullScene}  = this.$route.params
+          if(checkFullScene){
+            this.$router.push({
+              name: 'votebegin',
+              params: { checkFullScene:this.$route.params.checkFullScene }
+            })
+          }else{
+            window.history.back()
+          }
         }
       } else if (slug === 'vote') {
         // 是否开启弹窗
