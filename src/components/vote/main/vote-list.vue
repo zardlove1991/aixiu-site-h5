@@ -274,7 +274,9 @@ export default {
       border-radius: px2rem(8px);
       position: fixed;
       bottom: px2rem(40px);
-      width: px2rem(690px);
+      width: 90%;
+      transform: translateX(-50%);
+      left: 50%;
       // background-color: #FC7465;
       @include bg-color('btnColor');
       .menu-text {
