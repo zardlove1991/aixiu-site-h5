@@ -103,6 +103,7 @@ instance.interceptors.response.use((res, xhr) => {
       return Promise.reject(data)
     }
   }
+  console.log('res.status', res.status)
   const dom = document.getElementById('watting-wrap')
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'

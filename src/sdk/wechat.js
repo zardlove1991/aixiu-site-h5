@@ -118,6 +118,9 @@ let wechat = {
         this.getDefaultScope()
       } else if (pathname.indexOf('newstart') !== -1 || pathname.indexOf('drawlist') !== -1) {
         this.getDefaultScope()
+      } else if (pathname.indexOf('enrollist') !== -1 || pathname.indexOf('votelist') !== -1) {
+        // 报名记录 投票记录
+        this.getDefaultScope()
       }
     }
   }

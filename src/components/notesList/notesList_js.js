@@ -184,7 +184,7 @@ export default {
     judgeEnv () {
       // 判断当前状态
       const _hostName = location.href
-      if (_hostName.indexOf('vote-list') > -1) {
+      if (_hostName.indexOf('votelist') > -1) {
         this.curStatus = 'vote'
         this.noDataTitle = '暂无投票记录'
         this.activeStatueList = [
@@ -204,7 +204,7 @@ export default {
         this.requestObj = Object.assign(this.requestObj, {
           status: 0 // 活动状态，1未开启 2 进行中 3暂停 4结束（此需求只用到2，3，4）
         })
-      } else if (_hostName.indexOf('enroll-list') > -1) {
+      } else if (_hostName.indexOf('enrollist') > -1) {
         this.curStatus = 'enroll'
         this.noDataTitle = '暂无报名记录'
         this.activeStatueList = [
@@ -401,26 +401,26 @@ export default {
         },
         query: { worksId: data.id }
       })
-    },
-    getVideoBase64 (url) {
-      return new Promise(function (resolve, reject) {
-        let dataURL = ''
-        let video = document.createElement('video')
-        video.setAttribute('crossOrigin', 'anonymous') // 处理跨域
-        video.setAttribute('src', url)
-        video.setAttribute('width', 400)
-        video.setAttribute('height', 240)
-        video.addEventListener('loadeddata', function () {
-            let canvas = document.createElement('canvas')
-            let width = video.width // canvas的尺寸和图片一样
-            let height = video.height
-            canvas.width = width
-            canvas.height = height
-            canvas.getContext('2d').drawImage(video, 0, 0, width, height) // 绘制canvas
-            dataURL = canvas.toDataURL('image/jpeg') // 转换为base64
-            resolve(dataURL)
-        })
-      })
     }
+    // getVideoBase64 (url) {
+    //   return new Promise(function (resolve, reject) {
+    //     let dataURL = ''
+    //     let video = document.createElement('video')
+    //     video.setAttribute('crossOrigin', 'anonymous') // 处理跨域
+    //     video.setAttribute('src', url)
+    //     video.setAttribute('width', 400)
+    //     video.setAttribute('height', 240)
+    //     video.addEventListener('loadeddata', function () {
+    //         let canvas = document.createElement('canvas')
+    //         let width = video.width // canvas的尺寸和图片一样
+    //         let height = video.height
+    //         canvas.width = width
+    //         canvas.height = height
+    //         canvas.getContext('2d').drawImage(video, 0, 0, width, height) // 绘制canvas
+    //         dataURL = canvas.toDataURL('image/jpeg') // 转换为base64
+    //         resolve(dataURL)
+    //     })
+    //   })
+    // }
   }
 }

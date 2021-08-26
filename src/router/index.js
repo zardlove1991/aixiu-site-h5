@@ -15,15 +15,15 @@ const routeBase = () => {
 Vue.use(Router)
 
 const routes = [{
-  path: '/enroll-list',
-  name: 'EnrollList',
+  path: '/enrollist',
+  name: 'enrollist',
   component: () => import('@/components/notesList/NotesList.vue'),
   meta: {
     title: '报名记录'
   }
 }, {
-  path: '/vote-list',
-  name: 'VoteList',
+  path: '/votelist',
+  name: 'votelist',
   component: () => import('@/components/notesList/NotesList.vue'),
   meta: {
     title: '投票记录'
