@@ -115,7 +115,11 @@ export default {
               STORAGE.set('location', location)
             }
             resolve()
+          },
+          fail (e) {
+            reject(e)
           }
+
         })
       })
     },

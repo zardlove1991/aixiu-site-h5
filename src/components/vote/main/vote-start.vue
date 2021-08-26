@@ -60,7 +60,8 @@
         </div>
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
           <div class="vote-cols-wrap signup-icon">
-            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <!-- <span class="vote-count">{{detailInfo.report_count}}</span> -->
+            <span class="vote-count">{{detailInfo.works_count}}</span>
             <span class="vote-desc">报名次数</span>
           </div>
           <div class="vote-cols-wrap examine-icon">
@@ -247,6 +248,12 @@
       :downloadLink="downloadLink"
       :activeTips="activeTips">
     </active-vote>
+    <area-vote
+      :show="isShowArea"
+      :limitArea="limitArea"
+      :curApp="curApp"
+      @close="isShowArea = false">
+    </area-vote>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
@@ -286,6 +293,7 @@ import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } f
 import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
+import AreaVote from '@/components/vote/global/vote-area'
 
 export default {
   mixins: [mixins],
@@ -310,10 +318,14 @@ export default {
     VoteClassifyList,
     Spinner,
     Loadmore,
-    LotteryVote
+    LotteryVote,
+    AreaVote
   },
   data () {
     return {
+      curApp: '',
+      isShowArea: false,
+      limitArea: [],
       interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
@@ -402,7 +414,12 @@ export default {
     },
     allWorkList () {
       if (this.myWork.id) {
-        return [this.myWork, ...this.workList]
+        let _index = this.workList.findIndex(item => item.id === this.myWork.id)
+        console.log('_index', _index, this.workList, this.myWork.id)
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.workList[_index] = Object.assign(this.workList[_index], this.myWork)
+        console.log('listValue', this.workList[_index], this.workList)
+        return this.workList
       } else {
         return this.workList
       }
@@ -720,6 +737,18 @@ export default {
         window.SmartCity.getLocation((res) => {
           if (res) {
             let { latitude, longitude } = res
+
+            let detailInfo = STORAGE.get('detailInfo')
+            let _area = ''
+            _area = detailInfo.rule.area_limit.area
+            if (_area !== undefined && _area.length !== 0) {
+              // 判断是否能获取经纬度
+              if (latitude === '' || longitude === '') {
+                this.positionTips()
+                return false
+              }
+            }
+
             let location = {
               lat: latitude,
               lng: longitude
@@ -728,8 +757,37 @@ export default {
           }
         })
       } else if (plat === 'wechat') {
+        let detailInfo = STORAGE.get('detailInfo')
+        let _area = []
+        _area = detailInfo.rule.area_limit.area
+        console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
+        if (_area !== undefined && _area.length !== 0) {
+          this.getLocation().then(res => {
+            // if (Object.keys(res).length === 0) {
+            //   this.positionTips()
+            // }
+          }).catch(e => {
+            this.positionTips()
+          })
+          return false
+        }
+
         this.getLocation()
       }
+    },
+    positionTips () {
+      let detailInfo = STORAGE.get('detailInfo')
+      this.limitArea = detailInfo.rule.area_limit.area
+      this.curApp = ''
+      let appSign = getAppSign()
+      const _userAppSource = detailInfo.rule.limit.source_limit.user_app_source
+      for (let i of _userAppSource) {
+        if (i.sign === appSign) {
+          this.curApp = i.name
+        }
+      }
+      console.log('curApp', this.curApp)
+      this.isShowArea = true
     },
     initVoteReportTime () {
       let detailInfo = this.detailInfo
@@ -1075,6 +1133,7 @@ export default {
       }
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
+      if (this.loading) return false
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -1429,10 +1488,10 @@ export default {
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            width: 1px;
-            height: px2rem(28px);
-            background-color: rgba(255, 255, 255, 0.3);
-            content: "";
+            // width: 1px;
+            // height: px2rem(28px);
+            // background-color: rgba(255, 255, 255, 0.3);
+            // content: "";
           }
           &:last-child {
             margin-right: 0;
