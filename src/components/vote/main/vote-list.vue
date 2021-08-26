@@ -79,7 +79,7 @@ export default {
       fullSceneMap,
       is_open_enroll_limit: '',
       loading: false,
-      count: 5,
+      count: 10,
       page: 1
     }
   },
@@ -189,7 +189,8 @@ export default {
       display: flex;
       flex-direction: column;
       .voteList {
-          height: px2rem(1050px);
+          // height: px2rem(1050px);
+          height: 88vh;
           overflow-y: auto;
           .data {
             width: 100%;
