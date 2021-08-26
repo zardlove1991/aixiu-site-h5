@@ -340,7 +340,10 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
-      if (this.showModel === 'picture' && this.imageUpload_min_num) {
+      if (this.showModel === 'picture' && !this.material.image.length) {
+        Toast(`请至少上传1张图片`)
+        return
+      } else if (this.showModel === 'picture' && this.material.image.length < this.imageUpload_min_num) {
         Toast(`请至少上传${this.imageUpload_min_num}张图片`)
         return
       }

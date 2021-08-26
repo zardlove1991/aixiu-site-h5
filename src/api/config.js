@@ -28,6 +28,7 @@ export default {
   // 'c4': `${protocol}//public.kxm.xmtv.cn/c4api/`,
   'c4': `${protocol}//c4api.kxm.xmtv.cn/`,
   'news': `${protocol}//public.kxm.xmtv.cn/news/`,
+  'plus': env !== 'online' ? `${protocol}//test-mapi.kxm.xmtv.cn/` : `${protocol}//mapi1.kxm.xmtv.cn/`,
   //
   'timeout': 36000,
   'HTTP-X-H5-VERSION': 1.0,
