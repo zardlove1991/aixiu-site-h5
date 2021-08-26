@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="exam-header-wrap">
-    <div v-show="examInfo.is_open_exam_limit_time" class="time-wrap" :class="['time-wrap', isTimeStyle ]">
+    <div v-show="examInfo.limit.is_open_exam_limit_time" class="time-wrap" :class="['time-wrap', isTimeStyle ]">
       <div class="time time-flex">
         <div class="time-icon"></div>
         <span>{{timeTip ? timeTip : '初始化...'}}</span>
