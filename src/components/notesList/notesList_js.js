@@ -21,8 +21,8 @@ export default {
         shenhe: require('@/assets/notesList/vote/shenhe.png'),
         tongguo: require('@/assets/notesList/vote/tongguo.png')
       },
-      yearValue: '',
-      monthValue: '',
+      yearValue: 0,
+      monthValue: 0,
       yearList: [
         {
           text: '全部', value: 0
