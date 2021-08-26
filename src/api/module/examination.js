@@ -97,8 +97,15 @@ let drawUrl = {
   getMyDrawList: 'xiuzan/account/mine/'
 }
 
+// 我的报名  我的投票
+let jiluObj = {
+  voteUrl: 'client/voting/myrecords',
+  enrollUrl: 'client/voting/myworks'
+}
+
 // 不带GUID
 let configUrl = {
+  ...jiluObj,
   ...QCloundUrl,
   ...baseUrl,
   ...examUrl,
@@ -181,5 +188,9 @@ export default {
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
-  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG)
+  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+  // 获取投票记录
+  getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
+  // 获取报名数据
+  getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG)
 }

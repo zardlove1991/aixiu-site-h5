@@ -17,6 +17,10 @@ import 'videojs-flash'
 import 'videojs-contrib-hls'
 import 'swiper/swiper-bundle.css'
 
+import Vant from 'vant'
+import 'vant/lib/index.css'
+Vue.use(Vant)
+
 Vue.use(VideoPlayer)
 Vue.use(VueAwesomeSwiper)
 Vue.use(VueClipboard)
@@ -25,7 +29,7 @@ Vue.config.productionTip = false
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   let name = to.name
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'enrollist', 'votelist']
   if (allArr.includes(name) && !from.name) {
     // 第一次进入页面
     oauth((res) => {
@@ -47,7 +51,7 @@ router.afterEach((route, from) => {
   let name = router.currentRoute.name
   let id = router.currentRoute.params.id
   let isFirst = false
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'enrollist', 'votelist']
   if (allArr.includes(name) && !from.name) {
     isFirst = true
   }
