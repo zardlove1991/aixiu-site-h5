@@ -223,13 +223,13 @@ export default {
             params: { id: this.id }
           })
         } else {
-          let { checkFullScene}  = this.$route.params
-          if(checkFullScene){
+          let { checkFullScene } = this.$route.params
+          if (checkFullScene) {
             this.$router.push({
               name: 'votebegin',
-              params: { checkFullScene:this.$route.params.checkFullScene }
+              params: { checkFullScene: this.$route.params.checkFullScene }
             })
-          }else{
+          } else {
             window.history.back()
           }
         }

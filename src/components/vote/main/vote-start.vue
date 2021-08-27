@@ -387,7 +387,7 @@ export default {
       fullSceneMap,
       isShowActiveTips: false,
       activeTips: [],
-      scrollTop:0, //滚动条距离顶部距离
+      scrollTop: 0, // 滚动条距离顶部距离
       downloadLink: ''
     }
   },
@@ -405,15 +405,15 @@ export default {
     console.log('beforeDestroy interval')
     this.clearSetInterval()
   },
-   mounted() {
+  mounted () {
     //  监听滚动事件
-    this.$nextTick(()=>{
-      document.addEventListener('scroll',this.handelscroll,true)
+    this.$nextTick(() => {
+      document.addEventListener('scroll', this.handelscroll, true)
     })
   },
-  activated() {
+  activated () {
     // 缓存组件直解获取内存中的数据
-   this.$refs["commvoteView"].scrollTop = this.scrollTop;
+    this.$refs['commvoteView'].scrollTop = this.scrollTop
     this.initData()
     let plat = getPlat()
     if (plat === 'smartcity') {
@@ -421,11 +421,11 @@ export default {
         this.appShareCallBack()
       })
     }
-    let {checkFullScene} =this.$route.params
-      console.log(this.$route.params,"this.$route.params")
-      if(checkFullScene){
-        this.toggleFullSceneType(checkFullScene)
-      }
+    let {checkFullScene} = this.$route.params
+    console.log(this.$route.params, 'this.$route.params')
+    if (checkFullScene) {
+      this.toggleFullSceneType(checkFullScene)
+    }
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -449,42 +449,36 @@ export default {
     }
   },
   // 路由钩子函数，在离开页面之前进行调用
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave (to, from, next) {
     let that = this
-    if (to.name == "votedetail") {
-      from.meta.keepAlive = true;
+    if (to.name === 'votedetail') {
+      from.meta.keepAlive = true
     } else {
-       let vnode = that.$vnode
-       let parentVnode = vnode && vnode.parent;
-	   if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
-	     var key = vnode.key == null
-	       ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '')
-	       : vnode.key;
-	     var cache = parentVnode.componentInstance.cache;
-	     var keys  = parentVnode.componentInstance.keys;
-	
-	     if (cache[key]) {
-	       that.$destroy()
-	       // remove key
-	       if (keys.length) {
-	         var index = keys.indexOf(key)
-	         if (index > -1) {
-	             keys.splice(index, 1)
-	         }
-	       }
-	
-	       cache[key] = null
-	     }
-	   }
-	   }
-	   next();
-	 },
+      let vnode = that.$vnode
+      let parentVnode = vnode && vnode.parent
+      if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
+        var key = vnode.key === null ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '') : vnode.key
+        var cache = parentVnode.componentInstance.cache
+        var keys = parentVnode.componentInstance.keys
+        if (cache[key]) {
+          that.$destroy()
+          // remove key
+          if (keys.length) {
+            var index = keys.indexOf(key)
+            if (index > -1) {
+              keys.splice(index, 1)
+            }
+          }
+          cache[key] = null
+        }
+      }
+    }
+    next()
+  },
   methods: {
     async initData () {
       let voteId = this.id
-      let { sign, invotekey ,} = this.$route.query
-      
-
+      let { sign, invotekey } = this.$route.query
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
@@ -1252,9 +1246,9 @@ export default {
       let params = {
         flag: this.showModel,
         id: this.id,
-        checkFullScene:this.checkFullScene
+        checkFullScene: this.checkFullScene
       }
-      console.log(params,data)
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,
@@ -1341,12 +1335,10 @@ export default {
       }
     },
     toggleFullSceneType (key) {
-      console.log(key,'keykey')
+      console.log(key, 'keykey')
       if (key !== this.checkFullScene) {
         this.checkFullScene = key
-      
-          console.log(this.fullSceneMap)
-
+        console.log(this.fullSceneMap)
         this.showModel = this.fullSceneMap[key][1]
         this.dealSearch('input-search', true)
       }
@@ -1365,28 +1357,28 @@ export default {
       this.dealSearch('input-search', true)
     },
     // 滚动函数
-    handelscroll() {
+    handelscroll () {
       // 获取滚动区域dom
-      let list = this.$refs["commvoteView"];
+      let list = this.$refs['commvoteView']
       // 设置滚动事件
       list.onscroll = this.debounce(() => {
-        this.scrollTop = list.scrollTop;
-      },100);      
+        this.scrollTop = list.scrollTop
+      }, 100)
     },
     // 防抖
-    debounce(fn,delay){
-      let timer = null 
-      return function() {
-          if(timer){
-            //当前正在一个计时过程中，并且又触发了相同事件。所以要取消当前的计时，重新开始计时
-            clearTimeout(timer) 
-            timer = setTimeout(fn,delay) 
-          }else{
-            //那么就开始一个计时
-            timer = setTimeout(fn,delay) 
-          }
+    debounce (fn, delay) {
+      let timer = null
+      return function () {
+        if (timer) {
+          // 当前正在一个计时过程中，并且又触发了相同事件。所以要取消当前的计时，重新开始计时
+          clearTimeout(timer)
+          timer = setTimeout(fn, delay)
+        } else {
+          // 那么就开始一个计时
+          timer = setTimeout(fn, delay)
+        }
       }
-    },
+    }
   }
 }
 </script>
