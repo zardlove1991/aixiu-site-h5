@@ -550,9 +550,9 @@ export default {
           let usedTime = parseInt((_now - firstTime))
           console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
           if (usedTime >= totalTime) {
-            console.error('已经答题超时,需要自动交卷')
-            this.$refs.examHeader.autoExamSubmit()
-            return false
+            // console.error('已经答题超时,需要自动交卷')
+            // this.$refs.examHeader.autoExamSubmit()
+            // return false
           }
         }
         console.error('本道题上一次进入时间戳', currentQuestionFirstTime)
@@ -566,6 +566,7 @@ export default {
           if (currentQuestion.remianTime === 0) {
             if (answerSubmitRules === 0) {
               console.error('answerSubmitRules已经答题超时,需要自动交卷')
+              Toast('本题答题超时，系统已经为您自动交卷')
               this.$refs.examHeader.autoExamSubmit()
             } else {
               console.error('未开启答错交卷，当前题目答题时间已经超时')
@@ -628,11 +629,11 @@ export default {
         this.saveClouding = false
         Indicator.close()
         if (err.error_code === 'member_submit') {
-          console.error('用户已交卷')
+          Toast('本场作答已超时，系统已经为您自动交卷')
           this.showExamResult()
         }
         if (err.error_code === 'question_time_out') {
-          Toast('本题答题超时已自动交卷!')
+          Toast('本题答题超时，系统已经为您自动交卷')
           this.showExamResult()
         }
       })
@@ -641,7 +642,12 @@ export default {
       let { success, data, saveStatus } = res
       console.log('setExerciseResult+******', res)
       if (res && res.error_code === 'member_submit') {
-        console.error('用户已交卷')
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        this.showExamResult()
+        return false
+      }
+      if (res && res.error_code === 'question_time_out') {
+        Toast('本题答题超时，系统已经为您自动交卷')
         this.showExamResult()
         return false
       }
@@ -655,9 +661,9 @@ export default {
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
             if (saveStatus === 'timeout') {
-              Toast('本题已超时，系统已为您自动交卷')
+              Toast('本题答题超时，系统已经为您自动交卷')
             } else {
-              Toast('本题答错，系统已为您自动交卷')
+              Toast('本题答错，系统已经为您自动交卷')
             }
             setTimeout(() => {
               this.showExamResult()
@@ -679,7 +685,7 @@ export default {
             setTimeout(() => {
               // 如果是最后一题 确认后自动交卷
               if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
-                Toast('本题是最后一题自动交卷!')
+                Toast('本题是最后一题,系统为您自动交卷中...')
                 this.$refs.examHeader.confirmSubmitModel('noconfirm')
               }
             }, 1000)
