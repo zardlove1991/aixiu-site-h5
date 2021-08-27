@@ -86,6 +86,7 @@ instance.interceptors.response.use((res, xhr) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  STORAGE.set('isTimeout', isTimeout)
   if (isTimeout || status === 503 || status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
       window.location.href = `/xzh5/waitting.html?origin=${url}`

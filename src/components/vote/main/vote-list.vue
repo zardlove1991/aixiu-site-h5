@@ -54,6 +54,7 @@ import { InfiniteScroll, Lazyload } from 'mint-ui'
 
 export default {
   mixins: [ SubjectMixin ],
+  name: 'voteList',
   created () {
     this.initDetail()
     this.initForm()
@@ -264,7 +265,7 @@ export default {
           }
       }
       .autoHeight {
-        height: px2rem(1200px);
+        height: 95vh;
       }
     }
     .submit-btn-wrap {

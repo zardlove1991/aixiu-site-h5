@@ -39,9 +39,9 @@
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div" v-if="imageRatio && !imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸），小于10M;图片最多上传9张；支持PNG、JPG、GIF格式</div>
-        <div class="form-tips-div" v-else-if="imageRatio && imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸,小于10M；图片最少上传{{imageUpload_min_num}}张,最多上传9张；支持PNG、JPG、GIF格式</div>
-         <div class="form-tips-div" v-else-if="!imageRatio && imageUpload_min_num">建议比例：1:1，小于10M;图片最少上传{{imageUpload_min_num}}张,最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-if="imageRatio && !imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸），小于10M;图片最多上传{{imageUpload_max_num}}张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else-if="imageRatio && imageUpload_min_num">建议比例：4:5.6（1寸照片的比例尺寸,小于10M；图片最少上传{{imageUpload_min_num}}张,最多上传{{imageUpload_max_num}}张；支持PNG、JPG、GIF格式</div>
+         <div class="form-tips-div" v-else-if="!imageRatio && imageUpload_min_num">建议比例：1:1，小于10M;图片最少上传{{imageUpload_min_num}}张,最多上传{{imageUpload_max_num}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-tips-div" v-else>建议比例：1:1，小于10M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
@@ -51,7 +51,7 @@
             :flag="showModel"
             :isALiyun="false"
             :fileList.sync="fileList"
-            :maxNum="9"
+            :maxNum="imageUpload_max_num"
            >
           </file-upload>
         </div>
@@ -180,7 +180,8 @@ export default {
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
       fullSceneMap,
-      imageUpload_min_num: ''
+      imageUpload_min_num: '',
+      imageUpload_max_num: ''
     }
   },
   methods: {
@@ -201,6 +202,10 @@ export default {
         // 控制图片上传最小上传张数
         if (limit.report_image && limit.image_upload_limitMinNum) {
           this.imageUpload_min_num = limit.image_upload_limitMinNum
+        }
+        // 控制图片上传最大上传张数
+        if (limit.report_image && limit.image_upload_limitMaxNum) {
+          this.imageUpload_max_num = +limit.image_upload_limitMaxNum
         }
         let pageSetup = rule.page_setup
         if (pageSetup) {

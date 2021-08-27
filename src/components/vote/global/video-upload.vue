@@ -15,14 +15,16 @@
       :class="{ hide: fileList.length >= settings['video'].limit }"
       list-type="picture-card"
       action=""
+      ref="video-upload"
       :limit="settings['video'].limit"
       :multiple="false"
       :show-file-list="false"
       :file-list="fileList"
       :http-request="uploadFile"
-      v-loading="loading"
+      :on-success="onSuccess"
       :accept="settings['video'].accept">
-      <i class="el-icon-plus"></i>
+      <i class="el-icon-plus" v-show="!loading"></i>
+      <el-progress type="line" :text-inside="true" :percentage="progressPercent" :stroke-width="14" style="position: absolute;width:6.25rem;" v-show="loading"></el-progress>
     </el-upload>
   </div>
 </template>
@@ -70,7 +72,8 @@ export default {
       signature: {}, // 签名
       // 接口超时及节流
       ajaxTime: 0, // 请求超过4次 8秒认为失败
-      lastTime: 0 // 上次请求的时间 2s请求一次
+      lastTime: 0, // 上次请求的时间 2s请求一次
+      progressPercent: 0
     }
   },
   methods: {
@@ -151,7 +154,10 @@ export default {
       param.append('appkey', '45920796f66247395069ee6f45d99c5e')
       param.append('file', file)
       await API.videoUpload({
-        data: param
+        data: param,
+        onUploadProgress: ProgressEvent => {
+          this.progressPercent = +((ProgressEvent.loaded / ProgressEvent.total) * 100).toFixed(0)
+        }
       }).then((res) => {
         localParam.name = file.name
         localParam.url = res.host + res.dir + res.file_name + '.' + res.type
@@ -168,7 +174,17 @@ export default {
         })
         this.$emit('update:fileList', this.fileList)
         this.$emit('update:loading', false)
+        this.progressPercent = 0
       }).catch(error => {
+        const isTimeout = STORAGE.get('isTimeout')
+        if (isTimeout) {
+          this.$toast({ message: '当前网络状态不佳请重新上传', type: 'error' })
+          this.$refs['video-upload'].clearFiles()
+          this.loading = false
+          this.progressPercent = 0
+          STORAGE.set('isTimeout', false)
+          return
+        }
         this.$toast({ message: error.error_message, type: 'error' })
       })
       await API.localVideoUpload({
@@ -247,6 +263,7 @@ export default {
   .vote-upload {
     display: flex;
     flex-wrap: wrap;
+    position: relative;
     .hide .el-upload--picture-card {
       display: none;
     }
@@ -272,6 +289,13 @@ export default {
         width: px2rem(250px);
         height: px2rem(375px);
       }
+    }
+    .el-progress {
+        position: absolute;
+        top: 50%;
+        /* left: 50%; */
+        transform: translateY(-50%);
+        width: 5rem;
     }
   }
 </style>

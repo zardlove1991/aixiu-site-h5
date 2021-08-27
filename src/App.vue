@@ -1,7 +1,10 @@
 <template>
   <div id="app" :class="{hide: isShowModelThumb}">
     <!--主体路由内容渲染-->
-    <router-view/>
+    <keep-alive :include="include">
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+     <router-view v-if="!$route.meta.keepAlive"></router-view>
     <!--图片预览插件-->
     <lg-preview></lg-preview>
     <errorDialog/>
@@ -15,12 +18,25 @@ import { getPlat, getUrlParam } from '@/utils/utils'
 
 export default {
   name: 'App',
+  data: () => ({
+    include: []
+  }),
   computed: {
     ...mapGetters('depence', ['isShowModelThumb'])
   },
   components: { errorDialog },
   created () {
     this.goPage()
+  },
+  watch: {
+    $route (to, from) {
+      if (to.meta.keepAlive) {
+        !this.include.includes(to.name) && this.include.push(to.name)
+      }
+      if (to.name === 'votebegin' && from.name === 'votesubmit') {
+        this.include = []
+      }
+    }
   },
   methods: {
     goPage () {

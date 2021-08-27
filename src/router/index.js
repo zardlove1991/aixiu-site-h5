@@ -221,7 +221,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '我的作品'
+    title: '我的作品',
+    keepAlive: true
   }
 }, {
   path: '/enrollstart/:id',
