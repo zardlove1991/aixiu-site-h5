@@ -1,4 +1,5 @@
-let requestUrl = 'http://10.0.31.183:9504'
+let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
+
 if(!document.getElementByClassName){
     function hasClass(elem, cls) {
       cls = cls || '';
@@ -297,7 +298,6 @@ var tncode = {
             if (ele.style.opacity != undefined) {
                 // 兼容FF和GG和新版本IE
                 ele.style.opacity = opacity / 100;
-
             } else {
                 // 兼容老版本ie
                 ele.style.filter = "alpha(opacity=" + opacity + ")";
@@ -393,7 +393,7 @@ var tncode = {
         tncode._img = new Image();
         var img_url = '';
         $.ajax({
-            url: requestUrl + "?t="+Math.random(),
+            url: requestUrl + "/?t="+Math.random(),
             async:false,
             success:function(res){
                 img_url = res.response.img
@@ -440,6 +440,8 @@ var tncode = {
             tncode._bind(obj,'touchstart',_this.refresh);
             tncode._bind(obj,'click',_this.refresh);
 
+            // 点击按钮事件
+            console.log(99, document.getElementByClassName('tncode',-1))
             var objs = document.getElementByClassName('tncode',-1);
             for (var i in objs) {
                 var o = objs[i];

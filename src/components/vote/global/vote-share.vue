@@ -7,7 +7,9 @@
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">确定要{{textSetting.vote ? textSetting.vote : '给Ta投票' }}吗？</div>
         <div class="workvote-all-btn">
-          <button class="dialog-sure-btn min workvote-right" v-if="!voteDisable" @click="sureWorkVote()">确定</button>
+          <button v-if="!voteDisable"
+            @click="sureWorkVote()"
+            class="tncode dialog-sure-btn min workvote-right">确定</button>
           <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
           <button class="dialog-ok-btn min" @click="close()">取消</button>
         </div>
@@ -143,6 +145,10 @@ export default {
         })
       })
     },
+    slideCodeVerification () {
+      // 验证码的校验
+      console.log('999', $TN.show())
+    },
     isCanvassShare () {
       let shareData = this.shareData
       if (shareData && shareData.sign && shareData.invotekey) {
@@ -165,6 +171,14 @@ export default {
       if (!config || !detailInfo) {
         return
       }
+
+      let codeObj = {
+        request_id: '', // 验证码ID
+        tn_x: '' // 验证码
+      }
+      // 判断验证码是否需要弹出
+      this.slideCodeVerification()
+
       this.voteDisable = true
       let obj = {
         ...config,
@@ -188,7 +202,6 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          // console.log('errCode', errCode)
           if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
