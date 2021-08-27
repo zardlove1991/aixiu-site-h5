@@ -301,7 +301,19 @@ const routes = [{
   path: '/drawlist',
   name: 'drawlist',
   component: getOtherComponent('list', 'draw')
-}]
+},
+{
+  path: '/dialbegin/:id',
+  name: 'dialbegin',
+  component: getOtherComponent('dial-start', 'dial'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '首页'
+  }
+}
+]
 
 let router = new Router({
   mode: 'history',
