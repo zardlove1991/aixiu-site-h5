@@ -30,7 +30,7 @@
           <span>{{item.time}}</span>
           <span>{{item.score}}分</span>
           <span v-if='isIntegralType'>{{item.points}}积分</span>
-          <span v-if="examInfo.mark !== 'examination@exercise'"><van-icon name="arrow"  /></span>
+          <span><van-icon name="arrow"  /></span>
         </div>
       </div>
     </div>
@@ -106,7 +106,7 @@ export default {
       })
     },
     goStaticPage (item) {
-      if (this.examInfo.mark === 'examination@exercise') return
+      // if (this.examInfo.mark === 'examination@exercise') return
       this.$router.push({
         path: `/exam/statistic/${this.id}`,
         query: {api_person_id: item.api_person_id}

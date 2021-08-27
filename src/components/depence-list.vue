@@ -64,24 +64,18 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <div style="display:none">是否显示提交{{isShowSubmitBtn}}--- 是否显示下一题{{nextExerciseBtn}}</div>
+        <div style="display:none;">是否显示提交{{isShowSubmitBtn}}--- 是否显示下一题{{nextExerciseBtn}}</div>
         <div class="next-wrap"
           v-show="!nextExerciseBtn && successStatus === 0"
           @click.stop="saveCloud('add')">
            确认
-        </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn && currentSubjectIndex === examList.length-1 && successStatus !== 0 &&!showExerciseResultBtn" @click.stop="submitExam">
-          {{examInfo.limit.submit_text || examInfo.mark === 'examination@exercise' ? '查看分数' : '立即交卷'}}
-        </div>
-        <div class="next-wrap" v-show="showExerciseResultBtn&&examInfo.mark === 'examination@exercise'" @click.stop="showExamResult">
-          查看分数
         </div>
         <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
           下一题
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" v-show="isShowSubmitBtn" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -167,7 +161,7 @@
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
+import { Indicator, Toast } from 'mint-ui'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
@@ -614,6 +608,7 @@ export default {
     },
     async saveCloud (status = 'add') {
       console.log('saveCloud******', this.successStatus)
+      let saveStatus = status
       if (this.saveClouding) return
       if (this.successStatus !== 0) return
       if (this.currentSubjectIndex === this.examList.length - 1) {
@@ -622,6 +617,7 @@ export default {
       this.saveClouding = true
       Indicator.open({ spinnerType: 'fading-circle' })
       await this.changeSubjectIndex(status).then(res => {
+        res.saveStatus = saveStatus
         // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
@@ -635,10 +631,14 @@ export default {
           console.error('用户已交卷')
           this.showExamResult()
         }
+        if (err.error_code === 'question_time_out') {
+          Toast('本题答题超时已自动交卷!')
+          this.showExamResult()
+        }
       })
     },
     setExerciseResult (res) {
-      let { success, data } = res
+      let { success, data, saveStatus } = res
       console.log('setExerciseResult+******', res)
       if (res && res.error_code === 'member_submit') {
         console.error('用户已交卷')
@@ -654,15 +654,17 @@ export default {
             console.log('res超时/答错直接交卷', res)
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
+            if (saveStatus === 'timeout') {
+              Toast('本题已超时，系统已为您自动交卷')
+            } else {
+              Toast('本题答错，系统已为您自动交卷')
+            }
+            setTimeout(() => {
+              this.showExamResult()
+            }, 1000)
             // 如果开启答题解析 手动点查看分数
             if (+isOpenAnswerAnalysis) {
               this.showExerciseResultBtn = true
-            } else {
-              // 如果未开启答题解析 自动查看分数
-              console.log('未开启答题解析 自动查看分数')
-              setTimeout(() => {
-                this.showExamResult()
-              }, 1000)
             }
           } else {
             // 允许继续答题
@@ -674,20 +676,22 @@ export default {
               this.nextExerciseBtn = true
               console.log('nextExerciseBtn', '还有题目')
             }
+            setTimeout(() => {
+              // 如果是最后一题 确认后自动交卷
+              if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
+                Toast('本题是最后一题自动交卷!')
+                this.$refs.examHeader.confirmSubmitModel('noconfirm')
+              }
+            }, 1000)
             // 如果未开启答题解析 自动进入下一题或交卷
             if (!this.isOpenAnswerAnalysis) {
               setTimeout(() => {
-                // 如果是最后一题 确认后自动交卷
-                if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
-                  console.log('未开启答题解析 最后一题自动交卷中')
-                  this.$refs.examHeader.confirmSubmitModel('noconfirm')
-                }
                 // 如果不是最后一题 自动进入下一题
                 if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
                   console.log('未开启答题解析 不是最后一题 自动进入下一题中')
                   this.exerciseNext()
                 }
-              }, 1000)
+              }, 500)
             }
             // 如果未开启答题解析 自动查看分数
             console.log('未开启答题解析 自动查看分数')
@@ -764,15 +768,14 @@ export default {
     // 启动倒计时
     startCountDown () {
       console.log('*****启动倒计时****', 'startCountDown')
+      this.clearTimer()
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = parseInt(currentQuestion.limit_time)
       this.exerciseCountTime = currentQuestion.remianTime !== undefined ? currentQuestion.remianTime : limitTime
-      this.clearTimer()
       console.error('startCountDown******倒计时时间剩余*****exerciseCountTime', this.exerciseCountTime)
       this.timeInterval = window.setInterval(() => {
         // console.log(this.exerciseCountTime, 'this.exerciseCountTime')
         if (this.exerciseCountTime <= 0 || this.exerciseTotalTimeOut) {
-          this.exerciseCountTime = 0
           this.clearTimer()
           console.log('*****倒计时时间已到****')
           this.saveCloud('timeout')
@@ -786,6 +789,7 @@ export default {
     clearTimer () {
       window.clearInterval(this.timeInterval)
       this.timeInterval = null
+      this.exerciseCountTime = 0
       console.log('******清除定时器*******')
     },
     timeFormat (percentage) {
