@@ -174,7 +174,7 @@ export default {
 
       let codeObj = {
         request_id: '', // 验证码ID
-        tn_x: '' // 验证码
+        tn_x: '  ' // 验证码
       }
       // 判断验证码是否需要弹出
       this.slideCodeVerification()
