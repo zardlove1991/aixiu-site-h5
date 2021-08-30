@@ -13,10 +13,10 @@
       @close="isShowLottery = false"></lottery-vote>
     <div v-show='false' id='qrcode'></div>
     <!-- 图片的存储容器 -->
-    <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false">
-    <img :src="worksBg" ref="worksBgRef" alt=""  v-show="false">
-    <img :src="qrcodeImg" ref="qrcodeImgRef" alt="" @load='qrcodeFun' v-show="false">
-    <img :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
+    <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false" crossOrigin='anonymous'>
+    <img :src="worksBg" ref="worksBgRef" alt=""  v-show="false" crossOrigin='anonymous'>
+    <img :src="qrcodeImg" ref="qrcodeImgRef" alt="" @load='qrcodeFun' v-show="false" crossOrigin='anonymous'>
+    <img :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false" crossOrigin='anonymous'>
   </div>
 </template>
 
