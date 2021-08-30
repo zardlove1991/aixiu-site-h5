@@ -191,7 +191,7 @@ export default {
     loadImg (data) {
       return new Promise((resolve, reject) => {
         const _img = new Image()
-        // _img.crossOrigin = 'anonymous'
+        _img.crossOrigin = 'anonymous'
         _img.src = data
         _img.onload = () => {
           resolve(_img)
@@ -244,7 +244,6 @@ export default {
         // ctx.save()
 
         const userInfo = STORAGE.get('userinfo')
-        console.log('userInfo', userInfo)
         let offwidthNum = '270'
         if (data.avatar === '') {
           offwidthNum = '215'
