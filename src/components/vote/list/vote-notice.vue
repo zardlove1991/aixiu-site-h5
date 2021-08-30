@@ -1,5 +1,5 @@
 <template>
-  <div class="advert-top" v-if="message">
+  <div class='advert-top' v-if="message">
     <div class="ico-horn">
       <van-icon name="volume"  color='#F56C6C'/>
       <!-- <img src="https://t7.baidu.com/it/u=2222012502,2910942051&fm=193" alt=""> -->
@@ -23,57 +23,55 @@ export default {
   props: {
     message: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  data() {
-    return {};
+  data () {
+    return {}
   },
   mounted: function () {
     // 延时滚动
     setTimeout(() => {
-      this.runMarquee();
-    }, 2000);
+      this.runMarquee()
+    }, 2000)
   },
   methods: {
-    runMarquee() {
+    runMarquee () {
       // 获取文字 计算后宽度
-      var width = document
-          .getElementById("marquee")
-          .getBoundingClientRect().width,
-        marquee = document.getElementById("marquee-box"),
-        disx = 0; // 位移距离
-      //设置位移
+      var width = document.getElementById('marquee').getBoundingClientRect().width
+      var marquee = document.getElementById('marquee-box')
+      var disx = 0 // 位移距离
+      // 设置位移
       setInterval(() => {
-        disx--; // disx-=1; 滚动步长
+        disx-- // disx-=1; 滚动步长
         if (-disx >= width) {
-          disx = 10; // 如果位移超过文字宽度，则回到起点  marquee-list的margin值
+          disx = 10 // 如果位移超过文字宽度，则回到起点  marquee-list的margin值
         }
         // marquee.style.transform = 'translateX(' + disx + 'px)'
-        marquee.style.left = disx + "px";
-      }, 30); //滚动速度
-    },
-  },
-};
+        marquee.style.left = disx + 'px'
+      }, 30) // 滚动速度
+    }
+  }
+}
 // JavaScript Document
-(function px2rem(doc, win) {
-  var docEl = doc.documentElement,
-    resizeEvt = "orientationchange" in window ? "orientationchange" : "resize",
-    recalc = function () {
-      var clientWidth = docEl.clientWidth;
-      if (!clientWidth) return;
-      docEl.style.fontSize = 100 * (clientWidth / 750) + "px";
-    };
-  if (!doc.addEventListener) return;
-  // 窗口大小发生变化，初始化
-  win.addEventListener(resizeEvt, recalc, false);
-  doc.addEventListener("DOMContentLoaded", recalc, false);
-  setTimeout(function () {
-    px2rem(doc, win);
-  }, 200);
-})(document, window);
+// (function px2rem (doc, win) {
+//   var docEl = doc.documentElement
+//   var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize'
+//   var recalc = function () {
+//     var clientWidth = docEl.clientWidth
+//     if (!clientWidth) return
+//     docEl.style.fontSize = 100 * (clientWidth / 750) + 'px'
+//   }
+//   if (!doc.addEventListener) return
+//   // 窗口大小发生变化，初始化
+//   win.addEventListener(resizeEvt, recalc, false)
+//   doc.addEventListener('DOMContentLoaded', recalc, false)
+//   setTimeout(function () {
+//     px2rem(doc, win)
+//   }, 200)
+// })(document, window)
 </script>
-<style scoped lang='scss'>
+<style lang="scss" scoped>
 body,
 div,
 html,
@@ -106,7 +104,7 @@ li {
 }
 .ico-horn {
   display: flex;
-  margin-right: 10px; 
+  margin-right: 10px;
   width: (16px);
   height: (16px);
   justify-content: center;

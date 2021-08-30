@@ -1380,7 +1380,7 @@ export default {
           timer = setTimeout(fn, delay)
         }
       }
-    },
+    }
   }
 }
 </script>
