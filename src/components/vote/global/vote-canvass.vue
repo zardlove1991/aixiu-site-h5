@@ -15,6 +15,7 @@
     <!-- 图片的存储容器 -->
     <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false">
     <img :src="worksCode" ref="worksCodeRef" alt="" @load="resetPoster(2)" v-show="false">
+    <img :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
   </div>
 </template>
 
@@ -46,6 +47,7 @@ export default {
       lottery: {},
       worksImg: '',
       worksCode: '',
+      userIcon: '',
       worksDetailObj: {}
     }
   },
@@ -201,7 +203,28 @@ export default {
       })
     },
     resetPoster (data) {
-      this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+      console.log(data, this.worksDetailObj.params)
+      let indexType1 = false
+      let indexType2 = false
+      let indexType3 = false
+      // 判断用户头像是否存在
+      if (this.worksDetailObj.params.avatar === '') {
+        if (data === 1) {
+          this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+        }
+      } else {
+        // 头像存在
+        if (data === 1) {
+          indexType1 = true
+        }
+        if (data === 3) {
+          indexType3 = true
+        }
+
+        if (indexType1 && indexType3) {
+          this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+        }
+      }
     },
     loadImg (data) {
       console.log('data-1', data)
@@ -268,8 +291,9 @@ export default {
           offwidthNum = '215'
         } else {
           // 用户头像
-          let iconUrl = data.avatar
-          let userIcon = await this.loadImg(iconUrl)
+          // let iconUrl = data.avatar
+          // let userIcon = await this.loadImg(iconUrl)
+          let userIcon = this.$refs['userIconRef']
           ctx.arc(120, 635, 20, 0, 2 * Math.PI)
           ctx.clip()
           ctx.drawImage(userIcon, 100, 615, 40, 40)
