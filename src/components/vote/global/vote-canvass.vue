@@ -14,7 +14,7 @@
     <div v-show='false' id='qrcode'></div>
     <!-- 图片的存储容器 -->
     <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false">
-    <img :src="worksCode" ref="worksCodeRef" alt="" @load="resetPoster(2)" v-show="false">
+    <img :src="worksBg" ref="worksBgRef" alt=""  v-show="false">
     <img :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
   </div>
 </template>
@@ -48,6 +48,7 @@ export default {
       worksImg: '',
       worksCode: '',
       userIcon: '',
+      worksBg: '',
       worksDetailObj: {}
     }
   },
@@ -56,6 +57,9 @@ export default {
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
     }
+  },
+  mounted () {
+    this.worksBg = this.imgs.bgImg
   },
   methods: {
     saveSharer (worksId) {
@@ -250,7 +254,8 @@ export default {
         canvas.width = 640
         canvas.height = 897
 
-        let bgImg = await this.loadImg(this.imgs.bgImg)
+        // let bgImg = await this.loadImg(this.imgs.bgImg)
+        let bgImg = this.$refs['worksBgRef']
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
 
         ctx.font = '26px Arial'
