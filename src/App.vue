@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="{hide: isShowModelThumb}">
     <!--主体路由内容渲染-->
-    <keep-alive :include="Cache">
+    <keep-alive :include="include">
         <router-view v-if="$route.meta.keepAlive"></router-view>
     </keep-alive>
      <router-view v-if="!$route.meta.keepAlive"></router-view>
@@ -12,15 +12,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import errorDialog from './components/error-dialog'
 import { getPlat, getUrlParam } from '@/utils/utils'
 
 export default {
   name: 'App',
+  data: () => ({
+    include: []
+  }),
   computed: {
-    ...mapGetters('depence', ['isShowModelThumb']),
-    ...mapGetters(['Cache'])
+    ...mapGetters('depence', ['isShowModelThumb'])
   },
   components: { errorDialog },
   created () {
@@ -29,7 +31,10 @@ export default {
   watch: {
     $route (to, from) {
       if (to.meta.keepAlive) {
-        this.addCache(to.name)
+        !this.include.includes(to.name) && this.include.push(to.name)
+      }
+      if (to.name === 'votebegin' && from.name === 'votesubmit') {
+        this.include = []
       }
     }
   },
@@ -49,8 +54,7 @@ export default {
           }
         })
       }
-    },
-    ...mapActions(['addCache'])
+    }
   }
 }
 </script>
