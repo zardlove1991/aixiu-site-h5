@@ -392,10 +392,10 @@ var tncode = {
 
       fadein(obj, 80, 4000);
   },
-  _html:function(){
-      var d = document.getElementById('tncode_div_bg');
-      if(d)return;
-      var html = `<div class="tncode_div_bg" id="tncode_div_bg"></div>
+  _html: function () {
+    var d = document.getElementById('tncode_div_bg')
+    if (d) return
+    var html = `<div class="tncode_div_bg" id="tncode_div_bg"></div>
                       <div class="tncode_div" id="tncode_div">
                       <div class="loading">加载中</div>
                       <canvas class="tncode_canvas_bg"></canvas>
@@ -412,9 +412,9 @@ var tncode = {
                           <div class="tncode_refresh"></div>
                           <div class="tncode_tips"></div>
                       </div>
-                  </div>`;
-      var bo = document.getElementsByTagName('body');
-      appendHTML(bo[0],html);
+                  </div>`
+    var bo = document.getElementsByTagName('body')
+    appendHTML(bo[0], html)
   },
   _currentUrl:function(){
       var list = document.getElementsByTagName('script');
@@ -426,52 +426,51 @@ var tncode = {
           }
       }
   },
-  refresh:function(){
-    var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0;
-    var _this = this;
-    tncode._err_c = 0;
-    tncode._is_draw_bg = false;
-    tncode._result = false;
-    tncode._img_loaded = false;
-    var obj = document.getElementByClassName('tncode_canvas_bg');
-    obj.style.display="none";
-    obj = document.getElementByClassName('tncode_canvas_mark');
-    obj.style.display="none";
-    tncode._img = new Image();
-    var img_url = '';
-
+  refresh: function () {
+    var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
+    var _this = this
+    tncode._err_c = 0
+    tncode._is_draw_bg = false
+    tncode._result = false
+    tncode._img_loaded = false
+    var obj = document.getElementByClassName('tncode_canvas_bg')
+    obj.style.display = 'none'
+    obj = document.getElementByClassName('tncode_canvas_mark')
+    obj.style.display = 'none'
+    tncode._img = new Image()
+    var img_url = ''
     $.ajax({
-        headers: {
-          'member':
-          JSON.stringify({
-              "id":"4bc266f9b87aac2a06db343d72f608a5",
-              "expire":1630297050,
-              "token":"2caad35bd13c4c387ab6ec55b7bbf340c4fb5123",
-              "source":"wechat",
-              "mobile":"",
-              "nick_name":"%E4%B8%94%E5%B0%86%E6%96%B0%E7%81%AB%E8%AF%95%E6%96%B0%E8%8C%B6"
-          })
-        },
-        url: requestUrl + "/client/voting/code?t="+Math.random(),
-        async:false,
-        success:function(res){
-            img_url = res.response.img
-            tncode._request_id = res.response.request_id;
-        }
-    });
+      headers: {
+        'member': JSON.stringify(tncode.member)
+        // JSON.stringify({
+        //     "id":"4bc266f9b87aac2a06db343d72f608a5",
+        //     "expire":1630297050,
+        //     "token":"2caad35bd13c4c387ab6ec55b7bbf340c4fb5123",
+        //     "source":"wechat",
+        //     "mobile":"",
+        //     "nick_name":"%E4%B8%94%E5%B0%86%E6%96%B0%E7%81%AB%E8%AF%95%E6%96%B0%E8%8C%B6"
+        // })
+      },
+      url: requestUrl + '/client/voting/code?t=' + Math.random(),
+      async: false,
+      success: function (res) {
+        img_url = res.response.img
+        tncode._request_id = res.response.request_id
+      }
+    })
 
     tncode._img.src = img_url;
-    tncode._img.onload = function(){
-        tncode._draw_fullbg();
-        var canvas_mark = document.getElementByClassName('tncode_canvas_mark');
-        var ctx_mark = canvas_mark.getContext('2d');
-        //清理画布
-        ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
-        tncode._img_loaded = true;
-        obj = document.getElementByClassName('tncode_canvas_bg');
-        obj.style.display="";
-        obj = document.getElementByClassName('tncode_canvas_mark');
-        obj.style.display="";
+    tncode._img.onload = function () {
+      tncode._draw_fullbg();
+      var canvas_mark = document.getElementByClassName('tncode_canvas_mark');
+      var ctx_mark = canvas_mark.getContext('2d');
+      //清理画布
+      ctx_mark.clearRect(0, 0, canvas_mark.width, canvas_mark.height)
+      tncode._img_loaded = true
+      obj = document.getElementByClassName('tncode_canvas_bg')
+      obj.style.display = ''
+      obj = document.getElementByClassName('tncode_canvas_mark')
+      obj.style.display = ''
     };
     obj = document.getElementByClassName('slide_block');
     obj.style.cssText = "transform: translate(0px, 0px)";
