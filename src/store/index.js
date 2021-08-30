@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger' // vuex中自带logger插件
 import depence from './modules/depence'
 import vote from './modules/vote'
+import dial from './modules/dial'
 
 Vue.use(Vuex)
 
@@ -24,7 +25,8 @@ export default new Vuex.Store({
   },
   modules: {
     depence,
-    vote
+    vote,
+    dial
   },
   plugins: debug ? [ createLogger() ] : []
 })

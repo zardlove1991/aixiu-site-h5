@@ -303,12 +303,13 @@ const routes = [{
   component: getOtherComponent('list', 'draw')
 },
 {
-  path: '/dialbegin/:id',
+  // path: '/dialbegin/:id',
+  path: '/dialbegin',
   name: 'dialbegin',
   component: getOtherComponent('dial-start', 'dial'),
-  props: (route) => ({
-    id: route.params.id
-  }),
+  // props: (route) => ({
+  //   id: route.params.id
+  // }),
   meta: {
     title: '首页'
   }
