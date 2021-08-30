@@ -1,5 +1,5 @@
-/* eslint-disable no-inner-declarations */
-/* eslint-disable eqeqeq */
+/* eslint-disable */
+
 // let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
 // let requestUrl = 'http://localhost:8080/api/votinghy'
 
@@ -66,7 +66,9 @@ _ajax.prototype = {
     // eslint-disable-next-line one-var
     var methods = [
       function () { return new XMLHttpRequest() },
+      // eslint-disable-next-line no-undef
       function () { return new ActiveXObject('Msxml2.XMLHTTP') },
+      // eslint-disable-next-line no-undef
       function () { return new ActiveXObject('Microsoft.XMLHTTP')}
     ]
     var i = 0
@@ -261,136 +263,135 @@ var tncode = {
     var ctx_bg = canvas_bg.getContext('2d')
     ctx_bg.drawImage(tncode._img, 0, 0, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
-  _draw_mark: function() {
+  _draw_mark: function () {
     var canvas_mark = document.getElementByClassName('tncode_canvas_mark')
     var ctx_mark = canvas_mark.getContext('2d')
-      //清理画布
-      ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
-      ctx_mark.drawImage(tncode._img, 0, tncode._img_h, tncode._mark_w,tncode._img_h,tncode._mark_offset,0,tncode._mark_w, tncode._img_h);
-      var imageData = ctx_mark.getImageData(0, 0, tncode._img_w, tncode._img_h);
-      // 获取画布的像素信息
-      // 是一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示
-      // 如：图片由两个像素构成，一个像素是白色，一个像素是黑色，那么 data 为
-      // [255,255,255,255,0,0,0,255]
-      // 这个一维数组可以看成是两个像素中RBGA通道的数组的集合即:
-      // [R,G,B,A].concat([R,G,B,A])
-      var data = imageData.data;
-      //alert(data.length/4);
-      var x = tncode._img_h,y=tncode._img_w;
-      for(var j = 0; j < x; j++) {
-          var ii = 1,k1=-1;
-          for(var k=0;k<y&&k>=0&&k>k1;){
-            // 得到 RGBA 通道的值
-              var i = (j*y+k)*4;
-              k+=ii;
-              var r = data[i]
-                , g = data[i+1]
-                , b = data[i+2];
-              // 我们从最下面那张颜色生成器中可以看到在图片的右上角区域，有一小块在
-              // 肉眼的观察下基本都是白色的，所以我在这里把 RGB 值都在 245 以上的
-              // 的定义为白色
-              // 大家也可以自己定义的更精确，或者更宽泛一些
-              if(r+g+b<200) data[i+3] = 0;
-              else{
-                  var arr_pix = [1,-5];
-                  var arr_op = [250,0];
-                  for (var i =1; i<arr_pix[0]-arr_pix[1]; i++) {
-                      var iiii = arr_pix[0]-1*i;
-                      var op = parseInt(arr_op[0]-(arr_op[0]-arr_op[1])/(arr_pix[0]-arr_pix[1])*i);
-                      var iii = (j*y+k+iiii*ii)*4;
-                      data[iii+3] = op;
-                  }
-                  if(ii==-1){
-                      break;
-                  }
-                  k1 = k;
-                  k = y-1;
-                  ii = -1;
+    // 清理画布
+    ctx_mark.clearRect(0, 0, canvas_mark.width, canvas_mark.height)
+    ctx_mark.drawImage(tncode._img, 0, tncode._img_h, tncode._mark_w,tncode._img_h,tncode._mark_offset,0,tncode._mark_w, tncode._img_h);
+    var imageData = ctx_mark.getImageData(0, 0, tncode._img_w, tncode._img_h);
+    // 获取画布的像素信息
+    // 是一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示
+    // 如：图片由两个像素构成，一个像素是白色，一个像素是黑色，那么 data 为
+    // [255,255,255,255,0,0,0,255]
+    // 这个一维数组可以看成是两个像素中RBGA通道的数组的集合即:
+    // [R,G,B,A].concat([R,G,B,A])
+    var data = imageData.data
+    // alert(data.length/4);
+    var x = tncode._img_h, y=tncode._img_w
+    for(var j = 0; j < x; j++) {
+        var ii = 1,k1=-1;
+        for(var k=0;k<y&&k>=0&&k>k1;){
+          // 得到 RGBA 通道的值
+            var i = (j*y+k)*4
+            k+=ii
+            var r = data[i], g = data[i+1], b = data[i+2]
+            // 我们从最下面那张颜色生成器中可以看到在图片的右上角区域，有一小块在
+            // 肉眼的观察下基本都是白色的，所以我在这里把 RGB 值都在 245 以上的
+            // 的定义为白色
+            // 大家也可以自己定义的更精确，或者更宽泛一些
+              if(r+g+b<200) {
+                data[i+3] = 0;
+              } else {
+                var arr_pix = [1,-5];
+                var arr_op = [250,0];
+                for (var i =1; i<arr_pix[0]-arr_pix[1]; i++) {
+                    var iiii = arr_pix[0]-1*i;
+                    var op = parseInt(arr_op[0]-(arr_op[0]-arr_op[1])/(arr_pix[0]-arr_pix[1])*i);
+                    var iii = (j*y+k+iiii*ii)*4;
+                    data[iii+3] = op;
+                }
+                if(ii==-1){
+                    break;
+                }
+                k1 = k;
+                k = y-1;
+                ii = -1;
               };
           }
       }
-      ctx_mark.putImageData(imageData, 0, 0);
+      ctx_mark.putImageData(imageData, 0, 0)
   },
-  _reset:function(){
-      tncode._mark_offset = 0;
-      tncode._draw_bg();
-      tncode._draw_mark();
-      var obj = document.getElementByClassName('slide_block');
-      obj.style.cssText = "transform: translate(0px, 0px)";
+  _reset: function () {
+    tncode._mark_offset = 0
+    tncode._draw_bg()
+    tncode._draw_mark()
+    var obj = document.getElementByClassName('slide_block')
+    obj.style.cssText = 'transform: translate(0px, 0px)'
   },
-  show:function(){
-      tncode.isLoadType = false
-      var obj = document.getElementByClassName('hgroup');
-      if(obj){
-          obj.style.display="none";
+  show: function () {
+    tncode.isLoadType = false
+    var obj = document.getElementByClassName('hgroup')
+    if (obj) {
+      obj.style.display = 'none'
+    }
+    tncode.refresh()
+    tncode._tncode = this
+    document.getElementById('tncode_div_bg').style.display = 'block'
+    document.getElementById('tncode_div').style.display = 'block'
+  },
+  hide: function () {
+    document.getElementById('tncode_div_bg').style.display = 'none'
+    document.getElementById('tncode_div').style.display = 'none'
+  },
+  _showmsg: function (msg, status) {
+    if (!status) {
+      status = 0
+      var obj = document.getElementByClassName('tncode_msg_error')
+    } else {
+      var obj = document.getElementByClassName('tncode_msg_ok')
+    }
+    obj.innerHTML = msg
+    var setOpacity = function (ele, opacity) {
+      if (ele.style.opacity != undefined) {
+        // 兼容FF和GG和新版本IE
+        ele.style.opacity = opacity / 100
+      } else {
+        // 兼容老版本ie
+        ele.style.filter = 'alpha(opacity=' + opacity + ')'
       }
-      tncode.refresh();
-      tncode._tncode = this;
-      document.getElementById('tncode_div_bg').style.display="block";
-      document.getElementById('tncode_div').style.display="block";
-  },
-  hide:function(){
-      document.getElementById('tncode_div_bg').style.display="none";
-      document.getElementById('tncode_div').style.display="none";
-  },
-  _showmsg:function(msg,status){
-      if(!status){
-          status = 0;
-          var obj = document.getElementByClassName('tncode_msg_error');
-      }else{
-          var obj = document.getElementByClassName('tncode_msg_ok');
-      }
-      obj.innerHTML = msg;
-      var setOpacity = function (ele, opacity) {
-          if (ele.style.opacity != undefined) {
-              // 兼容FF和GG和新版本IE
-              ele.style.opacity = opacity / 100;
+    }
+    function fadeout (ele, opacity, speed) {
+      if (ele) {
+        var v = ele.style.filter.replace('alpha(opacity=', '').replace(')', '') || ele.style.opacity || 100
+        v < 1 && (v = v * 100)
+        var count = speed / 1000
+        var avg = (100 - opacity) / count
+        var timer = null
+        timer = setInterval(function () {
+          if (v - avg > opacity) {
+            v -= avg
+            setOpacity(ele, v)
           } else {
-              // 兼容老版本ie
-              ele.style.filter = "alpha(opacity=" + opacity + ")";
+            setOpacity(ele, 0)
+            if (status == 0) {
+              tncode._reset()
+            }
+            clearInterval(timer)
           }
-      };
-      function fadeout(ele, opacity, speed) {
-          if (ele) {
-              var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity || 100;
-              v < 1 && (v = v * 100);
-              var count = speed / 1000;
-              var avg = (100 - opacity) / count;
-              var timer = null;
-              timer = setInterval(function() {
-                  if (v - avg > opacity) {
-                      v -= avg;
-                      setOpacity(ele, v);
-                  } else {
-                      setOpacity(ele, 0);
-                      if(status==0){
-                          tncode._reset();
-                      }
-                      clearInterval(timer);
-                  }
-              }, 100);
-          }
+        }, 100)
       }
-      function fadein(ele, opacity, speed) {
-          if (ele) {
-              var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity;
-              v < 1 && (v = v * 100);
-              var count = speed / 1000;
-              var avg = count < 2 ? (opacity / count) : (opacity / count - 1);
-              var timer = null;
-              timer = setInterval(function() {
-                  if (v < opacity) {
-                      v += avg;
-                      setOpacity(ele, v);
-                  } else {
-                      clearInterval(timer);
-                      setTimeout(function() {fadeout(obj, 0, 6000);},1000);
-                  }
-              }, 100);
+    }
+    function fadein (ele, opacity, speed) {
+      if (ele) {
+        var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity;
+        v < 1 && (v = v * 100)
+        var count = speed / 1000
+        var avg = count < 2 ? (opacity / count) : (opacity / count - 1)
+        var timer = null
+        timer = setInterval(function () {
+          if (v < opacity) {
+            v += avg
+            setOpacity(ele, v)
+          } else {
+            clearInterval(timer)
+            setTimeout(function () { fadeout(obj, 0, 6000);},1000)
           }
+        }, 100)
       }
+    }
 
-      fadein(obj, 80, 4000);
+    fadein(obj, 80, 4000)
   },
   _html: function () {
     var d = document.getElementById('tncode_div_bg')
@@ -416,15 +417,16 @@ var tncode = {
     var bo = document.getElementsByTagName('body')
     appendHTML(bo[0], html)
   },
-  _currentUrl:function(){
-      var list = document.getElementsByTagName('script');
-      for (var i in list) {
-          var  d=list[i];
-          if(d.src.indexOf('tn_code')!==-1){//js文件名一定要带这个字符
-              var arr = d.src.split('tn_code');
-              return arr[0];
-          }
+  _currentUrl: function () {
+    var list = document.getElementsByTagName('script')
+    for (var i in list) {
+      var d = list[i]
+      // js文件名一定要带这个字符
+      if (d.src.indexOf('tn_code') !== -1) {
+        var arr = d.src.split('tn_code')
+        return arr[0]
       }
+    }
   },
   refresh: function () {
     var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
@@ -438,10 +440,12 @@ var tncode = {
     obj = document.getElementByClassName('tncode_canvas_mark')
     obj.style.display = 'none'
     tncode._img = new Image()
+    // eslint-disable-next-line camelcase
     var img_url = ''
+    // eslint-disable-next-line no-undef
     $.ajax({
       headers: {
-        'member': JSON.stringify(tncode.member)
+        'member': tncode.member
         // JSON.stringify({
         //     "id":"4bc266f9b87aac2a06db343d72f608a5",
         //     "expire":1630297050,
@@ -454,75 +458,81 @@ var tncode = {
       url: requestUrl + '/client/voting/code?t=' + Math.random(),
       async: false,
       success: function (res) {
+        // eslint-disable-next-line camelcase
         img_url = res.response.img
         tncode._request_id = res.response.request_id
       }
     })
 
-    tncode._img.src = img_url;
+    // eslint-disable-next-line camelcase
+    tncode._img.src = img_url
     tncode._img.onload = function () {
-      tncode._draw_fullbg();
-      var canvas_mark = document.getElementByClassName('tncode_canvas_mark');
-      var ctx_mark = canvas_mark.getContext('2d');
-      //清理画布
+      tncode._draw_fullbg()
+      // eslint-disable-next-line camelcase
+      var canvas_mark = document.getElementByClassName('tncode_canvas_mark')
+      // eslint-disable-next-line camelcase
+      var ctx_mark = canvas_mark.getContext('2d')
+      // 清理画布
       ctx_mark.clearRect(0, 0, canvas_mark.width, canvas_mark.height)
       tncode._img_loaded = true
       obj = document.getElementByClassName('tncode_canvas_bg')
       obj.style.display = ''
       obj = document.getElementByClassName('tncode_canvas_mark')
       obj.style.display = ''
-    };
-    obj = document.getElementByClassName('slide_block');
-    obj.style.cssText = "transform: translate(0px, 0px)";
-    obj = document.getElementByClassName('slide_block_text');
-    obj.style.display="block";
-  },
-  init:function(){
-      let _this = this;
-      if(!tncode._img){
-          tncode._html();
-          var obj = document.getElementByClassName('slide_block');
-
-          tncode._bind(obj,'mousedown',_this._block_start_move);
-          tncode._bind(document,'mousemove',_this._block_on_move);
-          tncode._bind(document,'mouseup',_this._block_on_end);
-
-          tncode._bind(obj,'touchstart',_this._block_start_move);
-          tncode._bind(document,'touchmove',_this._block_on_move);
-          tncode._bind(document,'touchend',_this._block_on_end);
-
-          var obj = document.getElementByClassName('tncode_close');
-          tncode._bind(obj,'touchstart',_this.hide);
-          tncode._bind(obj,'click',_this.hide);
-          var obj = document.getElementByClassName('tncode_refresh');
-
-          //tncode._bind(obj,'touchstart',_this.refresh);
-        //   tncode._bind(obj,'click',_this.refresh);
-
-          // 点击按钮事件
-          console.log(99, document.getElementByClassName('tncode',-1))
-          var objs = document.getElementByClassName('tncode',-1);
-          for (var i in objs) {
-              var o = objs[i];
-              o.innerHTML = '点击按钮进行验证';
-              tncode._bind(o,'touchstart',_this.show);
-              tncode._bind(o,'click',_this.show);
-          }
-      }
-  },
-  result:function(){
-      return tncode._result;
-  },
-  onsuccess:function(fn){
-      tncode._onsuccess = fn;
-  }
-};
-
-var $TN = tncode;
-var _old_onload = window.onload;
-window.onload = function(){
-    if(typeof _old_onload == 'function'){
-        _old_onload();
     }
-    tncode.init();
+    obj = document.getElementByClassName('slide_block')
+    obj.style.cssText = 'transform: translate(0px, 0px)'
+    obj = document.getElementByClassName('slide_block_text')
+    obj.style.display = 'block'
+  },
+  init: function () {
+    let _this = this
+    if (!tncode._img) {
+      tncode._html()
+      var obj = document.getElementByClassName('slide_block')
+
+      tncode._bind(obj, 'mousedown', _this._block_start_move)
+      tncode._bind(document, 'mousemove', _this._block_on_move)
+      tncode._bind(document, 'mouseup', _this._block_on_end)
+
+      tncode._bind(obj, 'touchstart', _this._block_start_move)
+      tncode._bind(document, 'touchmove', _this._block_on_move)
+      tncode._bind(document, 'touchend', _this._block_on_end)
+
+      var obj = document.getElementByClassName('tncode_close')
+      tncode._bind(obj, 'touchstart', _this.hide)
+      tncode._bind(obj, 'click', _this.hide)
+      var obj = document.getElementByClassName('tncode_refresh')
+
+      tncode._bind(obj, 'touchstart', _this.refresh)
+      tncode._bind(obj, 'click', _this.refresh)
+
+      // 点击按钮事件
+      console.log(99, document.getElementByClassName('tncode', -1))
+      var objs = document.getElementByClassName('tncode', -1)
+      for (var i in objs) {
+        var o = objs[i]
+        o.innerHTML = '点击按钮进行验证'
+        tncode._bind(o, 'touchstart', _this.show)
+        tncode._bind(o, 'click', _this.show)
+      }
+    }
+  },
+  result: function () {
+    return tncode._result
+  },
+  onsuccess: function (fn) {
+    tncode._onsuccess = fn
+  }
+}
+
+var $TN = tncode
+// eslint-disable-next-line camelcase
+var _old_onload = window.onload
+window.onload = function () {
+  // eslint-disable-next-line camelcase
+  if (typeof _old_onload == 'function') {
+    _old_onload()
+  }
+  tncode.init()
 }
