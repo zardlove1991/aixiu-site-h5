@@ -161,7 +161,7 @@ var tncode = {
     }
     var obj = document.getElementByClassName('slide_block')
 
-    obj.style.cssText = 'transform: translate("+offset+"px, 0px)'
+    obj.style.cssText = 'transform: translate(' + offset + 'px, 0px)'
     tncode._mark_offset = offset / max_off * (tncode._img_w - tncode._mark_w)
 
     console.log('tncode._mark_offset', tncode._mark_offset)
