@@ -1,11 +1,11 @@
 <template>
   <div id="app" :class="{hide: isShowModelThumb}">
     <!--主体路由内容渲染-->
-    <!-- <router-view/> -->
-    <keep-alive>
+    <router-view/>
+    <!-- <keep-alive>
       <router-view v-if="$route.meta.keepAlive"></router-view>
     </keep-alive>
-    <router-view v-if="!$route.meta.keepAlive"></router-view>
+    <router-view v-if="!$route.meta.keepAlive"></router-view> -->
     <!--图片预览插件-->
     <lg-preview></lg-preview>
     <errorDialog/>
