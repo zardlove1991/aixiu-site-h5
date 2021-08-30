@@ -4,7 +4,7 @@
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
-    <img class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop crossOrigin='anonymous' />
+    <img crossOrigin='anonymous' class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop />
     <div class="poster-tips" v-if="sharePoster">长按图片保存或转发朋友圈</div>
     <lottery-vote
       :show="isShowLottery"
@@ -12,7 +12,9 @@
       :textSetting="{sign: '拉票'}"
       @close="isShowLottery = false"></lottery-vote>
     <div v-show='false' id='qrcode'></div>
-    <!-- <img :src="posterInfo.image" ref="posterBg" alt="" @load="resetPoster(1)" v-show="false"> -->
+    <!-- 图片的存储容器 -->
+    <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false">
+    <img :src="worksCode" ref="worksCodeRef" alt="" @load="resetPoster(2)" v-show="false">
   </div>
 </template>
 
@@ -41,7 +43,10 @@ export default {
       sharePoster: '',
       show: false,
       isShowLottery: false,
-      lottery: {}
+      lottery: {},
+      worksImg: '',
+      worksCode: '',
+      worksDetailObj: {}
     }
   },
   watch: {
@@ -165,7 +170,14 @@ export default {
           }
         }
 
-        this.renderPlaybill(params, voteTip)
+        this.worksImg = params.cover
+        this.worksDetailObj = {
+          params: params,
+          voteTip: voteTip
+        }
+        // this.worksCode = params.
+        console.log('params', params, 'voteTip', voteTip)
+        // this.renderPlaybill(params, voteTip)
 
         // API.shareMake({
         //   data: params
@@ -188,10 +200,14 @@ export default {
         // }
       })
     },
+    resetPoster (data) {
+      this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+    },
     loadImg (data) {
+      console.log('data-1', data)
       return new Promise((resolve, reject) => {
         const _img = new Image()
-        _img.crossOrigin = 'anonymous'
+        // _img.setAttribute('crossOrigin', 'anonymous')
         _img.src = data
         _img.onload = () => {
           resolve(_img)
@@ -225,7 +241,10 @@ export default {
         ctx.fillText(data.numbering, 300, 120)
         // ctx.save()
         // 绘制作品图片
-        let imgObj = await this.loadImg(data.cover)
+        // let imgObj = await this.loadImg(data.cover)
+        // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+        // let imgObj = await this.loadImg(data.cover)
+        let imgObj = this.$refs['worksImgRef']
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
         // ctx.restore()
         // ctx.save()
