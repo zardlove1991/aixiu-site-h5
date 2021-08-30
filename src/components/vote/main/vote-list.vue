@@ -12,7 +12,12 @@
                 <span class="format_time">{{v}}</span>
                 <div class="data" v-for="item in selfData.get(v)" :key="item.numbering"  @click="jumpPage('voteoneself', { worksId: item.id })">
                   <div class="data-wrap" v-if="item.material.image.length">
-                      <img v-lazy="item.material.image[0].url" alt="">
+                    <div class="img-wrap">
+                       <img v-lazy="item.material.image[0].url" alt="">
+                       <div class="bg-img">
+                         <span>{{item.material.image.length}}</span>
+                       </div>
+                    </div>
                       <div class="detail">
                         <span class="create_time">{{item.create_time}}上传了作品</span>
                         <div class="introduce" v-if="item.introduce">{{item.introduce}}</div>
@@ -243,11 +248,40 @@ export default {
                         color: #FFB138;
                     }
                 }
+                .img-wrap {
+                  position: relative;
+                  .bg-img {
+                    width: px2rem(54px);
+                    height: px2rem(26px);
+                    position: absolute;
+                    background: #000;
+                    border-radius: px2rem(13px);
+                    opacity: 0.75;
+                    right: px2rem(6px);
+                    bottom: px2rem(12px);
+                    @include img-retina("~@/assets/vote/index-pic.png","~@/assets/vote/index-pic@2x.png", 100%, 100%);
+                    background-size: px2rem(18px);
+                    background-repeat: no-repeat;
+                    background-position: px2rem(10px) center;
+                    span{
+                      margin-left: px2rem(30px);
+                      margin-top: px2rem(2px);
+                      color:#fff;
+                      font-size: px2rem(18px);
+                      display: block;
+                    }
+                  }
+                }
             }
             img {
                 width: px2rem(120px);
                 height: px2rem(120px);
                 border-radius: px2rem(8px);
+            }
+            img[lazy=loading] {
+              width: px2rem(120px);
+              height: px2rem(120px);
+              @include img-retina("~@/assets/vote/default.png","~@/assets/vote/default.png", 100%, 100%);
             }
           }
           .format_time {
@@ -261,6 +295,7 @@ export default {
             height: px2rem(26px);
             float: left;
             margin-right: px2rem(16px);
+            margin-top: px2rem(3px);
             @include img-retina("~@/assets/vote/date.png","~@/assets/vote/date@2x.png", 100%, 100%);
           }
       }

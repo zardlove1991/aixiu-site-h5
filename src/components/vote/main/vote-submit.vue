@@ -181,7 +181,7 @@ export default {
       fullSceneType: [], // 全场景的搜索条件
       fullSceneMap,
       imageUpload_min_num: '',
-      imageUpload_max_num: ''
+      imageUpload_max_num: 9
     }
   },
   methods: {
@@ -201,7 +201,7 @@ export default {
         }
         // 控制图片上传最小上传张数
         if (limit.report_image && limit.image_upload_limitMinNum) {
-          this.imageUpload_min_num = limit.image_upload_limitMinNum
+          this.imageUpload_min_num = +limit.image_upload_limitMinNum
         }
         // 控制图片上传最大上传张数
         if (limit.report_image && limit.image_upload_limitMaxNum) {
@@ -403,6 +403,7 @@ export default {
           Toast(res.error_message)
           return
         }
+        this.$store.dispatch('clearCache', 'voteList')
         Toast('报名成功')
         this.$router.replace({
           name: 'votebegin',
