@@ -15,6 +15,7 @@
     <!-- 图片的存储容器 -->
     <img :src="worksImg" ref="worksImgRef" alt="" @load="resetPoster(1)" v-show="false">
     <img :src="worksBg" ref="worksBgRef" alt=""  v-show="false">
+    <img :src="qrcodeImg" ref="qrcodeImgRef" alt="" @load='qrcodeFun' v-show="false">
     <img :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
   </div>
 </template>
@@ -49,6 +50,7 @@ export default {
       worksCode: '',
       userIcon: '',
       worksBg: '',
+      qrcodeImg: '',
       worksDetailObj: {}
     }
   },
@@ -256,6 +258,7 @@ export default {
 
         // let bgImg = await this.loadImg(this.imgs.bgImg)
         let bgImg = this.$refs['worksBgRef']
+        console.log('bgImg', bgImg)
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
 
         ctx.font = '26px Arial'
@@ -272,8 +275,10 @@ export default {
         // let imgObj = await this.loadImg(data.cover)
         // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
         // let imgObj = await this.loadImg(data.cover)
+
         let imgObj = this.$refs['worksImgRef']
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+
         // ctx.restore()
         // ctx.save()
 
@@ -308,18 +313,19 @@ export default {
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
-        const generateQR = async text => {
-          try {
-            let qrcodeURL = await QRCode.toDataURL(text)
-            let _qrcodeImg = await this.loadImg(qrcodeURL)
-            return _qrcodeImg
-          } catch (e) {
-            console.error(e)
-          }
-        }
+        // const generateQR = async text => {
+        //   try {
+        //     let qrcodeURL = await QRCode.toDataURL(text)
+        //     console.log('qrcodeURL', qrcodeURL)
+        //     let _qrcodeImg = await this.loadImg(qrcodeURL)
+        //     return _qrcodeImg
+        //   } catch (e) {
+        //     console.error(e)
+        //   }
+        // }
 
-        let qrcodeImg = await generateQR(data.qrcode)
-        ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
+        // let qrcodeImg = await generateQR(data.qrcode)
+        // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
         ctx.font = '20px Arial'
         ctx.fillStyle = '#333333'
@@ -334,6 +340,9 @@ export default {
         Toast('生成分享图片失败')
         console.error(e)
       }
+    },
+    qrcodeFun () {
+
     },
     dealUrlConcat (params, detailInfo) {
       let location = window.location
