@@ -10,7 +10,7 @@
           <button v-if="!voteDisable"
             @click="sureWorkVote()"
             class="tncode dialog-sure-btn min workvote-right">确定</button>
-          <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
+          <button class="dialog-sure-btn min workvote-right" v-else @click='showWorkVote()'>确定</button>
           <button class="dialog-ok-btn min" @click="close()">取消</button>
         </div>
       </div>
@@ -88,8 +88,23 @@ export default {
   computed: {
     ...mapGetters('vote', ['shareData'])
   },
+  watch: {
+    slideCode: {
+      handler (newData, oldData) {
+        if (newData.isStopSlideType) {
+          // 滑动校验成功
+          this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
+          this.saveShare({memberId: this.curMemberId})
+        }
+      },
+      deep: true
+    }
+  },
   data () {
     return {
+      curMemberId: '',
+      slideCode: {},
+      codeObj: {},
       isCheckVote: false,
       isShowQrcode: false, // 关注公众号，即可参加活动弹窗
       isShowLottery: false, // 抽奖弹窗
@@ -100,10 +115,28 @@ export default {
       lottery: {}, // 抽奖信息
       checkVote: {},
       qrcodeUrl: '',
-      voteDisable: false
+      voteDisable: false,
+      curDetailInfo: {}
     }
   },
+  mounted () {
+    this.curDetailInfo = STORAGE.get('detailInfo')
+    // eslint-disable-next-line no-undef
+    this.slideCode = $TN
+    // 设置头信息
+    let userInfo = STORAGE.get('userinfo')
+    let userStr = ''
+    if (userInfo) {
+      let {id, expire, token, source, mobile, nick_name: nickName} = userInfo
+      userStr = JSON.stringify({id, expire, token, source, mobile, nick_name: encodeURIComponent(nickName)})
+    }
+    console.log('1-1', userStr)
+    this.slideCode.member = userStr
+  },
   methods: {
+    showWorkVote () {
+      // Toast('已经投过票')
+    },
     close () {
       this.$emit('close')
     },
@@ -145,10 +178,6 @@ export default {
         })
       })
     },
-    slideCodeVerification () {
-      // 验证码的校验
-      console.log('999', $TN.show())
-    },
     isCanvassShare () {
       let shareData = this.shareData
       if (shareData && shareData.sign && shareData.invotekey) {
@@ -159,10 +188,26 @@ export default {
           if (!res || !res.member_id) {
             return
           }
-          this.saveShare(res.member_id)
+          // this.saveShare(res.member_id)
+          this.curMemberId = res.member_id
+          this.checkedCodeFun(res.member_id)
         })
       } else {
-        this.saveShare()
+        // this.saveShare()
+        this.curMemberId = ''
+        this.checkedCodeFun()
+      }
+    },
+    checkedCodeFun (memberId = '') {
+      // 判断是否开启滑动验证码
+      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      this.codeObj = {}
+      if (_needCode === 1) {
+        this.slideCode.show() // 显示二维码
+        // eslint-disable-next-line no-undef
+        this.codeObj.request_id = $TN._request_id // 获取请求的id
+      } else {
+        this.saveShare(memberId)
       }
     },
     saveShare (memberId = '') {
@@ -172,15 +217,17 @@ export default {
         return
       }
 
-      let codeObj = {
-        request_id: '', // 验证码ID
-        tn_x: '  ' // 验证码
+      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      if (_needCode === 0) {
+        // 不需要滑动验证码
+        this.codeObj = {}
       }
-      // 判断验证码是否需要弹出
-      this.slideCodeVerification()
+
+      console.log('this.codeObj----', this.codeObj)
 
       this.voteDisable = true
       let obj = {
+        ...this.codeObj,
         ...config,
         member_id: memberId
       }
@@ -202,7 +249,14 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         if (errCode) {
-          if (errCode === 'WORKS_LOCKED' && limitTime) {
+          if (errCode === 'INVALID_CODE') {
+            console.log('yy', errCode, _needCode)
+            // 滑动验证码失败
+            if (_needCode === 1) {
+              this.slideCode.checkSuccessType({type: 'fail'})
+            }
+            return false
+          } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
             this.isShowMax = true
@@ -253,6 +307,10 @@ export default {
         let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
         Toast('成功' + sign)
         // this.$emit('success')
+        // 验证码成功的回调
+        if (_needCode === 1) {
+          this.slideCode.checkSuccessType({type: 'ok'})
+        }
         this.$emit('updateCard')
       })
     }
