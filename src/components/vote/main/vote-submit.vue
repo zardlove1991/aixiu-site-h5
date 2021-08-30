@@ -145,6 +145,7 @@ export default {
     return {
       ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
       ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
+      ZCIdIndex2: 'ab3bf9c79f2b4870806d1665e4f8d33b',
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -198,6 +199,8 @@ export default {
       this.nameStr = '照片主题'
       this.describeStr = '照片描述'
       this.describeSuffix = ''
+    } else if (this.id === this.ZCIdIndex2) {
+      this.nameStr = '留言标题'
     }
   },
   methods: {
