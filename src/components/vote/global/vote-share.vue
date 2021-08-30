@@ -121,6 +121,7 @@ export default {
   },
   mounted () {
     this.curDetailInfo = STORAGE.get('detailInfo')
+    console.log('this.curDetailInfo', this.curDetailInfo)
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 设置头信息
