@@ -360,8 +360,10 @@ export default {
         let _name = '请输入名称'
         if (this.id === this.ZCId) {
           _name = '请输入作品名称及朗诵人'
-        } else {
+        } else if (this.id === this.ZCIdIndex1) {
           _name = '请输入照片主题'
+        } else if (this.id === this.ZCIdIndex2) {
+          _name = '请输入留言标题'
         }
         Toast(_name)
         return
