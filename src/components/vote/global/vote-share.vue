@@ -123,6 +123,9 @@ export default {
     this.curDetailInfo = STORAGE.get('detailInfo')
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
+    // 对象的清空
+    this.initTnObj()
+
     // 设置头信息
     let userInfo = STORAGE.get('userinfo')
     let userStr = ''
@@ -133,8 +136,14 @@ export default {
     this.slideCode.member = userStr
   },
   methods: {
+    initTnObj () {
+      this.slideCode.requestUrl = ''
+      this.slideCode.member = {}
+      this.slideCode.isStopSlideType = false // 是否已经停止滑动
+      this.slideCode.isLoadType = false // 是否已经加载过
+    },
     showWorkVote () {
-      // Toast('已经投过票')
+      console.log('剩余投票不足')
     },
     close () {
       this.$emit('close')
@@ -189,7 +198,6 @@ export default {
           }
           // this.saveShare(res.member_id)
           this.curMemberId = res.member_id
-          console.log('res.member_id', res.member_id)
           this.checkedCodeFun(res.member_id)
         })
       } else {
@@ -199,7 +207,6 @@ export default {
       }
     },
     checkedCodeFun (memberId = '') {
-      console.log('data---', memberId)
       // 判断是否开启滑动验证码
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
       this.codeObj = {}
@@ -212,7 +219,6 @@ export default {
       }
     },
     saveShare (memberId = '') {
-      console.log('88', memberId)
       let detailInfo = STORAGE.get('detailInfo')
       let config = this.config
       if (!config || !detailInfo) {
@@ -225,16 +231,12 @@ export default {
         this.codeObj = {}
       }
 
-      console.log('this.codeObj----', this.codeObj, memberId)
-
       this.voteDisable = true
       let obj = {
         ...this.codeObj,
         ...config,
         member_id: memberId
       }
-
-      console.log('obj', obj)
 
       // 区域限制
       let { rule, id } = detailInfo
@@ -255,11 +257,11 @@ export default {
         let errCode = res.error_code
         if (errCode) {
           if (errCode === 'INVALID_CODE') {
-            console.log('yy', errCode, _needCode)
             // 滑动验证码失败
             if (_needCode === 1) {
               this.slideCode.checkSuccessType({type: 'fail'})
             }
+            this.voteDisable = false
             return false
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message

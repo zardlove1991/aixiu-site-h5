@@ -280,10 +280,6 @@ export default {
         ctx.fillText(data.numbering, 300, 120)
         // ctx.save()
         // 绘制作品图片
-        // let imgObj = await this.loadImg(data.cover)
-        // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
-        // let imgObj = await this.loadImg(data.cover)
-
         let imgObj = this.$refs['worksImgRef']
         console.log('imgObj', imgObj)
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
@@ -341,21 +337,6 @@ export default {
 
         QRCode.toDataURL(data.qrcode).then(res => {
           this.qrcodeImg = res
-          console.log('res', res)
-          // this.$nextTick(() => {
-          //   console.log("this.$refs['qrcodeImgRef']", this.$refs['qrcodeImgRef'])
-          //   ctx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
-          //   console.log('2', ctx)
-          //   ctx.font = '20px Arial'
-          //   ctx.fillStyle = '#333333'
-          //   ctx.fillText('长按识别二维码', 220, 730)
-
-          //   ctx.font = '20px Arial'
-          //   ctx.fillStyle = '#333333'
-          //   ctx.fillText('查看作品详情', 220, 760)
-
-          //   this.sharePoster = canvas.toDataURL('image/png', 0.8)
-          // })
         })
       } catch (e) {
         Toast('生成分享图片失败')
@@ -363,9 +344,7 @@ export default {
       }
     },
     qrcodeFun () {
-      console.log("this.$refs['qrcodeImgRef']", this.$refs['qrcodeImgRef'])
       this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
-      console.log('2', this.curCtx)
       this.curCtx.font = '20px Arial'
       this.curCtx.fillStyle = '#333333'
       this.curCtx.fillText('长按识别二维码', 220, 730)
