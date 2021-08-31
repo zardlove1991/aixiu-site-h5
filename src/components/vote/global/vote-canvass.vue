@@ -4,7 +4,11 @@
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
-    <img crossOrigin='anonymous' class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop />
+    <img crossOrigin='anonymous'
+      class="poster-img"
+      v-if="sharePoster"
+      :src="sharePoster"
+      @click.stop />
     <div class="poster-tips" v-if="sharePoster">长按图片保存或转发朋友圈</div>
     <lottery-vote
       :show="isShowLottery"
@@ -15,8 +19,10 @@
     <!-- 图片的存储容器 -->
     <img crossOrigin='anonymous' :src="worksImg" ref="worksImgRef" alt=""
       @load="resetPoster(1)" v-show="false">
-    <img crossOrigin='anonymous' :src="worksBg" ref="worksBgRef" alt=""  v-show="false">
-    <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt="" @load='qrcodeFun' v-show="false">
+    <img crossOrigin='anonymous' :src="worksBg" ref="worksBgRef" alt=""
+      v-show="false">
+    <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt=""
+      @load='qrcodeFun' v-show="false">
     <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
   </div>
 </template>
@@ -234,7 +240,6 @@ export default {
       }
     },
     loadImg (data) {
-      console.log('data-1', data)
       return new Promise((resolve, reject) => {
         const _img = new Image()
         // _img.setAttribute('crossOrigin', 'anonymous')
@@ -277,8 +282,10 @@ export default {
         // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
         // let imgObj = await this.loadImg(data.cover)
 
-        let imgObj = this.$refs['worksImgRef']
-        ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+        // ====
+        // let imgObj = this.$refs['worksImgRef']
+        // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+        // ====
 
         // ctx.restore()
         // ctx.save()
@@ -304,29 +311,30 @@ export default {
           // 用户头像
           // let iconUrl = data.avatar
           // let userIcon = await this.loadImg(iconUrl)
-          let userIcon = this.$refs['userIconRef']
-          ctx.arc(120, 635, 20, 0, 2 * Math.PI)
-          ctx.clip()
-          ctx.drawImage(userIcon, 100, 615, 40, 40)
-          ctx.restore()
+          // ===
+          // let userIcon = this.$refs['userIconRef']
+          // ctx.arc(120, 635, 20, 0, 2 * Math.PI)
+          // ctx.clip()
+          // ctx.drawImage(userIcon, 100, 615, 40, 40)
+          // ctx.restore()
+          // ===
         }
 
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
-        const generateQR = async text => {
-          try {
-            let qrcodeURL = await QRCode.toDataURL(text)
-            console.log('qrcodeURL', qrcodeURL)
-            let _qrcodeImg = await this.loadImg(qrcodeURL)
-            return _qrcodeImg
-          } catch (e) {
-            console.error(e)
-          }
-        }
-
-        let qrcodeImg = await generateQR(data.qrcode)
-        ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
+        // const generateQR = async text => {
+        //   try {
+        //     let qrcodeURL = await QRCode.toDataURL(text)
+        //     console.log('qrcodeURL', qrcodeURL)
+        //     let _qrcodeImg = await this.loadImg(qrcodeURL)
+        //     return _qrcodeImg
+        //   } catch (e) {
+        //     console.error(e)
+        //   }
+        // }
+        // let qrcodeImg = await generateQR(data.qrcode)
+        // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
         ctx.font = '20px Arial'
         ctx.fillStyle = '#333333'

@@ -163,8 +163,7 @@ var tncode = {
 
     obj.style.cssText = 'transform: translate(' + offset + 'px, 0px)'
     tncode._mark_offset = offset / max_off * (tncode._img_w - tncode._mark_w)
-
-    console.log('tncode._mark_offset', tncode._mark_offset)
+    // console.log('tncode._mark_offset', tncode._mark_offset)
     tncode._draw_bg()
     tncode._draw_mark()
   },
@@ -182,7 +181,7 @@ var tncode = {
   },
   checkSuccessType: function (data) {
     if (tncode.isLoadType) {
-      // 加载过不在加载
+      // 加载过不再加载
       return false
     }
     tncode.isLoadType = true
@@ -195,9 +194,9 @@ var tncode = {
       console.log(' tncode._result', tncode._result)
       document.getElementByClassName('hgroup').style.display = 'block'
       setTimeout(tncode.hide, 3000)
-      if (tncode._onsuccess) {
-        tncode._onsuccess()
-      }
+      // if (tncode._onsuccess) {
+      //   tncode._onsuccess()
+      // }
     } else {
       // var obj = document.getElementById('tncode_div')
       // addClass( obj,'dd');
@@ -205,10 +204,8 @@ var tncode = {
       //     removeClass( obj,'dd');
       // },200);
       tncode._result = false
-      console.log(' tncode._result', tncode._result)
       tncode._showmsg('验证失败')
       tncode._err_c++
-      console.log('tncode._err_c', tncode._err_c)
       if (tncode._err_c > 10) {
         tncode.refresh()
       }
@@ -324,7 +321,7 @@ var tncode = {
       if(obj){
           obj.style.display="none";
       }
-      tncode.refresh();
+      tncode.refresh(); // 初次默认调取
       tncode._tncode = this;
       document.getElementById('tncode_div_bg').style.display="block";
       document.getElementById('tncode_div').style.display="block";
@@ -427,8 +424,9 @@ var tncode = {
       }
   },
   refresh: function () {
-    var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
-    var _this = this
+    console.log('我被谁调用了：', tncode.refresh.caller)
+    // var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
+    // var _this = this
     tncode._err_c = 0
     tncode._is_draw_bg = false
     tncode._result = false
@@ -442,14 +440,6 @@ var tncode = {
     $.ajax({
       headers: {
         'member': tncode.member
-        // JSON.stringify({
-        //     "id":"4bc266f9b87aac2a06db343d72f608a5",
-        //     "expire":1630297050,
-        //     "token":"2caad35bd13c4c387ab6ec55b7bbf340c4fb5123",
-        //     "source":"wechat",
-        //     "mobile":"",
-        //     "nick_name":"%E4%B8%94%E5%B0%86%E6%96%B0%E7%81%AB%E8%AF%95%E6%96%B0%E8%8C%B6"
-        // })
       },
       url: requestUrl + '/client/voting/code?t=' + Math.random(),
       async: false,

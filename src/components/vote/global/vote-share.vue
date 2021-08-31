@@ -91,10 +91,10 @@ export default {
   watch: {
     slideCode: {
       handler (newData, oldData) {
-        if (newData.isStopSlideType) {
+        if (newData.isStopSlideType && newData._mark_offset !== 0) {
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
-          this.saveShare({memberId: this.curMemberId})
+          this.saveShare(this.curMemberId)
         }
       },
       deep: true
@@ -121,7 +121,6 @@ export default {
   },
   mounted () {
     this.curDetailInfo = STORAGE.get('detailInfo')
-    console.log('this.curDetailInfo', this.curDetailInfo)
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 设置头信息
@@ -131,7 +130,6 @@ export default {
       let {id, expire, token, source, mobile, nick_name: nickName} = userInfo
       userStr = JSON.stringify({id, expire, token, source, mobile, nick_name: encodeURIComponent(nickName)})
     }
-    console.log('1-1', userStr)
     this.slideCode.member = userStr
   },
   methods: {
@@ -191,6 +189,7 @@ export default {
           }
           // this.saveShare(res.member_id)
           this.curMemberId = res.member_id
+          console.log('res.member_id', res.member_id)
           this.checkedCodeFun(res.member_id)
         })
       } else {
@@ -200,6 +199,7 @@ export default {
       }
     },
     checkedCodeFun (memberId = '') {
+      console.log('data---', memberId)
       // 判断是否开启滑动验证码
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
       this.codeObj = {}
@@ -212,6 +212,7 @@ export default {
       }
     },
     saveShare (memberId = '') {
+      console.log('88', memberId)
       let detailInfo = STORAGE.get('detailInfo')
       let config = this.config
       if (!config || !detailInfo) {
@@ -224,7 +225,7 @@ export default {
         this.codeObj = {}
       }
 
-      console.log('this.codeObj----', this.codeObj)
+      console.log('this.codeObj----', this.codeObj, memberId)
 
       this.voteDisable = true
       let obj = {
@@ -232,6 +233,9 @@ export default {
         ...config,
         member_id: memberId
       }
+
+      console.log('obj', obj)
+
       // 区域限制
       let { rule, id } = detailInfo
       let { area_limit: areaLimit, unlock_duration: limitTime } = rule
