@@ -282,10 +282,9 @@ export default {
         // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
         // let imgObj = await this.loadImg(data.cover)
 
-        // ====
-        // let imgObj = this.$refs['worksImgRef']
-        // ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
-        // ====
+        let imgObj = this.$refs['worksImgRef']
+        console.log('imgObj', imgObj)
+        ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
 
         // ctx.restore()
         // ctx.save()
