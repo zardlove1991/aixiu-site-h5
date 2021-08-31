@@ -310,13 +310,11 @@ export default {
           // 用户头像
           // let iconUrl = data.avatar
           // let userIcon = await this.loadImg(iconUrl)
-          // ===
-          // let userIcon = this.$refs['userIconRef']
-          // ctx.arc(120, 635, 20, 0, 2 * Math.PI)
-          // ctx.clip()
-          // ctx.drawImage(userIcon, 100, 615, 40, 40)
-          // ctx.restore()
-          // ===
+          let userIcon = this.$refs['userIconRef']
+          ctx.arc(120, 635, 20, 0, 2 * Math.PI)
+          ctx.clip()
+          ctx.drawImage(userIcon, 100, 615, 40, 40)
+          ctx.restore()
         }
 
         ctx.font = '24px Arial'
