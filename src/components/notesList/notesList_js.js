@@ -392,7 +392,7 @@ export default {
       } else if (data.full_scene_type === 2) {
         flagValue = 'picture'
       }
-      console.log('_flag', flagValue)
+      console.log('_flag', flagValue, data.voting_id, data.id)
       if (this.curStatus === 'enroll') {
         // 1-已审核，2-驳回  3-审核中
         const auditStatus = Number(data.audit_status)
