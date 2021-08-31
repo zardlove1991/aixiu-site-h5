@@ -58,7 +58,9 @@ export default {
       userIcon: '',
       worksBg: '',
       qrcodeImg: '',
-      worksDetailObj: {}
+      worksDetailObj: {},
+      curCtx: '',
+      curCanvas: ''
     }
   },
   watch: {
@@ -320,6 +322,7 @@ export default {
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
+
         // const generateQR = async text => {
         //   try {
         //     let qrcodeURL = await QRCode.toDataURL(text)
@@ -333,22 +336,45 @@ export default {
         // let qrcodeImg = await generateQR(data.qrcode)
         // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
-        ctx.font = '20px Arial'
-        ctx.fillStyle = '#333333'
-        ctx.fillText('长按识别二维码', 220, 730)
+        this.curCtx = ctx
+        this.curCanvas = canvas
 
-        ctx.font = '20px Arial'
-        ctx.fillStyle = '#333333'
-        ctx.fillText('查看作品详情', 220, 760)
+        QRCode.toDataURL(data.qrcode).then(res => {
+          this.qrcodeImg = res
+          console.log('res', res)
+          // this.$nextTick(() => {
+          //   console.log("this.$refs['qrcodeImgRef']", this.$refs['qrcodeImgRef'])
+          //   ctx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
+          //   console.log('2', ctx)
+          //   ctx.font = '20px Arial'
+          //   ctx.fillStyle = '#333333'
+          //   ctx.fillText('长按识别二维码', 220, 730)
 
-        this.sharePoster = canvas.toDataURL('image/png', 0.8)
+          //   ctx.font = '20px Arial'
+          //   ctx.fillStyle = '#333333'
+          //   ctx.fillText('查看作品详情', 220, 760)
+
+          //   this.sharePoster = canvas.toDataURL('image/png', 0.8)
+          // })
+        })
       } catch (e) {
         Toast('生成分享图片失败')
         console.error(e)
       }
     },
     qrcodeFun () {
+      console.log("this.$refs['qrcodeImgRef']", this.$refs['qrcodeImgRef'])
+      this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
+      console.log('2', this.curCtx)
+      this.curCtx.font = '20px Arial'
+      this.curCtx.fillStyle = '#333333'
+      this.curCtx.fillText('长按识别二维码', 220, 730)
 
+      this.curCtx.font = '20px Arial'
+      this.curCtx.fillStyle = '#333333'
+      this.curCtx.fillText('查看作品详情', 220, 760)
+
+      this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
     dealUrlConcat (params, detailInfo) {
       let location = window.location
