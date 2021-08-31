@@ -9,7 +9,7 @@
       </div>
       <div slot="default" class="dial-header-right">
         <van-button plain class="btn-header" @click="isActivityShow=true">活动规则</van-button>
-        <van-button plain class="btn-header" @click="isAddressShow=true">中奖纪录</van-button>
+        <van-button plain class="btn-header" @click="isPrizeRecord=true">中奖纪录</van-button>
       </div>
     </van-cell>
     <div class="dial-container">
@@ -89,7 +89,21 @@
     </div>
     <ActivityRule :show='isActivityShow' @close="isActivityShow = false"/>
     <Address :show='isAddressShow' @close="isAddressShow = false"/>
-    <Command :show='isCommandShow' @close ='isCommandShow = fasle'/>
+    <Command :show='isCommandShow' @close ='isCommandShow = false'/>
+    <!-- <PrizeRecord :show='isPrizeRecord' @close ='isPrizeRecord = false'/> -->
+    <RecordDraw :show='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"/>
+    <RecordLess :show='isRecordLessShow' @close ='isRecordLessShow = false'/>
+    <Shared :show='isSharedShow' @close ='isSharedShow = false'/>
+    <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false'/>
+    <UnPrizeChance :show='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
+
+    <Prize :show='isPrizeShow' @close='isPrizeShow = false'/>
+    <PrizeAddress :show='isPrizeAddressShow' @close='isPrizeAddressShow = false'/>
+    <PrizeVerification :show='isPrizeVerificationcShow' @close='isPrizeVerificationcShow = false'/>
+    <PrizeQrCode :show='isPrizeQrCodeShow' @close='isPrizeQrCodeShow = false'/>
+    <UnRecord :show='isUnRecordShow' @close='isUnRecordShow = false'/>
+    <!-- <MoalImg :show="isWheelShow"/> -->
+    <!-- <DialDialog :show="isWheelShow"/> -->
   </div>
 </template>
 
@@ -98,8 +112,37 @@ import prizeList from '@/components/dial/global/dial-prize-list'
 import ActivityRule from '@/components/dial/global/dial-activity-rule'
 import Address from '@/components/dial/global/dial-address'
 import Command from '@/components/dial/global/dial-command'
+import PrizeRecord from '@/components/dial/global/dial-prize-record'
+import DialDialog from '@/components/dial/global/dial-dialog'
+import MoalImg from '@/components/dial/global/dial-model-img'
+import RecordDraw from '@/components/dial/global/dial-recordDraw'
+import RecordLess from '@/components/dial/global/dial-recordLess'
+import Shared from '@/components/dial/global/dial-shared'
+import UnDraw from '@/components/dial/global/dial-unDraw'
+import UnPrizeChance from '@/components/dial/global/dial-unPrizeChance'
+import Prize from '@/components/dial/global/dial-prize'
+import PrizeAddress from '@/components/dial/global/dial-prize-address'
+import PrizeVerification from '@/components/dial/global/dial-prize-verification'
+import PrizeQrCode from '@/components/dial/global/dial-prize-qrCode'
 export default {
-  components: { prizeList, ActivityRule, Address, Command },
+  components: {
+    prizeList,
+    ActivityRule,
+    Address,
+    Command,
+    PrizeRecord,
+    RecordDraw,
+    RecordLess,
+    Shared,
+    UnDraw,
+    UnPrizeChance,
+    MoalImg,
+    Prize,
+    PrizeAddress,
+    PrizeVerification,
+    PrizeQrCode,
+    DialDialog
+  },
   computed: {
     animationClass () {
       // 对应css样式中定义的class属性值,如果有更多的话可以继续添加  case 8:   return 'wr8'
@@ -158,7 +201,17 @@ export default {
       isWheelShow: true, // 控制开始抽奖状态
       isActivityShow: false, // 控制活动规则状态
       isAddressShow: false, // 控制收获地址状态
-      isCommandShow: true, // 控制输入口令开始抽奖状态
+      isCommandShow: false, // 控制输入口令开始抽奖状态
+      isPrizeRecord: false, // 控制中奖纪录状态
+      isRecordDrawShow: false, // 控制积分参与抽奖状态
+      isRecordLessShow: false, // 控制积分不足状态
+      isSharedShow: false, // 控制分享成功状态
+      isUnDrawShow: false, // 控制没抽中状态
+      isUnPrizeChanceShow: false, // 控制无抽奖机会状态
+      isPrizeShow: false, // 控制实物奖品状态
+      isPrizeAddressShow: false, // 控制实物奖品-带地址状态
+      isPrizeVerificationcShow: false, // 控制实物奖品-需核销状态
+      isPrizeQrCodeShow: false, // 控制实物奖品-核销码状态
       count: 0
     }
   },

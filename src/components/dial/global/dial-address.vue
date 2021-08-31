@@ -1,5 +1,5 @@
 <template>
-  <DialDialog :show="show" @close="close()">
+  <DialDialog :show="show" @close="onClose">
     <div slot="tille-name" class="tille-name">收获地址</div>
     <div slot="container" class="container">
       <span class="tips">请务必填写以下信息，奖品才能送到您手中</span>
@@ -33,7 +33,7 @@
           :rules="formRules.address"
           class="form-textarea"
         />
-        <div style="margin: 16px">
+        <div class="form-sub">
           <van-button round block  native-type="submit" class="form-btn"
             >确认</van-button
           >
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import DialDialog from '@/components/dial/global/dial-dialog'
+import DialDialog from '@/components/dial/global/dial-dialog-title'
 import { mapMutations } from 'vuex'
 export default {
   name: 'Address',
@@ -82,7 +82,7 @@ export default {
   created () {},
   mounted () {},
   methods: {
-    close () {
+    onClose () {
       this.$emit('close')
     },
     ...mapMutations('dial', {
@@ -155,6 +155,7 @@ export default {
         border-radius: px2rem(8px);
         padding:  0 px2rem(30px);
         overflow-y: auto;
+        margin-bottom:px2rem(60px);
     }
     .form-btn{
         width: px2rem(300px);
@@ -163,7 +164,8 @@ export default {
         background: linear-gradient(0deg,#ffdaa3 1%, #ffebc5);
         border-radius: px2rem(16px);
         margin: auto;
-        box-shadow: 0 10px 8px -8px #ECBD7B;
+        // box-shadow: 0 10px 8px -8px #ECBD7B;
+        box-shadow: 0 px2rem(16px) 0px 0px #e5b56b;
     }
   }
 }

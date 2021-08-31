@@ -1,5 +1,5 @@
 <template>
-  <DialDialog :show="show" @close="close()">
+  <DialDialog :show="show" @close="onClose">
     <div slot="tille-name" class="tille-name">活动规则</div>
     <div slot="container" class="container">
       <div class="container-desc">活动时间：本活动为长期活动，具体在线时间以页面呈现为准抽奖细节：<br/>1. 每天每个微信号可投票十票，投票后点 击此链接幸运抽奖，进入抽奖页面。</div>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import DialDialog from '@/components/dial/global/dial-dialog'
+import DialDialog from '@/components/dial/global/dial-dialog-title'
 import { mapMutations } from 'vuex'
 export default {
   name: 'ActivityRule',
@@ -40,7 +40,7 @@ export default {
   mounted () {
   },
   methods: {
-    close () {
+    onClose () {
       this.$emit('close')
     },
     ...mapMutations('dial', {

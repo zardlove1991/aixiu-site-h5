@@ -311,7 +311,19 @@ const routes = [{
   //   id: route.params.id
   // }),
   meta: {
-    title: '首页'
+    title: '幸运大转盘'
+  }
+},
+{
+  // path: '/dialbegin/:id',
+  path: '/dialliist',
+  name: 'dialliist',
+  component: getOtherComponent('record-prize', 'dial'),
+  // props: (route) => ({
+  //   id: route.params.id
+  // }),
+  meta: {
+    title: '中奖记录'
   }
 }
 ]
