@@ -212,7 +212,7 @@ export default {
     resetPoster (data) {
       console.log(data, this.worksDetailObj.params)
       let indexType1 = false
-      let indexType2 = false
+      // let indexType2 = false
       let indexType3 = false
       // 判断用户头像是否存在
       if (this.worksDetailObj.params.avatar === '') {
@@ -314,19 +314,19 @@ export default {
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
-        // const generateQR = async text => {
-        //   try {
-        //     let qrcodeURL = await QRCode.toDataURL(text)
-        //     console.log('qrcodeURL', qrcodeURL)
-        //     let _qrcodeImg = await this.loadImg(qrcodeURL)
-        //     return _qrcodeImg
-        //   } catch (e) {
-        //     console.error(e)
-        //   }
-        // }
+        const generateQR = async text => {
+          try {
+            let qrcodeURL = await QRCode.toDataURL(text)
+            console.log('qrcodeURL', qrcodeURL)
+            let _qrcodeImg = await this.loadImg(qrcodeURL)
+            return _qrcodeImg
+          } catch (e) {
+            console.error(e)
+          }
+        }
 
-        // let qrcodeImg = await generateQR(data.qrcode)
-        // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
+        let qrcodeImg = await generateQR(data.qrcode)
+        ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
         ctx.font = '20px Arial'
         ctx.fillStyle = '#333333'
