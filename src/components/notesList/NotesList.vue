@@ -18,7 +18,7 @@
       :auto-fill="false">
         <div v-for='(item, index) in notesList' :key='index' @click='goWorksDetail(item)' class='single-note-list'>
           <div v-if='curStatus == "vote"' class='note-list-1'>截止 {{item.formateData}} 累计给 {{item.numbering}}号 投了&nbsp;<span class='enroll-num'>{{item.vote_count}}</span>&nbsp;票</div>
-          <div v-if='curStatus == "enroll"' class='note-list-1'>{{item.create_time}} 报名参与</div>
+          <div v-if='curStatus == "enroll"' class='note-list-1'>{{item.update_time}} 报名参与</div>
           <div class='note-list-2'>
             <!-- 默认为0 -->
             <div v-if='item.full_scene_type == 0 && item.name !== ""'>{{item.name}}</div>

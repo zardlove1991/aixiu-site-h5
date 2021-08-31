@@ -392,15 +392,62 @@ export default {
       } else if (data.full_scene_type === 2) {
         flagValue = 'picture'
       }
-      console.log('_flag', flagValue)
-      this.$router.push({
-        name: 'votedetail',
-        params: {
-          flag: flagValue,
-          id: data.voting_id
-        },
-        query: { worksId: data.id }
-      })
+      console.log('_flag', flagValue, data.voting_id, data.id)
+      if (this.curStatus === 'enroll') {
+        // 1-已审核，2-驳回  3-审核中
+        const auditStatus = Number(data.audit_status)
+        if (auditStatus === 1) {
+          this.$router.push({
+            name: 'votedetail',
+            params: {
+              flag: flagValue,
+              id: data.voting_id
+            },
+            query: { worksId: data.id }
+          })
+        } else {
+          this.$router.push({
+            name: 'voteoneself',
+            params: {
+              flag: flagValue,
+              id: data.voting_id
+            },
+            query: { worksId: data.id }
+          })
+        }
+      } else if (this.curStatus === 'vote') {
+        let _status = Number(data.voting_status)
+        // "voting_status": 2 //1未开启 2 进行中 3暂停 4结束
+        if (_status === 1) {
+
+        } else if (_status === 2) {
+          this.$router.push({
+            name: 'votedetail',
+            params: {
+              flag: flagValue,
+              id: data.voting_id
+            },
+            query: { worksId: data.id }
+          })
+        } else {
+          this.$router.push({
+            name: 'voteoneself',
+            params: {
+              flag: flagValue,
+              id: data.voting_id
+            },
+            query: { worksId: data.id }
+          })
+        }
+      }
+      // this.$router.push({
+      //   name: 'votedetail',
+      //   params: {
+      //     flag: flagValue,
+      //     id: data.voting_id
+      //   },
+      //   query: { worksId: data.id }
+      // })
     }
     // getVideoBase64 (url) {
     //   return new Promise(function (resolve, reject) {
