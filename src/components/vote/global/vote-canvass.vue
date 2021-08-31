@@ -4,13 +4,26 @@
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
-    <img class="poster-img" v-if="sharePoster" :src="sharePoster" @click.stop />
+    <img crossOrigin='anonymous'
+      class="poster-img"
+      v-if="sharePoster"
+      :src="sharePoster"
+      @click.stop />
     <div class="poster-tips" v-if="sharePoster">长按图片保存或转发朋友圈</div>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
       :textSetting="{sign: '拉票'}"
       @close="isShowLottery = false"></lottery-vote>
+    <div v-show='false' id='qrcode'></div>
+    <!-- 图片的存储容器 -->
+    <img crossOrigin='anonymous' :src="worksImg" ref="worksImgRef" alt=""
+      @load="resetPoster(1)" v-show="false">
+    <img crossOrigin='anonymous' :src="worksBg" ref="worksBgRef" alt=""
+      v-show="false">
+    <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt=""
+      @load='qrcodeFun' v-show="false">
+    <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
   </div>
 </template>
 
@@ -19,6 +32,8 @@ import { mapMutations } from 'vuex'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import LotteryVote from '@/components/vote/global/vote-lottery'
+import QRCode from 'qrcode'
+import { Toast } from 'mint-ui'
 
 export default {
   props: {
@@ -31,10 +46,21 @@ export default {
   components: { LotteryVote },
   data () {
     return {
+      imgs: {
+        bgImg: require('@/assets/vote/vote-bg.png')
+      },
       sharePoster: '',
       show: false,
       isShowLottery: false,
-      lottery: {}
+      lottery: {},
+      worksImg: '',
+      worksCode: '',
+      userIcon: '',
+      worksBg: '',
+      qrcodeImg: '',
+      worksDetailObj: {},
+      curCtx: '',
+      curCanvas: ''
     }
   },
   watch: {
@@ -42,6 +68,9 @@ export default {
       // 更改当前是否显示遮罩的状态
       this.setModelThumbState(newState)
     }
+  },
+  mounted () {
+    this.worksBg = this.imgs.bgImg
   },
   methods: {
     saveSharer (worksId) {
@@ -78,7 +107,6 @@ export default {
         if (!res) {
           return
         }
-        // console.log('拉票数据：', res)
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
         let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
@@ -158,14 +186,25 @@ export default {
             params.source = res.type_name + ' | ' + params.source
           }
         }
-        API.shareMake({
-          data: params
-        }).then(res => {
-          if (!res || !res.image) {
-            return
-          }
-          this.sharePoster = res.image
-        })
+
+        this.worksImg = params.cover
+        this.worksDetailObj = {
+          params: params,
+          voteTip: voteTip
+        }
+        // this.worksCode = params.
+        console.log('params', params, 'voteTip', voteTip)
+        // this.renderPlaybill(params, voteTip)
+
+        // API.shareMake({
+        //   data: params
+        // }).then(res => {
+        //   if (!res || !res.image) {
+        //     return
+        //   }
+        //   this.sharePoster = res.image
+        // })
+
         // 拉票抽奖
         // let lottery = res.lottery
         // if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
@@ -177,6 +216,144 @@ export default {
         // this.$emit('updateCard')
         // }
       })
+    },
+    resetPoster (data) {
+      console.log(data, this.worksDetailObj.params)
+      let indexType1 = false
+      // let indexType2 = false
+      let indexType3 = false
+      // 判断用户头像是否存在
+      if (this.worksDetailObj.params.avatar === '') {
+        if (data === 1) {
+          this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+        }
+      } else {
+        // 头像存在
+        if (data === 1) {
+          indexType1 = true
+        }
+        if (data === 3) {
+          indexType3 = true
+        }
+
+        if (indexType1 && indexType3) {
+          this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
+        }
+      }
+    },
+    loadImg (data) {
+      return new Promise((resolve, reject) => {
+        const _img = new Image()
+        // _img.setAttribute('crossOrigin', 'anonymous')
+        _img.src = data
+        _img.onload = () => {
+          resolve(_img)
+        }
+        _img.onerror = () => {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject({status: 'error', title: '解析图片失败'})
+          Toast('解析图片失败')
+        }
+      })
+    },
+    async renderPlaybill (data) {
+      try {
+        let canvas = document.createElement('canvas')
+        let ctx = canvas.getContext('2d')
+        // 绘制背景图
+        canvas.width = 640
+        canvas.height = 897
+
+        // let bgImg = await this.loadImg(this.imgs.bgImg)
+        let bgImg = this.$refs['worksBgRef']
+        console.log('bgImg', bgImg)
+        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
+
+        ctx.font = '26px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.textAlign = 'center'
+        ctx.fillText(data.lastvotes, 300, 80)
+
+        ctx.font = '26px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.textAlign = 'center'
+        ctx.fillText(data.numbering, 300, 120)
+        // ctx.save()
+        // 绘制作品图片
+        let imgObj = this.$refs['worksImgRef']
+        console.log('imgObj', imgObj)
+        ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
+
+        // ctx.restore()
+        // ctx.save()
+
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#666666'
+        ctx.fillText(data.source, 130, 540)
+
+        ctx.font = 'bold 30px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText(data.title, 135, 590)
+
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText('来自', 70, 640)
+        // ctx.save()
+
+        const userInfo = STORAGE.get('userinfo')
+        let offwidthNum = '270'
+        if (data.avatar === '') {
+          offwidthNum = '215'
+        } else {
+          // 用户头像
+          // let iconUrl = data.avatar
+          // let userIcon = await this.loadImg(iconUrl)
+          let userIcon = this.$refs['userIconRef']
+          ctx.arc(120, 635, 20, 0, 2 * Math.PI)
+          ctx.clip()
+          ctx.drawImage(userIcon, 100, 615, 40, 40)
+          ctx.restore()
+        }
+
+        ctx.font = '24px Arial'
+        ctx.fillStyle = '#333333'
+        ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
+
+        // const generateQR = async text => {
+        //   try {
+        //     let qrcodeURL = await QRCode.toDataURL(text)
+        //     console.log('qrcodeURL', qrcodeURL)
+        //     let _qrcodeImg = await this.loadImg(qrcodeURL)
+        //     return _qrcodeImg
+        //   } catch (e) {
+        //     console.error(e)
+        //   }
+        // }
+        // let qrcodeImg = await generateQR(data.qrcode)
+        // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
+
+        this.curCtx = ctx
+        this.curCanvas = canvas
+
+        QRCode.toDataURL(data.qrcode).then(res => {
+          this.qrcodeImg = res
+        })
+      } catch (e) {
+        Toast('生成分享图片失败')
+        console.error(e)
+      }
+    },
+    qrcodeFun () {
+      this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
+      this.curCtx.font = '20px Arial'
+      this.curCtx.fillStyle = '#333333'
+      this.curCtx.fillText('长按识别二维码', 220, 730)
+
+      this.curCtx.font = '20px Arial'
+      this.curCtx.fillStyle = '#333333'
+      this.curCtx.fillText('查看作品详情', 220, 760)
+
+      this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
     dealUrlConcat (params, detailInfo) {
       let location = window.location

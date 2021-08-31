@@ -1182,6 +1182,7 @@ export default {
       return res
     },
     triggerWork (obj, index) {
+      console.log('obj', obj, 'index', index)
       if (index !== null && index !== undefined) {
         this.activeIndex = index
       } else {
