@@ -571,3 +571,23 @@ export const getShareUrl = (...args) => {
   }
   return tmpLink
 }
+
+export const logger = (info) => {
+  let route = window.$vue.$route
+  let logger = info || {}
+  let i = document.createElement('script')
+  let params = ''
+  logger.mod = route.meta.mod
+  logger.route = route.fullPath
+  logger.timestamp = new Date().getTime()
+  for (let k in logger) {
+    params += '&' + k + '=' + logger[k]
+  }
+  i.src = '/static/js/logger.js?sys=ax' + params
+  i.onload = function () {
+    setTimeout(function () {
+      i.remove()
+    }, 20)
+  }
+  document.body.appendChild(i)
+}

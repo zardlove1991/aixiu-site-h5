@@ -142,7 +142,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">答题正在进行中，请尽快答题，超时则系统会自动为您交卷</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
       </div>
     </my-model>
     <my-model

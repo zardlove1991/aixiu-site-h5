@@ -3,6 +3,7 @@ import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
+import { logger } from '@/utils/utils'
 import wechat from '@/sdk/wechat'
 import 'element-ui/lib/theme-chalk/index.css'
 import { Message } from 'element-ui'
@@ -65,6 +66,7 @@ instance.interceptors.request.use((config) => {
       config.params.guid = STORAGE.get('guid')
     }
   }
+  logger({memberId: userInfo.id, action: 'ajax:' + config.url})
   return config
 }, error => Promise.reject(error))
 
@@ -127,6 +129,8 @@ instance.interceptors.response.use((res, xhr) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
+  let userInfo = STORAGE.get('userinfo')
+  logger({memberId: userInfo.id, error: error.response})
   // isTimeout || status === 503
   if (isTimeout || status === 503) {
     window.location.href = `/error.html?origin=${url}`
