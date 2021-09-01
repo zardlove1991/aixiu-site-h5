@@ -580,6 +580,7 @@ export const logger = (info) => {
   logger.mod = route.meta.mod
   logger.route = route.fullPath
   logger.timestamp = new Date().getTime()
+  logger.userAgent = window.navigator.userAgent
   for (let k in logger) {
     params += '&' + k + '=' + logger[k]
   }
