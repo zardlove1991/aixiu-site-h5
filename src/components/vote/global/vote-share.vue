@@ -10,7 +10,7 @@
           <button v-if="!voteDisable"
             @click="sureWorkVote()"
             class="tncode dialog-sure-btn min workvote-right">确定</button>
-          <button class="dialog-sure-btn min workvote-right" v-else @click='showWorkVote()'>确定</button>
+          <button class="dialog-sure-btn min workvote-right" v-else>确定</button>
           <button class="dialog-ok-btn min" @click="close()">取消</button>
         </div>
       </div>
@@ -92,6 +92,7 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
+          // console.log('我调用了。。。', newData)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
@@ -124,6 +125,7 @@ export default {
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 对象的清空
+    this.slideCode.member = {} // 清理用户信息
     this.initTnObj()
 
     // 设置头信息
@@ -137,13 +139,10 @@ export default {
   },
   methods: {
     initTnObj () {
+      // 滑块信息的清空
       this.slideCode.requestUrl = ''
-      this.slideCode.member = {}
       this.slideCode.isStopSlideType = false // 是否已经停止滑动
       this.slideCode.isLoadType = false // 是否已经加载过
-    },
-    showWorkVote () {
-      console.log('剩余投票不足')
     },
     close () {
       this.$emit('close')
@@ -211,7 +210,9 @@ export default {
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
       this.codeObj = {}
       if (_needCode === 1) {
+        this.initTnObj()
         this.slideCode.show() // 显示二维码
+        this.codeObj.tn_x = 0
         // eslint-disable-next-line no-undef
         this.codeObj.request_id = $TN._request_id // 获取请求的id
       } else {

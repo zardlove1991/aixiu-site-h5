@@ -2,6 +2,10 @@
 // let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
 // let requestUrl = 'http://localhost:8080/api/votinghy'
 
+window.document.addEventListener('touchend', function () {
+  console.log('0000')
+})
+
 let requestUrl = `${window.location.protocol}//${window.location.host}/api/votinghy`
 
 if (!document.getElementByClassName) {
@@ -149,7 +153,7 @@ var tncode = {
       theEvent = theEvent.touches[0]
     }
     tncode._is_moving = true
-    console.log('_block_on_move')
+    // console.log('_block_on_move')
     // document.getElementById('msg').innerHTML = "move:"+theEvent.clientX+";"+theEvent.clientY;
     var offset = theEvent.clientX - tncode._block_start_x
     if (offset < 0) {
@@ -163,18 +167,18 @@ var tncode = {
 
     obj.style.cssText = 'transform: translate(' + offset + 'px, 0px)'
     tncode._mark_offset = offset / max_off * (tncode._img_w - tncode._mark_w)
-    // console.log('tncode._mark_offset', tncode._mark_offset)
     tncode._draw_bg()
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
     if (!tncode._doing) return true
+    console.log('我_block_on_end被谁调用了：', tncode._block_on_end.caller)
     e.preventDefault()
     var theEvent = window.event || e
     if (theEvent.touches) {
       theEvent = theEvent.touches[0]
     }
-    console.log('_block_on_end')
+
     tncode.isStopSlideType = true
     tncode._is_moving = false
     // tncode._send_result();
@@ -321,6 +325,8 @@ var tncode = {
       if(obj){
           obj.style.display="none";
       }
+      // 初始化数据
+      tncode._request_id = ''
       tncode.refresh(); // 初次默认调取
       tncode._tncode = this;
       document.getElementById('tncode_div_bg').style.display="block";
@@ -475,7 +481,7 @@ var tncode = {
 
           tncode._bind(obj,'mousedown',_this._block_start_move);
           tncode._bind(document,'mousemove',_this._block_on_move);
-          tncode._bind(document,'mouseup',_this._block_on_end);
+          // tncode._bind(document,'mouseup',_this._block_on_end);
 
           tncode._bind(obj,'touchstart',_this._block_start_move);
           tncode._bind(document,'touchmove',_this._block_on_move);
