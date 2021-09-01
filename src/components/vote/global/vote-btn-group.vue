@@ -47,6 +47,9 @@ export default {
       downloadLink: ''
     }
   },
+  mounted () {
+    console.log('!remainVotes', !this.remainVotes, 'isBtnAuth', this.isBtnAuth)
+  },
   computed: {
     ...mapGetters('vote', ['isBtnAuth']),
     getVoteTxt () {
