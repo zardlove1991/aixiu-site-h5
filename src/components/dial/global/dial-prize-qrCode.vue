@@ -1,5 +1,5 @@
 <template>
-  <div class="prize-qrCode">
+  <div class="prize-qrCode" v-if="show">
        <Model :show="show" @close="onClose">
            <div slot="container" class="container">
                 <div class="title">提货凭证~</div>

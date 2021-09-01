@@ -90,7 +90,7 @@
     <ActivityRule :show='isActivityShow' @close="isActivityShow = false"/>
     <Address :show='isAddressShow' @close="isAddressShow = false"/>
     <Command :show='isCommandShow' @close ='isCommandShow = false'/>
-    <!-- <PrizeRecord :show='isPrizeRecord' @close ='isPrizeRecord = false'/> -->
+
     <RecordDraw :show='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"/>
     <RecordLess :show='isRecordLessShow' @close ='isRecordLessShow = false'/>
     <Shared :show='isSharedShow' @close ='isSharedShow = false'/>
@@ -102,8 +102,16 @@
     <PrizeVerification :show='isPrizeVerificationcShow' @close='isPrizeVerificationcShow = false'/>
     <PrizeQrCode :show='isPrizeQrCodeShow' @close='isPrizeQrCodeShow = false'/>
     <UnRecord :show='isUnRecordShow' @close='isUnRecordShow = false'/>
+    <Coupon :show='isCouponShow' @close='isCouponShow = false'/>
+    <CardView :show='isCardViewShow' @close='isCardViewShow = false'/>
+    <Integral :show='isIntegralShow' @close='isIntegralShow = false'/>
+    <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false'/>
+    <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
+    <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
+    <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/>
     <!-- <MoalImg :show="isWheelShow"/> -->
     <!-- <DialDialog :show="isWheelShow"/> -->
+    <!-- <DialogPage :show="isWheelShow"/> -->
   </div>
 </template>
 
@@ -112,7 +120,7 @@ import prizeList from '@/components/dial/global/dial-prize-list'
 import ActivityRule from '@/components/dial/global/dial-activity-rule'
 import Address from '@/components/dial/global/dial-address'
 import Command from '@/components/dial/global/dial-command'
-import PrizeRecord from '@/components/dial/global/dial-prize-record'
+
 import DialDialog from '@/components/dial/global/dial-dialog'
 import MoalImg from '@/components/dial/global/dial-model-img'
 import RecordDraw from '@/components/dial/global/dial-recordDraw'
@@ -124,13 +132,21 @@ import Prize from '@/components/dial/global/dial-prize'
 import PrizeAddress from '@/components/dial/global/dial-prize-address'
 import PrizeVerification from '@/components/dial/global/dial-prize-verification'
 import PrizeQrCode from '@/components/dial/global/dial-prize-qrCode'
+import Coupon from '@/components/dial/global/dial-coupon'
+import CardView from '@/components/dial/global/dial-cardView'
+import Integral from '@/components/dial/global/dial-integral'
+import ActivityStart from '@/components/dial/global/dial-activity-start'
+import ActivityPause from '@/components/dial/global/dial-activity-pause'
+import ActivityEnd from '@/components/dial/global/dial-activity-end'
+import DialogPage from '@/components/dial/global/dial-dialog-page'
+import RecordInfo from '@/components/dial/global/dial-record-info'
 export default {
   components: {
     prizeList,
     ActivityRule,
     Address,
     Command,
-    PrizeRecord,
+
     RecordDraw,
     RecordLess,
     Shared,
@@ -141,6 +157,14 @@ export default {
     PrizeAddress,
     PrizeVerification,
     PrizeQrCode,
+    Coupon,
+    CardView,
+    Integral,
+    ActivityStart,
+    ActivityPause,
+    ActivityEnd,
+    DialogPage,
+    RecordInfo,
     DialDialog
   },
   computed: {
@@ -202,7 +226,6 @@ export default {
       isActivityShow: false, // 控制活动规则状态
       isAddressShow: false, // 控制收获地址状态
       isCommandShow: false, // 控制输入口令开始抽奖状态
-      isPrizeRecord: false, // 控制中奖纪录状态
       isRecordDrawShow: false, // 控制积分参与抽奖状态
       isRecordLessShow: false, // 控制积分不足状态
       isSharedShow: false, // 控制分享成功状态
@@ -212,6 +235,13 @@ export default {
       isPrizeAddressShow: false, // 控制实物奖品-带地址状态
       isPrizeVerificationcShow: false, // 控制实物奖品-需核销状态
       isPrizeQrCodeShow: false, // 控制实物奖品-核销码状态
+      isCouponShow: false, // 控制优惠劵状态
+      isCardViewShow: false, // 控制卡劵状态
+      isIntegralShow: false, // 控制积分状态
+      isActivityStartShow: false, // 控制活动开始状态
+      isActivityPauseShow: false, // 控制活动暂停状态
+      isActivityEndShow: false, // 控制活动结束状态
+      isRecordInfoShow: true, // 控制中奖纪录-个人信息状态
       count: 0
     }
   },

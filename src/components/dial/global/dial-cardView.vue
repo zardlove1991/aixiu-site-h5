@@ -1,11 +1,21 @@
 <template>
-<div class="prize-verification" v-if="show">
-  <Model :show="show" @close="onClose">
+<div class="cardview" v-if="show">
+  <Model :show="show" @close="onClose" class="prize-model">
         <div slot="container" class="container">
             <div class="title">中奖啦~</div>
             <div class="prize-box">
                 <div class="bg"></div>
-                <div class="prize">
+                <div class="prize-header"></div>
+                <div class="prize-bannner">
+                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">二等奖·卡券</span></van-divider>
+                </div>
+                <div class="prize-content">
+                    <div class="coupon-bg">
+                        <span>100元</span>
+                    </div>
+                    <!-- <div class="code">兑奖码：KM12HJSNS23</div> -->
+                </div>
+                <!-- <div class="prize">
                     <div class="header"></div>
                     <div class="circle">
                         <van-image class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
@@ -16,7 +26,7 @@
                     <div class="prize-name">简约日式实木落地镜</div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
-                </div>
+                </div> -->
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
@@ -26,25 +36,29 @@
                 </div>
                 <div class="avatar-name">乐乐茶奶茶店</div>
             </div>
-            <div class="info">
-                <p>兑奖码： KM13NJDJNCKK </p>
-                <p>门店地址：楚翘城3号商务楼 </p>
-                <p>营业时间：8:00-18:00 </p>
-                <p>兑奖时间：2021-06-28 至 2021-07-28</p>
-            </div>
-
-            <van-button  block  class="btn">中奖二维码</van-button>
+            <!-- <van-button  block  class="btn">去兑奖</van-button> -->
             <div class="container-bottom">
                 <div class="qr-code">
                     <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
                 </div>
                 <div class="tips">
-                   <p>兑奖提示：请指定时间和门店地址 </p>
-                   <p>进行核销，超时即失效</p>
-                    <!-- <p>兑奖码：KM12HJSNS23</p> -->
-                    <!-- <textarea name="" id="" cols="30" rows="10">中奖后，工作人员将在7到15个工作 日内联系您</textarea> -->
+                    <p>长按识别二维码领取卡券，可在微 </p>
+                    <p>信-我的卡券查看</p>
+                    <!-- <p>兑奖码：KM12HJSNS23</p>
+                    <textarea name="" id="" cols="30" rows="10">中奖后，工作人员将在7到15个工作 日内联系您</textarea> -->
                 </div>
             </div>
+            <!-- <van-divider  :dashed="true" class="line"/> -->
+            <!-- <p class="name"><span>肖沾沾</span>15850602022</p>
+            <div class="address-warp">
+                <textarea name="" id="" cols="30" rows="10">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea>
+                <div class="icon"></div>
+            </div> -->
+            <!-- <div class="info-wrap">
+                <p>有效期: 2021.06.29 00:00:00 - </p>
+                <p>2021.06.30 00:00:00</p>
+                <p>优惠券仅支持在本店铺使用，全场商品通用</p>
+            </div> -->
         </div>
     </Model>
 </div>
@@ -88,15 +102,19 @@ export default {
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 // 父组件样式
-.prize-verification{ height: 100%; width: 100%;}
-.prize-verification  .model /deep/.model-wrap{
-    height: px2rem(1002px);
+.cardview{ height: 100%; width: 100%;}
+.cardview  .model /deep/.model-wrap{
+    height: px2rem(650px);
 }
-.prize-verification .model /deep/.model-bg{
-    top:-15.5%;
+.cardview .model /deep/.model-bg{
+    top:-24%;
 }
-.prize-verification .model /deep/.header-bg{
- top:-11.5%;
+.cardview .model /deep/.header-bg{
+ top:-18%;
+}
+.cardview .model /deep/.model-footer{
+ bottom:-6%;
+ z-index: 1;
 }
 // 本身样式
 .container{
@@ -118,7 +136,7 @@ export default {
     }
     .prize-box{
         width: px2rem(540px);
-        height: px2rem(274px);
+        height: px2rem(250px);
         position: relative;
         margin-left: auto;
         margin-right: auto;
@@ -129,6 +147,87 @@ export default {
             background-color: #e13842;
             border-radius: px2rem(10px);
         }
+        .prize-header{
+            width: px2rem(520px);
+            height: px2rem(6px);
+            background-color: #F9E1CF;
+            position: absolute;
+            top: px2rem(4px); left:px2rem(11px);
+        }
+        .prize-bannner{
+            position: absolute;
+            top: px2rem(10px); left:px2rem(11px);
+            width: px2rem(520px);
+            height: px2rem(54px);
+            opacity: 1;
+            @include img-retina("~@/assets/dial/coupon/bg.png",
+            "~@/assets/dial/coupon/bg@2x.png", 100%, 100%);
+            background-repeat: no-repeat;
+            padding-top: px2rem(38px);
+            padding-left: px2rem(23px);
+            padding-right: px2rem(23px);
+            .line{
+                border-bottom-color: rgba(79, 15, 15,.2);
+                width: px2rem(474px);
+                .prize-name{
+                    width: px2rem(182px);
+                    height: px2rem(28px);
+                    opacity: 1;
+                    font-size: px2rem(28px);
+                    font-family: PingFangSC, PingFangSC-Medium;
+                    font-weight: 500;
+                    text-align: left;
+                    color: #4f0f0f;
+                    line-height: px2rem(28px)
+                }
+            }
+        }
+        .prize-content{
+            position: absolute;
+            top: px2rem(60px); left:px2rem(11px);
+            width: px2rem(520px);
+            height: px2rem(180px);
+            opacity: 1;
+            background: #fff9ec;
+            // position: relative;
+            .coupon-bg{
+                width: px2rem(340px);
+                height: px2rem(110px);
+                position: absolute;
+                top: px2rem(30px); left: px2rem(89px);
+                @include img-retina("~@/assets/dial/cardView/cardView-bg.png",
+                "~@/assets/dial/cardView/cardView-bg@2x.png", 100%,100%);
+                background-repeat: no-repeat;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                span{
+                    // width: px2rem(212px);
+                    height: px2rem(44px);
+                    opacity: 1;
+                    font-size: px2rem(44px);
+                    font-family: PingFangSC, PingFangSC-Medium;
+                    font-weight: 500;
+                    text-align: left;
+                    color: #fff4e3;
+                    line-height: px2rem(44px);
+                }
+            }
+            .code{
+                width: px2rem(264px);
+                height: px2rem(24px);
+                opacity: 1;
+                font-size: px2rem(24px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: left;
+                color: #4f0f0f;
+                line-height: px2rem(24px);
+                position: absolute;
+                top:px2rem(170px);left:px2rem(127px)
+            }
+        }
+
         .prize{
             width: px2rem(520px);
             height: px2rem(260px);
@@ -233,7 +332,7 @@ export default {
             height: px2rem(10px);
             opacity: 1;
             position: absolute;
-            bottom:px2rem(0px);left:px2rem(10px);
+            bottom:px2rem(0px);left:px2rem(11px);
             @include img-retina("~@/assets/dial/prize/prize_2.png",
             "~@/assets/dial/prize/prize_2@2x.png", 100%,100%);
             background-repeat: no-repeat;
@@ -304,7 +403,8 @@ export default {
         height: px2rem(120px);
         margin-left: px2rem(40px);
         margin-bottom: px2rem(42px);
-        align-items: center;
+        position: absolute;
+        z-index: 10;
         .qr-code{
             width: px2rem(120px);
             height: px2rem(120px);
@@ -315,7 +415,7 @@ export default {
             align-items: center;
             justify-content: center;
             margin-right: px2rem(20px);
-            padding: px2rem(5px);
+             padding: px2rem(5px);
             .code{
                 width: px2rem(110px);
                 height: px2rem(110px);
@@ -324,20 +424,15 @@ export default {
             }
         }
         .tips{
-            // width: 100%;
-            // height: 100%;
-            // margin-right: px2rem(46px);
-            // padding-top: px2rem(6px);
-            width: px2rem(360px);
+           width: px2rem(360px);
             height: px2rem(66px);
-            opacity: 0.8;
-            font-size: px2rem(24px);
-            font-family: PingFangSC, PingFangSC-Regular;
-            font-weight: 400;
-            text-align: left;
-            color: #fff4e3;
-            line-height: px2rem(24px);
+            margin-right: px2rem(46px);
+            padding-top: px2rem(40px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             p{
+                width: px2rem(360px);
                 height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -346,25 +441,105 @@ export default {
                 text-align: left;
                 color: #fff4e3;
                 line-height: px2rem(24px);
-                margin-bottom: px2rem(20px);
+                margin-bottom: px2rem(10px);
+            }
+            textarea{
+                width: px2rem(374px);
+                height: px2rem(62px);
+                opacity: 0.8;
+                font-size: px2rem(24px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: left;
+                color: #fff4e3;
+                line-height: px2rem(34px);
+                // line-height: 200%;
             }
         }
     }
-    .info{
-        width: px2rem(475px);
-        height: px2rem(164px);
-        opacity: 1;
-        font-size: px2rem(26px);
+    .line{
+        width: px2rem(520px);
+        height: px2rem(2px);
+        // opacity: 0.4;
+        border-bottom: px2rem(1px) dashed #ffeccf;
+        // background-color: #ffeccf;
+        color: #ffeccf;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: px2rem(39px);
+    }
+    .name{
+            span{
+                width: px2rem(72px);
+                height: px2rem(24px);
+                opacity: 0.8;
+                font-size: px2rem(24px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: left;
+                color: #fff4e3;
+                line-height: px2rem(24px);
+                margin-right: px2rem(16px);
+            }
+                // width: 154px;
+            height: px2rem(24px);
+            opacity: 0.8;
+            font-size: px2rem(24px);
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            text-align: left;
+            color: #fff4e3;
+            line-height: px2rem(24px);
+            margin-bottom: px2rem(20px);
+            padding-left: px2rem(39px);
+    }
+    .address-warp{
+        padding-left: px2rem(39px);
+        display: flex;
+        textarea{
+            width: px2rem(426px);
+            height: px2rem(62px);
+            opacity: 0.8;
+            font-size: px2rem(24px);
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            text-align: left;
+            color: #fff4e3;
+            line-height: px2rem(34px);
+            word-wrap:break-word;
+            word-break:break-all;
+            // @include bg-color('bgColor');
+            margin-right: px2rem(72px);
+        }
+        .icon{
+            width: px2rem(22px);
+            height: px2rem(22px);
+            opacity: 0.8;
+            @include img-retina("~@/assets/dial/prize/icon-edit.png",
+            "~@/assets/dial/prize/icon-edit@2x.png", 100%, 100%);
+            background-repeat: no-repeat;
+            cursor: pointer;
+            // background: #fef8e7;
+        }
+    }
+    .info-wrap{
+        width: px2rem(456px);
+        height: px2rem(100px);
+        opacity: 0.8;
+        font-size: px2rem(24px);
         font-family: PingFangSC, PingFangSC-Regular;
         font-weight: 400;
         text-align: left;
         color: #fff4e3;
-        line-height: px2rem(26px);
+        line-height: px2rem(24px);
         margin-left: px2rem(40px);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        margin-bottom: px2rem(40px);
+        p{
+            margin-bottom: px2rem(20px);
+        }
+        & p:nth-child(2){
+            // font-in
+            text-indent:3.5em;
+        }
     }
 }
 </style>

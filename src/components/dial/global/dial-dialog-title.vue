@@ -1,15 +1,15 @@
 <template>
   <div class="dialog" v-if="show">
       <div class="dialog-header">
-          <div class="title">
-            <slot name='tille-name' class="tille-name"></slot>
-          </div>
-          <i class="left-point"></i>
-          <i class="right-point"></i>
-          <div slot="left" class="close" @click.stop="close"></div>
-      </div>
-      <slot class="container"  name='container'></slot>
-      <div class="dialog-footer">
+            <div class="title">
+              <slot name='tille-name' class="tille-name"></slot>
+            </div>
+            <i class="left-point"></i>
+            <i class="right-point"></i>
+            <div slot="left" class="close" @click.stop="close"></div>
+        </div>
+        <slot class="container"  name='container'></slot>
+        <div class="dialog-footer">
       </div>
   </div>
 </template>
@@ -70,7 +70,9 @@ export default {
     "~@/assets/dial/activityRule/propup2@2x.png", 100%, 100%);
     background-position: top;
     background-repeat: no-repeat;
-    background-color:#fff;
+    background-color:#fff9ec;
+    border-top-left-radius: px2rem(16px);
+    border-top-right-radius: px2rem(16px);
     position: relative;
     opacity: 1;
     .title{
@@ -105,17 +107,17 @@ export default {
         position: absolute;
         top: px2rem(21px);
         left: px2rem(98px);
-        // @include img-retina("~@/assets/dial/activityRule/point.png",
-        // "~@/assets/dial/activityRule/point@2x.png", 100%, 100%);
+        @include img-retina("~@/assets/dial/activityRule/point.png",
+        "~@/assets/dial/activityRule/point@2x.png", 100%, 100%);
         background-repeat: no-repeat;
         width: px2rem(44px);
         height: px2rem(44px);
         opacity: 0.5;
         display: inline-block;
         // background: url("~@/assets/dial/activityRule/point.png") no-repeat center  cover;
-        background-image: url("~@/assets/dial/activityRule/point.png"), linear-gradient(#ffc27d, #ffc27d);
-        background-blend-mode: darken;
-        background-size: 100%;;
+        // background-image: url("~@/assets/dial/activityRule/point.png"), linear-gradient(#ffc27d, #ffc27d);
+        // background-blend-mode: darken;
+        // background-size: 100%;;
         z-index: 2;
     }
     .right-point{
@@ -124,9 +126,9 @@ export default {
         width: px2rem(74px);
         height: px2rem(34px);
         opacity: 0.37;
-        background-image: url("~@/assets/dial/activityRule/point.png"), linear-gradient(#ff97b4, #ff97b4);
-        background-blend-mode: darken;
-        background-size: 100%;
+        // background-image: url("~@/assets/dial/activityRule/point.png"), linear-gradient(#ff97b4, #ff97b4);
+        // background-blend-mode: darken;
+        // background-size: 100%;
         z-index: 2;
     }
     .close{
@@ -148,11 +150,13 @@ export default {
     width: px2rem(600px);
     padding-left: px2rem(40px);
     padding-right: px2rem(40px);
-    background-color: #fff;
+    background-color: #fff9ec;
   }
   .dialog-footer{
     width: px2rem(600px);
     height: px2rem(140px);
+    border-bottom-left-radius: px2rem(16px);
+    border-bottom-right-radius: px2rem(16px);
     opacity: 1;
     // position: absolute;
     // bottom: 0;
@@ -160,7 +164,7 @@ export default {
     "~@/assets/dial/activityRule/propup2@2x.png", 100%, 100%);
     background-position: bottom;
     background-repeat: no-repeat;
-    background-color:#fff;
+    background-color:#fff9ec;
   }
 }
 </style>
