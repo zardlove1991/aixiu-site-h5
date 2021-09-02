@@ -303,10 +303,10 @@ const routes = [{
   component: getOtherComponent('list', 'draw')
 },
 {
-  // path: '/dialbegin/:id',
-  path: '/dialbegin',
-  name: 'dialbegin',
-  component: getOtherComponent('dial-start', 'dial'),
+  // path: '/lottery/dial/index/:id',
+  path: '/lottery/dial/index',
+  name: 'dial',
+  component: getOtherComponent('dial-start', 'lottery'),
   // props: (route) => ({
   //   id: route.params.id
   // }),
@@ -315,10 +315,10 @@ const routes = [{
   }
 },
 {
-  // path: '/dialbegin/:id',
-  path: '/dialliist',
-  name: 'dialliist',
-  component: getOtherComponent('record-prize', 'dial'),
+  // path: '/lottery/dial/index/:id',
+  path: '/lottery/dial/record',
+  name: 'record',
+  component: getOtherComponent('record-prize', 'lottery'),
   // props: (route) => ({
   //   id: route.params.id
   // }),
