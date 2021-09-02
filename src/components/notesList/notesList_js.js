@@ -363,21 +363,21 @@ export default {
         }
 
         if (scaleValue >= 2.5) {
-          respObj.width = '20vw'
-          respObj.height = '40vw'
+          respObj.width = '40vw'
+          respObj.height = '20vw'
         }
       }
       if (_width < _height) {
-        scaleValue = (_width / _height).toFixed(1)
+        scaleValue = (_height / _width).toFixed(1)
 
         if (scaleValue > 1 && scaleValue < 2.5) {
-          respObj.width = parseInt(11 * 20 / 9) + 'vw'
           respObj.width = '20vw'
+          respObj.height = parseInt(11 * 20 / 9) + 'vw'
         }
 
         if (scaleValue >= 2.5) {
-          respObj.width = '40vw'
-          respObj.height = '20vw'
+          respObj.width = '20vw'
+          respObj.height = '40vw'
         }
       }
 
