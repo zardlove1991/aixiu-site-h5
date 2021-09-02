@@ -414,13 +414,13 @@ export default {
   activated () {
     // 缓存组件直解获取内存中的数据
     this.$refs['commvoteView'].scrollTop = this.scrollTop
-    this.initData()
-    let plat = getPlat()
-    if (plat === 'smartcity') {
-      window.SmartCity.onShareSuccess((res) => {
-        this.appShareCallBack()
-      })
-    }
+    // this.initData()
+    // let plat = getPlat()
+    // if (plat === 'smartcity') {
+    //   window.SmartCity.onShareSuccess((res) => {
+    //     this.appShareCallBack()
+    //   })
+    // }
     let {checkFullScene} = this.$route.params
     console.log(this.$route.params, 'this.$route.params')
     if (checkFullScene) {
@@ -457,9 +457,7 @@ export default {
       let vnode = that.$vnode
       let parentVnode = vnode && vnode.parent
       if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
-        var key = vnode.key == null
-          ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '')
-          : vnode.key
+        var key = vnode.key === null ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '') : vnode.key
         var cache = parentVnode.componentInstance.cache
         var keys = parentVnode.componentInstance.keys
         if (cache[key]) {
@@ -480,7 +478,7 @@ export default {
   methods: {
     async initData () {
       let voteId = this.id
-      let {sign, invotekey} = this.$route.query
+      let { sign, invotekey } = this.$route.query
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
@@ -1250,7 +1248,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      // console.log(params,data)
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,
@@ -1340,7 +1338,7 @@ export default {
       console.log(key, 'keykey')
       if (key !== this.checkFullScene) {
         this.checkFullScene = key
-        // console.log(this.fullSceneMap)
+        console.log(this.fullSceneMap)
         this.showModel = this.fullSceneMap[key][1]
         this.dealSearch('input-search', true)
       }

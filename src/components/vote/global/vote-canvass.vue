@@ -41,7 +41,11 @@ export default {
       isShowLottery: false,
       lottery: {},
       isTipsShow: false, // 控制通知框状态
+<<<<<<< HEAD
       message: '<span>长按图片保存或转发朋友圈</span>' // 通知框内的信息
+=======
+      message: '<span>长按图片保存或转发朋友圈</span>' //  通知框内的信息
+>>>>>>> master_fouc
     }
   },
   watch: {
@@ -114,6 +118,7 @@ export default {
         }
         let voteTip = res.index === 1 ? tips1 : tips2
         if (detailInfo.works_count === 1) voteTip = '目前是第一名，坚持就是胜利'
+<<<<<<< HEAD
         let qrcode = this.dealUrlConcat(
           {
             sign: 'invotefriend',
@@ -122,6 +127,13 @@ export default {
           },
           detailInfo
         )
+=======
+        let qrcode = this.dealUrlConcat({
+          sign: 'invotefriend',
+          invotekey: code,
+          worksId
+        }, detailInfo)
+>>>>>>> master_fouc
         let limit = detailInfo.rule.limit
         // 海报其他参数
         let bgImage = ''
@@ -183,7 +195,11 @@ export default {
               '//xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
           }
           // 判断是否长图 如果是就修改为不截断参数
+<<<<<<< HEAD
           if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
+=======
+          if (isLongCover)params.cover = params.cover.replace('m_fixed', 'm_pad')
+>>>>>>> master_fouc
         }
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           if (res.type_name) {
@@ -197,7 +213,15 @@ export default {
             return
           }
           this.sharePoster = res.image
+<<<<<<< HEAD
           if (this.sharePoster) { setTimeout(() => { this.isTipsShow = true }, 500) }
+=======
+          if (this.sharePoster) {
+            setTimeout(() => {
+              this.isTipsShow = true
+            }, 500)
+          }
+>>>>>>> master_fouc
         })
         // 拉票抽奖
         // let lottery = res.lottery
@@ -246,7 +270,10 @@ export default {
     ...mapMutations('depence', {
       setModelThumbState: 'SET_MODEL_THUMB_STATE'
     })
+<<<<<<< HEAD
 
+=======
+>>>>>>> master_fouc
   }
 }
 </script>

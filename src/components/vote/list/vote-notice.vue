@@ -136,7 +136,6 @@ li {
 .marquee-list span {
   padding: 0 0.04rem;
   color: #fff;
-  /* color: #ffe17b; */
-  font-weight: 700;
+  font-weight: 700
 }
 </style>
