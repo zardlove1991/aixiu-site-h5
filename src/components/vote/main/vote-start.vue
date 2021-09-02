@@ -407,20 +407,18 @@ export default {
   },
   mounted () {
     //  监听滚动事件
-    this.$nextTick(() => {
-      document.addEventListener('scroll', this.handelscroll, true)
-    })
+    document.addEventListener('scroll', this.handelscroll, true)
   },
   activated () {
     // 缓存组件直解获取内存中的数据
     this.$refs['commvoteView'].scrollTop = this.scrollTop
-    this.initData()
-    let plat = getPlat()
-    if (plat === 'smartcity') {
-      window.SmartCity.onShareSuccess((res) => {
-        this.appShareCallBack()
-      })
-    }
+    // this.initData()
+    // let plat = getPlat()
+    // if (plat === 'smartcity') {
+    //   window.SmartCity.onShareSuccess((res) => {
+    //     this.appShareCallBack()
+    //   })
+    // }
     let {checkFullScene} = this.$route.params
     console.log(this.$route.params, 'this.$route.params')
     if (checkFullScene) {
