@@ -223,11 +223,7 @@ export default {
             params: { id: this.id }
           })
         } else {
-<<<<<<< HEAD
-          let {checkFullScene} = this.$route.params
-=======
           let { checkFullScene } = this.$route.params
->>>>>>> master_fouc
           if (checkFullScene) {
             this.$router.push({
               name: 'votebegin',
