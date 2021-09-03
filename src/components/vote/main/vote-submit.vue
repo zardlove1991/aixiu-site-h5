@@ -145,6 +145,7 @@ export default {
     return {
       ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
       ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
+      ZCIdIndex2: 'ab3bf9c79f2b4870806d1665e4f8d33b',
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -180,7 +181,8 @@ export default {
       fullSceneMap,
       nameStr: '名称',
       describeStr: '描述',
-      describeSuffix: '(选填)'
+      describeSuffix: '(选填)',
+      full_scene_type: ''
     }
   },
   mounted () {
@@ -198,9 +200,28 @@ export default {
       this.nameStr = '照片主题'
       this.describeStr = '照片描述'
       this.describeSuffix = ''
+    } else if (this.id === this.ZCIdIndex2) {
+      this.nameStr = '留言标题'
     }
+
+    this.judgeStatus()
   },
   methods: {
+    judgeStatus () {
+      if (this.showModel === 'picture') {
+        // 图片
+        this.full_scene_type = 2
+      } else if (this.showModel === 'text') {
+        // 文本
+        this.full_scene_type = 3
+      } else if (this.showModel === 'video') {
+        // 视频
+        this.full_scene_type = 1
+      } else if (this.showModel === 'audio') {
+        // 音频
+        this.full_scene_type = 4
+      }
+    },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
       let isOpenClassify = false
@@ -357,8 +378,10 @@ export default {
         let _name = '请输入名称'
         if (this.id === this.ZCId) {
           _name = '请输入作品名称及朗诵人'
-        } else {
+        } else if (this.id === this.ZCIdIndex1) {
           _name = '请输入照片主题'
+        } else if (this.id === this.ZCIdIndex2) {
+          _name = '请输入留言标题'
         }
         Toast(_name)
         return
@@ -400,11 +423,14 @@ export default {
       }
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
+      } else {
+        data.full_scene_type = this.full_scene_type
       }
       if (this.worksId) {
         data.id = this.worksId
       }
       this.disabled = true
+
       API.workReport({
         data
       }).then(res => {
