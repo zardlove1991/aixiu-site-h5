@@ -260,7 +260,7 @@ export default {
               let key = newArr[0]
               this.fullSceneType = newArr
               this.checkFullScene = key
-              this.showModel = this.fullSceneMap[key][1]
+            //  this.showModel = this.fullSceneMap[key][1]
             }
           }
         }
