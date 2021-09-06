@@ -92,6 +92,7 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
+          console.log('111', newData, newData.isStopSlideType, newData._mark_offset)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)

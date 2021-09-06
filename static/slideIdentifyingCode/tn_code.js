@@ -184,6 +184,7 @@ var tncode = {
     // tncode._send_result();
   },
   checkSuccessType: function (data) {
+    console.log('tncode.isLoadType', tncode.isLoadType)
     if (tncode.isLoadType) {
       // 加载过不再加载
       return false
