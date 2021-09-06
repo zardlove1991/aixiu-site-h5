@@ -92,7 +92,6 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
-          // console.log('我调用了。。。', newData)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
@@ -225,7 +224,6 @@ export default {
       if (!config || !detailInfo) {
         return
       }
-
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
       if (_needCode === 0) {
         // 不需要滑动验证码
