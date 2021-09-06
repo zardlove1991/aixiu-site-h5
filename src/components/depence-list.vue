@@ -44,14 +44,6 @@
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div
-          class="prev-wrap"
-          v-if="examInfo.mark !== 'examination@exercise'"
-          v-show="currentSubjectIndex !== 0"
-          :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
-          @click.stop="changeSubjectIndex('sub')">
-          上一题
-        </div>
         <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
           v-if="_dealShowBtn('record')">
@@ -64,18 +56,25 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <div style="display:none;">是否显示提交{{isShowSubmitBtn}}--- 是否显示下一题{{nextExerciseBtn}}</div>
+        <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+          跳过本题
+        </div>
         <div class="next-wrap"
-          v-show="!nextExerciseBtn && successStatus === 0"
+          v-show="examInfo.mark !== 'examination@exercise'"
           @click.stop="saveCloud('add')">
            确认
         </div>
-        <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
+        <div class="next-wrap"
+          v-show="!nextExerciseBtn && successStatus === 0 && examInfo.mark === 'examination@exercise'"
+          @click.stop="saveCloud('add')">
+           确认
+        </div>
+        <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1 && examInfo.mark === 'examination@exercise'" @click.stop="exerciseNext">
           下一题
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" v-show="isShowSubmitBtn" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -140,13 +139,12 @@
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"/>
     </div>
-    <div style="display:none">isOpenAnswerAnalysis{{isOpenAnswerAnalysis}}-{{analysisData}}-{{examInfo.limit.answer_process_select}}</div>
-    <div class="analysis-div" v-if="isOpenAnswerAnalysis&&analysisData">
-      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_correctAnswer">
+    <div class="analysis-div" v-if="examInfo.mark === 'examination@exercise' && isOpenAnswerAnalysis&&analysisData">
+      <div class="item" v-if="examInfo.limit.answer_process_select && examInfo.limit.answer_process_select.is_show_correctAnswer">
         <span class="title">正确答案：</span>
         <span>{{analysisData.pageAnswer}}</span>
       </div>
-      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_questionAnalysis">
+      <div class="item" v-if="examInfo.limit.answer_process_select && examInfo.limit.answer_process_select.is_show_questionAnalysis">
         <span class="title">答案解析：</span>
         <span>{{analysisData.analysis}}</span>
       </div>
@@ -460,7 +458,7 @@ export default {
     },
     submitExam () {
       if (this.examInfo.mark !== 'examination@exercise') {
-        this.changeSubjectIndex(this.currentSubjectIndex)
+        // this.changeSubjectIndex(this.currentSubjectIndex)
         this.isShowSubmitModel = true
       } else {
         this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
@@ -491,7 +489,7 @@ export default {
     },
     dealExamHeaderSelect ({subject, index}) {
       this.toggetSubjectList()
-      this.changeSubjectIndex(index)
+      this.changeSubjectIndex('to_' + index)
     },
     dealConfrimOption () {
       let isShowSubmitBtn = this.isShowSubmitBtn // 判断是否已经到交卷的题目了
@@ -622,6 +620,8 @@ export default {
         // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
+        } else {
+          this.questionAnswerCallBack(res)
         }
         this.saveClouding = false
         Indicator.close()
@@ -637,6 +637,31 @@ export default {
           this.showExamResult()
         }
       })
+    },
+    questionAnswerCallBack (res) {
+      let { success } = res
+      if (res && res.error_code === 'member_submit') {
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        return false
+      }
+      if (success) {
+        this.$nextTick(() => {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+            // Toast('已经没有题目了~')
+            console.log('nextExerciseBtn', '已经没有题目了')
+            this.nextExerciseBtn = false
+          } else {
+            this.nextExerciseBtn = true
+            console.log('nextExerciseBtn', '还有题目')
+          }
+          setTimeout(() => {
+            // 如果不是最后一题 自动进入下一题
+            if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+              this.exerciseNext()
+            }
+          }, 0)
+        })
+      }
     },
     setExerciseResult (res) {
       let { success, data, saveStatus } = res
@@ -800,6 +825,10 @@ export default {
     },
     timeFormat (percentage) {
       return this.exerciseCountTime
+    },
+    toNextQuestion () {
+      let num = this.currentSubjectIndex
+      this.changeSubjectIndex('to_' + ++num)
     },
     exerciseNext () {
       if (this.exerciseNextIng) return
