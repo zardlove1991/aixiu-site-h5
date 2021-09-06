@@ -181,7 +181,8 @@ export default {
       fullSceneMap,
       nameStr: '名称',
       describeStr: '描述',
-      describeSuffix: '(选填)'
+      describeSuffix: '(选填)',
+      full_scene_type: ''
     }
   },
   mounted () {
@@ -202,8 +203,25 @@ export default {
     } else if (this.id === this.ZCIdIndex2) {
       this.nameStr = '留言标题'
     }
+
+    this.judgeStatus()
   },
   methods: {
+    judgeStatus () {
+      if (this.showModel === 'picture') {
+        // 图片
+        this.full_scene_type = 2
+      } else if (this.showModel === 'text') {
+        // 文本
+        this.full_scene_type = 3
+      } else if (this.showModel === 'video') {
+        // 视频
+        this.full_scene_type = 1
+      } else if (this.showModel === 'audio') {
+        // 音频
+        this.full_scene_type = 4
+      }
+    },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
       let isOpenClassify = false
@@ -242,7 +260,7 @@ export default {
               let key = newArr[0]
               this.fullSceneType = newArr
               this.checkFullScene = key
-              this.showModel = this.fullSceneMap[key][1]
+            //  this.showModel = this.fullSceneMap[key][1]
             }
           }
         }
@@ -405,11 +423,14 @@ export default {
       }
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
+      } else {
+        data.full_scene_type = this.full_scene_type
       }
       if (this.worksId) {
         data.id = this.worksId
       }
       this.disabled = true
+
       API.workReport({
         data
       }).then(res => {
