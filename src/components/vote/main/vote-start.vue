@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
+    <div ref="commvoteView" id="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
       <template
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
@@ -407,26 +407,24 @@ export default {
   },
   mounted () {
     //  监听滚动事件
-    this.$nextTick(() => {
-      document.addEventListener('scroll', this.handelscroll, true)
-    })
+    // document.addEventListener('scroll', this.handelscroll, true)
   },
-  activated () {
-    // 缓存组件直解获取内存中的数据
-    this.$refs['commvoteView'].scrollTop = this.scrollTop
-    // this.initData()
-    // let plat = getPlat()
-    // if (plat === 'smartcity') {
-    //   window.SmartCity.onShareSuccess((res) => {
-    //     this.appShareCallBack()
-    //   })
-    // }
-    let {checkFullScene} = this.$route.params
-    console.log(this.$route.params, 'this.$route.params')
-    if (checkFullScene) {
-      this.toggleFullSceneType(checkFullScene)
-    }
-  },
+  // async activated () {
+  //   // 缓存组件直解获取内存中的数据
+  //   this.$refs['commvoteView'].scrollTop = this.scrollTop
+  //   // this.initData()
+  //   // let plat = getPlat()
+  //   // if (plat === 'smartcity') {
+  //   //   window.SmartCity.onShareSuccess((res) => {
+  //   //     this.appShareCallBack()
+  //   //   })
+  //   // }
+  //   let {checkFullScene} = this.$route.params
+  //   console.log(this.$route.params, 'this.$route.params')
+  //   if (checkFullScene) {
+  //     this.toggleFullSceneType(checkFullScene)
+  //   }
+  // },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
     ...mapGetters('depence', ['isShowModelThumb']),
@@ -450,32 +448,59 @@ export default {
   },
   // 路由钩子函数，在离开页面之前进行调用
   beforeRouteLeave (to, from, next) {
-    let that = this
-    if (to.name === 'votedetail') {
-      from.meta.keepAlive = true
-    } else {
-      let vnode = that.$vnode
-      let parentVnode = vnode && vnode.parent
-      if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
-        var key = vnode.key === null ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '') : vnode.key
-        var cache = parentVnode.componentInstance.cache
-        var keys = parentVnode.componentInstance.keys
-        if (cache[key]) {
-          that.$destroy()
-          // remove key
-          if (keys.length) {
-            var index = keys.indexOf(key)
-            if (index > -1) {
-              keys.splice(index, 1)
-            }
-          }
-          cache[key] = null
-        }
-      }
-    }
+    // let that = this
+    // if (to.name === 'votedetail') {
+    //   from.meta.keepAlive = true
+    // } else {
+    //   let vnode = that.$vnode
+    //   let parentVnode = vnode && vnode.parent
+    //   if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
+    //     var key = vnode.key === null ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '') : vnode.key
+    //     var cache = parentVnode.componentInstance.cache
+    //     var keys = parentVnode.componentInstance.keys
+    //     if (cache[key]) {
+    //       that.$destroy()
+    //       // remove key
+    //       if (keys.length) {
+    //         var index = keys.indexOf(key)
+    //         if (index > -1) {
+    //           keys.splice(index, 1)
+    //         }
+    //       }
+    //       cache[key] = null
+    //     }
+    //   }
+    // }
+    // next()
+    let position = document.getElementById('commvoteView').scrollTop // 记录离开页面时的位置
+    if (position == null) position = 0
+    this.$store.commit('vote/SET_SCROllY', position) // 离开路由时把位置存起来
+    console.log(position, 'positionpositionposition')
     next()
   },
+  watch: {
+    '$route': {
+      handler (val, oldVal) {
+        this.isTabRoute()
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   methods: {
+    isTabRoute () {
+      if (this.$route.name === 'votebegin') {
+        this.$nextTick(() => {
+          // debugger
+          setTimeout(() => {
+            let recruitScrollY = this.$store.state.vote.recruitScrollY
+            document.getElementById('commvoteView').scrollTop = recruitScrollY
+            // console.log(recruitScrollY, 'recruitScrollYrecruitScrollYrecruitScrollYrecruitScrollY')
+            // console.log(document.getElementById('commvoteView').scrollTop, 'scrollTopscrollTopscrollTopscrollTop')
+          }, 700)
+        })
+      }
+    },
     async initData () {
       let voteId = this.id
       let { sign, invotekey } = this.$route.query
@@ -1357,14 +1382,14 @@ export default {
       this.dealSearch('input-search', true)
     },
     // 滚动函数
-    handelscroll () {
-      // 获取滚动区域dom
-      let list = this.$refs['commvoteView']
-      // 设置滚动事件
-      list.onscroll = this.debounce(() => {
-        this.scrollTop = list.scrollTop
-      }, 100)
-    },
+    // handelscroll () {
+    //   // 获取滚动区域dom
+    //   let list = this.$refs['commvoteView']
+    //   // 设置滚动事件
+    //   list.onscroll = this.debounce(() => {
+    //     this.scrollTop = list.scrollTop
+    //   }, 100)
+    // },
     // 防抖
     debounce (fn, delay) {
       let timer = null
