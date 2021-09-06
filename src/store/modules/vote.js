@@ -2,6 +2,7 @@ const state = {
   isModelShow: false,
   shareData: null,
   myVote: null,
+  recruitScrollY: 0,
   isBtnAuth: null
 }
 
@@ -9,6 +10,7 @@ const getters = {
   isModelShow: state => state.isModelShow,
   shareData: state => state.shareData,
   myVote: state => state.myVote,
+  recruitScrollY: state => state.recruitScrollY,
   isBtnAuth: state => state.isBtnAuth
 }
 
@@ -24,6 +26,9 @@ const mutations = {
   },
   SET_IS_BTN_AUTH (state, payload) {
     state.isBtnAuth = payload
+  },
+  SET_SCROllY (state, payload) {
+    state.recruitScrollY = payload
   }
 }
 
