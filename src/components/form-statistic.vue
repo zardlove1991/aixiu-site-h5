@@ -599,9 +599,14 @@ export default {
         context.font = '28px Arial'
         context.fillStyle = '#fff'
         context.fillText(name, 180, 80)
-        context.font = '40px Arial'
+        context.font = '36px Arial'
         context.fillStyle = '#fff'
-        context.fillText(this.posterInfo.title, 60, 160)
+        if (this.posterInfo.title.length > 15) {
+          context.fillText(this.posterInfo.title.slice(0, 15), 60, 160)
+          context.fillText(this.posterInfo.title.slice(15, 28), 60, 210)
+        } else {
+          context.fillText(this.posterInfo.title, 60, 160)
+        }
         context.font = '90px Arial'
         context.fillStyle = '#fff'
         context.fillText(this.posterInfo.score, 60, 320)
