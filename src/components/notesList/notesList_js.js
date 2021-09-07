@@ -27,53 +27,11 @@ export default {
         {
           text: '全部', value: 0
         },
-        // {
-        //   text: '2015', value: '2015'
-        // },
-        // {
-        //   text: '2016', value: '2016'
-        // },
-        // {
-        //   text: '2017', value: '2017'
-        // },
-        {
-          text: '2018年', value: '2018'
-        },
-        {
-          text: '2019年', value: '2019'
-        },
         {
           text: '2020年', value: '2020'
         },
         {
           text: '2021年', value: '2021'
-        },
-        {
-          text: '2022年', value: '2022'
-        },
-        {
-          text: '2023年', value: '2023'
-        },
-        {
-          text: '2024年', value: '2024'
-        },
-        {
-          text: '2025年', value: '2025'
-        },
-        {
-          text: '2026年', value: '2026'
-        },
-        {
-          text: '2027年', value: '2027'
-        },
-        {
-          text: '2028年', value: '2028'
-        },
-        {
-          text: '2029年', value: '2029'
-        },
-        {
-          text: '2030年', value: '2030'
         }
       ],
       monthList: [
@@ -145,11 +103,25 @@ export default {
     Spinner,
     Loadmore
   },
-  created () {
-    this.judgeEnv()
-  },
   mounted () {
+    const _year = (new Date()).getFullYear()
+    this.yearList = [
+      {
+        text: '全部', value: 0
+      }
+    ]
 
+    this.yearList.push({
+      text: (_year - 1) + '年',
+      value: String(_year - 1)
+    })
+
+    this.yearList.push({
+      text: _year + '年',
+      value: String(_year)
+    })
+
+    this.judgeEnv()
   },
   computed: {
     noMore () {
@@ -290,18 +262,6 @@ export default {
             materialObj: JSON.parse(i.material)
           }
 
-          // 判断视频进行获取视频宽高的获取
-          // if (Number(i.full_scene_type) === 1) {
-          //   let _videoArr = mixObj.materialObj.video
-          //   let _videoImgAttr = ''
-          //   if (_videoArr.length !== 0) {
-          //     _videoImgAttr = this.getVideoBase64(_videoArr[0].url)
-          //     _videoImgAttr.then(res => {
-          //       console.log('res', res)
-          //     })
-          //   }
-          // }
-
           this.notesList.push(Object.assign(i, mixObj))
         }
       })
@@ -403,7 +363,7 @@ export default {
               flag: flagValue,
               id: data.voting_id
             },
-            query: { worksId: data.id }
+            query: { worksId: data.id, time: (new Date()).getTime() }
           })
         } else {
           this.$router.push({
@@ -412,7 +372,7 @@ export default {
               flag: flagValue,
               id: data.voting_id
             },
-            query: { worksId: data.id }
+            query: { worksId: data.id, time: (new Date()).getTime() }
           })
         }
       } else if (this.curStatus === 'vote') {
@@ -434,40 +394,13 @@ export default {
             name: 'voteoneself',
             params: {
               flag: flagValue,
-              id: data.voting_id
+              id: data.voting_id,
+              time: (new Date()).getTime()
             },
             query: { worksId: data.id }
           })
         }
       }
-      // this.$router.push({
-      //   name: 'votedetail',
-      //   params: {
-      //     flag: flagValue,
-      //     id: data.voting_id
-      //   },
-      //   query: { worksId: data.id }
-      // })
     }
-    // getVideoBase64 (url) {
-    //   return new Promise(function (resolve, reject) {
-    //     let dataURL = ''
-    //     let video = document.createElement('video')
-    //     video.setAttribute('crossOrigin', 'anonymous') // 处理跨域
-    //     video.setAttribute('src', url)
-    //     video.setAttribute('width', 400)
-    //     video.setAttribute('height', 240)
-    //     video.addEventListener('loadeddata', function () {
-    //         let canvas = document.createElement('canvas')
-    //         let width = video.width // canvas的尺寸和图片一样
-    //         let height = video.height
-    //         canvas.width = width
-    //         canvas.height = height
-    //         canvas.getContext('2d').drawImage(video, 0, 0, width, height) // 绘制canvas
-    //         dataURL = canvas.toDataURL('image/jpeg') // 转换为base64
-    //         resolve(dataURL)
-    //     })
-    //   })
-    // }
   }
 }

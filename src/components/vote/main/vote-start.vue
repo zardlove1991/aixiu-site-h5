@@ -409,22 +409,6 @@ export default {
     //  监听滚动事件
     // document.addEventListener('scroll', this.handelscroll, true)
   },
-  // async activated () {
-  //   // 缓存组件直解获取内存中的数据
-  //   this.$refs['commvoteView'].scrollTop = this.scrollTop
-  //   // this.initData()
-  //   // let plat = getPlat()
-  //   // if (plat === 'smartcity') {
-  //   //   window.SmartCity.onShareSuccess((res) => {
-  //   //     this.appShareCallBack()
-  //   //   })
-  //   // }
-  //   let {checkFullScene} = this.$route.params
-  //   console.log(this.$route.params, 'this.$route.params')
-  //   if (checkFullScene) {
-  //     this.toggleFullSceneType(checkFullScene)
-  //   }
-  // },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
     ...mapGetters('depence', ['isShowModelThumb']),
@@ -448,34 +432,10 @@ export default {
   },
   // 路由钩子函数，在离开页面之前进行调用
   beforeRouteLeave (to, from, next) {
-    // let that = this
-    // if (to.name === 'votedetail') {
-    //   from.meta.keepAlive = true
-    // } else {
-    //   let vnode = that.$vnode
-    //   let parentVnode = vnode && vnode.parent
-    //   if (parentVnode && parentVnode.componentInstance && parentVnode.componentInstance.cache) {
-    //     var key = vnode.key === null ? vnode.componentOptions.Ctor.cid + (vnode.componentOptions.tag ? `::${vnode.componentOptions.tag}` : '') : vnode.key
-    //     var cache = parentVnode.componentInstance.cache
-    //     var keys = parentVnode.componentInstance.keys
-    //     if (cache[key]) {
-    //       that.$destroy()
-    //       // remove key
-    //       if (keys.length) {
-    //         var index = keys.indexOf(key)
-    //         if (index > -1) {
-    //           keys.splice(index, 1)
-    //         }
-    //       }
-    //       cache[key] = null
-    //     }
-    //   }
-    // }
-    // next()
     let position = document.getElementById('commvoteView').scrollTop // 记录离开页面时的位置
     if (position == null) position = 0
     this.$store.commit('vote/SET_SCROllY', position) // 离开路由时把位置存起来
-    console.log(position, 'positionpositionposition')
+    // console.log(position, 'positionpositionposition')
     next()
   },
   watch: {
@@ -488,6 +448,7 @@ export default {
     }
   },
   methods: {
+    // 记录滚动位置
     isTabRoute () {
       if (this.$route.name === 'votebegin') {
         this.$nextTick(() => {
@@ -1380,29 +1341,6 @@ export default {
     searchClassify (val) {
       this.searchClassifyVal = val
       this.dealSearch('input-search', true)
-    },
-    // 滚动函数
-    // handelscroll () {
-    //   // 获取滚动区域dom
-    //   let list = this.$refs['commvoteView']
-    //   // 设置滚动事件
-    //   list.onscroll = this.debounce(() => {
-    //     this.scrollTop = list.scrollTop
-    //   }, 100)
-    // },
-    // 防抖
-    debounce (fn, delay) {
-      let timer = null
-      return function () {
-        if (timer) {
-          // 当前正在一个计时过程中，并且又触发了相同事件。所以要取消当前的计时，重新开始计时
-          clearTimeout(timer)
-          timer = setTimeout(fn, delay)
-        } else {
-          // 那么就开始一个计时
-          timer = setTimeout(fn, delay)
-        }
-      }
     }
   }
 }
