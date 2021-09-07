@@ -92,10 +92,11 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
-          // console.log('我调用了。。。', newData)
+          console.log('111', newData, newData.isStopSlideType, newData._mark_offset)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
+          newData.isStopSlideType = false // 事件停止
         }
       },
       deep: true
@@ -208,6 +209,7 @@ export default {
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      console.log('_needCode', _needCode, this.curDetailInfo.rule)
       this.codeObj = {}
       if (_needCode === 1) {
         this.initTnObj()
@@ -225,8 +227,8 @@ export default {
       if (!config || !detailInfo) {
         return
       }
-
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      console.log('1', _needCode, this.curDetailInfo)
       if (_needCode === 0) {
         // 不需要滑动验证码
         this.codeObj = {}

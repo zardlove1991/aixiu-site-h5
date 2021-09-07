@@ -264,9 +264,7 @@ export default {
         canvas.width = 640
         canvas.height = 897
 
-        // let bgImg = await this.loadImg(this.imgs.bgImg)
         let bgImg = this.$refs['worksBgRef']
-        console.log('bgImg', bgImg)
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
 
         ctx.font = '26px Arial'
@@ -278,36 +276,35 @@ export default {
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
         ctx.fillText(data.numbering, 300, 120)
-        // ctx.save()
         // 绘制作品图片
         let imgObj = this.$refs['worksImgRef']
-        console.log('imgObj', imgObj)
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
 
-        // ctx.restore()
-        // ctx.save()
+        ctx.restore()
+        ctx.save()
 
         ctx.font = '24px Arial'
         ctx.fillStyle = '#666666'
-        ctx.fillText(data.source, 130, 540)
+        ctx.textAlign = 'left'
+        ctx.fillText(data.source, 50, 540)
 
+        ctx.save()
         ctx.font = 'bold 30px Arial'
         ctx.fillStyle = '#333333'
-        ctx.fillText(data.title, 135, 590)
+        ctx.fillText(data.title, 50, 590, 540)
+        ctx.save()
 
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
-        ctx.fillText('来自', 70, 640)
-        // ctx.save()
+        ctx.fillText('来自', 50, 640)
+        ctx.save()
 
         const userInfo = STORAGE.get('userinfo')
-        let offwidthNum = '270'
+        let offwidthNum = '145'
         if (data.avatar === '') {
-          offwidthNum = '215'
+          offwidthNum = '100'
         } else {
           // 用户头像
-          // let iconUrl = data.avatar
-          // let userIcon = await this.loadImg(iconUrl)
           let userIcon = this.$refs['userIconRef']
           ctx.arc(120, 635, 20, 0, 2 * Math.PI)
           ctx.clip()
@@ -318,19 +315,6 @@ export default {
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
-
-        // const generateQR = async text => {
-        //   try {
-        //     let qrcodeURL = await QRCode.toDataURL(text)
-        //     console.log('qrcodeURL', qrcodeURL)
-        //     let _qrcodeImg = await this.loadImg(qrcodeURL)
-        //     return _qrcodeImg
-        //   } catch (e) {
-        //     console.error(e)
-        //   }
-        // }
-        // let qrcodeImg = await generateQR(data.qrcode)
-        // ctx.drawImage(qrcodeImg, 50, 695, 90, 90)
 
         this.curCtx = ctx
         this.curCanvas = canvas
@@ -347,11 +331,11 @@ export default {
       this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
       this.curCtx.font = '20px Arial'
       this.curCtx.fillStyle = '#333333'
-      this.curCtx.fillText('长按识别二维码', 220, 730)
+      this.curCtx.fillText('长按识别二维码', 160, 730)
 
       this.curCtx.font = '20px Arial'
       this.curCtx.fillStyle = '#333333'
-      this.curCtx.fillText('查看作品详情', 220, 760)
+      this.curCtx.fillText('查看作品详情', 160, 760)
 
       this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },

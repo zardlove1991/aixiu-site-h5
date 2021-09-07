@@ -60,7 +60,12 @@
       <div v-if="showModel === 'text'" class="form-item">
         <div class="form-title">文字内容</div>
         <div class="form-content">
-          <el-input type="textarea" v-model="examineData.introduce" @blur="blurAction()"></el-input>
+          <!-- <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input> -->
+          <textarea  v-model.trim="examineData.introduce"
+            @blur="blurAction()"
+            class='font-ctx-wrap'
+            rows="5" cols="20">
+          </textarea>
         </div>
       </div>
       <div class="form-item">
@@ -467,6 +472,13 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .font-ctx-wrap{
+    background: #ffffff;
+    width: 100%;
+    border-radius: px2rem(10px);
+    padding: 5px;
+  }
+
   .form-submit-wrap {
     // background-color: #221A6E;
     // @include bg-color('bgColor');
