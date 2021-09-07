@@ -179,19 +179,6 @@ const routes = [{
       title: '加载中...',
       mod: 'exam'
     }
-  }, {
-    path: 'exam/statistic',
-    name: 'livestatistic',
-    component: getOtherComponent('live-statistic', 'live-exam'),
-    props: (route) => ({
-      id: route.params.id, // 传入需要请求当前试卷的ID
-      redirect: route.query.redirect, // 小程序传入的重定向地址
-      delta: route.query.delta // 小程序需要回退的页面层级
-    }),
-    meta: {
-      title: '直播测评结果',
-      mod: 'exam'
-    }
   }]
 }, {
   path: '/permission',

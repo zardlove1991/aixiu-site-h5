@@ -265,7 +265,7 @@ export default {
         let color = ''
         if (this.examInfo && this.examInfo.limit.color_scheme) {
           const config = this.examInfo.limit.color_scheme
-          const buttonColor = config.content.button_color
+          const buttonColor = this.examInfo.mark === 'examination@live' ? config.content.high_text : config.content.button_color
           const costomColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.2)`
           color = costomColor
         }
@@ -277,7 +277,7 @@ export default {
         let color = ''
         if (this.examInfo && this.examInfo.limit.color_scheme) {
           const config = this.examInfo.limit.color_scheme
-          const buttonColor = config.content.bg_color
+          const buttonColor = this.examInfo.mark === 'examination@live' ? config.content.high_text : config.content.bg_color
           const costomBgColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.05)`
           color = costomBgColor
         }
@@ -537,8 +537,9 @@ export default {
     },
     backUrl () {
       let examId = this.$route.params.id
+      let path = this.examInfo.mark === 'examination@live' ? `/livestart/${examId}/start` : `/depencestart/${examId}`
       this.$router.push({
-        path: `/depencestart/${examId}`
+        path: path
       })
     },
     shareScore () {
