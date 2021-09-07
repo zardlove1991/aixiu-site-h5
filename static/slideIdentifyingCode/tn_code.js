@@ -2,10 +2,6 @@
 // let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
 // let requestUrl = 'http://localhost:8080/api/votinghy'
 
-window.document.addEventListener('touchend', function () {
-  console.log('0000')
-})
-
 let requestUrl = `${window.location.protocol}//${window.location.host}/api/votinghy`
 
 if (!document.getElementByClassName) {
@@ -153,7 +149,6 @@ var tncode = {
       theEvent = theEvent.touches[0]
     }
     tncode._is_moving = true
-    // console.log('_block_on_move')
     // document.getElementById('msg').innerHTML = "move:"+theEvent.clientX+";"+theEvent.clientY;
     var offset = theEvent.clientX - tncode._block_start_x
     if (offset < 0) {
@@ -171,8 +166,11 @@ var tncode = {
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
-    if (!tncode._doing) return true
     console.log('我_block_on_end被谁调用了：', tncode._block_on_end.caller)
+    if (!tncode._doing) return true
+    // if (tncode.isInitType) {
+    //   return false
+    // }
     e.preventDefault()
     var theEvent = window.event || e
     if (theEvent.touches) {
@@ -181,7 +179,6 @@ var tncode = {
 
     tncode.isStopSlideType = true
     tncode._is_moving = false
-    // tncode._send_result();
   },
   checkSuccessType: function (data) {
     console.log('tncode.isLoadType', tncode.isLoadType)
@@ -216,39 +213,6 @@ var tncode = {
       }
     }
   },
-  // _send_result:function(){
-  //     $.ajax({
-  //         url: requestUrl + '/check?request_id='+tncode._request_id+'&tn_x='+tncode._mark_offset,
-  //         async:false,
-  //         success:function(res){
-  //             tncode._doing = false;
-  //             if (res.response == 'ok') {
-  //                 tncode._tncode.innerHTML = '验证成功';
-  //                 tncode._showmsg('验证成功',1);
-  //                 tncode._result = true;
-  //                 console.log(' tncode._result',  tncode._result)
-  //                 document.getElementByClassName('hgroup').style.display="block";
-  //                 setTimeout(tncode.hide,3000);
-  //                 if(tncode._onsuccess){
-  //                     tncode._onsuccess();
-  //                 }
-  //             } else {
-  //                 var obj = document.getElementById('tncode_div');
-  //                 addClass( obj,'dd');
-  //                 setTimeout(function(){
-  //                     removeClass( obj,'dd');
-  //                 },200);
-  //                 tncode._result = false;
-  //                 console.log(' tncode._result',  tncode._result)
-  //                 tncode._showmsg('验证失败');
-  //                 tncode._err_c++;
-  //                 if(tncode._err_c>10){
-  //                     tncode.refresh();
-  //                 }
-  //             }
-  //         }
-  //     });
-  // },
   _draw_fullbg: function () {
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
@@ -490,14 +454,13 @@ var tncode = {
 
           var obj = document.getElementByClassName('tncode_close');
           tncode._bind(obj,'touchstart',_this.hide);
-          tncode._bind(obj,'click',_this.hide);
+          // tncode._bind(obj,'click',_this.hide);
           var obj = document.getElementByClassName('tncode_refresh');
 
           tncode._bind(obj,'touchstart',_this.refresh);
-          tncode._bind(obj,'click',_this.refresh);
+          // tncode._bind(obj,'click',_this.refresh);
 
           // 点击按钮事件
-          console.log(99, document.getElementByClassName('tncode',-1))
           var objs = document.getElementByClassName('tncode',-1);
           for (var i in objs) {
               var o = objs[i];

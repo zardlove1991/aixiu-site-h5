@@ -96,6 +96,7 @@ export default {
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
+          newData.isStopSlideType = false // 事件停止
         }
       },
       deep: true
