@@ -11,14 +11,10 @@
               :placeholder="item.name"
               :type="item.type"
               :maxlength="item.maxlength"
-              :readonly="item.unique_name === 'gender' || item.unique_name === 'birthday' ||
-              item.unique_name === 'address' || item.type === 'select'"
-              :disabled="isGetDept && item.unique_name === 'department'"
               @focus="focusAction(item)"
-              @blur="blurAction(item)"
               v-model="checkData[item.unique_name]"></el-input>
             <div v-show="(item.unique_name === 'gender' || item.unique_name === 'birthday' ||
-              item.unique_name === 'address' || item.type === 'select') && !isGetDept" class="drop-icon"></div>
+              item.unique_name === 'address' || item.type === 'select')" class="drop-icon"></div>
           </div>
           <!-- <div
             v-if="item.unique_name === 'mobile' &&  codeTime === 0"
@@ -169,56 +165,18 @@ export default {
         this.isShowCitySelect = true
       }
       if (type === 'select') {
-        if (this.isGetDept && key === 'department') {
-          // console.log('no-show', key)
-        } else {
-          // console.log('show', key)
-          let value = this.checkData[item.unique_name]
-          if (value) {
-            let values = item.select_data
-            if (values && values.length) {
-              let arr = values[0]
-              let arr2 = arr.values
-              let index = arr2.indexOf(value)
-              arr.defaultIndex = index
-            }
-          }
-          this.customShow = true
-          this.customData = item
-        }
-      }
-    },
-    blurAction (item) {
-      document.body.scrollTop = 0
-      if (this.isGetDept) {
-        if (item.unique_name === 'name' || item.unique_name === 'work_number') {
-          let checkData = this.checkData
-          let nameVal = checkData['name']
-          let workNumVal = checkData['work_number']
-          if (nameVal && workNumVal) {
-            API.getInfoDept({
-              params: {
-                examination_id: this.examId,
-                name: nameVal,
-                work_number: workNumVal
-              }
-            }).then(res => {
-              if (res) {
-                let department = ''
-                if (res.constructor === Object) {
-                  department = res.response
-                } else if (res.constructor === String) {
-                  department = res
-                }
-                if (!department) {
-                  Toast('抱歉，没有查到您的用户信息！')
-                  return
-                }
-                this.$set(this.checkData, 'department', department)
-              }
-            })
+        let value = this.checkData[item.unique_name]
+        if (value) {
+          let values = item.select_data
+          if (values && values.length) {
+            let arr = values[0]
+            let arr2 = arr.values
+            let index = arr2.indexOf(value)
+            arr.defaultIndex = index
           }
         }
+        this.customShow = true
+        this.customData = item
       }
     },
     selectSuccessAction (val) {
@@ -232,17 +190,6 @@ export default {
       } else if (key === 'address') {
         this.checkData.address = val
         this.isShowCitySelect = false
-      }
-      // 临时处理
-      if (key === 'department') {
-        this.showTmp = val
-        let arr = this.checkDraw
-        for (let tmp of arr) {
-          let key = tmp.unique_name
-          if (key === 'HCuGpRSUNLXw' || key === 'wVefsbQKWOlF' || key === 'sEtIQMMiWRnD') {
-            this.checkData[key] = '' // 清空
-          }
-        }
       }
       if (this.customShow) {
         this.customShow = false
@@ -390,9 +337,8 @@ export default {
           id: examInfo.id
         }
       }).then(res => {
-        if (res.ErrorCode) {
-          // this.getImgCode()
-          Toast(res.ErrorText)
+        if (res.error_code === 'collect_member_fail') {
+          Toast('抱歉，没有查到您的用户信息！')
           return
         }
         this.$emit('close')

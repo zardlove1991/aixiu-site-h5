@@ -24,23 +24,16 @@
           </subject-content>
         </div>
         <div class="btn-wrap">
-          <!--上一题按钮-->
-          <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
-            :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
-            @click.stop="changeSubjectIndex('sub')">
-            上一题
+          <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+            跳过本题
           </div>
           <div class="next-wrap"
-            v-show="!isShowSubmitBtn"
-            :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length - 1 }"
-            @click.stop="changeSubjectIndex('add')">
-            下一题
-          </div>
-          <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-            {{examInfo.limit.submit_text || '立即交卷'}}
+            v-show="examInfo.mark !== 'examination@exercise'"
+            @click.stop="saveCloud('add')">
+            确认
           </div>
         </div>
-        <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+        <div class="sumbit-btn" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
       </div>
@@ -98,7 +91,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { Indicator, Toast } from 'mint-ui'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
@@ -131,7 +125,8 @@ export default {
       isShowSuspendModel: false,
       isShowSuspendModels: false,
       isShowSubmitModel: false,
-      isOpenSubmitAll: false
+      isOpenSubmitAll: false,
+      successStatus: 0
     }
   },
   components: {
@@ -184,12 +179,6 @@ export default {
       try {
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
-        let status = this.examInfo.person_status
-        // 调用考试考试接口
-        if (this.rtp === 'exam' && status !== 2) {
-          let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart })
-        }
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -202,8 +191,6 @@ export default {
         if (isAll) {
           this.isOpenSubmitAll = true
         }
-        // 检查是否存在中断考试的情况
-        this.checkAnswerMaxQuestionId()
         this.sharePage()
       } catch (err) {
         console.log(err)
@@ -313,7 +300,7 @@ export default {
     },
     dealExamHeaderSelect ({subject, index}) {
       this.toggetSubjectList()
-      this.changeSubjectIndex(index)
+      this.changeSubjectIndex('to_' + index)
     },
     dealConfrimOption () {
       let isShowSubmitBtn = this.isShowSubmitBtn // 判断是否已经到交卷的题目了
@@ -322,22 +309,75 @@ export default {
         this.submitExam()
       } else {
         // 完成并到下一题
-        this.changeSubjectIndex('add')
-      }
-    },
-    checkAnswerMaxQuestionId () {
-      let examInfo = this.examInfo
-      let answerMaxQuestionId = examInfo.answer_max_question_id
-      let renderType = this.renderType
-      // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam' && answerMaxQuestionId) {
-        let list = this.examList
-        let index = list.findIndex(item => item.id === answerMaxQuestionId)
-        if (index >= 0) this.changeSubjectIndex(index)
+        this.saveCloud('add')
       }
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
+    },
+    async saveCloud (status = 'add') {
+      console.log('saveCloud******', this.successStatus)
+      let saveStatus = status
+      if (this.saveClouding) return
+      if (this.successStatus !== 0) return
+      if (this.currentSubjectIndex === this.examList.length - 1) {
+        status = this.currentSubjectIndex
+      }
+      this.saveClouding = true
+      Indicator.open({ spinnerType: 'fading-circle' })
+      await this.changeSubjectIndex(status).then(res => {
+        res.saveStatus = saveStatus
+        // 练习题回调处理
+        this.questionAnswerCallBack(res)
+        this.saveClouding = false
+        Indicator.close()
+      }).catch(err => {
+        this.saveClouding = false
+        Indicator.close()
+        if (err.error_code === 'member_submit') {
+          Toast('本场作答已超时，系统已经为您自动交卷')
+        }
+      })
+    },
+    questionAnswerCallBack (res) {
+      let { success } = res
+      if (res && res.error_code === 'member_submit') {
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        return false
+      }
+      if (success) {
+        this.$nextTick(() => {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+            // Toast('已经没有题目了~')
+            console.log('nextExerciseBtn', '已经没有题目了')
+            this.nextExerciseBtn = false
+          } else {
+            this.nextExerciseBtn = true
+            console.log('nextExerciseBtn', '还有题目')
+          }
+          setTimeout(() => {
+            // 如果不是最后一题 自动进入下一题
+            if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+              this.exerciseNext()
+            }
+          }, 0)
+        })
+      }
+    },
+    toNextQuestion () {
+      let num = this.currentSubjectIndex
+      this.changeSubjectIndex('to_' + ++num)
+    },
+    exerciseNext () {
+      if (this.exerciseNextIng) return
+      this.exerciseNextIng = true
+      setTimeout(() => {
+        this.exerciseNextIng = false
+        this.nextExerciseBtn = false
+        this.successStatus = 0
+        let num = this.currentSubjectIndex
+        this.setCurrentSubjectIndex(++num)
+      }, 500)
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -346,6 +386,10 @@ export default {
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
       unlockCorse: 'UNLOCK_COURSE'
+    }),
+    ...mapMutations('depence', {
+      setCurrentSubjectIndex: 'SET_CURRENT_SUBJECT_INDEX',
+      setAnalysisAnswer: 'SET_ANALYSIS_ANSWER'
     })
   }
 }

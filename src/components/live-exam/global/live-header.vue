@@ -83,6 +83,8 @@ import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import { formatTimeBySec } from '@/utils/utils'
+import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'live-header',
@@ -126,7 +128,8 @@ export default {
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
       'essayAnswerInfo', 'oralAnswerInfo',
-      'subjectAnswerInfo', 'luckDrawLink'
+      'subjectAnswerInfo', 'luckDrawLink',
+      'remainTime'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -156,7 +159,9 @@ export default {
   methods: {
     initCountTime () {
       let limitTime = this.examInfo.limit_time
-      this.duration = this.list[0].remain_time
+      if (this.remainTime) {
+        this.duration = this.remainTime
+      }
       let timeFun = () => {
         if (this.duration === 2) {
           this.$emit('notimeup')
@@ -182,49 +187,108 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    async confirmSubmitModel () {
-      // let subject = this.currentSubjectInfo
-      this.toggleSubmitModel()
-      try {
-        await this.endExam() // 提交试卷
-        clearInterval(this.timer)
-        let rules = this.examInfo.limit.submit_rules
-        if (rules) {
-          let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-          if (isOpenRaffle && isOpenRaffle !== 0) {
-            // 抽奖
-            this.isLuckSubmitSuccess = true
-            if (this.luckDrawLink) {
-              this.isLuckDraw = true
-              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-            } else {
-              this.isLuckDraw = false
-              this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-            }
-          } else if (link) {
-            this.isSubmitSuccess = true
-            setTimeout(() => {
-              this.isSubmitSuccess = false
-              window.location.replace(link.url)
-            }, 1000)
-          } else if (result) {
-            let examId = this.examId
-            this.$router.replace({
-              path: `/livestart/${examId}/statistic`
+    async confirmSubmitModel (command) {
+      if (command !== 'noconfirm') {
+        this.toggleSubmitModel()
+      }
+      let _id = this.$route.params.id
+      // 提交试卷
+      let _result = await API.submitExam({
+        query: {
+          id: this.examId
+        }
+      })
+      clearInterval(this.timer)
+      if (_result) {
+        let {success, raffle} = _result
+        if (success) {
+          this.temporaryData = raffle
+          if (this.examInfo.mark === 'examination@exercise') {
+            // 获取测评结果
+            API.getExamDetailsStatistics({query: {id: _id}, params: {api_person_id: _result.api_person_id}}).then(res => {
+              let { correct_num: correctNum, points, score } = res
+              let exerciseResult = {
+                correctNum, points, score
+              }
+              this.$emit('update:showExerciseResult', true)
+              this.$emit('getExerciseStatistics', exerciseResult)
+              STORAGE.remove(_result.api_person_id)
             })
-          } else if (pop) {
-            this.isPopSubmitSuccess = true
-            this.pop = pop
           } else {
-            // 跳转去答题卡页面
-            this.pageToStart()
+            this.setResult(raffle, _result)
           }
         } else {
-          // 跳转去答题卡页面
-          this.pageToStart()
+          console.error('提交失败')
         }
-      } catch (err) {
-        console.log(err)
+      }
+    },
+    async autoExamSubmit () {
+      // 提交试卷
+      let _result = await API.submitExam({
+        query: {
+          id: this.examId
+        }
+      })
+      clearInterval(this.timer)
+      if (_result) {
+        let {success} = _result
+        if (success) {
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.$emit('exerciseTimeOut')
+            console.error('autoExamSubmit-超时自动交卷exerciseTimeOut')
+          }
+        }
+      } else {
+        console.error('提交失败')
+      }
+    },
+    // 处理结果
+    setResult (raffle, res) {
+      if (!raffle) {
+        if (this.temporaryData) {
+          raffle = this.temporaryData
+        } else {
+          return
+        }
+      }
+      if (raffle) {
+        let _raffleUrl = raffle.raffle_url
+        let {
+          is_open_raffle: _openRaffle,
+          is_open_jump: _openJump,
+          jump_conditions: _jumpConditions,
+          result,
+          pop,
+          link
+        } = raffle
+        if (_openRaffle) {
+          if (_raffleUrl) {
+            this.isLuckDraw = true
+            this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+          } else {
+            this.isLuckDraw = false
+            this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+          }
+        } else if (link) {
+          this.isSubmitSuccess = true
+          let { url } = link
+          setTimeout(() => {
+            this.isSubmitSuccess = false
+            window.location.replace(url)
+          }, 1000)
+        } else if (result || _jumpConditions) {
+          console.log(result, '答题结果页')
+          let examId = this.examId
+          this.$router.replace({
+            path: `/exam/statistic/${examId}`,
+            query: {api_person_id: res ? res.api_person_id : ''}
+          })
+        } else if (pop) {
+          this.isPopSubmitSuccess = true
+          this.pop = pop
+        } else {
+          console.log('_openRaffle:', _openRaffle, '_openJump:', _openJump, 'result:', result, 'pop:', pop)
+        }
       }
     },
     pageToLuckDraw () {

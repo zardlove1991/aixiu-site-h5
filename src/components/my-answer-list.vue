@@ -79,7 +79,7 @@ export default {
   mounted () {
     console.log('examInfo', this.examInfo)
     this.initData()
-    if (this.examInfo.limit.random.score_conversion === 1) {
+    if (this.examInfo.limit.random && this.examInfo.limit.random.score_conversion === 1) {
       // 存在积分
       this.isIntegralType = true
     } else {

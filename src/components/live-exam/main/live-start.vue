@@ -3,12 +3,12 @@
   <div class="live-start-wrap" v-if="examInfo">
     <div class="content-wrap">
       <div class="header-top"
-        v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result && examInfo.last_submit">
+        v-show="examInfo.last_submit == 1">
         <div class="end-tips">
           <i class="tips-icon"></i>
           <span class="tips-msg">已提交</span>
         </div>
-        <div class="to-score" @click.stop="toStatistic">查看结果</div>
+        <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
       </div>
       <div class="exam-body-content">
         <div class="header-desc">
@@ -214,9 +214,11 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      let answerRecord = STORAGE.get('answer_record_' + examId)
       try {
-        await this.endExam({ id: examId, answerList: answerRecord })
+        await this.endExam({
+          id: examId
+          // answerList: answerRecord
+        })
       } catch (err) {
         Toast(err.error_message)
       } finally {
@@ -558,6 +560,12 @@ export default {
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
+    },
+    goAnswerListPage () {
+      let examId = this.id
+      this.$router.push({
+        path: `/exam/myAnswerList/${examId}`
+      })
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',
