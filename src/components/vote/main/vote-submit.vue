@@ -181,7 +181,7 @@ export default {
       fullSceneType: [], // 全场景的搜索条件
       fullSceneMap,
       imageUpload_min_num: '',
-      imageUpload_max_num: ''
+      imageUpload_max_num: 9
     }
   },
   methods: {
