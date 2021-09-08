@@ -380,7 +380,7 @@ export default {
         // "voting_status": 2 //1未开启 2 进行中 3暂停 4结束
         if (_status === 1) {
 
-        } else if (_status === 2) {
+        } else if (_status === 2 || _status === 4) {
           this.$router.push({
             name: 'votedetail',
             params: {
