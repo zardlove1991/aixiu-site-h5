@@ -4,6 +4,7 @@
       <!--头部组件-->
       <exam-header
         :list="examList"
+        ref="examHeader"
         :showSubmitModel.sync="isShowSubmitModel"
         :isOpenSubmitAll="isOpenSubmitAll"
         :curIndex="currentSubjectIndex"
@@ -111,6 +112,7 @@ export default {
   props: {
     id: String,
     rtp: String,
+    directlySubmit: String,
     restart: {
       type: String,
       default: 'none'

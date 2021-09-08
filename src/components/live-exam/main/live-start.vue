@@ -231,8 +231,8 @@ export default {
       // 直接交卷
       let examId = this.id
       this.$router.replace({
-        path: `/exam/depencelist/${examId}`,
-        query: {'directlySubmit': '1'}
+        path: `/livestart/${examId}/list`,
+        query: {'directlySubmit': '1', 'rtp': 'exam'}
       })
     },
     cancelBreakModel () {
@@ -306,10 +306,19 @@ export default {
       this.errTips = ''
     },
     toStatistic () {
+      this.closeSuspendModels()
       let examId = this.id
       this.$router.push({
         path: `/exam/statistic/${examId}`
       })
+    },
+    closeSuspendModels () {
+      let apiPersonId = this.examInfo.api_person_id
+      this.isShowSuspendModels = false
+      if (apiPersonId) {
+        STORAGE.set(apiPersonId + 'timeout_tip', 1)
+      }
+      console.error('closeSuspendModels' + apiPersonId + STORAGE.get(apiPersonId + 'timeout_tip'))
     },
     async initStartInfo () {
       let examId = this.id
