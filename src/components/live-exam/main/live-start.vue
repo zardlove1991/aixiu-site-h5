@@ -50,9 +50,10 @@
           </div>
         </div>
         <!--底部按钮-->
-        <div class="btn-area" v-if="examInfo.timeStatus !== 0">
-          <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
-          <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+        <div class="btn-area" v-if="examInfo.activity_vp_status">
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_no_start'">答题未开始</button>
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_close'">答题已暂停</button>
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_end'">答题已结束</button>
         </div>
         <div class="btn-area" v-else>
           <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
