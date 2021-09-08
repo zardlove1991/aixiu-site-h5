@@ -517,25 +517,10 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      if (this.examInfo.mark === 'examination@exercise') {
-        this.$router.replace({
-          path: `/exam/depencelist/${examId}`,
-          query: {'directlySubmit': '1'}
-        })
-      } else {
-        try {
-          await this.endExam({
-            id: examId
-            // answerList: answerRecord
-          })
-        } catch (err) {
-          Toast(err.error_message)
-        } finally {
-          this.initStartInfo()
-          this.isShowBreak = false
-          this.breakDoAction()
-        }
-      }
+      this.$router.replace({
+        path: `/exam/depencelist/${examId}`,
+        query: {'directlySubmit': '1'}
+      })
     },
     cancelBreakModel () {
       // 继续答题

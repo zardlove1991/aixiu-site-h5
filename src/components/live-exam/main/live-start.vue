@@ -77,13 +77,28 @@
       </div>
     </my-model>
     <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="tip" v-if="examInfo.submit_status === 2">本场作答已超时，系统已为您自动交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 4">本场单题作答已超时，系统已为您自动交卷</div>
+        <div class="tip-btn"
+          v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
+          @click.stop="toStatistic">查看分数</div>
+        <div class="tip-btn" v-else @click.stop="closeSuspendModels">知道了</div>
+      </div>
+    </my-model>
+    <my-model
       :show="isShowBreak && isOpenSubmitAll"
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
         <div class="tip-btn tip-btn-top" @click.stop="cancelBreakModel">继续答题</div>
       </div>
     </my-model>
@@ -97,7 +112,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
       </div>
     </my-model>
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
@@ -143,7 +158,6 @@ import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import LiveVideo from '@/components/live-exam/global/live-video'
-import { Toast } from 'mint-ui'
 
 export default {
   mixins: [mixins],
@@ -165,6 +179,7 @@ export default {
       passwordTips: '',
       errTips: '',
       isShowBreak: false,
+      isShowSuspendModels: false,
       isShowDrawCheck: false,
       checkDraw: [],
       isNoLimit: false,
@@ -215,18 +230,10 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      try {
-        await this.endExam({
-          id: examId
-          // answerList: answerRecord
-        })
-      } catch (err) {
-        Toast(err.error_message)
-      } finally {
-        this.initStartInfo()
-        this.isShowBreak = false
-        this.breakDoAction()
-      }
+      this.$router.replace({
+        path: `/exam/depencelist/${examId}`,
+        query: {'directlySubmit': '1'}
+      })
     },
     cancelBreakModel () {
       // 继续答题
@@ -301,7 +308,7 @@ export default {
     toStatistic () {
       let examId = this.id
       this.$router.push({
-        path: `/livestart/${examId}/statistic`
+        path: `/exam/statistic/${examId}`
       })
     },
     async initStartInfo () {
@@ -315,6 +322,19 @@ export default {
         // 分享
         this.sharePage()
         let info = this.examInfo
+        // submit_status0未交卷 1 已交卷 2 超时交卷
+        if (info.submit_status === 0) {
+          // 考试中
+          this.isShowBreak = true
+        } else {
+          this.isShowBreak = false
+        }
+        if (info.submit_status === 2 || info.submit_status === 4) {
+          if (info.api_person_id) {
+            let isTimeoutTip = STORAGE.get(info.api_person_id + 'timeout_tip')
+            this.isShowSuspendModels = !isTimeoutTip
+          }
+        }
         if (info.person_status === 2) {
           // 考试中
           this.isShowBreak = true

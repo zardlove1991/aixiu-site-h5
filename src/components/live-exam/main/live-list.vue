@@ -103,6 +103,7 @@ import SubjectContent from '@/components/depence/subject-content'
 import SubjectList from '@/components/depence/subject-list'
 import MyModel from '@/components/live-exam/global/live-model'
 import LiveVideo from '@/components/live-exam/global/live-video'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'live-list',
@@ -126,7 +127,10 @@ export default {
       isShowSuspendModels: false,
       isShowSubmitModel: false,
       isOpenSubmitAll: false,
-      successStatus: 0
+      successStatus: 0,
+      nextExerciseBtn: false,
+      exerciseTotalTimeOut: false, // 倒计时答题总时间超时
+      showExerciseResultBtn: false // 显示直接查看结果按钮
     }
   },
   components: {
@@ -139,7 +143,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos', 'answerList',
-      'isShowSubjectList'
+      'isShowSubjectList', 'remainTime', 'apiPersonInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -158,7 +162,7 @@ export default {
       setTimeout(() => {
         let examId = this.id
         this.$router.replace({
-          path: `/livestart/${examId}/statistic`
+          path: `/exam/statistic/${examId}`
         })
       }, 1000)
     },
@@ -190,6 +194,13 @@ export default {
         let isAll = this.examInfo.limit.is_open_submit_all
         if (isAll) {
           this.isOpenSubmitAll = true
+        }
+        this.exerciseTotalTimeOut = false
+        this.setQusetionTimeToCloud()
+        // 检测是否有答题中断并自动定位到未答题上
+        this.checkExamBreak()
+        if (this.directlySubmit === '1') {
+          this.$refs.examHeader.confirmSubmitModel('noconfirm')
         }
         this.sharePage()
       } catch (err) {
@@ -250,6 +261,51 @@ export default {
         link,
         mark: 'examination'
       })
+    },
+    // 获取云端答题最后一道题的索引
+    getLastestAnswerRecordIndex () {
+      let list = this.examList
+      let _lastIndex = null
+      list.forEach((item, index) => {
+        if (item.value) _lastIndex = index
+      })
+      // 如果存在云端答题存储 则自动把答题索引下移到当前索引下一题 如果是最后一题直接保持为当前索引
+      if (_lastIndex !== null) {
+        _lastIndex = _lastIndex < this.examList.length - 1 ? _lastIndex + 1 : _lastIndex
+      } else {
+        _lastIndex = 0
+      }
+      console.error(_lastIndex, '_lastIndex')
+      return _lastIndex
+    },
+    // 检测存在答题中断进行处理
+    checkExamBreak () {
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark !== 'examination@exercise') {
+        let _lastIndex = this.getLastestAnswerRecordIndex()
+        if (this.remainTime > 0) {
+          console.error('答题剩余时间:' + this.remainTime)
+          this.changeSubjectIndex('to_' + _lastIndex)
+        } else {
+          Toast('本题答题超时，系统已经为您自动交卷')
+          this.$refs.examHeader.autoExamSubmit()
+        }
+      }
+      // 如果试卷超时自动交卷
+      if (this.apiPersonInfo.submit_status === 2 || this.apiPersonInfo.submit_status === 4) {
+        this.$refs.examHeader.autoExamSubmit()
+      }
+    },
+    // 是否展示本场次超时交卷提示
+    isShowexerciseTimeOut (apiPersonId) {
+      let isTimeoutTip = STORAGE.get(apiPersonId + 'timeout_tip')
+      this.isShowSuspendModels = !isTimeoutTip
+    },
+    // 异常中断进入检测超时自动打开超时弹窗
+    exerciseTimeOut () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
+      this.exerciseTotalTimeOut = true
+      this.isShowexerciseTimeOut(apiPersonId)
+      this.clearTimer()
     },
     async confirmSuspendModel () {
       let examId = this.id
@@ -379,18 +435,63 @@ export default {
         this.setCurrentSubjectIndex(++num)
       }, 500)
     },
+    setQusetionTimeToCloud () {
+      if (this.examInfo) {
+        this.setQuestionTime()
+      }
+    },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
       saveAnswerRecords: 'SAVE_ANSWER_RECORDS',
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
-      unlockCorse: 'UNLOCK_COURSE'
+      unlockCorse: 'UNLOCK_COURSE',
+      setQuestionTime: 'SET_QUESTION_TIME'
     }),
     ...mapMutations('depence', {
       setCurrentSubjectIndex: 'SET_CURRENT_SUBJECT_INDEX',
       setAnalysisAnswer: 'SET_ANALYSIS_ANSWER'
     })
+  },
+  watch: {
+    'examInfo': {
+      handler: function (v) {
+        console.log(v, '监听examInfo')
+        if (v && !this.loadList) {
+          this.setCurrentSubjectIndex(0)
+          this.loadList = true
+          this.$nextTick(() => {
+            this.initList()
+            this.nextExerciseBtn = false
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    'currentSubjectIndex': {
+      handler: function (v) {
+        console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
+        if (v !== 0) {
+          this.nextExerciseBtn = false
+          if (this.examList && this.examList.length > 0) {
+            // 记录云端时间
+            this.setQusetionTimeToCloud()
+          }
+          this.successStatus = 0
+          this.analysisData = null
+        }
+      },
+      immediate: true
+    },
+    'examList': {
+      handler: function (v) {
+        console.log(v, '监听examList')
+        // this.resetTimeLimit()
+      },
+      immediate: true
+    }
   }
 }
 </script>

@@ -106,7 +106,8 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 2">本场作答已超时，系统已为您自动交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 4">本场单题作答已超时，系统已为您自动交卷</div>
         <div class="tip-btn"
           v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
           @click.stop="toStatistic">查看分数</div>
@@ -240,7 +241,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos', 'answerList', 'apiPersonInfo',
-      'isShowSubjectList'
+      'isShowSubjectList', 'remainTime'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -323,6 +324,14 @@ export default {
           console.log(this.directlySubmit, '********this.directlySubmit*******')
           if (this.directlySubmit === '1') {
             this.clearTimer()
+            this.$refs.examHeader.confirmSubmitModel('noconfirm')
+          }
+        } else {
+          this.exerciseTotalTimeOut = false
+          this.setQusetionTimeToCloud()
+          // 检测是否有答题中断并自动定位到未答题上
+          this.checkExamBreak()
+          if (this.directlySubmit === '1') {
             this.$refs.examHeader.confirmSubmitModel('noconfirm')
           }
         }
@@ -531,12 +540,13 @@ export default {
       } else {
         _lastIndex = 0
       }
+      console.error('我返回的索引', _lastIndex)
       return _lastIndex
     },
     // 检测存在答题中断进行处理
     checkExamBreak () {
       // submit_status0未交卷 1 已交卷 2 超时交卷
-      if (this.apiPersonInfo.submit_status === 0) {
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark === 'examination@exercise') {
         // 如果检测考试未交卷 自动跳转到上次答题位置
         let totalTime = this.getExerciseTotalTime()
         let _lastIndex = this.getLastestAnswerRecordIndex()
@@ -549,11 +559,12 @@ export default {
           console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
           if (usedTime >= totalTime) {
             // console.error('已经答题超时,需要自动交卷')
-            // this.$refs.examHeader.autoExamSubmit()
-            // return false
+            Toast('本场作答已超时，系统已为您自动交卷')
+            this.$refs.examHeader.autoExamSubmit()
+            return false
           }
         }
-        console.error('本道题上一次进入时间戳', currentQuestionFirstTime)
+        console.error('本道题上一次进入时间戳', currentQuestionFirstTime, _lastIndex)
         if (currentQuestionFirstTime) {
           let usedTime = _now - parseInt(currentQuestionFirstTime)
           let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
@@ -566,17 +577,27 @@ export default {
               console.error('answerSubmitRules已经答题超时,需要自动交卷')
               Toast('本题答题超时，系统已经为您自动交卷')
               this.$refs.examHeader.autoExamSubmit()
+              return false
             } else {
               console.error('未开启答错交卷，当前题目答题时间已经超时')
             }
-            return false
           }
           console.error('********此流程结束**********')
         }
         this.changeSubjectIndex('to_' + _lastIndex)
       }
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark !== 'examination@exercise') {
+        let _lastIndex = this.getLastestAnswerRecordIndex()
+        if (this.remainTime > 0) {
+          console.error('答题剩余时间:' + this.remainTime)
+          this.changeSubjectIndex('to_' + _lastIndex)
+        } else {
+          Toast('本题答题超时，系统已经为您自动交卷')
+          this.$refs.examHeader.autoExamSubmit()
+        }
+      }
       // 如果试卷超时自动交卷
-      if (this.apiPersonInfo.submit_status === 2) {
+      if (this.apiPersonInfo.submit_status === 2 || this.apiPersonInfo.submit_status === 4) {
         this.$refs.examHeader.autoExamSubmit()
       }
     },
@@ -587,8 +608,9 @@ export default {
     },
     // 异常中断进入检测超时自动打开超时弹窗
     exerciseTimeOut () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
       this.exerciseTotalTimeOut = true
-      this.isShowexerciseTimeOut()
+      this.isShowexerciseTimeOut(apiPersonId)
       this.clearTimer()
     },
     _dealShowBtn (flag) {
@@ -861,7 +883,7 @@ export default {
       }
     },
     setQusetionTimeToCloud () {
-      if (this.examInfo && this.examInfo.mark === 'examination@exercise') {
+      if (this.examInfo) {
         this.setQuestionTime()
       }
     },
@@ -901,7 +923,6 @@ export default {
         console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
         if (v !== 0) {
           this.nextExerciseBtn = false
-          console.log(this.examList && this.examList.length > 0, 'this.examList && this.examList.length > 0')
           if (this.examList && this.examList.length > 0) {
             console.log('调用-resetTimeLimit 启动定时器')
             this.resetTimeLimit()
