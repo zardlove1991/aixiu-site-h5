@@ -259,6 +259,12 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
+    <!-- 投票关联抽奖 -->
+    <vote-reward
+      :show="isShowVoteReward"
+      @close="isShowVoteReward = false">
+    </vote-reward>
+
   </div>
 </template>
 
@@ -279,6 +285,7 @@ import ActiveStart from '@/components/vote/global/active-start'
 import ActiveVote from '@/components/vote/global/vote-active'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
+import VoteReward from '@/components/vote/global/vote-reward.vue'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
@@ -310,10 +317,12 @@ export default {
     VoteClassifyList,
     Spinner,
     Loadmore,
-    LotteryVote
+    LotteryVote,
+    VoteReward
   },
   data () {
     return {
+      isShowVoteReward: true,
       interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
