@@ -191,7 +191,6 @@ export default {
       this.ZCIdType = false
     }
     console.log("STORAGE.get('detailInfo')", STORAGE.get('detailInfo'))
-
   },
   methods: {
     async initForm () {
