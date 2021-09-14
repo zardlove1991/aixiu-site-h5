@@ -113,6 +113,7 @@ instance.interceptors.response.use((res, xhr) => {
       return Promise.reject(data)
     }
   }
+  console.log('res.status', res.status)
   const dom = document.getElementById('watting-wrap')
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'
@@ -127,9 +128,18 @@ instance.interceptors.response.use((res, xhr) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  // isTimeout || status === 503
+  // if (isTimeout || status === 503 || status === 429 || status === 499) {
+  //   if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
+  //     window.location.href = `/waitting.html?origin=${url}`
+  //   } else {
+  //     store.dispatch('setDialogVisible', true)
+  //     return
+  //   }
+  // }
+
   if (isTimeout || status === 503) {
-    window.location.href = `/error.html?origin=${url}`
+    // 临时注销掉
+    // window.location.href = `/error.html?origin=${url}`
   }
   if (status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {

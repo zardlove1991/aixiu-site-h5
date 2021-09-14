@@ -117,7 +117,7 @@
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
     </div>
-    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次</div>
+    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：{{examSubmitCount?'每天最多提交'+examSubmitCount+'次':''}} {{examInfo.limit.userid_limit_num?'全程最多提交'+examInfo.limit.userid_limit_num+'次':''}}</div>
     <my-model
       :show="App"
       :isLock="true"
@@ -347,7 +347,7 @@ export default {
     },
     examSubmitCount () {
       let examInfo = this.examInfo
-      let count = 1
+      let count = 0
       if (examInfo && examInfo.limit) {
         let dayUserIdLimit = examInfo.limit.day_userid_limit_num
         if (dayUserIdLimit) {

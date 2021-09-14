@@ -65,6 +65,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import { fullSceneMap } from '@/utils/config'
+import { setBrowserTitle } from '@/utils/utils'
 
 export default {
   components: {
@@ -182,6 +183,8 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         this.workDetail = res
+
+        setBrowserTitle(this.workDetail.name)
       })
     },
     getDetail () {
@@ -220,7 +223,15 @@ export default {
             params: { id: this.id }
           })
         } else {
-          window.history.back()
+          let { checkFullScene } = this.$route.params
+          if (checkFullScene) {
+            this.$router.push({
+              name: 'votebegin',
+              params: { checkFullScene: this.$route.params.checkFullScene }
+            })
+          } else {
+            window.history.back()
+          }
         }
       } else if (slug === 'vote') {
         // 是否开启弹窗

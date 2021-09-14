@@ -69,7 +69,7 @@
         </div>
       </div>
       <div class="form-item">
-        <div class="form-title">{{ZCIdType ? '作品名称及朗诵人' : '名称'}}</div>
+        <div class="form-title">{{nameStr}}</div>
         <div class="form-content">
           <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
         </div>
@@ -89,13 +89,13 @@
       </div>
       <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}</div>
+        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}<span class="form-tips">{{ZCIdType ? '' : '(选填)'}}</span></div>
         <div class="form-content">
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
       </div>
       <div class="form-item" v-if="showModel !== 'text'">
-        <div class="form-title">{{ZCIdType ? '作品描述' : '描述'}}<span class="form-tips">{{ZCIdType ? '(必填)' : '(选填)'}}</span></div>
+        <div class="form-title">{{describeStr}}<span class="form-tips">{{describeSuffix}}</span></div>
         <div class="form-content">
           <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
@@ -149,6 +149,8 @@ export default {
   data () {
     return {
       ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
+      ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
+      ZCIdIndex2: 'ab3bf9c79f2b4870806d1665e4f8d33b',
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -181,7 +183,11 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap
+      fullSceneMap,
+      nameStr: '名称',
+      describeStr: '描述',
+      describeSuffix: '(选填)',
+      full_scene_type: ''
     }
   },
   mounted () {
@@ -190,9 +196,37 @@ export default {
     } else {
       this.ZCIdType = false
     }
-    console.log("STORAGE.get('detailInfo')", STORAGE.get('detailInfo'))
+
+    if (this.id === this.ZCId) {
+      this.nameStr = '作品名称及朗诵人'
+      this.describeStr = '作品描述'
+      this.describeSuffix = '(必填)'
+    } else if (this.id === this.ZCIdIndex1) {
+      this.nameStr = '照片主题'
+      this.describeStr = '照片描述'
+      this.describeSuffix = ''
+    } else if (this.id === this.ZCIdIndex2) {
+      this.nameStr = '留言标题'
+    }
+
+    this.judgeStatus()
   },
   methods: {
+    judgeStatus () {
+      if (this.showModel === 'picture') {
+        // 图片
+        this.full_scene_type = 2
+      } else if (this.showModel === 'text') {
+        // 文本
+        this.full_scene_type = 3
+      } else if (this.showModel === 'video') {
+        // 视频
+        this.full_scene_type = 1
+      } else if (this.showModel === 'audio') {
+        // 音频
+        this.full_scene_type = 4
+      }
+    },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
       let isOpenClassify = false
@@ -233,7 +267,7 @@ export default {
               // this.fullSceneType = newArr
               this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
               this.checkFullScene = key
-              this.showModel = this.fullSceneMap[key][1]
+            //  this.showModel = this.fullSceneMap[key][1]
             }
           }
         }
@@ -349,20 +383,24 @@ export default {
       }
       if (!examineData.name || !examineData.name.trim()) {
         let _name = '请输入名称'
-        if (this.ZCIdType) {
+        if (this.id === this.ZCId) {
           _name = '请输入作品名称及朗诵人'
+        } else if (this.id === this.ZCIdIndex1) {
+          _name = '请输入照片主题'
+        } else if (this.id === this.ZCIdIndex2) {
+          _name = '请输入留言标题'
         }
         Toast(_name)
         return
       }
-      if (!examineData.source || !examineData.source.trim()) {
-        let _origin = '请输入来源'
-        if (this.ZCIdType) {
-          _origin = '请输入所属村居'
-        }
-        Toast(_origin)
-        return
-      }
+      // if (!examineData.source || !examineData.source.trim()) {
+      //   let _origin = '请输入来源'
+      //   if (this.ZCIdType) {
+      //     _origin = '请输入所属村居'
+      //   }
+      //   Toast(_origin)
+      //   return
+      // }
       if (this.showModel === 'text') {
         if (!examineData.introduce || !examineData.introduce.trim()) {
           Toast('请输入文字内容')
@@ -392,11 +430,14 @@ export default {
       }
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
+      } else {
+        data.full_scene_type = this.full_scene_type
       }
       if (this.worksId) {
         data.id = this.worksId
       }
       this.disabled = true
+
       API.workReport({
         data
       }).then(res => {

@@ -1,6 +1,6 @@
 <template>
   <div class="canvass-dialog-wrap" v-if="show" @click.stop="close()">
-    <div class="no-poster"  v-if="!sharePoster">
+    <div class="no-poster" v-if="!sharePoster">
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
@@ -34,6 +34,7 @@ import STORAGE from '@/utils/storage'
 import LotteryVote from '@/components/vote/global/vote-lottery'
 import QRCode from 'qrcode'
 import { Toast } from 'mint-ui'
+import notice from '@/components/vote/list/vote-notice'
 
 export default {
   props: {
@@ -43,7 +44,7 @@ export default {
       default: '票'
     }
   },
-  components: { LotteryVote },
+  components: {LotteryVote, notice},
   data () {
     return {
       imgs: {
@@ -60,7 +61,9 @@ export default {
       qrcodeImg: '',
       worksDetailObj: {},
       curCtx: '',
-      curCanvas: ''
+      curCanvas: '',
+      isTipsShow: false, // 控制通知框状态
+      message: '<span>长按图片保存或转发朋友圈</span>' //  通知框内的信息
     }
   },
   watch: {
@@ -74,6 +77,7 @@ export default {
   },
   methods: {
     saveSharer (worksId) {
+      console.log(worksId)
       this.show = true
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo || !worksId) {
@@ -86,7 +90,7 @@ export default {
       }
       API.saveSharer({
         params
-      }).then(code => {
+      }).then((code) => {
         if (!code) {
           return
         }
@@ -98,18 +102,21 @@ export default {
       if (!detailInfo) {
         return
       }
+      console.log('shareMake', worksId)
       API.getVoteWorksDetail({
         query: {
           id: detailInfo.id,
           worksId
         }
-      }).then(res => {
+      }).then((res) => {
         if (!res) {
           return
         }
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
-        let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
+        let avatarUrl = avatar
+          ? avatar + '?x-oss-process=image/circle,r_104/format,png'
+          : ''
         let signUnit = this.signUnit
         let tips1 = ''
         let tips2 = ''
@@ -123,7 +130,8 @@ export default {
           tips2 = ''
           numbering = '向' + res.numbering + '号英雄致敬'
         } else {
-          tips1 = '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
+          tips1 =
+            '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
           numbering = '快来帮' + res.numbering + '号投票吧'
         }
@@ -162,24 +170,40 @@ export default {
         }
         if (res.material) {
           let isLongCover = false
-          if (this.flag === 'picture' && res.material.image && res.material.image.length) {
+          if (
+            this.flag === 'picture' &&
+            res.material.image &&
+            res.material.image.length
+          ) {
             let img = res.material.image[0]
             params.cover = img.url + coverExt
             if (img.width && img.height) {
               isLongCover = img.height > img.width
             }
-          } else if (this.flag === 'video' && res.material.video && res.material.video.length) {
-            let cover = res.material.video[0].cover_image ? res.material.video[0].cover_image : res.material.video[0].cover
+          } else if (
+            this.flag === 'video' &&
+            res.material.video &&
+            res.material.video.length
+          ) {
+            let cover = res.material.video[0].cover_image
+              ? res.material.video[0].cover_image
+              : res.material.video[0].cover
             params.cover = cover + coverExt
-          } else if (this.flag === 'audio' && res.material.audio && res.material.audio.length) {
+          } else if (
+            this.flag === 'audio' &&
+            res.material.audio &&
+            res.material.audio.length
+          ) {
             params.audioTime = res.material.audio[0].duration
-            params.cover = '//xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
+            params.cover =
+              '//xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
           } else if (this.flag === 'text') {
             params.content = res.introduce
-            params.cover = '//xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
+            params.cover =
+              '//xzh5.hoge.cn/new-vote/images/poster_text_bg.png' + coverExt
           }
           // 判断是否长图 如果是就修改为不截断参数
-          if (isLongCover) params.cover = params.cover.replace('m_fixed', 'm_pad')
+          if (isLongCover)params.cover = params.cover.replace('m_fixed', 'm_pad')
         }
         if (limit.is_open_classify && limit.is_open_classify === 1) {
           if (res.type_name) {
@@ -359,10 +383,13 @@ export default {
         pathname = pathname + 'votedetail/' + mark + '/' + id
       }
       let url = '?'
-      for (let key in params) { // 拼接字符串
+      for (let key in params) {
+        // 拼接字符串
         url += key + '=' + params[key] + '&'
       }
-      return protocol + '//' + host + pathname + url.substring(0, url.length - 1)
+      return (
+        protocol + '//' + host + pathname + url.substring(0, url.length - 1)
+      )
     },
     close () {
       this.show = false
@@ -376,53 +403,67 @@ export default {
 </script>
 
 <style lang="scss">
-  @import "@/styles/index.scss";
-  .canvass-dialog-wrap {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100vh;
-    background: rgba(0,0,0,0.5);
+@import "@/styles/index.scss";
+.canvass-dialog-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 99;
+
+  .no-poster {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    pointer-events: auto;
-    z-index: 99;
-    .no-poster {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      .no-poster-bg {
-        display: inline-block;
-        margin-bottom: px2rem(20px);
-        width: px2rem(54px);
-        height: px2rem(57px);
-        @include img-retina('~@/assets/vote/loading@2x.png', '~@/assets/vote/loading@3x.png', px2rem(54px), px2rem(57px));
-        animation: circle 5s infinite linear;
-        -webkit-animation: circle 5s infinite linear;
-      }
-      @-webkit-keyframes circle {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(+360deg);
-        }
-      }
+    align-items: center;
+    justify-content: center;
+    .no-poster-bg {
+      display: inline-block;
+      margin-bottom: px2rem(20px);
+      width: px2rem(54px);
+      height: px2rem(57px);
+      @include img-retina(
+        "~@/assets/vote/loading@2x.png",
+        "~@/assets/vote/loading@3x.png",
+        px2rem(54px),
+        px2rem(57px)
+      );
+      animation: circle 5s infinite linear;
+      -webkit-animation: circle 5s infinite linear;
     }
-    .poster-img {
-      width: 88%;
-      height: auto;
-    }
-    .poster-tips {
-      margin-top: px2rem(10px);
-      width: 100%;
-      text-align: center;
-      @include font-dpr(12px);
-      color: #FFFFFF;
+    @-webkit-keyframes circle {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(+360deg);
+      }
     }
   }
+  .poster-img {
+    width: 88%;
+    height: auto;
+  }
+  .poster-tips {
+    margin-top: px2rem(10px);
+    width: 100%;
+    text-align: center;
+    @include font-dpr(12px);
+    color: #ffffff;
+  }
+  .tips {
+    width: 88%;
+    padding: 6px;
+    background-color: #fdf3e5;
+    color: #000;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+}
 </style>

@@ -239,6 +239,7 @@ export default {
       this.getRankList()
     },
     getRankList () {
+      if (this.loading) return false
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager

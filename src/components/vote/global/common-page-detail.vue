@@ -91,6 +91,8 @@ export default {
   watch: {
     info: 'getVoteList'
   },
+  mounted () {
+  },
   beforeDestroy () {
     // 清除定时器
     this.clearSetInterval()
