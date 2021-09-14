@@ -264,7 +264,6 @@
       :show="isShowVoteReward"
       @close="isShowVoteReward = false">
     </vote-reward>
-
   </div>
 </template>
 
@@ -322,7 +321,7 @@ export default {
   },
   data () {
     return {
-      isShowVoteReward: true,
+      isShowVoteReward: false,
       interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
@@ -398,7 +397,6 @@ export default {
   },
   beforeDestroy () {
     // 清除定时器
-    console.log('beforeDestroy interval')
     this.clearSetInterval()
   },
   computed: {

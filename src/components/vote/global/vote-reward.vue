@@ -1,5 +1,5 @@
 <template>
-<div class='vote-reward-wrap'>
+<div class='vote-reward-wrap' v-if='show'>
   <div class="vote-reward-dialog">
     <div class='close-icon-box' @click='closeDialog'>
       <img :src="closeIcon" alt=""  @click='closeDialog' class='close-icon-wrap'>

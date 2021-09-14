@@ -190,8 +190,6 @@ export default {
     } else {
       this.ZCIdType = false
     }
-    console.log("STORAGE.get('detailInfo')", STORAGE.get('detailInfo'))
-
   },
   methods: {
     async initForm () {
@@ -221,7 +219,6 @@ export default {
           }
         }
         if (detailInfo.mark === 'commonvote-fullscene') {
-          console.log('---000---', rule)
           let arr = limit.full_scene_type
           if (arr && arr.length) {
             let newArr = arr.filter(item => {
@@ -231,8 +228,7 @@ export default {
             })
             if (newArr.length) {
               let key = newArr[0]
-              // this.fullSceneType = newArr
-              this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
+              this.fullSceneType = newArr
               this.checkFullScene = key
               this.showModel = this.fullSceneMap[key][1]
             }
