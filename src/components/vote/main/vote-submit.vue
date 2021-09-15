@@ -84,7 +84,7 @@
       </div>
       <div class="form-item">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}<span class="form-tips">{{ZCIdType ? '' : '(选填)'}}</span></div>
+        <div class="form-title" v-else>{{sourceStr}}<span class="form-tips">{{sourceStrDescribe}}</span></div>
         <div class="form-content">
           <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
@@ -96,7 +96,7 @@
         </div>
       </div>
       <div class="form-item">
-        <div class="form-title">联系人姓名</div>
+        <div class="form-title">{{linkPersonName}}</div>
         <div class="form-content">
           <el-input v-model="examineData.contact_name" @blur="blurAction()" maxlength="20"></el-input>
         </div>
@@ -146,6 +146,7 @@ export default {
       ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
       ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
       ZCIdIndex2: 'ab3bf9c79f2b4870806d1665e4f8d33b',
+      ZCIdIndex3: '06d1591f800f4864839eb61ba74feb2f',
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -182,26 +183,38 @@ export default {
       nameStr: '名称',
       describeStr: '描述',
       describeSuffix: '(选填)',
-      full_scene_type: ''
+      full_scene_type: '',
+      sourceStr: '所属村居',
+      sourceStrDescribe: '',
+      linkPersonName: '联系人姓名'
     }
   },
   mounted () {
-    if (this.id === this.ZCId) {
-      this.ZCIdType = true
-    } else {
-      this.ZCIdType = false
-    }
+    // if (this.id === this.ZCId) {
+    //   this.ZCIdType = true
+    // } else {
+    //   this.ZCIdType = false
+    // }
 
+    this.sourceStrDescribe = '(选填)'
+    this.sourceStr = '来源'
     if (this.id === this.ZCId) {
       this.nameStr = '作品名称及朗诵人'
       this.describeStr = '作品描述'
       this.describeSuffix = '(必填)'
+      this.sourceStr = '所属村居'
+      this.sourceStrDescribe = ''
     } else if (this.id === this.ZCIdIndex1) {
       this.nameStr = '照片主题'
       this.describeStr = '照片描述'
       this.describeSuffix = ''
     } else if (this.id === this.ZCIdIndex2) {
       this.nameStr = '留言标题'
+    } else if (this.id === this.ZCIdIndex3) {
+      this.nameStr = '作品名称'
+      this.sourceStrDescribe = ''
+      this.sourceStr = '职业&年龄'
+      this.linkPersonName = '作者'
     }
 
     this.judgeStatus()
@@ -382,6 +395,8 @@ export default {
           _name = '请输入照片主题'
         } else if (this.id === this.ZCIdIndex2) {
           _name = '请输入留言标题'
+        } else if (this.id === this.ZCIdIndex3) {
+          _name = '请输入作品名称'
         }
         Toast(_name)
         return
@@ -401,7 +416,7 @@ export default {
         }
       }
       if (!examineData.contact_name || !examineData.contact_name.trim()) {
-        Toast('请输入联系人姓名')
+        Toast(`请输入${this.linkPersonName}`)
         return
       }
       if (!examineData.contact_phone || !examineData.contact_phone.trim()) {
