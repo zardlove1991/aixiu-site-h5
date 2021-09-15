@@ -68,50 +68,55 @@
           </textarea>
         </div>
       </div>
-      <div class="form-item">
-        <div class="form-title">{{nameStr}}</div>
-        <div class="form-content">
-          <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
+      <!-- 字段列表 -->
+      <template v-for='item in enrollForm.formFixList'>
+        <div :key='item.unique_name'
+          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1'
+          class="form-item">
+          <div class="form-title">
+            {{item.formTitle}}
+            <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
+          </div>
+          <div v-if='item.type == "singleText"' class="form-content">
+            <el-input v-model="item.inputValue" maxlength="40"></el-input>
+          </div>
+          <textarea v-if='item.type == "mulText"'
+            v-model.trim="item.inputValue"
+            class='font-ctx-wrap'
+            rows="5" cols="20">
+          </textarea>
         </div>
-      </div>
-      <div class="form-item" v-if="isOpenClassify">
-        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
-        <div class="form-title" v-else>分类</div>
-        <div class="form-content classify-wrap">
-          <el-input v-model="examineData.type_name"
-            :readonly="true"
-            placeholder="请选择"
-            @focus="showClassifyAction()"
-            @blur="blurAction()">
-          </el-input>
-          <div class="drop-icon"></div>
+      </template>
+      <!-- 收集信息 -->
+      <template v-for='(item, index11) in enrollForm.visibleFieldList'>
+        <div :key='index11' class="form-item">
+          <div class="form-title">
+            {{item.fieldSuffix}}
+            <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
+          </div>
+          <div v-if='item.type === "singleText"' class="form-content">
+            <el-input v-model="item.inputValue"
+              @blur="blurAction()" maxlength="20">
+            </el-input>
+          </div>
+          <div v-if='item.type === "mulText"' class="form-content">
+            <textarea  v-model.trim="item.inputValue"
+              @blur="blurAction()"
+              class='font-ctx-wrap'
+              rows="5" cols="20">
+            </textarea>
+          </div>
+          <div v-if='item.type === "downSelect"' class="form-content">
+            <el-select v-model="item.inputValue" placeholder="请选择" style='width: 100%;'>
+              <el-option v-for="(item1, index1) in item.option"
+                :key="index1"
+                :label="item1.value"
+                :value="item1.value">
+              </el-option>
+            </el-select>
+          </div>
         </div>
-      </div>
-      <div class="form-item">
-        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
-        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}<span class="form-tips">{{ZCIdType ? '' : '(选填)'}}</span></div>
-        <div class="form-content">
-          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
-        </div>
-      </div>
-      <div class="form-item" v-if="showModel !== 'text'">
-        <div class="form-title">{{describeStr}}<span class="form-tips">{{describeSuffix}}</span></div>
-        <div class="form-content">
-          <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
-        </div>
-      </div>
-      <div class="form-item">
-        <div class="form-title">联系人姓名</div>
-        <div class="form-content">
-          <el-input v-model="examineData.contact_name" @blur="blurAction()" maxlength="20"></el-input>
-        </div>
-      </div>
-      <div class="form-item">
-        <div class="form-title">联系人电话</div>
-        <div class="form-content">
-          <el-input v-model="examineData.contact_phone" @blur="blurAction()" maxlength="11"></el-input>
-        </div>
-      </div>
+      </template>
       <div class="submit-btn-wrap" @click="!disabled && commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
@@ -134,13 +139,19 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { fullSceneMap } from '@/utils/config'
 import { Toast } from 'mint-ui'
+import { Select, Option } from 'element-ui'
 
 export default {
   created () {
     this.initForm()
   },
   components: {
-    FileUpload, VideoUpload, ClassifyDialog, VoteFullsceneList
+    FileUpload,
+    VideoUpload,
+    ClassifyDialog,
+    VoteFullsceneList,
+    ElSelect: Select,
+    ElOption: Option
   },
   props: {
     id: String,
@@ -148,9 +159,7 @@ export default {
   },
   data () {
     return {
-      ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
-      ZCIdIndex1: '4b07592637c642d4afd931dc3b6d3753',
-      ZCIdIndex2: 'ab3bf9c79f2b4870806d1665e4f8d33b',
+      enrollForm: {},
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -191,23 +200,20 @@ export default {
     }
   },
   mounted () {
-    if (this.id === this.ZCId) {
-      this.ZCIdType = true
-    } else {
-      this.ZCIdType = false
+    this.enrollForm = {}
+    try {
+      this.enrollForm = STORAGE.get('detailInfo').rule.enroll_form
+      for (let i of this.enrollForm.formFixList) {
+        this.$set(i, 'inputValue', '')
+      }
+      for (let i of this.enrollForm.visibleFieldList) {
+        this.$set(i, 'inputValue', '')
+      }
+    } catch (e) {
+      console.log(e)
     }
 
-    if (this.id === this.ZCId) {
-      this.nameStr = '作品名称及朗诵人'
-      this.describeStr = '作品描述'
-      this.describeSuffix = '(必填)'
-    } else if (this.id === this.ZCIdIndex1) {
-      this.nameStr = '照片主题'
-      this.describeStr = '照片描述'
-      this.describeSuffix = ''
-    } else if (this.id === this.ZCIdIndex2) {
-      this.nameStr = '留言标题'
-    }
+    console.log('9999', this.enrollForm.visibleFieldList)
 
     this.judgeStatus()
   },
@@ -254,7 +260,6 @@ export default {
           }
         }
         if (detailInfo.mark === 'commonvote-fullscene') {
-          console.log('---000---', rule)
           let arr = limit.full_scene_type
           if (arr && arr.length) {
             let newArr = arr.filter(item => {
@@ -381,52 +386,51 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
-      if (!examineData.name || !examineData.name.trim()) {
-        let _name = '请输入名称'
-        if (this.id === this.ZCId) {
-          _name = '请输入作品名称及朗诵人'
-        } else if (this.id === this.ZCIdIndex1) {
-          _name = '请输入照片主题'
-        } else if (this.id === this.ZCIdIndex2) {
-          _name = '请输入留言标题'
-        }
-        Toast(_name)
-        return
-      }
-      // if (!examineData.source || !examineData.source.trim()) {
-      //   let _origin = '请输入来源'
-      //   if (this.ZCIdType) {
-      //     _origin = '请输入所属村居'
-      //   }
-      //   Toast(_origin)
-      //   return
-      // }
-      if (this.showModel === 'text') {
-        if (!examineData.introduce || !examineData.introduce.trim()) {
-          Toast('请输入文字内容')
-          return
+
+      let _extra = []
+      for (let i of this.enrollForm.formFixList) {
+        if (i.inputValue !== '') {
+          _extra.push(i.inputValue)
         }
       }
-      if (!examineData.contact_name || !examineData.contact_name.trim()) {
-        Toast('请输入联系人姓名')
-        return
-      }
-      if (!examineData.contact_phone || !examineData.contact_phone.trim()) {
-        Toast('请输入联系人电话')
-        return
-      }
-      if (this.isOpenClassify) {
-        if (!examineData.type_name) {
-          Toast('请选择分类')
-          return
+      for (let j of this.enrollForm.visibleFieldList) {
+        if (j.inputValue !== '') {
+          _extra.push(j.inputValue)
         }
       }
+
+      for (let i of this.enrollForm.formFixList) {
+        // 标题
+        if (i.unique_name === 'form_3') {
+          this.examineData.name = i.inputValue
+        }
+        // 来源
+        if (i.unique_name === 'form_5') {
+          this.examineData.source = i.inputValue
+        }
+      }
+
+      for (let i of this.enrollForm.visibleFieldList) {
+        // 联系人姓名
+        if (i.value === 'name') {
+          this.examineData.contact_name = i.inputValue
+        }
+        // 联系人手机号
+        if (i.value === 'phone') {
+          this.examineData.contact_phone = i.inputValue
+        }
+      }
+
+      // this.examineData.type_id = ''
+      // this.examineData.type_name = ''
+
       let data = {
         voting_id: id,
         material: {
           ...this.material
         },
-        ...examineData
+        ...examineData,
+        extra: _extra
       }
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
