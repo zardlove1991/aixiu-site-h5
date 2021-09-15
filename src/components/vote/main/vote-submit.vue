@@ -215,6 +215,7 @@ export default {
       this.sourceStrDescribe = ''
       this.sourceStr = '职业&年龄'
       this.linkPersonName = '作者'
+      this.describeStr = '是否原创'
     }
 
     this.judgeStatus()
