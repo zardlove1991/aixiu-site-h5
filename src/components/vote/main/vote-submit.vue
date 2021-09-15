@@ -68,6 +68,19 @@
           </textarea>
         </div>
       </div>
+      <div class="form-item" v-if="isOpenClassify">
+        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
+        <div class="form-title" v-else>分类</div>
+        <div class="form-content classify-wrap">
+          <el-input v-model="examineData.type_name"
+            :readonly="true"
+            placeholder="请选择"
+            @focus="showClassifyAction()"
+            @blur="blurAction()">
+          </el-input>
+          <div class="drop-icon"></div>
+        </div>
+      </div>
       <!-- 字段列表 -->
       <template v-for='item in enrollForm.formFixList'>
         <div :key='item.unique_name'
@@ -142,9 +155,6 @@ import { Toast } from 'mint-ui'
 import { Select, Option } from 'element-ui'
 
 export default {
-  created () {
-    this.initForm()
-  },
   components: {
     FileUpload,
     VideoUpload,
@@ -199,25 +209,28 @@ export default {
       full_scene_type: ''
     }
   },
+  created () {
+    this.mixinList()
+    this.initForm()
+  },
   mounted () {
-    this.enrollForm = {}
-    try {
-      this.enrollForm = STORAGE.get('detailInfo').rule.enroll_form
-      for (let i of this.enrollForm.formFixList) {
-        this.$set(i, 'inputValue', '')
-      }
-      for (let i of this.enrollForm.visibleFieldList) {
-        this.$set(i, 'inputValue', '')
-      }
-    } catch (e) {
-      console.log(e)
-    }
-
-    console.log('9999', this.enrollForm.visibleFieldList)
-
     this.judgeStatus()
   },
   methods: {
+    mixinList () {
+      this.enrollForm = {}
+      try {
+        this.enrollForm = STORAGE.get('detailInfo').rule.enroll_form
+        for (let i of this.enrollForm.formFixList) {
+          this.$set(i, 'inputValue', '')
+        }
+        for (let i of this.enrollForm.visibleFieldList) {
+          this.$set(i, 'inputValue', '')
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
     judgeStatus () {
       if (this.showModel === 'picture') {
         // 图片
@@ -285,8 +298,25 @@ export default {
             id: this.id
           }
         }).then(res => {
+          console.log('---res---', res)
           if (!res) {
             return
+          }
+          // 输入值得回显
+          console.log('--88--', this.enrollForm)
+          let _extra = res.extra
+          for (let [key, value] of Object.entries(_extra)) {
+            for (let i of this.enrollForm.formFixList) {
+              if (i.cid === key) {
+                i.inputValue = value
+              }
+            }
+
+            for (let i of this.enrollForm.visibleFieldList) {
+              if (i.cid === key) {
+                i.inputValue = value
+              }
+            }
           }
           this.worksId = worksId
           let flag = this.showModel
@@ -322,7 +352,7 @@ export default {
             type_name: res.type_name
           }
           if (res.full_scene_type) {
-            this.checkFullScene = res.full_scene_type
+            this.checkFullScene = String(res.full_scene_type)
             this.showModel = this.fullSceneMap[res.full_scene_type][1]
           }
           this.getVoteTypeFid(res.type_id, res.type_name)
@@ -387,16 +417,12 @@ export default {
         return
       }
 
-      let _extra = []
+      let _extra = {}
       for (let i of this.enrollForm.formFixList) {
-        if (i.inputValue !== '') {
-          _extra.push(i.inputValue)
-        }
+        _extra[i.cid] = i.inputValue
       }
       for (let j of this.enrollForm.visibleFieldList) {
-        if (j.inputValue !== '') {
-          _extra.push(j.inputValue)
-        }
+        _extra[j.cid] = j.inputValue
       }
 
       for (let i of this.enrollForm.formFixList) {
@@ -421,9 +447,6 @@ export default {
         }
       }
 
-      // this.examineData.type_id = ''
-      // this.examineData.type_name = ''
-
       let data = {
         voting_id: id,
         material: {
@@ -432,6 +455,7 @@ export default {
         ...examineData,
         extra: _extra
       }
+
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
       } else {
