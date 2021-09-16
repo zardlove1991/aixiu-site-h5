@@ -42,17 +42,22 @@
       <div class="overview-content-wrap">
         <!--信息展示-->
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
-          <div :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
+          <div v-if='detailInfo.rule.is_works_upload_limit === 1' class="vote-cols-wrap num-box">
+            <div class="vote-cols-icon"></div>
+            <span class="vote-count">{{detailInfo.remains_reports}}</span>
+            <span class="vote-desc">剩余报名数</span>
+          </div>
+          <div class='num-box' :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.report_count}}</span>
             <span class="vote-desc">作品数</span>
           </div>
-          <div class="vote-cols-wrap">
+          <div class="vote-cols-wrap num-box">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.votes}}</span>
             <span class="vote-desc">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
-          <div class="vote-cols-wrap">
+          <div class="vote-cols-wrap num-box">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.views_count}}</span>
             <span class="vote-desc">访问次数</span>
@@ -271,6 +276,10 @@
       :show="isShowVoteReward"
       @close="isShowVoteReward = false">
     </vote-reward>
+    <report-num-limit
+      :show="isReportNumLimit"
+      @closeReportNumLimit='closeReportNumLimit'>
+    </report-num-limit>
   </div>
 </template>
 
@@ -292,6 +301,7 @@ import ActiveVote from '@/components/vote/global/vote-active'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
 import VoteReward from '@/components/vote/global/vote-reward.vue'
+import ReportNumLimit from '@/components/vote/global/report-num-limit.vue'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
@@ -326,10 +336,12 @@ export default {
     Loadmore,
     LotteryVote,
     VoteReward,
-    AreaVote
+    AreaVote,
+    ReportNumLimit
   },
   data () {
     return {
+      isReportNumLimit: false,
       isShowVoteReward: false,
       curApp: '',
       isShowArea: false,
@@ -413,8 +425,7 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-    //  监听滚动事件
-    // document.addEventListener('scroll', this.handelscroll, true)
+
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -427,10 +438,8 @@ export default {
     allWorkList () {
       if (this.myWork.id) {
         let _index = this.workList.findIndex(item => item.id === this.myWork.id)
-        console.log('_index', _index, this.workList, this.myWork.id)
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         this.workList[_index] = Object.assign(this.workList[_index], this.myWork)
-        console.log('listValue', this.workList[_index], this.workList)
         return this.workList
       } else {
         return this.workList
@@ -442,7 +451,6 @@ export default {
     let position = document.getElementById('commvoteView').scrollTop // 记录离开页面时的位置
     if (position == null) position = 0
     this.$store.commit('vote/SET_SCROllY', position) // 离开路由时把位置存起来
-    // console.log(position, 'positionpositionposition')
     next()
   },
   watch: {
@@ -455,16 +463,16 @@ export default {
     }
   },
   methods: {
+    closeReportNumLimit () {
+      this.isReportNumLimit = false
+    },
     // 记录滚动位置
     isTabRoute () {
       if (this.$route.name === 'votebegin') {
         this.$nextTick(() => {
-          // debugger
           setTimeout(() => {
             let recruitScrollY = this.$store.state.vote.recruitScrollY
             document.getElementById('commvoteView').scrollTop = recruitScrollY
-            // console.log(recruitScrollY, 'recruitScrollYrecruitScrollYrecruitScrollYrecruitScrollY')
-            // console.log(document.getElementById('commvoteView').scrollTop, 'scrollTopscrollTopscrollTopscrollTop')
           }, 700)
         })
       }
@@ -1231,6 +1239,10 @@ export default {
     jumpPage (page, data) {
       if (page === 'votesubmit') {
         this.sourceLimit()
+        // 是否提示活动报名数
+        if (this.detailInfo.remains_reports === 0) {
+          this.isReportNumLimit = true
+        }
         if (this.isShowActiveTips) {
           return
         }
@@ -1590,6 +1602,9 @@ export default {
         display: flex;
         justify-content: space-between;
         margin-bottom: px2rem(50px);
+        .num-box + .num-box{
+          margin-left: px2rem(20px);
+        }
         .vote-cols-wrap {
           position: relative;
           flex: 1;
@@ -1625,9 +1640,9 @@ export default {
             opacity: 0.3;
             border-radius: px2rem(8px);
           }
-          &:nth-child(2) {
-            margin: 0 px2rem(30px);
-          }
+          // &:nth-child(2) {
+          //   margin: 0 px2rem(30px);
+          // }
           &.fullscene-text:nth-child(1)::before {
             background-image: url('~@/assets/vote/fullscene-icon.png');
           }
