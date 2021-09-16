@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createEnroll, createBase, createC4 } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -178,11 +178,11 @@ export default {
   shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
   getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
   // 预约报名
-  getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
-  getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
-  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
-  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG),
-  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
+  getEnrollDetail: config => createEnroll(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
+  getMineEnrollList: config => createEnroll(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
+  saveEnrollInfo: config => createEnroll(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
+  remainEnroll: config => createEnroll(configUrl.remainEnroll, 'GET', config, API_FLAG),
+  getMyEnrollCount: config => createEnroll(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
   // 新闻
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),

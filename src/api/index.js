@@ -257,6 +257,16 @@ export const createVote = (url, method, config = {}, api) => {
   })
 }
 
+export const createEnroll = (url, method, config = {}, api) => {
+  api = 'enroll'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
 export const createBase = (url, method, config = {}, api) => {
   return instance({
     url: getUrl(url, config, api),

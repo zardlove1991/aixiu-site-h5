@@ -8,6 +8,7 @@ export default {
   'user': `${host}/memberhy/`,
   'exam': `${host}/examinationhy/`,
   'vote': `${host}/votinghy/`,
+  'enroll': `${host}/voteapi/`,
   'mlink': `${host}/m/`,
   'reserve': `${host}/reserve/`,
   'public': `${host}/publichy/`,
