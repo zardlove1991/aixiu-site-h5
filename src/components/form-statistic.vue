@@ -313,7 +313,7 @@ export default {
     this.getExamList()
   },
   mounted () {
-    this.api_person_id = this.$route.query.api_person_id
+    this.api_person_id = this.$route.query.api_person_id || this.examInfo.api_person_id
   },
   methods: {
     initStatInfo (score, correctNum, total) {
