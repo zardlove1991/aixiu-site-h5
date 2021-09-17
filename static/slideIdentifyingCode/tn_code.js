@@ -166,7 +166,7 @@ var tncode = {
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
-    console.log('我_block_on_end被谁调用了：', tncode._block_on_end.caller)
+   // console.log('我_block_on_end被谁调用了：', tncode._block_on_end.caller)
     if (!tncode._doing) return true
     // if (tncode.isInitType) {
     //   return false

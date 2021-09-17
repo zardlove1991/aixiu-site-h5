@@ -1,6 +1,6 @@
 <template>
   <div class="vote-start-wrap">
-    <div ref="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
+    <div ref="commvoteView" id="commvoteView" :class="['commvote-overview', status !== statusCode.endStatus ? 'status-no-end' : '', isShowModelThumb ? 'hide': '',  showLotteryEntrance ? 'raffle-bottom' : '']">
       <template
         v-if="isOpenVoteReport &&
           (status === statusCode.signUpStatus || status === statusCode.voteStatus || status === statusCode.signUpVoteStatus) &&
@@ -42,17 +42,22 @@
       <div class="overview-content-wrap">
         <!--信息展示-->
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status !== statusCode.signUpStatus">
-          <div :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
+          <div v-if='detailInfo.rule.is_works_upload_limit === 1' class="vote-cols-wrap num-box">
+            <div class="vote-cols-icon"></div>
+            <span class="vote-count">{{detailInfo.remains_reports}}</span>
+            <span class="vote-desc">剩余报名数</span>
+          </div>
+          <div class='num-box' :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.report_count}}</span>
             <span class="vote-desc">作品数</span>
           </div>
-          <div class="vote-cols-wrap">
+          <div class="vote-cols-wrap num-box">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.votes}}</span>
             <span class="vote-desc">{{detailInfo.text_setting && detailInfo.text_setting.total ? detailInfo.text_setting.total : '总票数'}}</span>
           </div>
-          <div class="vote-cols-wrap">
+          <div class="vote-cols-wrap num-box">
             <div class="vote-cols-icon"></div>
             <span class="vote-count">{{detailInfo.views_count}}</span>
             <span class="vote-desc">访问次数</span>
@@ -60,7 +65,8 @@
         </div>
         <div :class="['overview-vote-wrap', darkMark === '2' ? 'light' : '']" v-if="detailInfo.interact_data_display && status === statusCode.signUpStatus">
           <div class="vote-cols-wrap signup-icon">
-            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <!-- <span class="vote-count">{{detailInfo.report_count}}</span> -->
+            <span class="vote-count">{{detailInfo.works_count}}</span>
             <span class="vote-desc">报名次数</span>
           </div>
           <div class="vote-cols-wrap examine-icon">
@@ -247,6 +253,12 @@
       :downloadLink="downloadLink"
       :activeTips="activeTips">
     </active-vote>
+    <area-vote
+      :show="isShowArea"
+      :limitArea="limitArea"
+      :curApp="curApp"
+      @close="isShowArea = false">
+    </area-vote>
     <lottery-vote
       :show="isShowLottery"
       :lottery="lottery"
@@ -259,6 +271,15 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
+    <!-- 投票关联抽奖 -->
+    <vote-reward
+      :show="isShowVoteReward"
+      @close="isShowVoteReward = false">
+    </vote-reward>
+    <report-num-limit
+      :show="isReportNumLimit"
+      @closeReportNumLimit='closeReportNumLimit'>
+    </report-num-limit>
   </div>
 </template>
 
@@ -279,6 +300,8 @@ import ActiveStart from '@/components/vote/global/active-start'
 import ActiveVote from '@/components/vote/global/vote-active'
 import VoteClassifyList from '@/components/vote/global/vote-classify-list'
 import LotteryVote from '@/components/vote/global/vote-lottery'
+import VoteReward from '@/components/vote/global/vote-reward.vue'
+import ReportNumLimit from '@/components/vote/global/report-num-limit.vue'
 import { Toast, Spinner, Loadmore } from 'mint-ui'
 import mixins from '@/mixins/index'
 import API from '@/api/module/examination'
@@ -286,6 +309,7 @@ import { formatSecByTime, getPlat, getAppSign, delUrlParams, setBrowserTitle } f
 import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
+import AreaVote from '@/components/vote/global/vote-area'
 
 export default {
   mixins: [mixins],
@@ -310,10 +334,18 @@ export default {
     VoteClassifyList,
     Spinner,
     Loadmore,
-    LotteryVote
+    LotteryVote,
+    VoteReward,
+    AreaVote,
+    ReportNumLimit
   },
   data () {
     return {
+      isReportNumLimit: false,
+      isShowVoteReward: false,
+      curApp: '',
+      isShowArea: false,
+      limitArea: [],
       interval: null, // 底部的定时器
       colorName: '', // 配色名称
       status: null, // 0: 未开始 1: 报名中 2: 投票中 3: 已结束 4: 未开始报名
@@ -375,6 +407,7 @@ export default {
       fullSceneMap,
       isShowActiveTips: false,
       activeTips: [],
+      scrollTop: 0, // 滚动条距离顶部距离
       downloadLink: ''
     }
   },
@@ -389,8 +422,10 @@ export default {
   },
   beforeDestroy () {
     // 清除定时器
-    console.log('beforeDestroy interval')
     this.clearSetInterval()
+  },
+  mounted () {
+
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -402,13 +437,46 @@ export default {
     },
     allWorkList () {
       if (this.myWork.id) {
-        return [this.myWork, ...this.workList]
+        let _index = this.workList.findIndex(item => item.id === this.myWork.id)
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.workList[_index] = Object.assign(this.workList[_index], this.myWork)
+        return this.workList
       } else {
         return this.workList
       }
     }
   },
+  // 路由钩子函数，在离开页面之前进行调用
+  beforeRouteLeave (to, from, next) {
+    let position = document.getElementById('commvoteView').scrollTop // 记录离开页面时的位置
+    if (position == null) position = 0
+    this.$store.commit('vote/SET_SCROllY', position) // 离开路由时把位置存起来
+    next()
+  },
+  watch: {
+    '$route': {
+      handler (val, oldVal) {
+        this.isTabRoute()
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   methods: {
+    closeReportNumLimit () {
+      this.isReportNumLimit = false
+    },
+    // 记录滚动位置
+    isTabRoute () {
+      if (this.$route.name === 'votebegin') {
+        this.$nextTick(() => {
+          setTimeout(() => {
+            let recruitScrollY = this.$store.state.vote.recruitScrollY
+            document.getElementById('commvoteView').scrollTop = recruitScrollY
+          }, 700)
+        })
+      }
+    },
     async initData () {
       let voteId = this.id
       let { sign, invotekey } = this.$route.query
@@ -720,6 +788,18 @@ export default {
         window.SmartCity.getLocation((res) => {
           if (res) {
             let { latitude, longitude } = res
+
+            let detailInfo = STORAGE.get('detailInfo')
+            let _area = ''
+            _area = detailInfo.rule.area_limit.area
+            if (_area !== undefined && _area.length !== 0) {
+              // 判断是否能获取经纬度
+              if (latitude === '' || longitude === '') {
+                this.positionTips()
+                return false
+              }
+            }
+
             let location = {
               lat: latitude,
               lng: longitude
@@ -728,8 +808,37 @@ export default {
           }
         })
       } else if (plat === 'wechat') {
+        let detailInfo = STORAGE.get('detailInfo')
+        let _area = []
+        _area = detailInfo.rule.area_limit.area
+        console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
+        if (_area !== undefined && _area.length !== 0) {
+          this.getLocation().then(res => {
+            // if (Object.keys(res).length === 0) {
+            //   this.positionTips()
+            // }
+          }).catch(e => {
+            this.positionTips()
+          })
+          return false
+        }
+
         this.getLocation()
       }
+    },
+    positionTips () {
+      let detailInfo = STORAGE.get('detailInfo')
+      this.limitArea = detailInfo.rule.area_limit.area
+      this.curApp = ''
+      let appSign = getAppSign()
+      const _userAppSource = detailInfo.rule.limit.source_limit.user_app_source
+      for (let i of _userAppSource) {
+        if (i.sign === appSign) {
+          this.curApp = i.name
+        }
+      }
+      console.log('curApp', this.curApp)
+      this.isShowArea = true
     },
     initVoteReportTime () {
       let detailInfo = this.detailInfo
@@ -1075,6 +1184,7 @@ export default {
       }
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
+      if (this.loading) return false
       let voteId = this.id
       this.loading = true
       let { page, count } = this.pager
@@ -1129,14 +1239,21 @@ export default {
     jumpPage (page, data) {
       if (page === 'votesubmit') {
         this.sourceLimit()
+        // 是否提示活动报名数
+        if (this.detailInfo.remains_reports === 0) {
+          this.isReportNumLimit = true
+        }
         if (this.isShowActiveTips) {
           return
         }
       }
+      console.log(page)
       let params = {
         flag: this.showModel,
-        id: this.id
+        id: this.id,
+        checkFullScene: this.checkFullScene
       }
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,
@@ -1224,8 +1341,10 @@ export default {
       }
     },
     toggleFullSceneType (key) {
+      console.log(key, 'keykey')
       if (key !== this.checkFullScene) {
         this.checkFullScene = key
+        console.log(this.fullSceneMap)
         this.showModel = this.fullSceneMap[key][1]
         this.dealSearch('input-search', true)
       }
@@ -1430,10 +1549,10 @@ export default {
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            width: 1px;
-            height: px2rem(28px);
-            background-color: rgba(255, 255, 255, 0.3);
-            content: "";
+            // width: 1px;
+            // height: px2rem(28px);
+            // background-color: rgba(255, 255, 255, 0.3);
+            // content: "";
           }
           &:last-child {
             margin-right: 0;
@@ -1483,6 +1602,9 @@ export default {
         display: flex;
         justify-content: space-between;
         margin-bottom: px2rem(50px);
+        .num-box + .num-box{
+          margin-left: px2rem(20px);
+        }
         .vote-cols-wrap {
           position: relative;
           flex: 1;
@@ -1518,9 +1640,9 @@ export default {
             opacity: 0.3;
             border-radius: px2rem(8px);
           }
-          &:nth-child(2) {
-            margin: 0 px2rem(30px);
-          }
+          // &:nth-child(2) {
+          //   margin: 0 px2rem(30px);
+          // }
           &.fullscene-text:nth-child(1)::before {
             background-image: url('~@/assets/vote/fullscene-icon.png');
           }

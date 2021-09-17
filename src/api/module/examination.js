@@ -104,8 +104,15 @@ let drawUrl = {
   getMyDrawList: 'xiuzan/account/mine/'
 }
 
+// 我的报名  我的投票
+let jiluObj = {
+  voteUrl: 'client/voting/myrecords',
+  enrollUrl: 'client/voting/myworks'
+}
+
 // 不带GUID
 let configUrl = {
+  ...jiluObj,
   ...QCloundUrl,
   ...baseUrl,
   ...examUrl,
@@ -188,7 +195,6 @@ export default {
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
-
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
@@ -197,5 +203,9 @@ export default {
   getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'GET', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),
   getMyAnswerList: config => createAPI(configUrl.getAnswerList, 'GET', config, API_FLAG),
-  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG)
+  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG),
+  // 获取投票记录
+  getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
+  // 获取报名数据
+  getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG)
 }

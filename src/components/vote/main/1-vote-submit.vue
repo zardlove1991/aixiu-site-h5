@@ -68,6 +68,12 @@
           </textarea>
         </div>
       </div>
+      <div class="form-item">
+        <div class="form-title">{{ZCIdType ? '作品名称及朗诵人' : '名称'}}</div>
+        <div class="form-content">
+          <el-input v-model="examineData.name" @blur="blurAction()" maxlength="40"></el-input>
+        </div>
+      </div>
       <div class="form-item" v-if="isOpenClassify">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
         <div class="form-title" v-else>分类</div>
@@ -81,55 +87,31 @@
           <div class="drop-icon"></div>
         </div>
       </div>
-      <!-- 字段列表 -->
-      <template v-for='item in enrollForm.formFixList'>
-        <div :key='item.unique_name'
-          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1'
-          class="form-item">
-          <div class="form-title">
-            {{item.formTitle}}
-            <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
-          </div>
-          <div v-if='item.type == "singleText"' class="form-content">
-            <el-input v-model="item.inputValue" maxlength="40"></el-input>
-          </div>
-          <textarea v-if='item.type == "mulText"'
-            v-model.trim="item.inputValue"
-            class='font-ctx-wrap'
-            rows="5" cols="20">
-          </textarea>
+      <div class="form-item">
+        <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">乡镇及行政村</div>
+        <div class="form-title" v-else>{{ZCIdType ? '所属村居' : '来源'}}</div>
+        <div class="form-content">
+          <el-input v-model="examineData.source" @blur="blurAction()" maxlength="20"></el-input>
         </div>
-      </template>
-      <!-- 收集信息 -->
-      <template v-for='(item, index11) in enrollForm.visibleFieldList'>
-        <div :key='index11' class="form-item">
-          <div class="form-title">
-            {{item.fieldSuffix}}
-            <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
-          </div>
-          <div v-if='item.type === "singleText"' class="form-content">
-            <el-input v-model="item.inputValue"
-              @blur="blurAction()" maxlength="20">
-            </el-input>
-          </div>
-          <div v-if='item.type === "mulText"' class="form-content">
-            <textarea  v-model.trim="item.inputValue"
-              @blur="blurAction()"
-              class='font-ctx-wrap'
-              rows="5" cols="20">
-            </textarea>
-          </div>
-          <div v-if='item.type === "downSelect"' class="form-content">
-            <el-select v-model="item.inputValue" placeholder="请选择" style='width: 100%;'>
-              <el-option v-for="(item1, index1) in item.option"
-                :key="index1"
-                :label="item1.value"
-                :value="item1.value">
-              </el-option>
-            </el-select>
-          </div>
+      </div>
+      <div class="form-item" v-if="showModel !== 'text'">
+        <div class="form-title">{{ZCIdType ? '作品描述' : '描述'}}<span class="form-tips">{{ZCIdType ? '(必填)' : '(选填)'}}</span></div>
+        <div class="form-content">
+          <el-input type="textarea" maxlength="500" @blur="blurAction()" show-word-limit v-model="examineData.introduce"></el-input>
         </div>
-      </template>
+      </div>
+      <div class="form-item">
+        <div class="form-title">联系人姓名</div>
+        <div class="form-content">
+          <el-input v-model="examineData.contact_name" @blur="blurAction()" maxlength="20"></el-input>
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="form-title">联系人电话</div>
+        <div class="form-content">
+          <el-input v-model="examineData.contact_phone" @blur="blurAction()" maxlength="11"></el-input>
+        </div>
+      </div>
       <div class="submit-btn-wrap" @click="!disabled && commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
@@ -152,16 +134,13 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { fullSceneMap } from '@/utils/config'
 import { Toast } from 'mint-ui'
-import { Select, Option } from 'element-ui'
 
 export default {
+  created () {
+    this.initForm()
+  },
   components: {
-    FileUpload,
-    VideoUpload,
-    ClassifyDialog,
-    VoteFullsceneList,
-    ElSelect: Select,
-    ElOption: Option
+    FileUpload, VideoUpload, ClassifyDialog, VoteFullsceneList
   },
   props: {
     id: String,
@@ -169,7 +148,7 @@ export default {
   },
   data () {
     return {
-      enrollForm: {},
+      ZCId: '093cbe62f85b451fb44adbfafe606340', // 阅增城的一个活动配置
       ZCIdType: false,
       showModel: this.flag,
       disabled: false,
@@ -202,50 +181,17 @@ export default {
       darkMark: '1', // 1: 深色系 2: 浅色系
       checkFullScene: '', // 选中的全场景
       fullSceneType: [], // 全场景的搜索条件
-      fullSceneMap,
-      nameStr: '名称',
-      describeStr: '描述',
-      describeSuffix: '(选填)',
-      full_scene_type: ''
+      fullSceneMap
     }
   },
-  created () {
-    this.mixinList()
-    this.initForm()
-  },
   mounted () {
-    this.judgeStatus()
+    if (this.id === this.ZCId) {
+      this.ZCIdType = true
+    } else {
+      this.ZCIdType = false
+    }
   },
   methods: {
-    mixinList () {
-      this.enrollForm = {}
-      try {
-        this.enrollForm = STORAGE.get('detailInfo').rule.enroll_form
-        for (let i of this.enrollForm.formFixList) {
-          this.$set(i, 'inputValue', '')
-        }
-        for (let i of this.enrollForm.visibleFieldList) {
-          this.$set(i, 'inputValue', '')
-        }
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    judgeStatus () {
-      if (this.showModel === 'picture') {
-        // 图片
-        this.full_scene_type = 2
-      } else if (this.showModel === 'text') {
-        // 文本
-        this.full_scene_type = 3
-      } else if (this.showModel === 'video') {
-        // 视频
-        this.full_scene_type = 1
-      } else if (this.showModel === 'audio') {
-        // 音频
-        this.full_scene_type = 4
-      }
-    },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
       let isOpenClassify = false
@@ -282,10 +228,9 @@ export default {
             })
             if (newArr.length) {
               let key = newArr[0]
-              // this.fullSceneType = newArr
-              this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
+              this.fullSceneType = newArr
               this.checkFullScene = key
-            //  this.showModel = this.fullSceneMap[key][1]
+              this.showModel = this.fullSceneMap[key][1]
             }
           }
         }
@@ -298,25 +243,8 @@ export default {
             id: this.id
           }
         }).then(res => {
-          console.log('---res---', res)
           if (!res) {
             return
-          }
-          // 输入值得回显
-          console.log('--88--', this.enrollForm)
-          let _extra = res.extra
-          for (let [key, value] of Object.entries(_extra)) {
-            for (let i of this.enrollForm.formFixList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
-
-            for (let i of this.enrollForm.visibleFieldList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
           }
           this.worksId = worksId
           let flag = this.showModel
@@ -352,7 +280,7 @@ export default {
             type_name: res.type_name
           }
           if (res.full_scene_type) {
-            this.checkFullScene = String(res.full_scene_type)
+            this.checkFullScene = res.full_scene_type
             this.showModel = this.fullSceneMap[res.full_scene_type][1]
           }
           this.getVoteTypeFid(res.type_id, res.type_name)
@@ -416,56 +344,56 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
-
-      let _extra = {}
-      for (let i of this.enrollForm.formFixList) {
-        _extra[i.cid] = i.inputValue
-      }
-      for (let j of this.enrollForm.visibleFieldList) {
-        _extra[j.cid] = j.inputValue
-      }
-
-      for (let i of this.enrollForm.formFixList) {
-        // 标题
-        if (i.unique_name === 'form_3') {
-          this.examineData.name = i.inputValue
+      if (!examineData.name || !examineData.name.trim()) {
+        let _name = '请输入名称'
+        if (this.ZCIdType) {
+          _name = '请输入作品名称及朗诵人'
         }
-        // 来源
-        if (i.unique_name === 'form_5') {
-          this.examineData.source = i.inputValue
-        }
+        Toast(_name)
+        return
       }
-
-      for (let i of this.enrollForm.visibleFieldList) {
-        // 联系人姓名
-        if (i.value === 'name') {
-          this.examineData.contact_name = i.inputValue
+      if (!examineData.source || !examineData.source.trim()) {
+        let _origin = '请输入来源'
+        if (this.ZCIdType) {
+          _origin = '请输入所属村居'
         }
-        // 联系人手机号
-        if (i.value === 'phone') {
-          this.examineData.contact_phone = i.inputValue
+        Toast(_origin)
+        return
+      }
+      if (this.showModel === 'text') {
+        if (!examineData.introduce || !examineData.introduce.trim()) {
+          Toast('请输入文字内容')
+          return
         }
       }
-
+      if (!examineData.contact_name || !examineData.contact_name.trim()) {
+        Toast('请输入联系人姓名')
+        return
+      }
+      if (!examineData.contact_phone || !examineData.contact_phone.trim()) {
+        Toast('请输入联系人电话')
+        return
+      }
+      if (this.isOpenClassify) {
+        if (!examineData.type_name) {
+          Toast('请选择分类')
+          return
+        }
+      }
       let data = {
         voting_id: id,
         material: {
           ...this.material
         },
-        ...examineData,
-        extra: _extra
+        ...examineData
       }
-
       if (this.checkFullScene) {
         data.full_scene_type = this.checkFullScene
-      } else {
-        data.full_scene_type = this.full_scene_type
       }
       if (this.worksId) {
         data.id = this.worksId
       }
       this.disabled = true
-
       API.workReport({
         data
       }).then(res => {

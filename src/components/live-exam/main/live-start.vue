@@ -59,7 +59,7 @@
           <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
           <button class="end-exambtn" v-else>{{examInfo.limit.button || '开始答题'}}</button>
         </div>
-        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：每天最多提交{{examSubmitCount}}次</div>
+        <div class="start-exam-tips" v-if="!isNoLimit">答题规范：{{examSubmitCount?'每天最多提交'+examSubmitCount+'次':''}} {{examInfo.limit.userid_limit_num?'全程最多提交'+examInfo.limit.userid_limit_num+'次':''}}</div>
       </div>
     </div>
     <my-model
