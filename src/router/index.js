@@ -308,6 +308,18 @@ const routes = [{
     title: '新闻专题',
     mod: 'news'
   }
+},
+{
+  path: '/newstopic/:id',
+  name: 'newstopic',
+  component: getOtherComponent('news-topic', 'news-topic'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '移动专题',
+    mod: 'news'
+  }
 }, {
   path: '/drawlist',
   name: 'drawlist',
