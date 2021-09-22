@@ -4,7 +4,7 @@
       <div class="no-poster-bg" @click.stop></div>
       <div class="poster-tips">海报正在生成中...</div>
     </div>
-    <img crossOrigin='anonymous'
+    <img crossOrigin='anonymous' style='border-radius: 5px;'
       class="poster-img"
       v-if="sharePoster"
       :src="sharePoster"
@@ -73,7 +73,10 @@ export default {
     }
   },
   mounted () {
-    this.worksBg = this.imgs.bgImg
+    let detailInfo = STORAGE.get('detailInfo')
+    this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
+    console.log('detailInfo', detailInfo.rule.limitm.canvassing_poster.background_img)
+    // this.worksBg = this.imgs.bgImg
   },
   methods: {
     saveSharer (worksId) {
@@ -320,7 +323,7 @@ export default {
 
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
-        ctx.fillText('来自', 50, 640)
+        ctx.fillText('来自', 50, 635)
         ctx.save()
 
         const userInfo = STORAGE.get('userinfo')
@@ -330,15 +333,15 @@ export default {
         } else {
           // 用户头像
           let userIcon = this.$refs['userIconRef']
-          ctx.arc(120, 635, 20, 0, 2 * Math.PI)
+          ctx.arc(120, 630, 18, 0, 2 * Math.PI)
           ctx.clip()
-          ctx.drawImage(userIcon, 100, 615, 40, 40)
+          ctx.drawImage(userIcon, 100, 608, 40, 40)
           ctx.restore()
         }
 
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
-        ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 640)
+        ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 635)
 
         this.curCtx = ctx
         this.curCanvas = canvas
@@ -352,14 +355,14 @@ export default {
       }
     },
     qrcodeFun () {
-      this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 695, 90, 90)
-      this.curCtx.font = '20px Arial'
-      this.curCtx.fillStyle = '#333333'
-      this.curCtx.fillText('长按识别二维码', 160, 730)
+      this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 685, 90, 90)
+      // this.curCtx.font = '20px Arial'
+      // this.curCtx.fillStyle = '#333333'
+      // this.curCtx.fillText('长按识别二维码', 160, 730)
 
-      this.curCtx.font = '20px Arial'
-      this.curCtx.fillStyle = '#333333'
-      this.curCtx.fillText('查看作品详情', 160, 760)
+      // this.curCtx.font = '20px Arial'
+      // this.curCtx.fillStyle = '#333333'
+      // this.curCtx.fillText('查看作品详情', 160, 760)
 
       this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
