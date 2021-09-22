@@ -545,7 +545,7 @@ export default {
 <style lang="scss">
   @import "@/styles/index.scss";
   .font-ctx-wrap{
-    background: #ffffff;
+    background:#FFFFFF;
     width: 100%;
     border-radius: px2rem(10px);
     padding: 5px;
