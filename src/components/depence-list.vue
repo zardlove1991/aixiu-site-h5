@@ -845,7 +845,7 @@ export default {
           this.exerciseCountTime--
           this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / limitTime)
           // console.log('倒计时中')
-          if (this.exerciseCountTime <= 5) {
+          if (this.exerciseCountTime <= 10) {
             window.SmartCity.vibrateFeedback('warning', function () {
               console.log('warning')
             })

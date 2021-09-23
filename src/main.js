@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import 'babel-polyfill'
 import 'url-search-params-polyfill'
+import { Toast } from 'mint-ui'
 import router from '@/router/index'
 import store from '@/store/index'
 import { oauth } from '@/utils/userinfo'
@@ -28,6 +29,11 @@ Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
+  // 检测网络连接情况
+  if (!window.navigator.onLine) {
+    Toast('网络异常，请检查网络连接')
+    return false
+  }
   let name = to.name
   let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank']
   if (allArr.includes(name) && !from.name) {

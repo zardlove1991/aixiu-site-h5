@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Toast } from 'mint-ui'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
@@ -42,6 +43,11 @@ const instance = axios.create({
 })
 // 请求前添加的过滤器
 instance.interceptors.request.use((config) => {
+  // 检测网络连接情况
+  if (!window.navigator.onLine) {
+    Toast('网络异常，请检查网络连接')
+    return false
+  }
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
