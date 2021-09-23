@@ -31,7 +31,7 @@ setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   // 检测网络连接情况
   if (!window.navigator.onLine) {
-    Toast('网络异常，请检查网络连接')
+    Toast('网络异常，请检查网络连接设置')
     return false
   }
   let name = to.name

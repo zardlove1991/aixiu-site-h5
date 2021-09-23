@@ -45,7 +45,7 @@ const instance = axios.create({
 instance.interceptors.request.use((config) => {
   // 检测网络连接情况
   if (!window.navigator.onLine) {
-    Toast('网络异常，请检查网络连接')
+    Toast('网络异常，请检查网络连接设置')
     return false
   }
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
