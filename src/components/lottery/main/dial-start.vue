@@ -221,7 +221,7 @@ export default {
         case 7:
           return 'wr7'
       }
-    },
+    }
     // listData () {
     //   let awardTabel = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
     //   awardTabel.map(item => {
@@ -428,7 +428,7 @@ export default {
           this.isCommandShow = true
         } else {
           const res = await API.getDraw({ query: { id: this.id } })
-          // console.log(res)
+          console.log(res)
         }
         if (this.specified) {
           // 此处可指定后端返回的指定奖品

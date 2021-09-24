@@ -111,7 +111,7 @@ export default {
       isCardOverduesShow: false, // 控制优惠券-已过期状态
       isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
       isRecordCodeShow: false, // 控制实物核销-有码纪录状态
-      isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
+      isRecordTicketedShow: false // 控制实物核销-已兑奖状态
 
     }
   },

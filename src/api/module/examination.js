@@ -90,7 +90,7 @@ let lotteryDailUrl = {
   getCheckDraw: 'api/client/cj/{id}/check', // 口令抽奖
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
-  getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
+  getAddress: 'api/client/cj/prize/address/{id}' // 线上实物发货地址
 }
 
 // 预约报名

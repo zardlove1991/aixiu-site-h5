@@ -59,7 +59,7 @@ export default {
     activityId: {
       type: String,
       require: true
-    },
+    }
   },
   data () {
     return {
