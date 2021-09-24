@@ -33,7 +33,8 @@
                 </div>
                 <div class="tips">
                     <p>兑奖码：{{prizeData.code}}</p>
-                    <span name="" id="" cols="30" rows="10" v-if="prizeData.give_aways === 1">中奖后，工作人员将在{{prizeData.award_time}}个工作日内联系您</span>
+                    <!-- <span name="" id="" cols="30" rows="10" v-if="prizeData.give_aways === 1">中奖后，工作人员将在{{prizeData.award_time}}个工作日内联系您</span> -->
+                    <span name="" id="" cols="30" rows="10" >中奖后，工作人员将在7到15个工作日内联系您</span>
                 </div>
             </div>
             <van-divider  :dashed="true" class="line"/>
@@ -49,14 +50,6 @@
                     <div class="icon" @click="onSubmit" v-else></div>
                 </div>
             </form>
-            <!-- <p class="name">
-                <span>{{prizeData.select_merchant.leader}}</span>
-                {{prizeData.select_merchant.mobile}}
-            </p>
-            <div class="address-warp">
-                <p >{{prizeData.select_merchant.address}}</p>
-                <div class="icon"></div>
-            </div> -->
         </div>
     </Model>
 </div>
@@ -118,11 +111,11 @@ export default {
     },
     async onSubmit () {
       let err = ''
-      if (!this.prizeData.select_merchant.leader) {
+      if (!this.prizeData.address[0]) {
         err = '请填姓名'
-      } else if (!this.prizeData.select_merchant.mobile) {
+      } else if (!this.prizeData.address[1]) {
         err = '请填写手机号'
-      } else if (!this.prizeData.select_merchant.address) {
+      } else if (!this.prizeData.address[2]) {
         err = '请填写详细地址'
       }
       if (err) {
@@ -132,9 +125,9 @@ export default {
       const res = await API.getAddress({
         query: { id: this.id },
         data: {
-          name: this.prizeData.select_merchant.leader,
-          mobile: this.prizeData.select_merchant.mobile,
-          address: this.prizeData.select_merchant.address
+          name: this.prizeData.address[0],
+          mobile: this.prizeData.address[1],
+          address: this.prizeData.address[2]
         }
       })
       console.log(res)
