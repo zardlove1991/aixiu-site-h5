@@ -5,21 +5,21 @@
                <span>中奖记录</span>
            </div>
           <div slot="content" class="record-info-pre">
-            <div class="content-pre-title">获得 二等奖优惠券</div>
+            <!-- <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}优惠券</div> -->
               <div class="content-pre-wrap">
                   <div class="coupon">
-                      <span>满100减50</span>
+                      <!-- <span>{{itemData.prize_info.award_content}}</span> -->
                   </div>
-                  <div class="overdues"></div>
+                  <div class="overdues" v-if="itemData.status === '已过期'"></div>
               </div>
               <div class="content-pre-info">
-                    <p>有效期: 2021.06.29 00:00:00 - </p>
-                    <p>2021.06.30 00:00:00</p>
+                    <!-- <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
+                    <p>{{itemData.prize_info.prize_date[1]}}</p> -->
                     <p>优惠券仅支持在本店铺使用，全场商品通用</p>
               </div>
           </div>
           <div slot="content-next" class="record-info-next">
-            <van-button  block  class="btn"><span>返回</span></van-button>
+            <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
       </DialogPage>
   </div>
@@ -32,12 +32,26 @@ export default {
   name: '',
   components: { DialogPage },
   props: {
-    show: {type: Boolean, require: true}
+    show: {type: Boolean, require: true},
+    data: {
+      type: Object,
+      require: true
+    }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -50,7 +64,7 @@ export default {
     onClose () {
       this.$emit('close')
     },
-    ...mapMutations('dial', {
+    ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     })
   }

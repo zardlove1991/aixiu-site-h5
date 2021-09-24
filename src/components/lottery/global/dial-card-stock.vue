@@ -5,24 +5,24 @@
                <span>中奖记录</span>
            </div>
           <div slot="content" class="record-info-pre">
-            <div class="content-pre-title">获得 三等奖卡券</div>
+            <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}卡券</div>
               <div class="content-pre-wrap">
                   <div class="stock">
-                      <span>100元</span>
+                      <span>{{itemData.prize_info.award_content}}元</span>
                   </div>
               </div>
               <div class="content-code-wrap">
                 <div class="qr-code">
-                    <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                    <van-image class="code" :src="itemData.prize_info.qr_code"></van-image>
                 </div>
                 <div class="content-pre-info">
-                        <p>长按识别二维码领取卡券，可在 </p>
-                        <p>微信-我的卡券查看</p>
+                  <p>长按识别二维码领取卡券，可在 </p>
+                  <p>微信-我的卡券查看</p>
                 </div>
               </div>
           </div>
           <div slot="content-next" class="record-info-next">
-            <van-button  block  class="btn"><span>返回</span></van-button>
+            <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
       </DialogPage>
   </div>
@@ -35,12 +35,26 @@ export default {
   name: '',
   components: { DialogPage },
   props: {
-    show: {type: Boolean, require: true}
+    show: {type: Boolean, require: true},
+    data: {
+      type: Object,
+      require: true
+    }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -48,12 +62,17 @@ export default {
     }
   },
   created () {},
-  mounted () {},
+  mounted () {
+    // let images = this.getImage(this.itemData.prize_info.qr_code[0])
+    // this.itemData.prize_info.qr_code = this.itemData.prize_info.qr_code ? images : this.itemData.prize_info.qr_code
+    // this.$set(this.itemData.prize_info, 'qr_code', this.itemData.prize_info.qr_code)
+    // console.log(this.itemData.prize_info.qr_code)
+  },
   methods: {
     onClose () {
       this.$emit('close')
     },
-    ...mapMutations('dial', {
+    ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     })
   }

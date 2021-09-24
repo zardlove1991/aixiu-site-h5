@@ -5,7 +5,7 @@
       <div class="img"></div>
       <div class="tips-error">没有抽中哦~</div>
       <div class="tips">好可惜，差点就抽中了</div>
-      <van-button  block  native-type="submit" class="btn">再抽一次(2)</van-button>
+      <van-button  block  native-type="submit" class="btn" @click="onDrawAgain">再抽一次({{count}})</van-button>
       <div class="left-circle"></div>
       <div class="right-half-circle"></div>
     </div>
@@ -22,12 +22,26 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    data: {
+      type: [Object, Number, String],
+      required: true
     }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    count: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -42,7 +56,11 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onDrawAgain () {
+      this.$parent.onDraw()
+      this.onClose()
+    }
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-<div class="cardview" v-if="show">
+<div class="integral" v-if="show">
   <Model :show="show" @close="onClose" class="prize-model">
         <div slot="container" class="container">
             <div class="title">中奖啦~</div>
@@ -7,58 +7,31 @@
                 <div class="bg"></div>
                 <div class="prize-header"></div>
                 <div class="prize-bannner">
-                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{cardViewData.award_name}}·卡券</span></van-divider>
+                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{packet.award_name}}·积分</span></van-divider>
                 </div>
                 <div class="prize-content">
-                    <div class="coupon-bg">
-                        <span>{{cardViewData.award_content}}元</span>
-                    </div>
-                    <!-- <div class="code">兑奖码：KM12HJSNS23</div> -->
+                    <!-- <div class="coupon-bg">
+                        <div class="score">{{integral.prize_integral}}</div>
+                        <div class="score-name">积分</div>
+                    </div> -->
+                    <div class="packetPull">
+                        <p>{{packet.money}}
+                            <span>元</span>
+                        </p>
+                      <!-- <span>{{packet.award_content}}</span>
+                      <span>元</span> -->
+                  </div>
                 </div>
-                <!-- <div class="prize">
-                    <div class="header"></div>
-                    <div class="circle">
-                        <van-image class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
-                    </div>
-                    <div class="prize-bg">
-                        <span>一等奖</span>
-                    </div>
-                    <div class="prize-name">简约日式实木落地镜</div>
-                    <div class="left-icon"></div>
-                    <div class="right-icon"></div>
-                </div> -->
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
-            <div class="avatar-box" v-if="cardViewData.is_merchants">
+            <div class="avatar-box" v-if="packet.is_merchants">
                 <div class="avatar">
-                    <van-image class="img" :src="cardViewData.is_merchants.logo_url"></van-image>
+                    <van-image class="img" :src="packet.is_merchants.logo_url"></van-image>
                 </div>
-                <div class="avatar-name">{{cardViewData.is_merchants.merchant_info}}</div>
+                <div class="avatar-name">{{packet.is_merchants.merchant_info}}</div>
             </div>
-            <!-- <van-button  block  class="btn">去兑奖</van-button> -->
-            <div class="container-bottom">
-                <div class="qr-code">
-                    <van-image class="code" :src="cardViewData.qr_code"></van-image>
-                </div>
-                <div class="tips">
-                    <p>长按识别二维码领取卡券，可在微 </p>
-                    <p>信-我的卡券查看</p>
-                    <!-- <p>兑奖码：KM12HJSNS23</p>
-                    <textarea name="" id="" cols="30" rows="10">中奖后，工作人员将在7到15个工作 日内联系您</textarea> -->
-                </div>
-            </div>
-            <!-- <van-divider  :dashed="true" class="line"/> -->
-            <!-- <p class="name"><span>肖沾沾</span>15850602022</p>
-            <div class="address-warp">
-                <textarea name="" id="" cols="30" rows="10">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea>
-                <div class="icon"></div>
-            </div> -->
-            <!-- <div class="info-wrap">
-                <p>有效期: 2021.06.29 00:00:00 - </p>
-                <p>2021.06.30 00:00:00</p>
-                <p>优惠券仅支持在本店铺使用，全场商品通用</p>
-            </div> -->
+            <p class="integral-tip">现金红包需在24小时内前往公众号领取，超时自动过期</p>
         </div>
     </Model>
 </div>
@@ -75,82 +48,26 @@ export default {
       type: Boolean,
       default: false
     },
-    cardView: {
+    packet: {
       type: Object,
       require: true
     }
   },
   data () {
-    return {
-    }
+    return {}
   },
-  computed: {
-    cardViewData: {
-      get () {
-        return this.cardView
-      },
-      set (val) {
-        console.log('rule page数据改变')
-        this.$emit('update:data', val)
-      }
-    }
-  },
+  computed: {},
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
       this.setIsModelShow(newState)
     }
   },
-  created () {
-    // this.cardViewData.qr_code = this.cardViewData.qr_code ? this.getImage(this.cardViewData.qr_code[0]) : this.cardViewData.qr_code
-    // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
-    console.log(this.cardViewData, 'is_qr_codeis_qr_codeis_qr_code')
-  },
-  mounted () {
-  },
+  created () {},
+  mounted () {},
   methods: {
     onClose () {
       this.$emit('close')
-    },
-    getImage (image = {}, width, height) {
-      if (image instanceof Array && image.length === 0) {
-        return ''
-      } else if (typeof image === 'string' || image instanceof Object) {
-        let src = (typeof image === 'string') ? image : image.host + image.filename
-        src = src || ''
-        if (src) { // 替换域名
-          src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
-          src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
-          src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
-          src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
-        }
-        width = isNaN(width) ? 0 : width
-        height = isNaN(height) ? 0 : height
-        if (image.process || width || height) {
-          src += '?x-oss-process=image'
-        }
-        if (image.process && image.process.crop) { // 先裁切，再缩放
-          src += '/crop,' + image.process.crop
-        }
-        if (width > 0 && !height) { // 宽度优先，高度等比缩放
-          src += `/resize,w_${width}`
-        } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
-          src += `/resize,h_${height}`
-        } else if (width && height) { // 指定宽高
-          src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
-        } else if (image.process && image.process.resize) {
-          src += `/resize,${image.process.resize}`
-        }
-        const protocol = window.location.protocol
-        if (src) {
-          src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
-        }
-        // const protocol = window.location.protocol
-        // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
-        return src
-      } else {
-        return ''
-      }
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
@@ -162,17 +79,17 @@ export default {
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 // 父组件样式
-.cardview{ height: 100%; width: 100%;}
-.cardview  .model /deep/.model-wrap{
-    height: px2rem(650px);
+.integral{ height: 100%; width: 100%;}
+.integral  .model /deep/.model-wrap{
+    height: px2rem(718px);
 }
-.cardview .model /deep/.model-bg{
-    top:-24%;
+.integral .model /deep/.model-bg{
+    top:-21.5%;
 }
-.cardview .model /deep/.header-bg{
- top:-18%;
+.integral .model /deep/.header-bg{
+ top:-16%;
 }
-.cardview .model /deep/.model-footer{
+.integral .model /deep/.model-footer{
  bottom:-6%;
  z-index: 1;
 }
@@ -196,7 +113,8 @@ export default {
     }
     .prize-box{
         width: px2rem(540px);
-        height: px2rem(250px);
+        // height: px2rem(292px);
+        height: px2rem(392px);
         position: relative;
         margin-left: auto;
         margin-right: auto;
@@ -246,32 +164,64 @@ export default {
             position: absolute;
             top: px2rem(60px); left:px2rem(11px);
             width: px2rem(520px);
-            height: px2rem(180px);
+            // height: px2rem(222px);
+            height: px2rem(322px);
             opacity: 1;
             background: #fff9ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             // position: relative;
             .coupon-bg{
-                width: px2rem(340px);
-                height: px2rem(110px);
+                width: px2rem(140px);
+                height: px2rem(156px);
                 position: absolute;
-                top: px2rem(30px); left: px2rem(89px);
-                @include img-retina("~@/assets/lottery/cardView/cardView-bg.png",
-                "~@/assets/lottery/cardView/cardView-bg@2x.png", 100%,100%);
+                top: px2rem(30px); left: px2rem(190px);
+                @include img-retina("~@/assets/lottery/integral/integral.png",
+                "~@/assets/lottery/integral/integral@2x.png", 100%,100%);
                 background-repeat: no-repeat;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                span{
-                    // width: px2rem(212px);
-                    height: px2rem(44px);
+                .score{
+                    // width: px2rem(56px);
+                    height: px2rem(40px);
                     opacity: 1;
-                    font-size: px2rem(44px);
+                    font-size: px2rem(46px);
                     font-family: PingFangSC, PingFangSC-Medium;
                     font-weight: 500;
-                    text-align: left;
-                    color: #fff4e3;
-                    line-height: px2rem(44px);
+                    text-align: center;
+                    color: #d10000;
+                    line-height: px2rem(40px);
+                    // position: absolute;
+                    // top:px2rem(51px);
+                    // margin:auto;
+                    // left:px2rem(42px);
                 }
+                .score-name{
+                    position: absolute;
+                    left:px2rem(50px);bottom:px2rem(35px);
+                    width: px2rem(40px);
+                    height: px2rem(22px);
+                    opacity: 0.8;
+                    font-size: px2rem(20px);
+                    font-family: PingFangSC, PingFangSC-Regular;
+                    font-weight: 400;
+                    text-align: left;
+                    color: #d10000;
+                    line-height: px2rem(22px);
+                }
+                // span{
+                //     width: px2rem(212px);
+                //     height: px2rem(44px);
+                //     opacity: 1;
+                //     font-size: px2rem(44px);
+                //     font-family: PingFangSC, PingFangSC-Medium;
+                //     font-weight: 500;
+                //     text-align: left;
+                //     color: #fff4e3;
+                //     line-height: px2rem(44px);
+                // }
             }
             .code{
                 width: px2rem(264px);
@@ -285,6 +235,73 @@ export default {
                 line-height: px2rem(24px);
                 position: absolute;
                 top:px2rem(170px);left:px2rem(127px)
+            }
+             .packetPull{
+                // position: absolute;
+                // top:px2rem(72px);left:px2rem(187px);
+                width: px2rem(228px);
+                height: px2rem(242px);
+                opacity: 1;
+                @include img-retina("~@/assets/lottery/packetPull/packetPull.png",
+                "~@/assets/lottery/packetPull/packetPull@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                text-align: center;
+                position: relative;
+                // display: flex;
+                // align-items: center;
+                // justify-content: center;
+                p {
+                    width: 100%;
+                    height: px2rem(70px);
+                    font-size: px2rem(32px);
+                    font-family: PingFangSC, PingFangSC-Medium;
+                    font-weight: 500;
+                    text-align: center;
+                    color: #d10000;
+                    line-height: px2rem(70px);
+                    position: absolute;
+                    top:px2rem(55px);
+                    span {
+                        height: px2rem(22px);
+                        opacity: 1;
+                        font-size: px2rem(22px);
+                        font-family: PingFangSC, PingFangSC-Regular;
+                        font-weight: 400;
+                        text-align: center;
+                        color: #d10000;
+                        line-height: px2rem(40px);
+                        // line-height: px2rem(22px);
+                    }
+                }
+                // span:first-child{
+                //     // width: px2rem(81px);
+                //     height: px2rem(70px);
+                //     opacity: 1;
+                //     // font-size: px2rem(50px);
+                //     font-size: px2rem(32px);
+                //     font-family: PingFangSC, PingFangSC-Medium;
+                //     font-weight: 500;
+                //     text-align: center;
+                //     color: #d10000;
+                //     line-height: px2rem(70px);
+                //     position: absolute;
+                //     top:px2rem(55px);
+                //     left:px2rem(55px);
+                // }
+                // span:last-child{
+                //     // width: px2rem(22px);
+                //     height: px2rem(22px);
+                //     opacity: 1;
+                //     font-size: px2rem(22px);
+                //     font-family: PingFangSC, PingFangSC-Regular;
+                //     font-weight: 400;
+                //     text-align: center;
+                //     color: #d10000;
+                //     line-height: px2rem(22px);
+                //     position: absolute;
+                //     top:px2rem(82px);
+                //     left:px2rem(141px);
+                // }
             }
         }
 
@@ -338,18 +355,21 @@ export default {
                 display: flex;
                 // align-items: center;
                 justify-content: center;
-                span{
-                    // width: 60px;
-                    height: px2rem(20px);
-                    opacity: 1;
-                    font-size: px2rem(20px);
-                    font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-                    font-weight: 500;
-                    text-align: center;
-                    color: #ffffff;
-                    // line-height: px2rem(30px);
-                    margin-top: px2rem(6px);
+                .score{
+
                 }
+                // span{
+                //     // width: 60px;
+                //     height: px2rem(20px);
+                //     opacity: 1;
+                //     font-size: px2rem(20px);
+                //     font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+                //     font-weight: 500;
+                //     text-align: center;
+                //     color: #ffffff;
+                //     // line-height: px2rem(30px);
+                //     margin-top: px2rem(6px);
+                // }
             }
             .left-icon{
                 position: absolute;
@@ -416,7 +436,6 @@ export default {
         width: 100%;
         height: px2rem(40px);
         margin-top: px2rem(40px);
-        margin-bottom: px2rem(40px);
         .avatar{
             width: px2rem(40px);
             height: px2rem(40px);
@@ -463,8 +482,6 @@ export default {
         height: px2rem(120px);
         margin-left: px2rem(40px);
         margin-bottom: px2rem(42px);
-        position: absolute;
-        z-index: 10;
         .qr-code{
             width: px2rem(120px);
             height: px2rem(120px);
@@ -484,15 +501,12 @@ export default {
             }
         }
         .tips{
-           width: px2rem(360px);
-            height: px2rem(66px);
+            width: 100%;
+            height: 100%;
             margin-right: px2rem(46px);
-            padding-top: px2rem(40px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            padding-top: px2rem(6px);
             p{
-                width: px2rem(360px);
+                width: px2rem(264px);
                 height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -501,7 +515,7 @@ export default {
                 text-align: left;
                 color: #fff4e3;
                 line-height: px2rem(24px);
-                margin-bottom: px2rem(10px);
+                margin-bottom: px2rem(20px);
             }
             textarea{
                 width: px2rem(374px);
@@ -600,6 +614,20 @@ export default {
             // font-in
             text-indent:3.5em;
         }
+    }
+    .integral-tip{
+        width: px2rem(437px);
+        height: px2rem(24px);
+        opacity: 0.8;
+        font-size: px2rem(24px);
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: #fff4e3;
+        line-height: px2rem(24px);
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: px2rem(40px);
     }
 }
 </style>

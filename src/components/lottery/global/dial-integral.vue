@@ -7,11 +7,11 @@
                 <div class="bg"></div>
                 <div class="prize-header"></div>
                 <div class="prize-bannner">
-                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">三等奖·积分</span></van-divider>
+                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{integral.award_name}}·积分</span></van-divider>
                 </div>
                 <div class="prize-content">
                     <div class="coupon-bg">
-                        <div class="score">88</div>
+                        <div class="score">{{integral.prize_integral}}</div>
                         <div class="score-name">积分</div>
                         <!-- <span>满100减50</span> -->
                     </div>
@@ -32,13 +32,13 @@
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
-            <div class="avatar-box">
+            <div class="avatar-box" v-if="integral.is_merchants">
                 <div class="avatar">
-                    <van-image class="img" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                    <van-image class="img" :src="integral.is_merchants.logo_url"></van-image>
                 </div>
-                <div class="avatar-name">乐乐茶奶茶店</div>
+                <div class="avatar-name">{{integral.is_merchants.merchant_info}}</div>
             </div>
-            <van-button  block  class="btn">立即领取</van-button>
+            <!-- <van-button  block  class="btn">立即领取</van-button> -->
             <!-- <div class="container-bottom">
                 <div class="qr-code">
                     <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
@@ -75,6 +75,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    integral: {
+      type: Object,
+      require: true
     }
   },
   data () {
@@ -199,21 +203,23 @@ export default {
                 @include img-retina("~@/assets/lottery/integral/integral.png",
                 "~@/assets/lottery/integral/integral@2x.png", 100%,100%);
                 background-repeat: no-repeat;
-                // display: flex;
-                // justify-content: center;
-                // align-items: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 .score{
-                    width: px2rem(56px);
+                    // width: px2rem(56px);
                     height: px2rem(40px);
                     opacity: 1;
                     font-size: px2rem(46px);
                     font-family: PingFangSC, PingFangSC-Medium;
                     font-weight: 500;
-                    text-align: left;
+                    text-align: center;
                     color: #d10000;
                     line-height: px2rem(40px);
-                    position: absolute;
-                    top:px2rem(51px);left:px2rem(42px);
+                    // position: absolute;
+                    // top:px2rem(51px);
+                    // margin:auto;
+                    // left:px2rem(42px);
                 }
                 .score-name{
                     position: absolute;
@@ -386,7 +392,6 @@ export default {
         width: 100%;
         height: px2rem(40px);
         margin-top: px2rem(40px);
-        margin-bottom: px2rem(40px);
         .avatar{
             width: px2rem(40px);
             height: px2rem(40px);
@@ -576,7 +581,9 @@ export default {
         text-align: left;
         color: #fff4e3;
         line-height: px2rem(24px);
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: px2rem(40px);
     }
 }
 </style>

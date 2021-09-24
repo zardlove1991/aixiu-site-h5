@@ -5,11 +5,14 @@
                <span>中奖记录</span>
            </div>
           <div slot="content" class="record-info-pre">
-            <div class="content-pre-title">获得 五等奖现金红包</div>
+            <div class="content-pre-title">获得{{itemData.prize_info.award_name}}红包</div>
               <div class="content-pre-wrap">
                   <div class="packetPull">
-                      <span>100</span>
+                    <p>{{itemData.prize_info.money}}
                       <span>元</span>
+                    </p>
+                      <!-- <span>{{itemData.prize_info.money}}</span>
+                      <span>元</span> -->
                   </div>
               </div>
             <div class="content-pre-info">
@@ -18,7 +21,7 @@
             </div>
           </div>
           <div slot="content-next" class="record-info-next">
-            <van-button  block  class="btn"><span>返回</span></van-button>
+            <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
       </DialogPage>
   </div>
@@ -31,12 +34,26 @@ export default {
   name: '',
   components: { DialogPage },
   props: {
-    show: {type: Boolean, require: true}
+    show: {type: Boolean, require: true},
+    data: {
+      type: Object,
+      require: true
+    }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -125,32 +142,55 @@ export default {
       "~@/assets/lottery/packetPull/packetPull@2x.png", 100%, 100%);
       background-repeat: no-repeat;
       text-align: center;
-      span:first-child{
-        width: px2rem(81px);
+      p {
+        width: 100%;
         height: px2rem(70px);
-        opacity: 1;
-        font-size: px2rem(50px);
+        font-size: px2rem(32px);
         font-family: PingFangSC, PingFangSC-Medium;
         font-weight: 500;
         text-align: center;
         color: #d10000;
         line-height: px2rem(70px);
         position: absolute;
-        top:px2rem(55px);left:px2rem(55px);
+        top:px2rem(55px);
+        span {
+            height: px2rem(22px);
+            opacity: 1;
+            font-size: px2rem(22px);
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            text-align: center;
+            color: #d10000;
+            line-height: px2rem(40px);
+            // line-height: px2rem(22px);
+        }
       }
-      span:last-child{
-        width: px2rem(22px);
-        height: px2rem(22px);
-        opacity: 1;
-        font-size: px2rem(22px);
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: center;
-        color: #d10000;
-        line-height: px2rem(22px);
-        position: absolute;
-        top:px2rem(82px);left:px2rem(141px);
-      }
+      // span:first-child{
+      //   width: px2rem(81px);
+      //   height: px2rem(70px);
+      //   opacity: 1;
+      //   font-size: px2rem(50px);
+      //   font-family: PingFangSC, PingFangSC-Medium;
+      //   font-weight: 500;
+      //   text-align: center;
+      //   color: #d10000;
+      //   line-height: px2rem(70px);
+      //   position: absolute;
+      //   top:px2rem(55px);left:px2rem(55px);
+      // }
+      // span:last-child{
+      //   width: px2rem(22px);
+      //   height: px2rem(22px);
+      //   opacity: 1;
+      //   font-size: px2rem(22px);
+      //   font-family: PingFangSC, PingFangSC-Regular;
+      //   font-weight: 400;
+      //   text-align: center;
+      //   color: #d10000;
+      //   line-height: px2rem(22px);
+      //   position: absolute;
+      //   top:px2rem(82px);left:px2rem(141px);
+      // }
     }
   }
   .content-pre-info{

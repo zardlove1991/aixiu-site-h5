@@ -11,12 +11,13 @@
           <van-list v-model="loading" :finished="finished" @load="onLoad">
             <van-cell
               v-for="item in list"
-              :key="item"
+              :key="item.id"
               value="查看"
               class="list-wrap"
             >
-              <div slot="title" class="title">{{ item.name }}</div>
-              <div slot="default" class="jump">{{ item.tip }}</div>
+              <div slot="title" class="title">{{ item.prize_content }}</div>
+              <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
+              <div slot="default" class="jump" @click="onLook(item)">查看</div>
             </van-cell>
           </van-list>
         </van-pull-refresh>
@@ -27,79 +28,210 @@
       </div>
     </div>
     <div class="logo"></div>
+    <CardIntegral :show='isCardIntegralShow' @close='isCardIntegralShow = false' :data.sync="tempItem"/>
+    <CardIntegralPull :show='isCardIintegralPullShow' @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
+    <CardStock :show='isCardStockShow' @close='isCardStockShow=false' :data.sync="tempItem"/>
+    <CardOverdues :show='isCardOverduesShow' @close='isCardOverduesShow = false' :data.sync="tempItem"/>
+    <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/>
+    <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/>
+    <RecordTicketed :show='isRecordTicketedShow' @close='isRecordTicketedShow = false'/>
+    <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
+    <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
+import CardIntegral from '@/components/lottery/global/dial-card-integral'
+import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
+import CardStock from '@/components/lottery/global/dial-card-stock'
+import CardOverdues from '@/components/lottery/global/dial-card-overdues'
+import RecordUncode from '@/components/lottery/global/dial-record-uncode'
+import RecordCode from '@/components/lottery/global/dial-record-code'
+import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
+// import CardPacket from '@/components/lottery/global/dial-card-packet'
+import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 export default {
   name: 'RecordPrize',
-  components: {},
+  components: {
+    CardIntegral,
+    CardIntegralPull,
+    CardOverdues,
+    RecordUncode,
+    RecordCode,
+    RecordTicketed,
+    // CardPacket,
+    CardPacketPull,
+    CardStock
+  },
   props: {},
   data () {
     return {
       list: [
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' },
-        { name: '获得手摇式音乐盒', tip: '查看' }
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' },
+        // { name: '获得手摇式音乐盒', tip: '查看' }
       ],
       loading: false,
       finished: false,
-      refreshing: false
+      id: this.$route.query.id,
+      currentPage: 1,
+      currentCount: 100,
+      total: null,
+      refreshing: false,
+      tempItem: {}, // 临时对象
+      isCardIntegralShow: false, // 控制积分纪录状态
+      isCardIintegralPullShow: false, // // 控制积分已领取纪录状态
+      isCardStockShow: false, // 控制卡劵纪录状态
+      isCardPacketShow: false, // 控制红包纪录状态
+      isCardPacketPullShow: false, // 控制红包已领取纪录状态
+      isCardOverduesShow: false, // 控制优惠券-已过期状态
+      isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
+      isRecordCodeShow: false, // 控制实物核销-有码纪录状态
+      isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
+
     }
   },
   computed: {},
   watch: {},
   created () {},
-  mounted () {},
+  mounted () {
+    // this.onLoad()
+  },
   methods: {
-    onLoad () {
-      setTimeout(() => {
-        if (this.refreshing) {
-          this.list = []
-          this.refreshing = false
-        }
+    async onLoad () {
+      if (this.refreshing) {
+        this.list = []
+        this.refreshing = false
+      }
+      const res = await API.getMyPrizeRecord({ query: { id: this.id },
+        params: {
+          page: this.currentPage,
+          count: this.currentCount
+        } })
+      console.log(res)
+      this.loading = false
 
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-        this.loading = false
-
-        if (this.list.length >= 10) {
-          this.finished = true
-        }
-      }, 1000)
+      if (res.data.length === 0) {
+        this.finished = true
+        return false
+      }
+      this.list.push(...res.data)
+      this.total = res.total
+      this.currentPage++
     },
-    onRefresh () {
+    async onRefresh () {
       // 清空列表数据
       this.finished = false
-
-      // 重新加载数据
-      // 将 loading 设置为 true，表示处于加载状态
+      this.currentPage = 1
       this.loading = true
       this.onLoad()
+      // this.finished = false
+
+      // // 重新加载数据
+      // // 将 loading 设置为 true，表示处于加载状态
+      // this.loading = true
+      // this.onLoad()
+    },
+    onLook (item) {
+      if (this.tempItem) {
+        this.tempItem = {}
+      }
+      console.log(item)
+      if (item.prize_type === 5) {
+        if (item.status === '已兑奖') {
+          this.tempItem = item
+          this.isCardIintegralPullShow = true
+        } else {
+          this.tempItem = item
+          this.isCardIntegralShow = true
+        }
+      } else if (item.prize_type === 4) {
+        this.tempItem = item
+        if (this.tempItem.prize_info.qr_code instanceof Array) {
+          let images = this.getImage(this.tempItem.prize_info.qr_code[0])
+          this.tempItem.prize_info.qr_code = this.tempItem.prize_info.qr_code ? images : this.tempItem.prize_info.qr_code
+          this.$set(this.tempItem.prize_info, 'qr_code', this.tempItem.prize_info.qr_code)
+        }
+        this.isCardStockShow = true
+        // console.log(this.tempItem, 'tempItemtempItemtempItem')
+      } else if (item.prize_type === 3) {
+        this.tempItem = item
+        this.isCardPacketPullShow = true
+      } else if (item.prize_type === 2) {
+        this.tempItem = item
+        // console.log(this.tempItem, 'tempItem')
+        this.isCardOverduesShow = true
+      } else if (item.prize_type === 1) {
+        this.tempItem = item
+        if (item.status === '已兑奖' && item.prize_info.give_aways === 2) {
+          this.isRecordTicketedShow = true
+        }
+        // this.isCardOverduesShow = true
+      }
+    },
+    getImage (image = {}, width, height) {
+      if (image instanceof Array && image.length === 0) {
+        return ''
+      } else if (typeof image === 'string' || image instanceof Object) {
+        let src = (typeof image === 'string') ? image : image.host + image.filename
+        src = src || ''
+        if (src) { // 替换域名
+          src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
+          src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
+          src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
+          src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
+        }
+        width = isNaN(width) ? 0 : width
+        height = isNaN(height) ? 0 : height
+        if (image.process || width || height) {
+          src += '?x-oss-process=image'
+        }
+        if (image.process && image.process.crop) { // 先裁切，再缩放
+          src += '/crop,' + image.process.crop
+        }
+        if (width > 0 && !height) { // 宽度优先，高度等比缩放
+          src += `/resize,w_${width}`
+        } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
+          src += `/resize,h_${height}`
+        } else if (width && height) { // 指定宽高
+          src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
+        } else if (image.process && image.process.resize) {
+          src += `/resize,${image.process.resize}`
+        }
+        const protocol = window.location.protocol
+        if (src) {
+          src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
+        }
+        // const protocol = window.location.protocol
+        // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
+        return src
+      } else {
+        return ''
+      }
     }
   }
 }
@@ -204,8 +336,8 @@ export default {
         padding-right: px2rem(40px);
       }
       .list-wrap {
-        height: px2rem(42px);
-        line-height: px2rem(42px);
+        height: px2rem(100px);
+        line-height: px2rem(100px);
         .title {
           font-family: SourceHanSansCN, SourceHanSansCN-Regular;
           font-weight: 400;
@@ -213,7 +345,7 @@ export default {
           color: #333333;
           opacity: 1;
           font-size: px2rem(28px);
-          line-height: px2rem(42px);
+          line-height: px2rem(100px);
         }
         .jump {
           opacity: 0.6;
@@ -222,7 +354,7 @@ export default {
           font-weight: 400;
           text-align: right;
           color: #333333;
-          line-height: px2rem(42px);
+          line-height: px2rem(100px);
         }
         &::after {
           width: 100%;

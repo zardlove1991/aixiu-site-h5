@@ -5,7 +5,7 @@
                <span>中奖记录</span>
            </div>
           <div slot="content" class="record-info-pre">
-            <div class="content-pre-title">获得 五等奖现金红包</div>
+            <div class="content-pre-title">获得{{itemData.prize_info.award_name}}红包</div>
               <div class="content-pre-wrap">
                   <div class="packet"></div>
               </div>

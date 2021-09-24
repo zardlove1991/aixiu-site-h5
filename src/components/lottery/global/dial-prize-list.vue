@@ -14,7 +14,7 @@
             }deg) skew(${-90 + 360 / list.length}deg);`"
           ></div>
         </div>
-        <div
+        <!-- <div
           class="prize-gift"
           :style="`transform: rotate(${
             (-index * 360) / list.length
@@ -47,7 +47,47 @@
           <div class="again-img" v-if="i.type ==='again' ">
             <img :src="i.img" alt />
           </div>
-        </div>
+        </div> -->
+        <template v-if="length === 6" >
+          <div
+            class="prize-gift"
+            :style="`transform: rotate(${
+              (-index * 360) / list.length
+            }deg) translateY(-6rem);`"
+            v-for="(i, index) in list"
+            :key="index"
+            >
+            <span class="circle"></span>
+            <span class="title">{{ i.is_award_name }}</span>
+            <div class="wechat-img" v-if="i.type ===4 ">
+              <img :src="i.images" alt />
+              <div class="wechat center"  v-if="i.choose_award.is_prize_name.length === 5">{{i.choose_award.is_prize_name}}</div>
+              <div class="wechat" v-else >{{i.choose_award.is_prize_name}}</div>
+            </div>
+            <div class="tocket-img" v-if="i.type ===2 ">
+              <img :src="i.images" alt />
+              <div class="tocket center" v-if="i.choose_award.is_prize_name.length === 4" >{{i.choose_award.is_prize_name}}</div>
+              <div class="tocket" v-else >{{i.choose_award.is_prize_name}}</div>
+            </div>
+            <div class="integral-img" v-if="i.type ===5 ">
+              <img :src="i.images" alt />
+              <div class="integral" >{{i.choose_award.is_prize_integral}}</div>
+              <div class="integral-name">积分</div>
+            </div>
+            <div class="wx-packet-img" v-if="i.type ===3 ">
+              <img :src="i.images" alt />
+            </div>
+            <div class="thanking-img" v-if="i.type === 7">
+              <img :src="i.images" alt />
+            </div>
+            <div class="again-img" v-if="i.type ===6 ">
+              <img :src="i.images" alt />
+            </div>
+            <div class="physical-img" v-if="i.type ===1 ">
+              <img :src="i.images" alt />
+            </div>
+          </div>
+        </template>
       </div>
       <div class="start-btn" ></div>
     </div>
@@ -80,7 +120,8 @@ export default {
   },
   data () {
     return {
-      panziElement: null
+      panziElement: null,
+      length: ''
     }
   },
   props: {
@@ -102,45 +143,46 @@ export default {
     }
   },
   mounted () {
+    this.length = this.list.length
     // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
     // var(--nums) 实现css动画根据奖品个数，动态改变
-    let root = document.querySelector(':root')
-    root.style.setProperty('--nums', this.list.length)
+    // let root = document.querySelector(':root')
+    // root.style.setProperty('--nums', this.list.length)
   },
   methods: {
-    // 开始抽奖
-    start () {
-      if (!this.loading) {
-        this.panziElement = document.querySelector('.prize')
-        this.panziElement.classList.remove(this.animationClass)
-        if (this.specified) {
-          // 此处可指定后端返回的指定奖品
-          // this.winner = this.winner
-          this.winCallback()
-        } else {
-          this.winner = this.random(0, this.list.length - 1)
-          this.winCallback()
-        }
-        this.loading = true
-      }
-    },
-    // 中奖返回方法
-    winCallback () {
-      setTimeout(() => {
-        /* 此处是为了解决当下次抽中的奖励与这次相同，动画不重新执行的 */
-        /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
-        this.panziElement.classList.add(this.animationClass)
-      }, 0)
-      // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
-      setTimeout(() => {
-        this.loading = false
-        console.log(`恭喜你获得了${this.winner}`)
-      }, 3000)
-    },
-    // 随机一个整数的方法
-    random (min, max) {
-      return parseInt(Math.random() * (max - min + 1) + min)
-    }
+    // // 开始抽奖
+    // start () {
+    //   if (!this.loading) {
+    //     this.panziElement = document.querySelector('.prize')
+    //     this.panziElement.classList.remove(this.animationClass)
+    //     if (this.specified) {
+    //       // 此处可指定后端返回的指定奖品
+    //       // this.winner = this.winner
+    //       this.winCallback()
+    //     } else {
+    //       this.winner = this.random(0, this.list.length - 1)
+    //       this.winCallback()
+    //     }
+    //     this.loading = true
+    //   }
+    // },
+    // // 中奖返回方法
+    // winCallback () {
+    //   setTimeout(() => {
+    //     /* 此处是为了解决当下次抽中的奖励与这次相同，动画不重新执行的 */
+    //     /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
+    //     this.panziElement.classList.add(this.animationClass)
+    //   }, 0)
+    //   // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
+    //   setTimeout(() => {
+    //     this.loading = false
+    //     console.log(`恭喜你获得了${this.winner}`)
+    //   }, 3000)
+    // },
+    // // 随机一个整数的方法
+    // random (min, max) {
+    //   return parseInt(Math.random() * (max - min + 1) + min)
+    // }
   }
 }
 </script>
@@ -211,6 +253,14 @@ $time: 3s; //转动多少秒后停下的时间
         font-weight: 500;
         text-align: center;
         color: #d10000;
+      }
+      .physical-img {
+        width: px2rem(124px);
+        height: px2rem(111px);
+        opacity: 1;
+        background-size: cover;
+        margin: auto;
+        position: relative;
       }
       .wechat-img{
         width: px2rem(110px);

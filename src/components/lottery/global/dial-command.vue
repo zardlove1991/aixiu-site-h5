@@ -1,5 +1,5 @@
 <template>
-   <DialDialog :show="show" @close="onClose">
+   <DialDialog :show="show" @close="onClose" v-if="show">
        <div slot="tille-name" class="tille-name">输口令开启抽奖</div>
         <div slot="container" class="container">
           <span class="tips">请务必填写以下信息，奖品才能送到您手中</span>
@@ -12,13 +12,13 @@
             class="form"
           >
             <van-field
-              v-model="user.command"
+              v-model="form.is_pwd"
               name="口令"
               placeholder="请输入口令"
               class="form-input"
             />
             <div class="tips">
-               <span >口令提示：恭喜发财</span>
+               <span >口令提示：{{form.is_pwdTips}}</span>
             </div>
             <div style="margin: 16px">
               <van-button round block  native-type="submit" class="form-btn"
@@ -33,6 +33,7 @@
 <script>
 import DialDialog from '@/components/lottery/global/dial-dialog-title'
 import { mapMutations } from 'vuex'
+import API from '@/api/module/examination'
 export default {
   name: '',
   components: { DialDialog },
@@ -40,27 +41,39 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String,
+      required: true
+    },
+    command: {
+      type: [String, Number],
+      required: true
+    },
+    data: {
+      type: Object,
+      required: true
     }
   },
   data () {
     return {
-      user: { name: '', phone: '', address: '', command: '' },
+      // user: { name: '', phone: '', address: '', command: '' },
       formRules: {
-        name: [{ required: true, message: '真实姓名不能为空' }],
-        phone: [
-          { required: true, message: '手机号不能为空' },
-          {
-            pattern:
-              /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
-            message: '手机号格式错误'
-          }
-        ],
-        address: [{ required: true, message: '详细地址不能为空' }],
-        command: [{ required: true, message: '口令不能为空' }]
+        is_pwd: [{ required: true, message: '口令不能为空' }]
       }
     }
   },
-  computed: {},
+  computed: {
+    form: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -76,15 +89,23 @@ export default {
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     }),
-    onSubmit (values) {
+    async onSubmit (values) {
       this.$toast.loading({
         message: '提交中...', // 提升文本
         forbidClick: true, // 是否启用遮罩层
         duration: 0 // 展示时长，为0时一直存在
       })
       try {
-        this.close()
+        const res = await API.getCheckDraw({ query: { id: this.id }, data: { password: this.form.is_pwd } })
+        this.$toast.success('验证成功')
+        // this.$emit('update:command', res.success)
+        this.$emit('onCommandSuccess', res.success)
+        console.log(res)
+        this.onClose()
       } catch (error) {
+        if (error) {
+          this.$toast.error('接口异常')
+        }
         // console.log(error)
       }
     },
@@ -150,6 +171,7 @@ export default {
         width: px2rem(300px);
         height: px2rem(80px);
         opacity: 1;
+        border: none;
         background: linear-gradient(0deg,#ffdaa3 1%, #ffebc5);
         border-radius: px2rem(16px);
         margin: auto;

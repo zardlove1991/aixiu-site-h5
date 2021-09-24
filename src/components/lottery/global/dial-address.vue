@@ -1,5 +1,5 @@
 <template>
-  <DialDialog :show="show" @close="onClose">
+  <DialDialog :show="show" @close="onClose" ref="address">
     <div slot="tille-name" class="tille-name">收获地址</div>
     <div slot="container" class="container">
       <span class="tips">请务必填写以下信息，奖品才能送到您手中</span>
@@ -19,10 +19,11 @@
           class="form-input"
         />
         <van-field
-          v-model="user.phone"
+          v-model="user.mobile"
           name="手机号"
           placeholder="手机号"
-          :rules="formRules.phone"
+          :rules="formRules.mobile"
+          :maxlength="11"
           class="form-input"
         />
         <van-field
@@ -46,6 +47,7 @@
 <script>
 import DialDialog from '@/components/lottery/global/dial-dialog-title'
 import { mapMutations } from 'vuex'
+import API from '@/api/module/examination'
 export default {
   name: 'Address',
   components: { DialDialog },
@@ -53,14 +55,18 @@ export default {
     show: {
       type: Boolean,
       default: false
-    }
+    },
+    activityId: {
+      type: String,
+      require: true
+    },
   },
   data () {
     return {
-      user: { name: '', phone: '', address: '' },
+      user: { name: '', mobile: '', address: '' },
       formRules: {
         name: [{ required: true, message: '真实姓名不能为空' }],
-        phone: [
+        mobile: [
           { required: true, message: '手机号不能为空' },
           {
             pattern:
@@ -88,20 +94,38 @@ export default {
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     }),
-    onSubmit (values) {
+    async onSubmit (values) {
       this.$toast.loading({
         message: '提交中...', // 提升文本
         forbidClick: true, // 是否启用遮罩层
         duration: 0 // 展示时长，为0时一直存在
       })
       try {
-        this.close()
+        const res = await API.getAddress({
+          query: { id: this.activityId },
+          data: {
+            name: this.user.name,
+            mobile: this.user.mobile,
+            address: this.user.address
+          }
+        })
+        if (res.success === 1) {
+          this.$toast.success('保存成功')
+          this.user.name = ''
+          this.user.mobile = ''
+          this.user.address = ''
+          // await API.getLotteryDetail({ query: { id: this.activityId } })
+          this.onClose()
+        }
       } catch (error) {
         // console.log(error)
       }
     },
     onFailed (error) {
       console.log('验证失败', error)
+      this.$toast({
+        message: error.errors[0].message
+      })
     }
   }
 }

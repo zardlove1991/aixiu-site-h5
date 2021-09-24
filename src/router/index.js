@@ -303,25 +303,25 @@ const routes = [{
   component: getOtherComponent('list', 'draw')
 },
 {
-  // path: '/lottery/dial/index/:id',
-  path: '/lottery/dial/index',
+  path: '/lottery/dial/index/:id',
+  // path: '/lottery/dial/index',
   name: 'dial',
   component: getOtherComponent('dial-start', 'lottery'),
-  // props: (route) => ({
-  //   id: route.params.id
-  // }),
+  props: (route) => ({
+    id: route.params.id
+  }),
   meta: {
     title: '幸运大转盘'
   }
 },
 {
-  // path: '/lottery/dial/index/:id',
-  path: '/lottery/dial/record',
+  path: '/lottery/dial/index/:id',
+  // path: '/lottery/dial/record',
   name: 'record',
   component: getOtherComponent('record-prize', 'lottery'),
-  // props: (route) => ({
-  //   id: route.params.id
-  // }),
+  props: (route) => ({
+    id: route.params.id
+  }),
   meta: {
     title: '中奖记录'
   }

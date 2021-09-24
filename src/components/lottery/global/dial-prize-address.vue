@@ -8,40 +8,55 @@
                 <div class="prize">
                     <div class="header"></div>
                     <div class="circle">
-                        <van-image class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                        <van-image class="gift" :src="prizeData.images"></van-image>
                     </div>
                     <div class="prize-bg">
-                        <span>一等奖</span>
+                        <span>{{prizeData.award_name}}</span>
                     </div>
-                    <div class="prize-name">简约日式实木落地镜</div>
+                    <div class="prize-name">{{prizeData.award_content}}</div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
-            <div class="avatar-box">
-                <div class="avatar">
-                    <van-image class="img" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+            <div class="avatar-box" v-if="prizeData.is_merchants">
+              <div class="avatar">
+                    <van-image class="img" :src="prizeData.is_merchants.logo_url"></van-image>
                 </div>
-                <div class="avatar-name">乐乐茶奶茶店</div>
+                <div class="avatar-name">{{prizeData.is_merchants.merchant_info}}</div>
             </div>
             <!-- <van-button  block  class="btn">填写收货地址</van-button> -->
             <div class="container-bottom">
-                <div class="qr-code">
-                    <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                <div class="qr-code" v-if="prizeData.qr_code">
+                    <van-image class="code" :src="prizeData.qr_code"></van-image>
                 </div>
                 <div class="tips">
-                    <p>兑奖码：KM12HJSNS23</p>
-                    <textarea name="" id="" cols="30" rows="10">中奖后，工作人员将在7到15个工作 日内联系您</textarea>
+                    <p>兑奖码：{{prizeData.code}}</p>
+                    <span name="" id="" cols="30" rows="10" v-if="prizeData.give_aways === 1">中奖后，工作人员将在{{prizeData.award_time}}个工作日内联系您</span>
                 </div>
             </div>
             <van-divider  :dashed="true" class="line"/>
-            <p class="name"><span>肖沾沾</span>15850602022</p>
+            <form action="">
+                <p class="name">
+                    <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit' />
+                    <input type="text" v-model="prizeData.address[1]" :readonly='edit'
+                    @input="prizeData.address[1] = prizeData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')"/>
+                </p>
+                <div class="address-warp">
+                    <input type="text" class="p" v-model="prizeData.address[2]" :readonly='edit'/>
+                    <div class="icon" @click="onEdit" v-if="edit"></div>
+                    <div class="icon" @click="onSubmit" v-else></div>
+                </div>
+            </form>
+            <!-- <p class="name">
+                <span>{{prizeData.select_merchant.leader}}</span>
+                {{prizeData.select_merchant.mobile}}
+            </p>
             <div class="address-warp">
-                <textarea name="" id="" cols="30" rows="10">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea>
+                <p >{{prizeData.select_merchant.address}}</p>
                 <div class="icon"></div>
-            </div>
+            </div> -->
         </div>
     </Model>
 </div>
@@ -49,6 +64,7 @@
 
 <script>
 import Model from '@/components/lottery/global/dial-model-img'
+import API from '@/api/module/examination'
 import { mapMutations } from 'vuex'
 export default {
   name: '',
@@ -57,12 +73,31 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String,
+      require: true
+    },
+    prize: {
+      type: Object,
+      require: true
     }
   },
   data () {
-    return {}
+    return { edit: true
+    }
   },
-  computed: {},
+  computed: {
+    prizeData: {
+      get () {
+        return this.prize
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -77,7 +112,34 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onEdit () {
+      this.edit = !this.edit
+    },
+    async onSubmit () {
+      let err = ''
+      if (!this.prizeData.select_merchant.leader) {
+        err = '请填姓名'
+      } else if (!this.prizeData.select_merchant.mobile) {
+        err = '请填写手机号'
+      } else if (!this.prizeData.select_merchant.address) {
+        err = '请填写详细地址'
+      }
+      if (err) {
+        this.$toast.fail(err)
+        return false
+      }
+      const res = await API.getAddress({
+        query: { id: this.id },
+        data: {
+          name: this.prizeData.select_merchant.leader,
+          mobile: this.prizeData.select_merchant.mobile,
+          address: this.prizeData.select_merchant.address
+        }
+      })
+      console.log(res)
+      this.edit = true
+    }
   }
 }
 </script>
@@ -99,6 +161,7 @@ export default {
 .container{
     position: absolute;
     top: 5%;
+    z-index: 10;
     .title{
         width: px2rem(126px);
         height: px2rem(36px);
@@ -212,17 +275,18 @@ export default {
                 z-index: 2;
             }
             .prize-name{
-                width: px2rem(288px);
+                // width: px2rem(288px);
                 height: px2rem(36px);
                 opacity: 1;
                 font-size: px2rem(32px);
                 font-family: PingFangSC, PingFangSC-Medium;
                 font-weight: 500;
-                text-align: left;
+                text-align: center;
                 color: #4f0f0f;
                 line-height: px2rem(36px);
-                position: absolute;
-                left:px2rem(116px);bottom: px2rem(26px);
+                margin-top: px2rem(28px);
+                // position: absolute;
+                // left:px2rem(116px);bottom: px2rem(26px);
             }
         }
         .prize-bottom{
@@ -325,7 +389,7 @@ export default {
             margin-right: px2rem(46px);
             padding-top: px2rem(6px);
             p{
-                width: px2rem(264px);
+                // width: px2rem(264px);
                 height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -336,8 +400,8 @@ export default {
                 line-height: px2rem(24px);
                 margin-bottom: px2rem(20px);
             }
-            textarea{
-                width: px2rem(374px);
+            span{
+                // width: px2rem(374px);
                 height: px2rem(62px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -362,7 +426,7 @@ export default {
         margin-bottom: px2rem(39px);
     }
     .name{
-            span{
+            .span{
                 width: px2rem(72px);
                 height: px2rem(24px);
                 opacity: 0.8;
@@ -389,7 +453,7 @@ export default {
     .address-warp{
         padding-left: px2rem(39px);
         display: flex;
-        textarea{
+        .p{
             width: px2rem(426px);
             height: px2rem(62px);
             opacity: 0.8;

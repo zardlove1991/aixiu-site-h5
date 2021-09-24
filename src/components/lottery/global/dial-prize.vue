@@ -8,62 +8,82 @@
                 <div class="prize">
                     <div class="header"></div>
                     <div class="circle">
-                        <van-image class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                        <van-image class="gift" :src="prizeData.images"></van-image>
                     </div>
                     <div class="prize-bg">
-                        <span>一等奖</span>
+                        <span>{{prizeData.award_name}}</span>
                     </div>
-                    <div class="prize-name">简约日式实木落地镜</div>
+                    <div class="prize-name">{{prizeData.award_content}}</div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
-            <div class="avatar-box">
+            <div class="avatar-box" v-if="prizeData.is_merchants">
                 <div class="avatar">
-                    <van-image class="img" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                    <van-image class="img" :src="prizeData.is_merchants.logo_url"></van-image>
                 </div>
-                <div class="avatar-name">乐乐茶奶茶店</div>
+                <div class="avatar-name">{{prizeData.is_merchants.merchant_info}}</div>
             </div>
-            <van-button  block  class="btn">填写收货地址</van-button>
+            <van-button  block  class="btn" @click="onSubmit">填写收货地址</van-button>
             <div class="container-bottom">
-                <div class="qr-code">
-                    <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                <div class="qr-code" v-if="prizeData.qr_code">
+                    <van-image class="code" :src="prizeData.qr_code"></van-image>
                 </div>
                 <div class="tips">
-                    <p>兑奖码：KM12HJSNS23</p>
-                    <textarea name="" id="" cols="30" rows="10">中奖后，工作人员将在7到15个工作 日内联系您</textarea>
+                    <p>兑奖码：{{prizeData.code}}</p>
+                    <span name="" id="" cols="30" rows="10" v-if="prizeData.give_aways === 1">中奖后，工作人员将在{{prizeData.award_time}}个工作 日内联系您</span>
                 </div>
             </div>
         </div>
+        <!-- <Address :show='isAddressShow' @close="isAddressShow = false"/> -->
     </Model>
 </div>
 </template>
 
 <script>
 import Model from '@/components/lottery/global/dial-model-img'
+import Address from '@/components/lottery/global/dial-address'
+
 import { mapMutations } from 'vuex'
 export default {
   name: '',
-  components: { Model },
+  components: { Model, Address },
   props: {
     show: {
       type: Boolean,
       default: false
+    },
+    prize: {
+      type: Object,
+      require: true
     }
   },
   data () {
-    return {}
+    return {
+      // isAddressShow: false // 控制收获地址状态
+    }
   },
-  computed: {},
+  computed: {
+    prizeData: {
+      get () {
+        return this.prize
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
       this.setIsModelShow(newState)
     }
   },
-  created () {},
+  created () {
+  },
   mounted () {},
   methods: {
     onClose () {
@@ -71,7 +91,13 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onSubmit () {
+      // this.isAddressShow = true
+      // console.log(this.isAddressShow)
+      this.$emit('onAddress', true)
+      this.onClose()
+    }
   }
 }
 </script>
@@ -128,6 +154,9 @@ export default {
             top:px2rem(-14px);
             left:px2rem(10px);
             position: relative;
+            // display: flex;
+            // flex-direction: column;
+            // justify-content: center;
             .header{
                 width: px2rem(520px);
                 height: px2rem(6px);
@@ -204,17 +233,19 @@ export default {
                 z-index: 2;
             }
             .prize-name{
-                width: px2rem(288px);
+                // width: px2rem(288px);
                 height: px2rem(36px);
                 opacity: 1;
                 font-size: px2rem(32px);
                 font-family: PingFangSC, PingFangSC-Medium;
                 font-weight: 500;
-                text-align: left;
+                text-align: center;
                 color: #4f0f0f;
                 line-height: px2rem(36px);
-                position: absolute;
-                left:px2rem(116px);bottom: px2rem(26px);
+                margin-top: px2rem(28px);
+                // position: absolute;
+                // left:px2rem(116px);
+                // bottom: px2rem(26px);
             }
         }
         .prize-bottom{
@@ -317,7 +348,7 @@ export default {
             margin-right: px2rem(46px);
             padding-top: px2rem(6px);
             p{
-                width: px2rem(264px);
+                // width: px2rem(264px);
                 height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -328,7 +359,8 @@ export default {
                 line-height: px2rem(24px);
                 margin-bottom: px2rem(20px);
             }
-            textarea{
+            span{
+                display: inline-block;
                 width: px2rem(374px);
                 height: px2rem(62px);
                 opacity: 0.8;

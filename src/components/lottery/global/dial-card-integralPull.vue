@@ -5,10 +5,10 @@
                <span>中奖记录</span>
         </div>
         <div slot="content" class="record-info-pre">
-            <div class="content-pre-title">获得 四等奖积分</div>
+            <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}积分</div>
             <div class="content-pre-wrap">
                 <div class="integralPull">
-                    <div class="score">88</div>
+                    <div class="score">{{itemData.prize_info.prize_integral}}</div>
                     <div class="score-name">积分</div>
                 </div>
                 <div class="pull"></div>
@@ -18,7 +18,7 @@
             </div>
         </div>
         <div slot="content-next" class="record-info-next">
-            <van-button  block  class="btn"><span>返回</span></van-button>
+            <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
         </div>
     </DialogPage>
 </div>
@@ -34,12 +34,26 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    data: {
+      type: Object,
+      require: true
     }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -124,8 +138,11 @@ export default {
         @include img-retina("~@/assets/lottery/integral/integral.png",
         "~@/assets/lottery/integral/integral@2x.png", 100%, 100%);
         background-repeat: no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         .score{
-            width: px2rem(56px);
+            // width: px2rem(56px);
             height: px2rem(40px);
             opacity: 1;
             font-size: px2rem(46px);
@@ -134,8 +151,8 @@ export default {
             text-align: left;
             color: #d10000;
             line-height: px2rem(40px);
-            position: absolute;
-            top:px2rem(51px);left:px2rem(42px);
+            // position: absolute;
+            // top:px2rem(51px);left:px2rem(42px);
         }
         .score-name{
             position: absolute;

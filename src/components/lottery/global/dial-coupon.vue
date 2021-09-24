@@ -7,27 +7,28 @@
                 <div class="bg"></div>
                 <div class="prize-header"></div>
                 <div class="prize-bannner">
-                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">二等奖·优惠券</span></van-divider>
+                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{couponData.award_name}}·优惠券</span></van-divider>
                 </div>
                 <div class="prize-content">
                     <div class="coupon-bg">
-                        <span>满100减50</span>
+                        <span>{{couponData.award_content}}</span>
                     </div>
-                    <div class="code">兑奖码：KM12HJSNS23</div>
+                    <div class="code" v-if="couponData.is_expiry_type === 1">兑奖码：{{couponData.code}}</div>
+                    <div class="code" v-else>兑奖码：{{couponData.code}}</div>
                 </div>
                 <div class="prize-bottom"></div>
             </div>
             <div class="point"></div>
-            <div class="avatar-box">
+            <div class="avatar-box" v-if="couponData.is_merchants">
                 <div class="avatar">
-                    <van-image class="img" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                    <van-image class="img" :src="couponData.is_merchants.logo_url"></van-image>
                 </div>
-                <div class="avatar-name">乐乐茶奶茶店</div>
+                <div class="avatar-name">{{couponData.is_merchants.merchant_info}}</div>
             </div>
-            <van-button  block  class="btn">去兑奖</van-button>
+            <!-- <van-button  block  class="btn">去兑奖</van-button> -->
             <div class="info-wrap">
-                <p>有效期: 2021.06.29 00:00:00 - </p>
-                <p>2021.06.30 00:00:00</p>
+                <p>有效期: {{couponData.prize_date[0]}} - </p>
+                <p>{{couponData.prize_date[1]}}</p>
                 <p>优惠券仅支持在本店铺使用，全场商品通用</p>
             </div>
         </div>
@@ -45,19 +46,34 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    coupon: {
+      type: Object,
+      require: true
     }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    couponData: {
+      get () {
+        return this.coupon
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
       this.setIsModelShow(newState)
     }
   },
-  created () {},
+  created () {
+  },
   mounted () {},
   methods: {
     onClose () {
@@ -175,7 +191,7 @@ export default {
                     font-size: px2rem(44px);
                     font-family: PingFangSC, PingFangSC-Medium;
                     font-weight: 500;
-                    text-align: left;
+                    text-align: center;
                     color: #fff4e3;
                     line-height: px2rem(44px);
                 }
