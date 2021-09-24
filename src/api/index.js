@@ -294,3 +294,17 @@ export const createC4 = (url, method, config = {}, api) => {
     ...config
   })
 }
+
+export const createLottery = (url, method, config = {}, api) => {
+  api = 'lottery'
+  console.log(getUrl(url, config, api), 'getUrl(url, config, api)')
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    headers: {
+      'member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
+    },
+    ...config
+  })
+}

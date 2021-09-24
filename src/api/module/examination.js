@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createEnroll, createBase, createC4 } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createEnroll, createBase, createC4, createLottery } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -84,6 +84,14 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
+let lotteryDailUrl = {
+  getLotteryDetail: 'api/client/cj/{id}', // 转盘详情
+  getDraw: 'api/client/cj/draw/{id}', // 开始抽奖
+  getCheckDraw: 'api/client/cj/{id}/check', // 口令抽奖
+  getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
+  getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
+  getAddress: 'api/client/cj/prize/address/{id}' // 线上实物发货地址
+}
 
 // 预约报名
 let enrollUrl = {
@@ -104,15 +112,8 @@ let drawUrl = {
   getMyDrawList: 'xiuzan/account/mine/'
 }
 
-// 我的报名  我的投票
-let jiluObj = {
-  voteUrl: 'client/voting/myrecords',
-  enrollUrl: 'client/voting/myworks'
-}
-
 // 不带GUID
 let configUrl = {
-  ...jiluObj,
   ...QCloundUrl,
   ...baseUrl,
   ...examUrl,
@@ -120,6 +121,7 @@ let configUrl = {
   ...enrollUrl,
   ...newsUrl,
   ...drawUrl,
+  ...lotteryDailUrl,
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -195,6 +197,13 @@ export default {
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+  // 大转盘、九宫格、盲盒
+  getLotteryDetail: config => createLottery(configUrl.getLotteryDetail, 'GET', config, 'lottery'),
+  getDraw: config => createLottery(configUrl.getDraw, 'POST', config, 'lottery'),
+  getCheckDraw: config => createLottery(configUrl.getCheckDraw, 'POST', config, 'lottery'),
+  getMyPrizeRecord: config => createLottery(configUrl.getMyPrizeRecord, 'GET', config, 'lottery'),
+  getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
+  getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
@@ -203,9 +212,5 @@ export default {
   getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'GET', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),
   getMyAnswerList: config => createAPI(configUrl.getAnswerList, 'GET', config, API_FLAG),
-  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG),
-  // 获取投票记录
-  getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
-  // 获取报名数据
-  getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG)
+  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG)
 }

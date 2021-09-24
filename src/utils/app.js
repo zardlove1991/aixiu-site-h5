@@ -28,6 +28,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['vote']
       break
     }
+    case 'lottery': {
+      host = globalConfig['lottery']
+      break
+    }
     case 'mlink': {
       host = globalConfig['mlink']
       break

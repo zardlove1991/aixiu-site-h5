@@ -9,6 +9,7 @@ export default {
   'exam': `${host}/examinationhy/`,
   'vote': `${host}/votinghy/`,
   'enroll': `${host}/voteapi/`,
+  'lottery': `${host}/lotteryhy/`,
   'mlink': `${host}/m/`,
   'reserve': `${host}/reserve/`,
   'public': `${host}/publichy/`,

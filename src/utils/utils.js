@@ -571,6 +571,7 @@ export const getShareUrl = (...args) => {
   }
   return tmpLink
 }
+<<<<<<< HEAD
 
 export const logger = (info) => {
   let route = window.$vue.$route
@@ -592,3 +593,17 @@ export const logger = (info) => {
   }
   document.body.appendChild(i)
 }
+=======
+export const getDaysBetween = (dateString1, dateString2) => {
+  let startDate = Date.parse(dateString1)
+  let endDate = Date.parse(dateString2)
+  if (startDate > endDate) {
+    return 0
+  }
+  if (startDate === endDate) {
+    return 1
+  }
+  let days = (endDate - startDate) / (1 * 24 * 60 * 60 * 1000)
+  return days
+}
+>>>>>>> feature/k8s_refactor_luckyWheel

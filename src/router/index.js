@@ -330,6 +330,28 @@ const routes = [{
     title: '中奖记录',
     mod: 'lottery'
   }
+},
+{
+  path: '/lottery/dial/index/:id',
+  name: 'dial',
+  component: getOtherComponent('dial-start', 'lottery'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '幸运大转盘'
+  }
+},
+{
+  path: '/lottery/dial/index/:id',
+  name: 'record',
+  component: getOtherComponent('record-prize', 'lottery'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '我的中奖记录'
+  }
 }]
 
 let router = new Router({
