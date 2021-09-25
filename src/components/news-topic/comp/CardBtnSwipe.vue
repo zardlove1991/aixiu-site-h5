@@ -1,14 +1,12 @@
 <template>
   <div class='card-btn-swipe'>
     <!-- 单行 -->
-    <!-- <div v-for='(item, index) in cardList' :key='index'
-    :class='{"choiced-btn" : true}'
-    class='single-btn-wrap'>
-      政治议程
-    </div> -->
+    <div v-for='(item, index) in cardList' :key='index'
+      :class='{"choiced-btn" : true}'
+      class='single-btn-wrap'>{{item.title}}</div>
 
     <!-- 多行 -->
-    <div class='mul-card-wrap'>
+    <!-- <div class='mul-card-wrap'>
       <div class='mul-card-line'>
         <div class='single-card'>媒体关注</div>
         <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
@@ -19,16 +17,40 @@
         <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
         <div class='single-card'>媒体关注</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    topicDisplay: {
+      handler (newData, oldData) {
+        console.log('card', newData)
+      },
+      depp: true,
+      immediate: true
+    }
+  },
+  watch: {
+    activeObj: {
+      handler (newData, oldData) {
+        console.log('newdata', newData)
+      },
+      deep: true
+    }
+  },
   data () {
     return {
-      cardList: new Array(10)
+      cardList: [],
+      detailInfo: {}
     }
+  },
+  mounted () {
+    // this.detailInfo = STORAGE.get('mobile_news')
+    // const columnSet = this.detailInfo.limit.column_set
+    // this.cardList = columnSet.column_list
+    // console.log('columnSet', this.cardList)
   }
 }
 </script>

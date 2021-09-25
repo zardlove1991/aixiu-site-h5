@@ -9,12 +9,11 @@
     </van-swipe>
     <div class='title-name'>
       <div class='topic-tips'>专题</div>
-      <div>奋斗青春 无悔抉择</div>
+      <div>{{baseInfo.title}}</div>
     </div>
     <div class='topic-descri'>
-      几十年来，一代代知识分子主动选择到基层去、
-      到边 疆去，让青春之花在祖国最需要的地方绚烂绽放...
-      <span class='all-title'>全部</span>
+      {{blockStr}}...
+      <span class='all-title' @click='togleBtn'>全部</span>
     </div>
 
   </div>
@@ -22,9 +21,36 @@
 
 <script>
 export default {
+  props: {
+    baseInfo: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
-
+      blockStr: '',
+      btnTitle: '全部'
+    }
+  },
+  watch: {
+    baseInfo: {
+      handler (newData, oldData) {
+        this.baseInfo = newData
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      },
+      deep: true
+    }
+  },
+  methods: {
+    togleBtn () {
+      if (this.btnTitle === '全部') {
+        this.btnTitle = '收起'
+        this.blockStr = this.baseInfo.summary
+      } else {
+        this.btnTitle = '全部'
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      }
     }
   }
 }

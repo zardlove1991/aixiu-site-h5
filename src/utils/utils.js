@@ -96,6 +96,15 @@ export const setTheme = (id, name, isFirst) => {
       }
       STORAGE.set('detailInfo', info)
     })
+  } else if (name.indexOf('newstopic') !== -1) {
+    API.getMobileNewsDetail({ query: { id } }).then(res => {
+      let info = res
+      STORAGE.set('mobile_news', info)
+      if (isFirst && info && info.id) {
+        let { id, title, mark } = info
+        setClick(id, title, mark)
+      }
+    })
   } else if (name.indexOf('news') !== -1) {
     API.getNewsDetail({ query: { id } }).then(res => {
       let info = res

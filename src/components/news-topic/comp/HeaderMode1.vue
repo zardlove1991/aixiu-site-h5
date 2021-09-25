@@ -1,10 +1,9 @@
 <template>
 <div class='header-mode-1'>
-  <BaseHeader>
+  <BaseHeader :title='baseInfo.title'>
     <div slot="circleCardBox" class='circle-card-box'>
-      和苹果合作多年的福斯特建筑事务所，又为苹果设计
-      了了一家零售店，这回是将华盛...
-      <span class='all-title'>全部</span>
+      {{blockStr}}...
+      <span class='all-title' @click='togleBtn'>全部</span>
     </div>
   </BaseHeader>
 </div>
@@ -13,9 +12,25 @@
 <script>
 import BaseHeader from './BaseHeader.vue'
 export default {
+  props: {
+    baseInfo: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
-
+      blockStr: '',
+      btnTitle: '全部'
+    }
+  },
+  watch: {
+    baseInfo: {
+      handler (newData, oldData) {
+        this.baseInfo = newData
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      },
+      deep: true
     }
   },
   components: {
@@ -23,6 +38,17 @@ export default {
   },
   mounted () {
 
+  },
+  methods: {
+    togleBtn () {
+      if (this.btnTitle === '全部') {
+        this.btnTitle = '收起'
+        this.blockStr = this.baseInfo.summary
+      } else {
+        this.btnTitle = '全部'
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      }
+    }
   }
 }
 </script>

@@ -10,9 +10,7 @@
     </van-swipe>
     <div class='news-title'>
       <div class='topic-tips'>专题</div>
-      <div class='topix-descri'>
-        苹果在华盛顿的第二家店，在一座拥 有上百年历史的图书馆里
-      </div>
+      <div class='topix-descri'>{{title}}</div>
     </div>
     <slot name='circleCardBox'></slot>
     <slot name='squareCardBox'></slot>
@@ -22,6 +20,12 @@
 
 <script>
 export default {
+  props: {
+    title: {
+      type: String,
+      default: ''
+    }
+  },
   data () {
     return {
 

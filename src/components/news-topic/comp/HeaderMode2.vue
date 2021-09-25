@@ -1,9 +1,9 @@
 <template>
 <div class='header-mode-2'>
-  <BaseHeader>
+  <BaseHeader :title='baseInfo.title'>
     <div slot="squareCardBox" class='square-card-box'>
-      根据苹果的描述，他们会在店外新建一个露天圆形 剧场，并且每年至少为公众举办 8 场文化活动。苹 果店位于地下，入口处设计成了瀑布式的玻璃屏风 。进入地下商场，需要通过富有现代感的阶梯或电 梯。这里可以观看视频，举办活动...
-      <span class='all-title'>全部</span>
+      {{blockStr}}...
+      <span class='all-title' @click='togleBtn'>全部</span>
     </div>
   </BaseHeader>
 </div>
@@ -12,9 +12,25 @@
 <script>
 import BaseHeader from './BaseHeader.vue'
 export default {
+  props: {
+    baseInfo: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
-
+      blockStr: '',
+      btnTitle: '全部'
+    }
+  },
+  watch: {
+    baseInfo: {
+      handler (newData, oldData) {
+        this.baseInfo = newData
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      },
+      deep: true
     }
   },
   components: {
@@ -22,6 +38,17 @@ export default {
   },
   mounted () {
 
+  },
+  methods: {
+    togleBtn () {
+      if (this.btnTitle === '全部') {
+        this.btnTitle = '收起'
+        this.blockStr = this.baseInfo.summary
+      } else {
+        this.btnTitle = '全部'
+        this.blockStr = this.baseInfo.summary.substring(0, 40)
+      }
+    }
   }
 }
 </script>
