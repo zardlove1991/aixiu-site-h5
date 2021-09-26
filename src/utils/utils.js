@@ -104,6 +104,8 @@ export const setTheme = (id, name, isFirst) => {
         setClick(id, title, mark)
       }
     })
+  } else if (name.indexOf('lottery') !== -1) {
+    console.log('抽奖setTheme')
   } else {
     // 测评
     console.log('isFirst', isFirst)
