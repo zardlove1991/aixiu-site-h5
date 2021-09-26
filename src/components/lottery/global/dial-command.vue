@@ -12,13 +12,13 @@
             class="form"
           >
             <van-field
-              v-model="form.is_pwd"
+              v-model="user.password"
               name="口令"
               placeholder="请输入口令"
               class="form-input"
             />
             <div class="tips">
-               <span >口令提示：{{form.is_pwdTips}}</span>
+               <span >口令提示：{{data.is_pwdTips}}</span>
             </div>
             <div style="margin: 16px">
               <van-button round block  native-type="submit" class="form-btn"
@@ -57,22 +57,22 @@ export default {
   },
   data () {
     return {
-      // user: { name: '', phone: '', address: '', command: '' },
+      user: { password: this.data.is_pwd },
       formRules: {
         is_pwd: [{ required: true, message: '口令不能为空' }]
       }
     }
   },
   computed: {
-    form: {
-      get () {
-        return this.data
-      },
-      set (val) {
-        console.log('rule page数据改变')
-        this.$emit('update:data', val)
-      }
-    }
+    // form: {
+    //   get () {
+    //     return this.data
+    //   },
+    //   set (val) {
+    //     console.log('rule page数据改变')
+    //     this.$emit('update:data', val)
+    //   }
+    // }
   },
   watch: {
     show (newState) {
@@ -96,17 +96,15 @@ export default {
         duration: 0 // 展示时长，为0时一直存在
       })
       try {
-        const res = await API.getCheckDraw({ query: { id: this.id }, data: { password: this.form.is_pwd } })
+        const res = await API.getCheckDraw({ query: { id: this.id }, data: { password: this.user.password } })
         this.$toast.success('验证成功')
         // this.$emit('update:command', res.success)
         this.$emit('onCommandSuccess', res.success)
         console.log(res)
         this.onClose()
       } catch (error) {
-        if (error) {
-          this.$toast.error('接口异常')
-        }
-        // console.log(error)
+        this.$toast.fail(error.error_message)
+        console.log(error)
       }
     },
     onFailed (error) {

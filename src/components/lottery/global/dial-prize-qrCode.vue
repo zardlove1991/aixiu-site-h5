@@ -2,15 +2,15 @@
   <div class="prize-qrCode" v-if="show">
        <Model :show="show" @close="onClose">
            <div slot="container" class="container">
-                <div class="title">提货凭证~</div>
+                <div class="title">提货凭证</div>
                 <div class="qrCode-wrap">
-                    <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                    <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image>
                 </div>
                 <div class="info">
-                    <p>兑奖码： KM13NJDJNCKK </p>
-                    <p>门店地址：楚翘城3号商务楼 </p>
-                    <p>营业时间：8:00-18:00 </p>
-                    <p>兑奖时间：2021-06-28 至 2021-07-28</p>
+                    <p>兑奖码： {{lotteryCodeData.code}} </p>
+                    <p>门店地址：{{lotteryCodeData.select_merchant.address}}</p>
+                    <p>营业时间：{{lotteryCodeData.select_merchant.start_time}} - {{lotteryCodeData.select_merchant.end_time}}</p>
+                    <p>兑奖时间：{{lotteryCodeData.award_time}}</p>
                 </div>
                 <div class="tips">
                     <p>请展示二维码图片给店员进行使用，长按图片可</p>
@@ -31,12 +31,26 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    data: {
+      type: Object,
+      require: true
     }
   },
   data () {
     return {}
   },
-  computed: {},
+  computed: {
+    lotteryCodeData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -92,7 +106,7 @@ export default {
         width: px2rem(360px);
         height: px2rem(360px);
         opacity: 1;
-        background: #ffffff;
+        // background: #ffffff;
         border-radius: px2rem(8px);
         padding: px2rem(5px);
         margin-left: auto;

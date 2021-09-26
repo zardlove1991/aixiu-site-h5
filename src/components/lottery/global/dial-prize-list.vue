@@ -48,7 +48,7 @@
             <img :src="i.img" alt />
           </div>
         </div> -->
-        <template v-if="length === 6" >
+        <template  >
           <div
             class="prize-gift"
             :style="`transform: rotate(${

@@ -36,13 +36,27 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    date: {
+      type: [Array, Number],
+      require: true
     }
   },
   data () {
-    return {time: 30 * 60 * 60 * 1000
+    return {
+      time: this.date
     }
   },
   computed: {
+    countDown: {
+      get () {
+        return this.date
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
   },
   watch: {
     show (newState) {

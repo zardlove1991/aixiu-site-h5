@@ -38,7 +38,7 @@
                 </div>
             </div>
             <van-divider  :dashed="true" class="line"/>
-            <form action="">
+            <form action="#">
                 <p class="name">
                     <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit' />
                     <input type="text" v-model="prizeData.address[1]" :readonly='edit'

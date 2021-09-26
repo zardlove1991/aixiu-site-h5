@@ -5,32 +5,38 @@
                <span>中奖记录</span>
            </div>
            <div slot="content" class="record-info-pre">
-               <div class="content-pre-title">获得 简约日式实木落地镜</div>
+               <div class="content-pre-title">获得{{itemData.prize_info.award_content}}</div>
                 <div class="content-pre-wrap">
                     <div class="content-pre-circle">
-                        <van-image src="https://img01.yzcdn.cn/vant/cat.jpeg" class="avatar"/>
+                        <van-image :src="itemData.prize_info.images" class="avatar"/>
                     </div>
                     <div class="center-icon">
-                        <span>一等奖</span>
+                        <span>{{itemData.prize_info.award_name}}</span>
                     </div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
+                    <div class="ticked-wrap" v-if="itemData.status === '已兑奖' "></div>
                 </div>
                 <div class="content-pre-userInfo">
-                    <p>兑奖码：KM13NJDJNCKK </p>
+                    <p>兑奖码：{{itemData.prize_info.code}} </p>
                     <p>工作人员将在7到15个工作日内联系您</p>
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
               <div class="content-next-wrap">
-                  <span class="label">肖沾沾</span>
-                  <span class="value">15850602022</span>
+                  <input type="text" placeholder="姓名" class="label" v-model="itemData.prize_info.address[0]" :readonly='edit' />
+                  <input type="text" v-model="itemData.prize_info.address[1]" :readonly='edit' class="value" placeholder="手机号" :maxlength="11"
+                    @input="itemData.address[1] = itemData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')"/>
+                  <!-- <span class="label">肖沾沾</span>
+                  <span class="value">15850602022</span> -->
               </div>
               <div class="content-next-wrap">
-                  <textarea name="" id="" cols="30" rows="10">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea>
-                 <div class="righit-icon"></div>
+                  <input type="text" class="address" v-model="itemData.prize_info.address[2]" :readonly='edit' placeholder="详细地址"/>
+                  <!-- <textarea name="" id="" cols="30" rows="10" class="address">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea> -->
+                 <div class="righit-icon" v-if="edit" @click="onEdit"></div>
+                 <div class="righit-icon" @click="onSubmit" v-else></div>
               </div>
-               <van-button  block  class="btn"><span>返回</span></van-button>
+               <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
        </DialogPage>
   </div>
@@ -39,23 +45,50 @@
 <script>
 import { mapMutations } from 'vuex'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
+import API from '@/api/module/examination'
 export default {
   name: '',
   components: { DialogPage },
   props: {
-    show: {type: Boolean, require: true}
+    show: {type: Boolean, require: true},
+    activityId: {type: String, require: true},
+    data: {
+      type: Object,
+      require: true
+    }
   },
   data () {
-    return {}
+    return {
+      edit: true
+    }
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
       this.setIsModelShow(newState)
+    },
+    itemData: {
+      handler: function (newValue, oldValue) {
+        console.log('%citemData：', 'color: red;font-size:14px;', newValue)
+      },
+      deep: true,
+      immediate: true
     }
   },
-  created () {},
+  created () {
+    console.log(this.itemData)
+  },
   mounted () {},
   methods: {
     onClose () {
@@ -63,7 +96,36 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onEdit () {
+      this.edit = !this.edit
+    },
+    async onSubmit () {
+      let err = ''
+      if (!this.itemData.prize_info.address[0]) {
+        err = '请填姓名'
+      } else if (!this.itemData.prize_info.address[1]) {
+        err = '请填写手机号'
+      } else if (!this.itemData.prize_info.address[2]) {
+        err = '请填写详细地址'
+      }
+      if (err) {
+        this.$toast.fail(err)
+        return false
+      }
+      console.log(this.itemData.prize_info.address[0])
+      const res = await API.getAddress({
+        query: { id: this.activityId },
+        data: {
+          name: this.itemData.prize_info.address[0],
+          mobile: this.itemData.prize_info.address[1],
+          address: this.itemData.prize_info.address[2]
+        }
+      })
+      console.log(res)
+      if (res.success === 1) this.$toast.success('编辑成功')
+      this.edit = true
+    }
   }
 }
 </script>
@@ -103,7 +165,7 @@ export default {
             font-size: px2rem(32px);
             font-family: PingFangSC, PingFangSC-Medium;
             font-weight: 500;
-            text-align: left;
+            text-align: center;
             color: #4f0f0f;
             line-height: px2rem(36px);
             margin-left: auto;
@@ -159,6 +221,14 @@ export default {
                 bottom: px2rem(30px);right: px2rem(210px);
                 z-index: 2;
             }
+             .ticked-wrap{
+                width: px2rem(122px);
+                height: px2rem(102px);
+                opacity: 1;
+                background: linear-gradient(135deg,#ff8f68, #ff1a4a);
+                position: absolute;
+                top:px2rem(42px);right: px2rem(30px);
+            }
              .content-pre-circle{
                 position: absolute;
                 top:px2rem(76px);
@@ -213,6 +283,7 @@ export default {
             display: flex;
             // align-items: center;
             .label{
+                width: px2rem(140px);
                 height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
@@ -233,7 +304,7 @@ export default {
                 color: #4f0f0f;
                 line-height: px2rem(24px);
             }
-            textarea{
+            .address{
                 width: px2rem(426px);
                 height: px2rem(62px);
                 opacity: 0.8;

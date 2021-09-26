@@ -9,12 +9,12 @@
                 <p>可以使用积分继续抽奖哦～</p>
             </div>
             <div class="btn-groups">
-              <van-button  block  native-type="submit" class="btn"
+              <van-button  block  native-type="submit" class="btn" @click="onClose"
               >算了吧</van-button>
-              <van-button  block  native-type="submit" class="btn"
+              <van-button  block  native-type="submit" class="btn" @click="onWheelDraw"
               >使用积分</van-button>
             </div>
-            <div class="tips-bottom">每次抽奖扣除10积分</div>
+            <div class="tips-bottom">每次抽奖扣除{{data.is_lottery_integral}}积分</div>
         </div>
     </DialDialog>
   </div>
@@ -30,6 +30,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    data: {
+      type: Object,
+      require: true
     }
   },
   data () {
@@ -50,7 +54,11 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onWheelDraw () {
+      this.$parent.onDraw()
+      this.onClose()
+    }
   }
 }
 </script>
