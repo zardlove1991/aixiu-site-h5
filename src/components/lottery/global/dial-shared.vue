@@ -5,7 +5,7 @@
           <div class="img"></div>
           <div class="tip-success">分享成功</div>
           <div class="tips">获得一次抽奖机会</div>
-            <van-button  block  native-type="submit" class="btn"
+            <van-button  block  native-type="submit" class="btn" @click="onDrawChance"
             >去抽奖</van-button>
             <div class="tip">赠送的抽奖机会需在当日使用，超时失效</div>
             <div class="left-circle"></div>
@@ -44,7 +44,11 @@ export default {
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
-    })
+    }),
+    onDrawChance () {
+      this.$parent.onDraw()
+      this.onClose()
+    }
   }
 }
 </script>

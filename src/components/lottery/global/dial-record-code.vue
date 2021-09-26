@@ -5,32 +5,33 @@
                <span>中奖记录</span>
            </div>
            <div slot="content" class="record-info-pre">
-               <div class="content-pre-title">获得 简约日式实木落地镜</div>
+               <div class="content-pre-title">获得{{itemData.prize_info.award_content}}</div>
                 <div class="content-pre-wrap">
                     <div class="content-pre-circle">
-                        <van-image src="https://img01.yzcdn.cn/vant/cat.jpeg" class="avatar"/>
+                        <van-image :src="itemData.prize_info.images" class="avatar"/>
                     </div>
                     <div class="center-icon">
-                        <span>一等奖</span>
+                        <span>{{itemData.prize_info.award_name}}</span>
                     </div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
                 <div class="content-pre-userInfo">
-                    <p>兑奖码：KM13NJDJNCKK </p>
-                    <p>门店地址：楚翘城3号商务楼</p>
-                    <p>营业时间：8:00-18:00</p>
-                    <p>兑奖时间：2021-06-28 至 2021-07-28</p>
+                    <p>兑奖码：{{itemData.prize_info.code}} </p>
+                    <p>门店地址：{{itemData.prize_info.select_merchant.address}}</p>
+                    <p>营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
+                    <p>兑奖时间：{{itemData.prize_info.award_time}}</p>
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
               <div class="grounp-btns-wrap">
-                  <van-button  block  class="btn"><span>返回</span></van-button>
-                  <van-button  block  class="btn"><span>中奖二维码</span></van-button>
+                  <van-button  block  class="btn back" @click="onClose"><span>返回</span></van-button>
+                  <van-button  block  class="btn lottery" v-if="itemData.status_name === '已抽中' " @click="isPrizeQrCodeShow=true"><span>中奖二维码</span></van-button>
+                  <van-button  block  class="btn due" disabled v-else-if="itemData.status_name === '已过期' "><span>中奖二维码</span></van-button>
               </div>
               <div class="record-code-wrap">
-                  <div class="code-wrap">
-                      <van-image class="code" src="https://img01.yzcdn.cn/vant/cat.jpeg"></van-image>
+                  <div class="code-wrap" v-if="itemData.prize_info.qr_code">
+                      <van-image class="code" :src="itemData.prize_info.qr_code"></van-image>
                   </div>
                     <div class="tips-wrap">
                         <p>兑奖提示：请指定时间和门店地址进行核销超时即失效</p>
@@ -38,22 +39,41 @@
               </div>
           </div>
        </DialogPage>
+    <PrizeQrCode :show.sync='isPrizeQrCodeShow' v-if="isPrizeQrCodeShow"  @close='isPrizeQrCodeShow = false'
+        :data.sync='itemData.prize_info'/>
   </div>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
+import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
 export default {
   name: '',
-  components: { DialogPage },
+  components: { DialogPage, PrizeQrCode },
   props: {
-    show: {type: Boolean, require: true}
+    show: {type: Boolean, require: true},
+    data: {
+      type: Object,
+      require: true
+    }
   },
   data () {
-    return {}
+    return {
+      isPrizeQrCodeShow: false
+    }
   },
-  computed: {},
+  computed: {
+    itemData: {
+      get () {
+        return this.data
+      },
+      set (val) {
+        console.log('rule page数据改变')
+        this.$emit('update:data', val)
+      }
+    }
+  },
   watch: {
     show (newState) {
       // 更改当前是否显示遮罩的状态
@@ -108,7 +128,7 @@ export default {
             font-size: px2rem(32px);
             font-family: PingFangSC, PingFangSC-Medium;
             font-weight: 500;
-            text-align: left;
+            text-align: center;
             color: #4f0f0f;
             line-height: px2rem(36px);
             margin-left: auto;
@@ -189,7 +209,7 @@ export default {
             }
         }
         .content-pre-userInfo{
-            width: px2rem(475px);
+            // width: px2rem(475px);
             height: px2rem(164px);
             opacity: 1;
             font-size: px2rem(26px);
@@ -229,7 +249,7 @@ export default {
                 border-radius: px2rem(16px);
                 border: none;
                 text-align: center;
-                &:first-child{
+                &.back{
                     background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
                     box-shadow: 0 px2rem(16px) 0px 0px #e5b56b;
                     margin-left: px2rem(52px);
@@ -243,7 +263,7 @@ export default {
                         line-height: px2rem(72px);
                     }
                 }
-                &:last-child{
+                &.lottery{
                     background: linear-gradient(0deg,#ff214b 1%, #ff5368);
                     box-shadow: 0 px2rem(16px) 0px 0px #DE183D;
                     span{
@@ -252,6 +272,18 @@ export default {
                         font-weight: 500;
                         text-align: left;
                         color: #fff4e3;
+                        line-height: px2rem(72px);
+                    }
+                }
+                &.due{
+                    background: linear-gradient(0deg,#fff 1%, #b7b09b);
+                    box-shadow: 0 px2rem(16px) 0px 0px #b7b09b;
+                    span{
+                        font-size: px2rem(28px);
+                        font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+                        font-weight: 500;
+                        text-align: left;
+                        color: #4f0f0f;
                         line-height: px2rem(72px);
                     }
                 }

@@ -15,7 +15,7 @@
     <div class="dial-container">
       <div class="container-title-on" :class="{ 'container-title':detailInfo.title.length > 5}" v-if="detailInfo.is_display_title">{{detailInfo.title}}</div>
       <!-- <div class="container-title" v-else-if='(detailInfo.remain_counts > 0 || detailInfo.user_integral_counts > 0)'>{{detailInfo.title}}</div> -->
-      <div class="container-title-notice" >
+      <div class="container-title-notice" :class="{'container-title-notice-off':disableBtn}">
           <van-notice-bar class="notice" scrollable text="疯狂派“兑”，快来邀请好友一起来参与吧！"/>
       </div>
       <div class="dial-container-wrap">
@@ -74,7 +74,8 @@
             </ul>
           </van-notice-bar>
         </div>
-        <div v-if="detailInfo.remain_counts > 0 || detailInfo.user_integral_counts > 0" class="wheel-btn-on" @click="onDraw">
+        <div v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
+            class="wheel-btn-on" @click="onDraw" >
           <span>立即抽奖</span>
         </div>
         <div v-else class="wheel-btn-off" >
@@ -86,39 +87,41 @@
         </div>
       </div>
     </div>
-    <ActivityRule :show='isActivityShow' :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
-    <Address :show='isAddressShow' @close="isAddressShow = false" @onPrizeAddress='onPrizeAddress' :activityId='id'
+    <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
+    <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
       />
-    <Command :show='isCommandShow' @close ='isCommandShow = false' :data.sync="detailInfo.limit" :command.sync="command"
+    <Command :show.sync='isCommandShow' v-if="isCommandShow" @close ='isCommandShow = false' :data.sync="detailInfo.limit" :command.sync="command"
       :id="id" @onCommandSuccess='onCommandSuccess'/>
 
-    <RecordDraw :show='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"/>
+    <RecordDraw :show.sync='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"
+      :data.sync="detailInfo.limit.integral_limit"/>
     <RecordLess :show='isRecordLessShow' @close ='isRecordLessShow = false'/>
     <Shared :show='isSharedShow' @close ='isSharedShow = false'/>
     <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/>
     <UnPrizeChance :show='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
 
     <Prize :show='isPrizeShow' @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
-    <PrizeAddress :show='isPrizeAddressShow' @close='isPrizeAddressShow = false' :prize.sync='prizeData' :id="id"/>
-    <PrizeVerification :show='isPrizeVerificationcShow' @close='isPrizeVerificationcShow = false'/>
-    <PrizeQrCode :show='isPrizeQrCodeShow' @close='isPrizeQrCodeShow = false'/>
+    <PrizeAddress :show.sync='isPrizeAddressShow' v-if="isPrizeAddressShow" @close='isPrizeAddressShow = false' :prize.sync='prizeData' :id="id"/>
+    <PrizeVerification :show.sync='isPrizeVerificationcShow' v-if="isPrizeVerificationcShow"
+      @close='isPrizeVerificationcShow = false' :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
+    <PrizeQrCode :show.sync='isPrizeQrCodeShow' v-if="isPrizeQrCodeShow"  @close='isPrizeQrCodeShow = false' :data.sync='tempPrize'/>
     <Coupon :show='isCouponShow' @close='isCouponShow = false' :coupon='couponData'/>
     <CardView :show='isCardViewShow' @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show='isIntegralShow' @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show='isPacketShow' @close='isPacketShow = false' :packet.sync='packetData'/>
-    <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false'/>
+    <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
     <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
-    <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/>
-    <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/>
-    <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/>
-    <RecordTicketed :show='isRecordTicketedShow' @close='isRecordTicketedShow = false'/>
-    <CardOverdues :show='isCardOverduesShow' @close='isCardOverduesShow = false'/>
-    <CardStock :show='isCardStockShow' @close='isCardStockShow = false'/>
-    <CardIntegral :show='isCardIntegralShow' @close='isCardIntegralShow = false'/>
-    <CardIntegralPull :show='isCardIintegralPullShow' @close='isCardIintegralPullShow = false'/>
-    <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/>
-    <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/>
+    <!-- <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/> -->
+    <!-- <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/> -->
+    <!-- <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/> -->
+    <!-- <RecordTicketed :show='isRecordTicketedShow' @close='isRecordTicketedShow = false'/> -->
+    <!-- <CardOverdues :show.sync='isCardOverduesShow' v-if="isCardOverduesShow" @close='isCardOverduesShow = false'/> -->
+    <!-- <CardStock :show='isCardStockShow' @close='isCardStockShow = false'/> -->
+    <!-- <CardIntegral :show='isCardIntegralShow' @close='isCardIntegralShow = false'/> -->
+    <!-- <CardIntegralPull :show='isCardIintegralPullShow' @close='isCardIintegralPullShow = false'/> -->
+    <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
+    <!-- <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/> -->
     <!-- <MoalImg :show="isWheelShow"/> -->
     <!-- <DialDialog :show="isWheelShow"/> -->
     <!-- <DialogPage :show="isWheelShow"/> -->
@@ -162,7 +165,7 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
-import { getDaysBetween } from '@/utils/utils'
+import { getDaysBetween, delUrlParams } from '@/utils/utils'
 export default {
   components: {
     prizeList,
@@ -221,7 +224,7 @@ export default {
         case 7:
           return 'wr7'
       }
-    },
+    }
     // listData () {
     //   let awardTabel = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
     //   awardTabel.map(item => {
@@ -296,30 +299,34 @@ export default {
       isActivityStartShow: false, // 控制活动开始状态
       isActivityPauseShow: false, // 控制活动暂停状态
       isActivityEndShow: false, // 控制活动结束状态
-      isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
-      isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
-      isRecordCodeShow: false, // 控制实物核销-有码纪录状态
-      isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
-      isCardOverduesShow: false, // 控制优惠券-已过期状态
-      isCardStockShow: false, // 控制卡劵纪录状态
-      isCardIntegralShow: false, // 控制积分纪录状态
-      isCardIintegralPullShow: false, // 控制积分已领取纪录状态
-      isCardPacketShow: false, // 控制红包纪录状态
-      isCardPacketPullShow: false, // 控制红包已领取纪录状态
+      // isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
+      // isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
+      // isRecordCodeShow: false, // 控制实物核销-有码纪录状态
+      // isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
+      // isCardOverduesShow: false, // 控制优惠券-已过期状态
+      // isCardStockShow: false, // 控制卡劵纪录状态
+      // isCardIntegralShow: false, // 控制积分纪录状态
+      // isCardIintegralPullShow: false, // 控制积分已领取纪录状态
+      // isCardPacketShow: false, // 控制红包纪录状态
+      // isCardPacketPullShow: false, // 控制红包已领取纪录状态
       command: '', // 口令抽奖返回结果 1为成功
       integralData: {}, // 积分中奖对象
       cardViewData: {}, // 微信卡劵中奖对象
       packetData: {}, // 微信红包中奖对象
       couponData: {}, // 优惠劵中奖对象
       prizeData: {}, // 实物中奖对象
-      noticeData: [],
-      addressStatus: null
+      noticeData: [], // 我的中奖通知
+      tempPrize: {}, // 临时提货凭证对象
+      interval: null, // 定时器
+      noStartDate: null, // 活动未开始时间
+      disableBtn: false
 
     }
   },
   watch: {
     detailInfo: {
       handler: function (newValue, oldValue) {
+        this.detailInfo = newValue
         // console.log('%cdetailInfo：', 'color: red;font-size:14px;', newValue.remain_counts)
       },
       deep: true,
@@ -328,8 +335,12 @@ export default {
   },
   async created () {
     // if (this.isWheelShow) this.count = 3
-    this.ininData()
+    // const res = await API.getShare({ query: { id: this.id } })
     // console.log(res)
+    // if (res.code === 1) {
+    //   this.$toast.success(res.msg)
+    // }
+    this.ininData()
   },
   async mounted () {
     // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
@@ -340,16 +351,33 @@ export default {
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
   },
+  beforeDestroy () {
+    // 清除定时器
+    if (this.interval) {
+      clearInterval(this.interval)
+    }
+  },
   methods: {
     async ininData () {
       let lotteryId = this.id
       const res = await API.getLotteryDetail({ query: { id: lotteryId } })
-      // console.log(res)
       this.detailInfo = res
+      if (res.activity_vp_status === 'activity_close') {
+        this.isActivityPauseShow = true
+        this.disableBtn = true
+      } else if (res.activity_vp_status === 'activity_no_start') {
+        // let nowDate = parseInt(new Date().getTime() / 1000)
+        let nowDate = parseInt(new Date().getTime())
+        let activityStart = (res.start_time * 1000)
+        this.noStartDate = (activityStart - nowDate)
+        this.isActivityStartShow = true
+        // console.log(this.noStartDate, ' this.noStartDate')
+        this.disableBtn = true
+      } else if (res.activity_vp_status === 'activity_end') {
+        this.isActivityEndShow = true
+        this.disableBtn = true
+      }
       STORAGE.set('detailInfo', res)
-      // this.detailInfo.is_open_list = 0
-      // this.detailInfo.is_display_title = 0
-      // this.detailInfo.remain_counts = 0
       this.list = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
       this.list.map((item, index) => {
         if (item.type === 1) {
@@ -375,8 +403,8 @@ export default {
           item.choose_award.is_prize_name = '谢谢参与'
         }
       })
-      // this.list.splice(this.length - 1, 1)
       console.log(this.list)
+      // this.sharePage(res)
     },
     getImage (image = {}, width, height) {
       if (image instanceof Array && image.length === 0) {
@@ -424,49 +452,161 @@ export default {
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.classList.remove(this.animationClass)
-        if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery) {
+        if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery) { // 口令抽奖
           this.isCommandShow = true
         } else {
           const res = await API.getDraw({ query: { id: this.id } })
-          // console.log(res)
+          console.log(res)
+          this.ininData()
+          this.specified = true // 指定获奖下标
+          if (this.specified) {
+            this.winner = this.winner
+            this.winCallback()
+          }
+          if (res.error_code === 'no_extract_prize') { // 未中奖
+            this.isUnDrawShow = true
+            this.list.map((item, index) => {
+              if (item.type === 7) {
+                this.winner = index
+                // console.log(this.winner, 'this.winnerthis.winnerthis.winner')
+              }
+            })
+          } else if (res.error_code === 'no_prize_num') { // 库存不足
+            // this.$toast.fail(res.error_message)
+            let uuid = res.error_message
+            this.list.map((item, index) => {
+              if (item.uuid === uuid) {
+                this.winner = index
+                // console.log(this.winner, '库存..............')
+              }
+            })
+          } else if (res.type === 5) { // 积分
+            this.integralData = res
+            this.isIntegralShow = true
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '积分..............')
+              }
+            })
+          } else if (res.type === 4) { // 卡劵
+            this.cardViewData = res
+            if (this.cardViewData.qr_code instanceof Array) {
+              this.cardViewData.qr_code = this.cardViewData.qr_code ? this.getImage(this.cardViewData.qr_code[0]) : this.cardViewData.qr_code
+              // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
+            }
+            this.isCardViewShow = true
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '卡劵..............')
+              }
+            })
+            console.log(this.cardViewData, 'this.cardViewData ')
+          } else if (res.type === 3) { // 红包
+            this.packetData = res
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '红包..............')
+              }
+            })
+            this.isPacketShow = true
+            console.log(this.isPacketShow, 'this.isPacketShow this.isPacketShow ')
+          } else if (res.type === 2) { // 优惠劵
+            this.isCouponShow = true
+            this.couponData = res
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '优惠劵..............')
+              }
+            })
+          } else if (res.type === 1) { // 实物
+            this.prizeData = res
+            // console.log(this.prizeData)
+            if (this.prizeData.images instanceof Array || this.prizeData.images instanceof Array) {
+              let images = this.getImage(this.prizeData.images[0])
+              this.prizeData.images = this.prizeData.images ? images : this.prizeData.images
+              let code = this.getImage(this.prizeData.qr_code[0])
+              this.prizeData.qr_code = this.prizeData.qr_code ? code : this.prizeData.qr_code
+            }
+            if (this.prizeData.give_aways === 1) { // 线下
+              if (this.prizeData.award_time) {
+                this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                if (this.prizeData.award_time instanceof Array) {
+                  this.prizeData.award_time = this.prizeData.award_time[0] + ' 至 ' + this.prizeData.award_time[1]
+                  console.log(this.prizeData.award_time, 'this.prizeData.award_time')
+                }
+              }
+              this.isPrizeVerificationcShow = true
+            } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 0) { // 线上 && 未填地址
+              if (this.prizeData.award_time) {
+                this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                if (this.prizeData.award_time instanceof Array) {
+                  this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
+                }
+              }
+              this.isPrizeShow = true
+              console.log(this.isPrizeShow)
+            } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 1) { // 线上 && 已填地址
+              if (this.prizeData.award_time) {
+                this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                if (this.prizeData.award_time instanceof Array) {
+                  this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
+                }
+              }
+              this.isPrizeAddressShow = true
+            }
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '实物..............')
+              }
+            })
+          } else if (res.error_code === 'no_draw_counts') { // 没抽奖次数
+            let integralLimit = this.detailInfo.limit.integral_limit
+            if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+              this.isRecordDrawShow = true
+            } else {
+              this.isUnPrizeChanceShow = true
+            }
+          }
         }
-        if (this.specified) {
-          // 此处可指定后端返回的指定奖品
-          this.winner = this.winner
-          // this.winCallback()
-        } else {
-          this.winner = this.random(0, this.list.length - 1)
-          this.winCallback()
-        }
+        // if (this.specified) {
+        //   // 此处可指定后端返回的指定奖品
+        //   this.winner = this.winner
+        //   // this.winCallback()
+        // } else {
+        //   this.winner = this.random(0, this.list.length - 1)
+        //   this.winCallback()
+        // }
         this.loading = true
       }
     },
+    // 口令抽奖判断
     async onCommandSuccess (data) {
       if (data) {
         this.command = data
         if (this.command) {
-          // this.$toast.loading({
-          //   message: '抽奖中...', // 提升文本
-          //   forbidClick: true, // 是否启用遮罩层
-          //   duration: 1500 // 展示时长，为0时一直存在
-          // })
           try {
             const res = await API.getDraw({ query: { id: this.id } })
             // console.log(res)
             this.ininData()
-            this.specified = true //
-            if (res.error_code === 'no_extract_prize') {
+            this.specified = true // 指定获奖下标
+            if (this.specified) {
+              this.winner = this.winner
+              this.winCallback()
+            }
+            if (res.error_code === 'no_extract_prize') { // 未中奖
               this.isUnDrawShow = true
-              // this.winner = 5
               this.list.map((item, index) => {
-                // if (item.type === 6) {
                 if (item.type === 7) {
                   this.winner = index
                   // console.log(this.winner, 'this.winnerthis.winnerthis.winner')
                 }
               })
-              this.winCallback()
-            } else if (res.error_code === 'no_prize_num') {
+            } else if (res.error_code === 'no_prize_num') { // 库存不足
               // this.$toast.fail(res.error_message)
               let uuid = res.error_message
               this.list.map((item, index) => {
@@ -475,8 +615,14 @@ export default {
                   // console.log(this.winner, '库存..............')
                 }
               })
-              this.winCallback()
-            } else if (res.type === 5) {
+            } else if (res.type === 6) {
+              this.list.map((item, index) => {
+                if (item.type === res.type) {
+                  this.winner = index
+                  console.log(this.winner, '再来一次..............')
+                }
+              })
+            } else if (res.type === 5) { // 积分
               this.integralData = res
               this.isIntegralShow = true
               this.list.map((item, index) => {
@@ -485,8 +631,7 @@ export default {
                   console.log(this.winner, '积分..............')
                 }
               })
-              this.winCallback()
-            } else if (res.type === 4) {
+            } else if (res.type === 4) { // 卡劵
               this.cardViewData = res
               if (this.cardViewData.qr_code instanceof Array) {
                 this.cardViewData.qr_code = this.cardViewData.qr_code ? this.getImage(this.cardViewData.qr_code[0]) : this.cardViewData.qr_code
@@ -500,8 +645,7 @@ export default {
                 }
               })
               console.log(this.cardViewData, 'this.cardViewData ')
-              this.winCallback()
-            } else if (res.type === 3) {
+            } else if (res.type === 3) { // 红包
               this.packetData = res
               this.list.map((item, index) => {
                 if (item.type === res.type) {
@@ -509,10 +653,9 @@ export default {
                   console.log(this.winner, '红包..............')
                 }
               })
-              this.winCallback()
               this.isPacketShow = true
               console.log(this.isPacketShow, 'this.isPacketShow this.isPacketShow ')
-            } else if (res.type === 2) {
+            } else if (res.type === 2) { // 优惠劵
               this.isCouponShow = true
               this.couponData = res
               this.list.map((item, index) => {
@@ -521,30 +664,40 @@ export default {
                   console.log(this.winner, '优惠劵..............')
                 }
               })
-              this.winCallback()
-            } else if (res.type === 1) {
+            } else if (res.type === 1) { // 实物
               this.prizeData = res
-              console.log(this.prizeData.give_aways)
               // console.log(this.prizeData)
-              if (this.prizeData.award_time) {
-                this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
-                if (this.prizeData.award_time instanceof Array) {
-                  this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
-                }
-              }
               if (this.prizeData.images instanceof Array || this.prizeData.images instanceof Array) {
                 let images = this.getImage(this.prizeData.images[0])
                 this.prizeData.images = this.prizeData.images ? images : this.prizeData.images
                 let code = this.getImage(this.prizeData.qr_code[0])
                 this.prizeData.qr_code = this.prizeData.qr_code ? code : this.prizeData.qr_code
               }
-              // console.log(this.prizeData.select_merchant.address, 'this.prizeData.select_merchant.address')
-              if (this.prizeData.give_aways === 1) {
-                this.isPrizeAddressShow = true
-              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 0) {
+              if (this.prizeData.give_aways === 1) { // 线下
+                if (this.prizeData.award_time) {
+                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                  if (this.prizeData.award_time instanceof Array) {
+                    this.prizeData.award_time = this.prizeData.award_time[0] + ' 至 ' + this.prizeData.award_time[1]
+                    console.log(this.prizeData.award_time, 'this.prizeData.award_time')
+                  }
+                }
+                this.isPrizeVerificationcShow = true
+              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 0) { // 线上 && 未填地址
+                if (this.prizeData.award_time) {
+                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                  if (this.prizeData.award_time instanceof Array) {
+                    this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
+                  }
+                }
                 this.isPrizeShow = true
                 console.log(this.isPrizeShow)
-              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 1) {
+              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 1) { // 线上 && 已填地址
+                if (this.prizeData.award_time) {
+                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                  if (this.prizeData.award_time instanceof Array) {
+                    this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
+                  }
+                }
                 this.isPrizeAddressShow = true
               }
               this.list.map((item, index) => {
@@ -553,11 +706,14 @@ export default {
                   console.log(this.winner, '实物..............')
                 }
               })
-              this.winCallback()
-            } else if (res.error_code === 'no_draw_counts') {
-              this.isUnPrizeChanceShow = true
+            } else if (res.error_code === 'no_draw_counts') { // 没抽奖次数
+              let integralLimit = this.detailInfo.limit.integral_limit
+              if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+                this.isRecordDrawShow = true
+              } else {
+                this.isUnPrizeChanceShow = true
+              }
             }
-            // this.detailInfo.remain_counts--
             this.isCommandShow = false
           } catch (error) {
             if (error) {
@@ -567,6 +723,7 @@ export default {
         }
       }
     },
+    // 实物地址填写
     onAddress (value) {
       // console.log(value)
       if (value) {
@@ -575,17 +732,16 @@ export default {
       }
       console.log(this.$refs['address'])
     },
-    // onAddressStatus (data) {
-    //   this.addressStatus = data
-    //   console.log(this.addressStatus, 'this.addressStatus')
-    // },
-    onPrizeAddress (value) {
-      if (value) {
-
+    onLotteryCode (data) {
+      if (data.cancel_code) {
+        this.tempPrize = data
+        console.log(this.tempPrize, 'this.tempPrize')
+        this.isPrizeQrCodeShow = true
       }
     },
+    // 中奖通知
     onNotice () {
-      setInterval(async () => {
+      this.interval = setInterval(async () => {
         const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
         // console.log(res)
         this.noticeData = res.data
@@ -598,7 +754,7 @@ export default {
         /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
         this.panziElement.classList.add(this.animationClass)
       }, 0)
-      // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
+      // 因为动画时间为 1s ，所以这里1s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
       setTimeout(() => {
         this.loading = false
         console.log(`恭喜你获得了${this.winner}`)
@@ -608,17 +764,121 @@ export default {
     random (min, max) {
       return parseInt(Math.random() * (max - min + 1) + min)
     },
+    // 中奖纪录
     handleGo () {
       this.$router.push({
-        name: 'record',
+        name: 'lotteryRecord',
         query: { id: this.id }
       })
+    },
+    sharePage (detailInfo) {
+      if (!detailInfo) {
+        return false
+      }
+      let { title, introduce, indexpic, rule, limit } = detailInfo
+      let imgUrl = ''
+      let shareLink = ''
+      let shareTitle = title
+      let shareBrief = introduce
+      // let shareTitle = limit.share_settings.share_title
+      // let shareBrief = limit.share_settings.share_brief
+      if (rule && rule.is_close_dialog) {
+        this.isCloseDialog = true
+      } else {
+        this.isCloseDialog = false
+      }
+      // if (rule && rule.share_settings) {
+      if (limit && limit.share_settings) {
+        // let share = rule.share_settings
+        let share = limit.share_settings
+        // let sharePic = share.indexpic
+        let sharePic = share.share_indexpic
+        // if (share.title) {
+        if (share.share_title) {
+          // shareTitle = share.title
+          shareTitle = share.share_title
+        }
+        // if (share.brief) {
+        if (share.share_brief) {
+          // shareBrief = share.brief
+          shareBrief = share.share_brief
+        }
+        // shareLink = share.link
+        shareLink = share.share_url
+        if (sharePic) {
+          if (sharePic.constructor === Array && sharePic.length > 0) {
+            let obj = sharePic[0]
+            if (obj.constructor === Object) {
+              if (/http/.test(obj.host)) {
+                imgUrl = obj.host + obj.filename
+              } else {
+                imgUrl = location.protocol + obj.host + obj.filename
+              }
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (sharePic.constructor === Object && sharePic.host && sharePic.filename) {
+            if (/http/.test(sharePic.host)) {
+              imgUrl = sharePic.host + sharePic.filename
+            } else {
+              imgUrl = location.protocol + sharePic.host + sharePic.filename
+            }
+          } else if (sharePic.constructor === String) {
+            imgUrl = sharePic
+          }
+        } else if (indexpic) {
+          if (indexpic.constructor === Array && indexpic.length > 0) {
+            let obj = indexpic[0]
+            if (obj.constructor === Object) {
+              imgUrl = obj.host + obj.filename
+            } else if (obj.constructor === String) {
+              imgUrl = obj
+            }
+          } else if (indexpic.constructor === Object && indexpic.host && indexpic.filename) {
+            imgUrl = indexpic.host + indexpic.filename
+          } else if (indexpic.constructor === String) {
+            imgUrl = indexpic
+          }
+        }
+      }
+      if (!shareLink) {
+        shareLink = delUrlParams(['code'])
+      } else {
+        shareLink = this.getShareUrl(shareLink)
+      }
+      if (imgUrl && !/^http/.test(imgUrl)) {
+        imgUrl = location.protocol + imgUrl
+      }
+      this.shareConfigData = {
+        id: detailInfo.id,
+        title: shareTitle,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
+      }
+      this.initPageShareInfo({
+        id: detailInfo.id,
+        title: shareTitle,
+        desc: shareBrief,
+        indexpic: imgUrl,
+        link: shareLink,
+        mark: detailInfo.mark
+      }, this.onShare)
+    },
+    async onShare () {
+      const res = await API.getShare({ query: { id: this.id } })
+      console.log(res)
+      if (res.code === 1) {
+        this.isSharedShow = true
+        this.$toast.success(res.msg)
+      }
     }
   }
 }
 </script>
 <style scoped lang='scss'>
-@import "@/styles/index.scss";
+@import '@/styles/index.scss';
 $time: 3s; //转动多少秒后停下的时间
 .tips-dialog-content{
   width: px2rem(600px);
@@ -737,6 +997,9 @@ $time: 3s; //转动多少秒后停下的时间
       color: #ffffff;
       line-height: px2rem(26px)
     }
+  }
+  .container-title-notice-off {
+    display: none !important;
   }
   .container-title-on{
     // width: px2rem(628px);

@@ -90,7 +90,9 @@ let lotteryDailUrl = {
   getCheckDraw: 'api/client/cj/{id}/check', // 口令抽奖
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
-  getAddress: 'api/client/cj/prize/address/{id}' // 线上实物发货地址
+  getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
+  getShare: 'api/client/cj/live/share/{id}' // 分享
+
 }
 
 // 预约报名
@@ -204,6 +206,7 @@ export default {
   getMyPrizeRecord: config => createLottery(configUrl.getMyPrizeRecord, 'GET', config, 'lottery'),
   getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
+  getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),

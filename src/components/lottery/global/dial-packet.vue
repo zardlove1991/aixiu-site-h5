@@ -1,5 +1,5 @@
 <template>
-<div class="integral" v-if="show">
+<div class="packet" v-if="show">
   <Model :show="show" @close="onClose" class="prize-model">
         <div slot="container" class="container">
             <div class="title">中奖啦~</div>
@@ -7,20 +7,23 @@
                 <div class="bg"></div>
                 <div class="prize-header"></div>
                 <div class="prize-bannner">
-                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{packet.award_name}}·积分</span></van-divider>
+                    <van-divider dashed  content-position='center' class="line"><span class="prize-name" slot="default">{{packet.award_name}}·微信红包</span></van-divider>
                 </div>
                 <div class="prize-content">
                     <!-- <div class="coupon-bg">
                         <div class="score">{{integral.prize_integral}}</div>
                         <div class="score-name">积分</div>
                     </div> -->
-                    <div class="packetPull">
+                    <!-- <div class="packetPull">
                         <p>{{packet.money}}
                             <span>元</span>
                         </p>
-                      <!-- <span>{{packet.award_content}}</span>
-                      <span>元</span> -->
-                  </div>
+                  </div> -->
+                   <p class="money">
+                       {{packet.money}}
+                        <span>元</span>
+                    </p>
+                    <p class="tips">红包会在24小时内发放</p>
                 </div>
                 <div class="prize-bottom"></div>
             </div>
@@ -31,7 +34,7 @@
                 </div>
                 <div class="avatar-name">{{packet.is_merchants.merchant_info}}</div>
             </div>
-            <p class="integral-tip">现金红包需在24小时内前往公众号领取，超时自动过期</p>
+            <p class="integral-tip">请在「爱秀AI」公众号或微信红包消息中领取红包</p>
         </div>
     </Model>
 </div>
@@ -79,17 +82,18 @@ export default {
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 // 父组件样式
-.integral{ height: 100%; width: 100%;}
-.integral  .model /deep/.model-wrap{
-    height: px2rem(718px);
+.packet{ height: 100%; width: 100%;}
+.packet  .model /deep/.model-wrap{
+    height: px2rem(502px);
 }
-.integral .model /deep/.model-bg{
-    top:-21.5%;
+.packet .model /deep/.model-bg{
+    // top:-21.5%;
+    top:-30.5%;
 }
-.integral .model /deep/.header-bg{
+.packet .model /deep/.header-bg{
  top:-16%;
 }
-.integral .model /deep/.model-footer{
+.packet .model /deep/.model-footer{
  bottom:-6%;
  z-index: 1;
 }
@@ -114,7 +118,8 @@ export default {
     .prize-box{
         width: px2rem(540px);
         // height: px2rem(292px);
-        height: px2rem(392px);
+        height: px2rem(256px);
+        // height: px2rem(392px);
         position: relative;
         margin-left: auto;
         margin-right: auto;
@@ -148,7 +153,7 @@ export default {
                 border-bottom-color: rgba(79, 15, 15,.2);
                 width: px2rem(474px);
                 .prize-name{
-                    width: px2rem(182px);
+                    // width: px2rem(182px);
                     height: px2rem(28px);
                     opacity: 1;
                     font-size: px2rem(28px);
@@ -162,16 +167,17 @@ export default {
         }
         .prize-content{
             position: absolute;
-            top: px2rem(60px); left:px2rem(11px);
+            top: px2rem(44px); left:px2rem(11px);
             width: px2rem(520px);
             // height: px2rem(222px);
-            height: px2rem(322px);
+            // height: px2rem(322px);
+            height: px2rem(185px);
             opacity: 1;
             background: #fff9ec;
             display: flex;
             align-items: center;
             justify-content: center;
-            // position: relative;
+            position: relative;
             .coupon-bg{
                 width: px2rem(140px);
                 height: px2rem(156px);
@@ -235,6 +241,42 @@ export default {
                 line-height: px2rem(24px);
                 position: absolute;
                 top:px2rem(170px);left:px2rem(127px)
+            }
+            .money {
+                width: 100%;
+                height: px2rem(70px);
+                font-size: px2rem(32px);
+                font-family: PingFangSC, PingFangSC-Medium;
+                font-weight: 500;
+                text-align: center;
+                color: #d10000;
+                line-height: px2rem(70px);
+                position: absolute;
+                top:px2rem(55px);
+                span {
+                    height: px2rem(22px);
+                    opacity: 1;
+                    font-size: px2rem(22px);
+                    font-family: PingFangSC, PingFangSC-Regular;
+                    font-weight: 400;
+                    text-align: center;
+                    color: #d10000;
+                    line-height: px2rem(40px);
+                    // line-height: px2rem(22px);
+                }
+            }
+            .tips{
+                position: absolute;
+                width: px2rem(245px);
+                height: px2rem(24px);
+                opacity: 1;
+                font-size: px2rem(24px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: left;
+                color: #4f0f0f;
+                line-height: px2rem(24px);
+                bottom: px2rem(26px); left: px2rem(138px);
             }
              .packetPull{
                 // position: absolute;
@@ -616,7 +658,7 @@ export default {
         }
     }
     .integral-tip{
-        width: px2rem(437px);
+        width: px2rem(526px);
         height: px2rem(24px);
         opacity: 0.8;
         font-size: px2rem(24px);

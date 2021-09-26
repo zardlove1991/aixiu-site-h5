@@ -6,7 +6,7 @@
     </div>
     <div class="record-prize-content">
       <h3>中奖记录</h3>
-      <div class="container pl40 pr40" v-if="list">
+      <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
           <van-list v-model="loading" :finished="finished" @load="onLoad">
             <van-cell
@@ -21,22 +21,23 @@
             </van-cell>
           </van-list>
         </van-pull-refresh>
+        <div class="bg" :class="{ isShow:list.length===0}"></div>
+        <div class="tip" :class="{ isShow:list.length===0}">您还未中奖哦~</div>
       </div>
-      <div class="container center" v-else>
-        <div class="bg"></div>
-        <div class="tip">您还未中奖哦~</div>
-      </div>
+      <!-- <div class="container center" v-else>
+      </div> -->
     </div>
     <div class="logo"></div>
-    <CardIntegral :show='isCardIntegralShow' @close='isCardIntegralShow = false' :data.sync="tempItem"/>
-    <CardIntegralPull :show='isCardIintegralPullShow' @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
-    <CardStock :show='isCardStockShow' @close='isCardStockShow=false' :data.sync="tempItem"/>
+    <CardIntegral :show.sync='isCardIntegralShow' v-if="isCardIntegralShow" @close='isCardIntegralShow = false' :data.sync="tempItem"/>
+    <CardIntegralPull :show.sync='isCardIintegralPullShow' v-if="isCardIintegralPullShow" @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
+    <CardStock :show.sync='isCardStockShow' v-if="isCardStockShow" @close='isCardStockShow=false' :data.sync="tempItem"/>
     <CardOverdues :show='isCardOverduesShow' @close='isCardOverduesShow = false' :data.sync="tempItem"/>
-    <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/>
-    <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/>
-    <RecordTicketed :show='isRecordTicketedShow' @close='isRecordTicketedShow = false'/>
+    <RecordUncode :show.sync='isRecordUncodeShow' v-if="isRecordUncodeShow" @close='isRecordUncodeShow = false' :data.sync="tempItem"/>
+    <RecordCode :show.sync='isRecordCodeShow' v-if="isRecordCodeShow" @close='isRecordCodeShow = false' :data.sync="tempItem"/>
+    <RecordTicketed :show.sync='isRecordTicketedShow' v-if="isRecordTicketedShow" @close='isRecordTicketedShow = false' :data.sync="tempItem"/>
+    <RecordInfo :show.sync='isRecordInfoShow' v-if="isRecordInfoShow"  @close='isRecordInfoShow = false' :data.sync="tempItem" :activityId="id"/>
     <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
-    <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
+    <CardPacketPull :show.sync='isCardPacketPullShow' v-if="isCardPacketPullShow" @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
   </div>
 </template>
 
@@ -49,6 +50,7 @@ import CardOverdues from '@/components/lottery/global/dial-card-overdues'
 import RecordUncode from '@/components/lottery/global/dial-record-uncode'
 import RecordCode from '@/components/lottery/global/dial-record-code'
 import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
+import RecordInfo from '@/components/lottery/global/dial-record-info'
 // import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 export default {
@@ -60,6 +62,7 @@ export default {
     RecordUncode,
     RecordCode,
     RecordTicketed,
+    RecordInfo,
     // CardPacket,
     CardPacketPull,
     CardStock
@@ -111,12 +114,14 @@ export default {
       isCardOverduesShow: false, // 控制优惠券-已过期状态
       isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
       isRecordCodeShow: false, // 控制实物核销-有码纪录状态
-      isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
+      isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
+      isRecordTicketedShow: false // 控制实物核销-已兑奖状态
 
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+  },
   created () {},
   mounted () {
     // this.onLoad()
@@ -187,7 +192,23 @@ export default {
         this.isCardOverduesShow = true
       } else if (item.prize_type === 1) {
         this.tempItem = item
-        if (item.status === '已兑奖' && item.prize_info.give_aways === 2) {
+        if (item.prize_info.give_aways === 2) {
+          this.isRecordInfoShow = true
+          // this.isRecordTicketedShow = true
+        } else if ((item.prize_info.give_aways === 1 && item.prize_info.qr_code && item.status_name === '已抽中') || (item.prize_info.give_aways === 1 && item.prize_info.qr_code && item.status_name === '已过期')) {
+          if (this.tempItem.prize_info.award_time instanceof Array) {
+            this.tempItem.prize_info.award_time = this.tempItem.prize_info.award_time[0] + ' 至 ' + this.tempItem.prize_info.award_time[1]
+          }
+          this.isRecordCodeShow = true
+        } else if (item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中') {
+          if (this.tempItem.prize_info.award_time instanceof Array) {
+            this.tempItem.prize_info.award_time = this.tempItem.prize_info.award_time[0] + ' 至 ' + this.tempItem.prize_info.award_time[1]
+          }
+          this.isRecordUncodeShow = true
+        } else if (item.prize_info.give_aways === 1 && item.status_name === '已兑奖') {
+          if (this.tempItem.prize_info.award_time instanceof Array) {
+            this.tempItem.prize_info.award_time = this.tempItem.prize_info.award_time[0] + ' 至 ' + this.tempItem.prize_info.award_time[1]
+          }
           this.isRecordTicketedShow = true
         }
         // this.isCardOverduesShow = true
@@ -375,6 +396,7 @@ export default {
         );
         background-position-x: right;
         background-repeat: no-repeat;
+        display: none;
       }
       .tip {
         width: px2rem(208px);
@@ -387,6 +409,7 @@ export default {
         color: #999999;
         line-height: px2rem(32px);
         z-index: 10;
+        display: none;
       }
     }
   }
@@ -405,5 +428,8 @@ export default {
     width: px2rem(339px);
     height: px2rem(157px);
   }
+}
+.isShow {
+  display: block !important;
 }
 </style>
