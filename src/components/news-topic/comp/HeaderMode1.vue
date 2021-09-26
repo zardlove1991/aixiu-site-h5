@@ -1,6 +1,6 @@
 <template>
 <div class='header-mode-1'>
-  <BaseHeader :title='baseInfo.title'>
+  <BaseHeader :title='baseInfo.title' :topicDisplay='topicDisplay'>
     <div slot="circleCardBox" class='circle-card-box'>
       {{blockStr}}...
       <span class='all-title' @click='togleBtn'>全部</span>
@@ -13,10 +13,18 @@
 import BaseHeader from './BaseHeader.vue'
 export default {
   props: {
-    baseInfo: {
+    infoDetail: {
       type: Object,
       default: () => {}
     }
+    // baseInfo: {
+    //   type: Object,
+    //   default: () => {}
+    // },
+    // topicDisplay: {
+    //   type: Object,
+    //   default: () => {}
+    // }
   },
   data () {
     return {
@@ -25,10 +33,11 @@ export default {
     }
   },
   watch: {
-    baseInfo: {
+    infoDetail: {
       handler (newData, oldData) {
-        this.baseInfo = newData
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
+        console.log('900000', newData)
+        // this.baseInfo = newData
+        // this.blockStr = this.baseInfo.summary.substring(0, 40)
       },
       deep: true
     }

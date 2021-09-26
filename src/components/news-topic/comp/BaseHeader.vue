@@ -4,9 +4,9 @@
     <van-swipe class="my-swipe" :autoplay="3000"
       indicator-color="white">
       <van-swipe-item>1</van-swipe-item>
-      <van-swipe-item>2</van-swipe-item>
+      <!-- <van-swipe-item>2</van-swipe-item>
       <van-swipe-item>3</van-swipe-item>
-      <van-swipe-item>4</van-swipe-item>
+      <van-swipe-item>4</van-swipe-item> -->
     </van-swipe>
     <div class='news-title'>
       <div class='topic-tips'>专题</div>
@@ -24,12 +24,19 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    topicDisplay: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
     return {
 
     }
+  },
+  mounted () {
+    console.log('90-0', this.topicDisplay)
   }
 }
 </script>

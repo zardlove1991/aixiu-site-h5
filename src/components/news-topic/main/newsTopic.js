@@ -11,6 +11,7 @@ export default {
   },
   data () {
     return {
+      info: {},
       detailInfo: {},
       topicDisplayValue: 1,
       baseInfo: {},
@@ -32,7 +33,6 @@ export default {
     initData () {
       let _curId = this.id
       API.getMobileNewsDetail({ query: { id: _curId } }).then(res => {
-        console.log('99', res, _curId)
         this.detailInfo = res
         this.limitObj = this.detailInfo.limit
         this.baseInfo = this.limitObj.base_info // 基本信息

@@ -1,56 +1,64 @@
 <template>
   <div class='card-btn-swipe'>
     <!-- 单行 -->
-    <div v-for='(item, index) in cardList' :key='index'
-      :class='{"choiced-btn" : true}'
-      class='single-btn-wrap'>{{item.title}}</div>
+    <template v-if='columnChangeStatus === 1'>
+      <div v-for='(item, index) in columnList' :key='index'
+        @click='choiceColumnList(item)'
+        :class='{"choiced-btn" : true}'
+        class='single-btn-wrap'>{{item.title}}</div>
+    </template>
 
     <!-- 多行 -->
-    <!-- <div class='mul-card-wrap'>
-      <div class='mul-card-line'>
-        <div class='single-card'>媒体关注</div>
-        <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
-        <div class='single-card'>媒体关注</div>
+    <template v-if='columnChangeStatus === 2'>
+      <div class='mul-card-wrap'>
+        <div class='mul-card-line'>
+          <div class='single-card'>媒体关注</div>
+          <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
+          <div class='single-card'>媒体关注</div>
+        </div>
+        <div class='mul-card-line'>
+          <div class='single-card' :class='{"choiced-btn" : true}'>媒体关注</div>
+          <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
+          <div class='single-card'>媒体关注</div>
+        </div>
       </div>
-      <div class='mul-card-line'>
-        <div class='single-card' :class='{"choiced-btn" : true}'>媒体关注</div>
-        <div class='single-card'>媒体媒体关注媒体关注媒体关注关注</div>
-        <div class='single-card'>媒体关注</div>
-      </div>
-    </div> -->
+    </template>
+
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    topicDisplay: {
-      handler (newData, oldData) {
-        console.log('card', newData)
-      },
-      depp: true,
-      immediate: true
+    activeObj: {
+      type: Object,
+      default: () => {}
     }
   },
   watch: {
     activeObj: {
       handler (newData, oldData) {
-        console.log('newdata', newData)
+        this.columnList = newData.column_set.column_list
+        this.columnChangeStatus = newData.topic_display.column_change_status
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   data () {
     return {
-      cardList: [],
-      detailInfo: {}
+      columnList: [],
+      columnChangeStatus: 1, // 1单行 2多行
+      topicDisplay: {}
     }
   },
   mounted () {
-    // this.detailInfo = STORAGE.get('mobile_news')
-    // const columnSet = this.detailInfo.limit.column_set
-    // this.cardList = columnSet.column_list
-    // console.log('columnSet', this.cardList)
+
+  },
+  methods: {
+    choiceColumnList (data) {
+      console.log('data', data)
+    }
   }
 }
 </script>
@@ -58,7 +66,7 @@ export default {
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
   .card-btn-swipe {
-    margin-top: px2rem(10px);
+    margin-top: px2rem(100px);
     padding: 0 px2rem(30px);
     width: 100%;
     overflow-x: auto;

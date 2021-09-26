@@ -1,10 +1,10 @@
 <template>
 <div class='info-card-list'>
   <!-- 标准列表-混合样式 -->
-  <div></div>
+  <!-- <div></div> -->
 
   <!-- 等高样式-上图下文字 -->
-  <!-- <div class='img-font-wrap'>
+  <div class='img-font-wrap'>
     <div class='img-font-header'>
       <div>
         <span></span>
@@ -23,10 +23,10 @@
         <div>网易新闻 2小时前</div>
       </div>
     </div>
-  </div> -->
+  </div>
 
   <!-- 卡片样式-文字在图上 -->
-  <div class='card-font-img'>
+  <!-- <div class='card-font-img'>
     <div class='card-font-header'>
       <div>
         <img src="" alt="">
@@ -54,7 +54,7 @@
         <span></span>
       </div>
     </div>
-  </div>
+  </div> -->
 
 </div>
 </template>
