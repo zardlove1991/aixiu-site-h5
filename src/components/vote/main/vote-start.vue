@@ -280,6 +280,14 @@
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- gift box -->
+    <div class='gift-box-wrap'>
+      <img :src="imgs.giftBox" alt="" class='gift-box-img'>
+    </div>
+    <!-- lottery tips -->
+    <lottery-tips :show="isLotteryTips"
+      @closeLotteryTipsFun='closeLotteryTipsFun'>
+    </lottery-tips>
   </div>
 </template>
 
@@ -310,6 +318,7 @@ import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
+import LotteryTips from '@/components/vote/global/lottery-tips'
 
 export default {
   mixins: [mixins],
@@ -337,10 +346,14 @@ export default {
     LotteryVote,
     VoteReward,
     AreaVote,
-    ReportNumLimit
+    ReportNumLimit,
+    LotteryTips
   },
   data () {
     return {
+      imgs: {
+        giftBox: require('@/assets/vote/gift-box.png')
+      },
       isReportNumLimit: false,
       isShowVoteReward: false,
       curApp: '',
@@ -408,7 +421,8 @@ export default {
       isShowActiveTips: false,
       activeTips: [],
       scrollTop: 0, // 滚动条距离顶部距离
-      downloadLink: ''
+      downloadLink: '',
+      isLotteryTips: true
     }
   },
   created () {
@@ -1361,6 +1375,9 @@ export default {
     searchClassify (val) {
       this.searchClassifyVal = val
       this.dealSearch('input-search', true)
+    },
+    closeLotteryTipsFun () {
+
     }
   }
 }
@@ -1938,6 +1955,17 @@ export default {
         border-radius: 15px;
         margin-top: -4px;
       }
+    }
+  }
+
+  .gift-box-wrap{
+    position: fixed;
+    bottom: px2rem(180px);
+    right: px2rem(10px);
+    z-index: 999;
+    .gift-box-img{
+      width: px2rem(160px);
+      height: px2rem(148px);
     }
   }
 </style>
