@@ -15,20 +15,6 @@ const routeBase = () => {
 Vue.use(Router)
 
 const routes = [{
-  path: '/enrollist',
-  name: 'enrollist',
-  component: () => import('@/components/notesList/NotesList.vue'),
-  meta: {
-    title: '报名记录'
-  }
-}, {
-  path: '/votelist',
-  name: 'votelist',
-  component: () => import('@/components/notesList/NotesList.vue'),
-  meta: {
-    title: '投票记录'
-  }
-}, {
   path: '/browser',
   name: 'browserpage',
   component: getComponent('browser'),
@@ -216,8 +202,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    // keepAlive: true,
-    title: '首页'
+    title: '首页',
+    mod: 'vote'
   }
 }, {
   path: '/votedetail/:flag/:id',
@@ -333,6 +319,7 @@ const routes = [{
 },
 {
   path: '/lottery/rotor/index/:id',
+  // path: '/lottery/dial/index',
   name: 'lotteryDial',
   component: getOtherComponent('dial-start', 'lottery'),
   props: (route) => ({
@@ -350,13 +337,13 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '我的中奖记录'
+    title: '中奖记录'
   }
-}]
+}
+]
 
 let router = new Router({
   mode: 'history',
-  // base: '/pre/',
   base: routeBase(),
   scrollBehavior () {
     return { x: 0, y: 0 }

@@ -707,9 +707,8 @@ export default {
             console.log('res超时/答错直接交卷', res)
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
-            window.SmartCity.vibrateFeedback('warning', function () {
-              console.log('warning')
-            })
+            // 震动提示
+            this.vibrateFeedback()
             if (saveStatus === 'timeout') {
               Toast('本题答题超时，系统已经为您自动交卷')
             } else {
@@ -735,9 +734,8 @@ export default {
             setTimeout(() => {
               // 如果是最后一题 确认后自动交卷
               if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
-                window.SmartCity.vibrateFeedback('warning', function () {
-                  console.log('warning')
-                })
+                // 震动提示
+                this.vibrateFeedback()
                 Toast('本题是最后一题,系统为您自动交卷中...')
                 this.$refs.examHeader.confirmSubmitModel('noconfirm')
               }
@@ -838,20 +836,24 @@ export default {
           this.clearTimer()
           console.log('*****倒计时时间已到****')
           this.saveCloud('timeout')
-          window.SmartCity.vibrateFeedback('warning', function () {
-            console.log('warning')
-          })
+          this.vibrateFeedback()
         } else {
           this.exerciseCountTime--
           this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / limitTime)
           // console.log('倒计时中')
           if (this.exerciseCountTime <= 10) {
-            window.SmartCity.vibrateFeedback('warning', function () {
-              console.log('warning')
-            })
+            this.vibrateFeedback()
           }
         }
       }, 1000)
+    },
+    vibrateFeedback () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.vibrateFeedback('warning', function () {
+          console.log('warning')
+        })
+      }
     },
     clearTimer () {
       window.clearInterval(this.timeInterval)

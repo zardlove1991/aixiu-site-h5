@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createEnroll, createBase, createC4, createLottery } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4, createLottery, createEnroll } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -91,7 +91,7 @@ let lotteryDailUrl = {
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
   getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
-  getShare: 'api/client/cj/live/share/{id}' // 分享
+  getShare: '/api/client/cj/live/share/{id}' // 分享
 
 }
 
