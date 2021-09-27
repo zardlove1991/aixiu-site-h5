@@ -585,3 +585,24 @@ export const getDaysBetween = (dateString1, dateString2) => {
   let days = (endDate - startDate) / (1 * 24 * 60 * 60 * 1000)
   return days
 }
+
+export const logger = (info) => {
+  let route = window.$vue.$route
+  let logger = info || {}
+  let i = document.createElement('script')
+  let params = ''
+  logger.mod = route.meta.mod
+  logger.route = route.fullPath
+  logger.timestamp = new Date().getTime()
+  logger.userAgent = window.navigator.userAgent
+  for (let k in logger) {
+    params += '&' + k + '=' + logger[k]
+  }
+  i.src = '/static/js/logger.js?sys=ax' + params
+  i.onload = function () {
+    setTimeout(function () {
+      i.remove()
+    }, 20)
+  }
+  document.body.appendChild(i)
+}

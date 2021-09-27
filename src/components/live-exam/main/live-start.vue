@@ -3,12 +3,12 @@
   <div class="live-start-wrap" v-if="examInfo">
     <div class="content-wrap">
       <div class="header-top"
-        v-show="examInfo.person_status !== 0 && examInfo.person_status !== 2 && examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result && examInfo.last_submit">
+        v-show="examInfo.last_submit == 1">
         <div class="end-tips">
           <i class="tips-icon"></i>
           <span class="tips-msg">已提交</span>
         </div>
-        <div class="to-score" @click.stop="toStatistic">查看结果</div>
+        <div class="to-score" @click.stop="goAnswerListPage">我的答题记录</div>
       </div>
       <div class="exam-body-content">
         <div class="header-desc">
@@ -50,9 +50,10 @@
           </div>
         </div>
         <!--底部按钮-->
-        <div class="btn-area" v-if="examInfo.timeStatus !== 0">
-          <button class="end-exambtn" v-if ="examInfo.timeStatus == 1">答题未开始</button>
-          <button class="end-exambtn" v-if ="examInfo.timeStatus == 2">答题已结束</button>
+        <div class="btn-area" v-if="examInfo.activity_vp_status">
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_no_start'">答题未开始</button>
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_close'">答题已暂停</button>
+          <button class="end-exambtn" v-if ="examInfo.activity_vp_status == 'activity_end'">答题已结束</button>
         </div>
         <div class="btn-area" v-else>
           <button class="start-exambtn" @click.stop="isShowPassword()" v-if="examInfo.remain_counts !== 0 || isNoLimit">{{examInfo.limit.button || '开始答题'}}</button>
@@ -76,13 +77,28 @@
       </div>
     </my-model>
     <my-model
+      :show="isShowSuspendModels"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="tip-title">操作提示</div>
+        <div class="tip-bg"></div>
+        <div class="tip" v-if="examInfo.submit_status === 2">本场作答已超时，系统已为您自动交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 4">本场单题作答已超时，系统已为您自动交卷</div>
+        <div class="tip-btn"
+          v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
+          @click.stop="toStatistic">查看分数</div>
+        <div class="tip-btn" v-else @click.stop="closeSuspendModels">知道了</div>
+      </div>
+    </my-model>
+    <my-model
       :show="isShowBreak && isOpenSubmitAll"
       :isLock="true"
       :showBtn="false">
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
         <div class="tip-btn tip-btn-top" @click.stop="cancelBreakModel">继续答题</div>
       </div>
     </my-model>
@@ -96,7 +112,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">考试意外中断了</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
       </div>
     </my-model>
     <div class="password-dialog" v-show="visitPasswordLimit" @click.stop="hiddenPasswordLimit()">
@@ -142,7 +158,6 @@ import PopDialog from '@/components/dialog/pop-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import LiveVideo from '@/components/live-exam/global/live-video'
-import { Toast } from 'mint-ui'
 
 export default {
   mixins: [mixins],
@@ -164,6 +179,7 @@ export default {
       passwordTips: '',
       errTips: '',
       isShowBreak: false,
+      isShowSuspendModels: false,
       isShowDrawCheck: false,
       checkDraw: [],
       isNoLimit: false,
@@ -214,16 +230,10 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      let answerRecord = STORAGE.get('answer_record_' + examId)
-      try {
-        await this.endExam({ id: examId, answerList: answerRecord })
-      } catch (err) {
-        Toast(err.error_message)
-      } finally {
-        this.initStartInfo()
-        this.isShowBreak = false
-        this.breakDoAction()
-      }
+      this.$router.replace({
+        path: `/livestart/${examId}/list`,
+        query: {'directlySubmit': '1', 'rtp': 'exam'}
+      })
     },
     cancelBreakModel () {
       // 继续答题
@@ -296,10 +306,19 @@ export default {
       this.errTips = ''
     },
     toStatistic () {
+      this.closeSuspendModels()
       let examId = this.id
       this.$router.push({
-        path: `/livestart/${examId}/statistic`
+        path: `/exam/statistic/${examId}`
       })
+    },
+    closeSuspendModels () {
+      let apiPersonId = this.examInfo.api_person_id
+      this.isShowSuspendModels = false
+      if (apiPersonId) {
+        STORAGE.set(apiPersonId + 'timeout_tip', 1)
+      }
+      console.error('closeSuspendModels' + apiPersonId + STORAGE.get(apiPersonId + 'timeout_tip'))
     },
     async initStartInfo () {
       let examId = this.id
@@ -312,6 +331,19 @@ export default {
         // 分享
         this.sharePage()
         let info = this.examInfo
+        // submit_status0未交卷 1 已交卷 2 超时交卷
+        if (info.submit_status === 0) {
+          // 考试中
+          this.isShowBreak = true
+        } else {
+          this.isShowBreak = false
+        }
+        if (info.submit_status === 2 || info.submit_status === 4) {
+          if (info.api_person_id) {
+            let isTimeoutTip = STORAGE.get(info.api_person_id + 'timeout_tip')
+            this.isShowSuspendModels = !isTimeoutTip
+          }
+        }
         if (info.person_status === 2) {
           // 考试中
           this.isShowBreak = true
@@ -558,6 +590,12 @@ export default {
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
+    },
+    goAnswerListPage () {
+      let examId = this.id
+      this.$router.push({
+        path: `/exam/myAnswerList/${examId}`
+      })
     },
     ...mapActions('depence', {
       getExamDetail: 'GET_EXAM_DETAIL',

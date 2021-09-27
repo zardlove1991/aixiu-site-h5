@@ -142,7 +142,7 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip tip-center">本场答题进行中,可以继续答题！</div>
+        <div class="tip tip-center">答题正进行中，请尽快答题，超时系统会自动为您交卷</div>
       </div>
     </my-model>
     <my-model
@@ -152,7 +152,8 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 2">本场作答已超时，系统已为您自动交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 4">本场单题作答已超时，系统已为您自动交卷</div>
         <div class="tip-btn"
           v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
           @click.stop="toStatistic">查看分数</div>
@@ -516,25 +517,10 @@ export default {
     async downBreakModel () {
       // 直接交卷
       let examId = this.id
-      if (this.examInfo.mark === 'examination@exercise') {
-        this.$router.replace({
-          path: `/exam/depencelist/${examId}`,
-          query: {'directlySubmit': '1'}
-        })
-      } else {
-        try {
-          await this.endExam({
-            id: examId
-            // answerList: answerRecord
-          })
-        } catch (err) {
-          Toast(err.error_message)
-        } finally {
-          this.initStartInfo()
-          this.isShowBreak = false
-          this.breakDoAction()
-        }
-      }
+      this.$router.replace({
+        path: `/exam/depencelist/${examId}`,
+        query: {'directlySubmit': '1'}
+      })
     },
     cancelBreakModel () {
       // 继续答题
@@ -638,7 +624,7 @@ export default {
         } else {
           this.isShowBreak = false
         }
-        if (info.submit_status === 2) {
+        if (info.submit_status === 2 || info.submit_status === 4) {
           if (info.api_person_id) {
             let isTimeoutTip = STORAGE.get(info.api_person_id + 'timeout_tip')
             this.isShowSuspendModels = !isTimeoutTip

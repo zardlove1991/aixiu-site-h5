@@ -19,7 +19,8 @@ const routes = [{
   name: 'browserpage',
   component: getComponent('browser'),
   meta: {
-    title: '爱秀'
+    title: '爱秀',
+    mod: 'guide'
   }
 }, {
   path: '/exam/depencelist/:id',
@@ -36,7 +37,8 @@ const routes = [{
     directlySubmit: route.query.directlySubmit
   }),
   meta: {
-    title: '加载中...'
+    title: '加载中...',
+    mod: 'exam'
   }
 }, {
   path: '/exam/alllist/:id',
@@ -52,7 +54,8 @@ const routes = [{
     useIntegral: route.query.use_integral
   }),
   meta: {
-    title: '加载中...'
+    title: '加载中...',
+    mod: 'exam'
   }
 }, {
   path: '/exam/statistic/:id',
@@ -64,7 +67,8 @@ const routes = [{
     delta: route.query.delta // 小程序需要回退的页面层级
   }),
   meta: {
-    title: '测评结果'
+    title: '测评结果',
+    mod: 'exam'
   }
 }, {
   path: '/exam/depencecard/:id',
@@ -76,7 +80,8 @@ const routes = [{
     delta: route.query.delta // 小程序需要回退的页面层级
   }),
   meta: {
-    title: '成绩单'
+    title: '成绩单',
+    mod: 'exam'
   }
 }, {
   path: '/depencestart/:id',
@@ -88,7 +93,8 @@ const routes = [{
     delta: route.query.delta // 小程序需要回退的页面层级
   }),
   meta: {
-    title: ''
+    title: '',
+    mod: 'exam'
   }
 }, {
   path: '/exam/depencerank/:id',
@@ -98,7 +104,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '排行榜'
+    title: '排行榜',
+    mod: 'exam'
   }
 }, {
   path: '/exam/depencerankfujian/:id',
@@ -108,7 +115,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '排行榜'
+    title: '排行榜',
+    mod: 'exam'
   }
 },
 {
@@ -119,7 +127,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '投票排行榜'
+    title: '投票排行榜',
+    mod: 'exam'
   }
 },
 {
@@ -130,7 +139,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '我的答题记录'
+    title: '我的答题记录',
+    mod: 'exam'
   }
 }, {
   path: '/livestart/:id',
@@ -150,7 +160,8 @@ const routes = [{
       delta: route.query.delta // 小程序需要回退的页面层级
     }),
     meta: {
-      title: '直播测评'
+      title: '直播测评',
+      mod: 'exam'
     }
   }, {
     path: 'list',
@@ -162,22 +173,12 @@ const routes = [{
       restart: route.query.restart, // 是否需要重新开始考试 需要:need 不需要:none
       redirect: route.query.redirect, // 小程序传入的重定向地址
       delta: route.query.delta, // 小程序需要回退的页面层级
-      listType: route.query.listType // 列表渲染类型 list: 正常列表  errorlist: 错题列表
+      listType: route.query.listType, // 列表渲染类型 list: 正常列表  errorlist: 错题列表
+      directlySubmit: route.query.directlySubmit
     }),
     meta: {
-      title: '加载中...'
-    }
-  }, {
-    path: 'exam/statistic',
-    name: 'livestatistic',
-    component: getOtherComponent('live-statistic', 'live-exam'),
-    props: (route) => ({
-      id: route.params.id, // 传入需要请求当前试卷的ID
-      redirect: route.query.redirect, // 小程序传入的重定向地址
-      delta: route.query.delta // 小程序需要回退的页面层级
-    }),
-    meta: {
-      title: '直播测评结果'
+      title: '加载中...',
+      mod: 'exam'
     }
   }]
 }, {
@@ -189,7 +190,8 @@ const routes = [{
     redirect: route.query.redirect
   }),
   meta: {
-    title: '温馨提示'
+    title: '温馨提示',
+    mod: 'guide'
   }
 },
 {
@@ -200,7 +202,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '首页'
+    title: '首页',
+    mod: 'vote'
   }
 }, {
   path: '/votedetail/:flag/:id',
@@ -211,7 +214,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '详情'
+    title: '详情',
+    mod: 'vote'
   }
 }, {
   path: '/voterank/:flag/:id',
@@ -222,7 +226,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '排行榜'
+    title: '排行榜',
+    mod: 'vote'
   }
 }, {
   path: '/votemy/:flag/:id',
@@ -233,7 +238,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '我的'
+    title: '我的',
+    mod: 'vote'
   }
 }, {
   path: '/votesubmit/:flag/:id',
@@ -244,7 +250,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '上传作品'
+    title: '上传作品',
+    mod: 'vote'
   }
 }, {
   path: '/voteoneself/:flag/:id',
@@ -255,7 +262,8 @@ const routes = [{
     flag: route.params.flag
   }),
   meta: {
-    title: '我的作品'
+    title: '我的作品',
+    mod: 'vote'
   }
 }, {
   path: '/enrollstart/:id',
@@ -265,7 +273,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '预约报名'
+    title: '预约报名',
+    mod: 'enroll'
   }
 }, {
   path: '/myenroll/:id',
@@ -275,7 +284,8 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '我的预约记录'
+    title: '我的预约记录',
+    mod: 'enroll'
   }
 }, {
   path: '/newstart/:id',
@@ -295,12 +305,17 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '新闻专题'
+    title: '新闻专题',
+    mod: 'news'
   }
 }, {
   path: '/drawlist',
   name: 'drawlist',
-  component: getOtherComponent('list', 'draw')
+  component: getOtherComponent('list', 'draw'),
+  meta: {
+    title: '中奖记录',
+    mod: 'lottery'
+  }
 },
 {
   path: '/lottery/rotor/index/:id',
@@ -316,7 +331,6 @@ const routes = [{
 },
 {
   path: '/lottery/rotor/record/:id',
-  // path: '/lottery/dial/record',
   name: 'lotteryRecord',
   component: getOtherComponent('record-prize', 'lottery'),
   props: (route) => ({
@@ -330,7 +344,6 @@ const routes = [{
 
 let router = new Router({
   mode: 'history',
-  // base: '/pre/',
   base: routeBase(),
   scrollBehavior () {
     return { x: 0, y: 0 }

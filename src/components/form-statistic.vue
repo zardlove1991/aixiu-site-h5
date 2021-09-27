@@ -265,7 +265,7 @@ export default {
         let color = ''
         if (this.examInfo && this.examInfo.limit.color_scheme) {
           const config = this.examInfo.limit.color_scheme
-          const buttonColor = config.content.button_color
+          const buttonColor = this.examInfo.mark === 'examination@live' ? config.content.high_text : config.content.button_color
           const costomColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.2)`
           color = costomColor
         }
@@ -277,7 +277,7 @@ export default {
         let color = ''
         if (this.examInfo && this.examInfo.limit.color_scheme) {
           const config = this.examInfo.limit.color_scheme
-          const buttonColor = config.content.bg_color
+          const buttonColor = this.examInfo.mark === 'examination@live' ? config.content.high_text : config.content.bg_color
           const costomBgColor = `rgba(${buttonColor.replace('rgb(', '').replace(')', '')}, 0.05)`
           color = costomBgColor
         }
@@ -313,7 +313,7 @@ export default {
     this.getExamList()
   },
   mounted () {
-    this.api_person_id = this.$route.query.api_person_id
+    this.api_person_id = this.$route.query.api_person_id || this.examInfo.api_person_id
   },
   methods: {
     initStatInfo (score, correctNum, total) {
@@ -537,8 +537,9 @@ export default {
     },
     backUrl () {
       let examId = this.$route.params.id
+      let path = this.examInfo.mark === 'examination@live' ? `/livestart/${examId}/start` : `/depencestart/${examId}`
       this.$router.push({
-        path: `/depencestart/${examId}`
+        path: path
       })
     },
     shareScore () {
@@ -598,9 +599,14 @@ export default {
         context.font = '28px Arial'
         context.fillStyle = '#fff'
         context.fillText(name, 180, 80)
-        context.font = '40px Arial'
+        context.font = '36px Arial'
         context.fillStyle = '#fff'
-        context.fillText(this.posterInfo.title, 60, 160)
+        if (this.posterInfo.title.length > 15) {
+          context.fillText(this.posterInfo.title.slice(0, 15), 60, 160)
+          context.fillText(this.posterInfo.title.slice(15, 28), 60, 210)
+        } else {
+          context.fillText(this.posterInfo.title, 60, 160)
+        }
         context.font = '90px Arial'
         context.fillStyle = '#fff'
         context.fillText(this.posterInfo.score, 60, 320)
