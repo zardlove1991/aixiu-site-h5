@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import 'babel-polyfill'
 import 'url-search-params-polyfill'
+import { Toast } from 'mint-ui'
 import router from '@/router/index'
 import store from '@/store/index'
 import { oauth } from '@/utils/userinfo'
@@ -27,8 +28,13 @@ Vue.config.productionTip = false
 // 判定当前是否有平台参数
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
+  // 检测网络连接情况
+  if (!window.navigator.onLine) {
+    Toast('网络异常，请检查网络连接设置')
+    return false
+  }
   let name = to.name
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank', 'enrollist', 'votelist']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank', 'enrollist', 'votelist', 'lotteryrotor']
   if (allArr.includes(name) && !from.name) {
     // 第一次进入页面
     oauth((res) => {
@@ -50,7 +56,7 @@ router.afterEach((route, from) => {
   let name = router.currentRoute.name
   let id = router.currentRoute.params.id
   let isFirst = false
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'enrollist', 'votelist']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'enrollist', 'votelist', 'lotteryrotor']
   if (allArr.includes(name) && !from.name) {
     isFirst = true
   }

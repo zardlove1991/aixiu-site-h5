@@ -32,6 +32,7 @@
               placeholder="请输入党支部名称"/>
             <van-icon name="search"  class='icon-box'/>
           </div>
+          <span class='search-box-wrap' @click='searchFilterFun(1)'>搜索</span>
         </div>
         <div v-if='isSearchType'>
           <div class='input-cancel-box'>
@@ -43,6 +44,7 @@
             v-model="curPartyAddr"/>
             <van-icon name="cross"  class='cancel-icon-box' @click="clearInputValueFun"/>
           </div>
+          <span class='search-box-wrap' @click='searchFilterFun(2)'>搜索</span>
           <span class='cancel-box' @click ='clearInputValue'>取消</span>
         </div>
       </div>
@@ -194,6 +196,13 @@ export default {
     this.getGameArea()
   },
   methods: {
+    searchFilterFun (type) {
+      if (type === 1) {
+        this.choiceAreaFun(this.areaValue)
+      } else if (type === 2) {
+        this.getRankList()
+      }
+    },
     async initData () {
       if (!this.examInfo) {
         // 获取试卷详情
@@ -578,7 +587,7 @@ export default {
 
   .input-wrap{
     display: inline-block;
-    width: px2rem(458px);
+    width: px2rem(322px);
     height: px2rem(64px);
 
     outline: none;
@@ -611,7 +620,7 @@ export default {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* 点击高亮的颜色*/
 
   //width: px2rem(400px);
-  width: px2rem(590px);
+  width: px2rem(420px);
   height: px2rem(64px);
   border-radius: px2rem(32px);
   display: inline-block;
@@ -816,5 +825,17 @@ export default {
       margin-top: px2rem(30px);
     }
   }
+}
+
+.search-box-wrap {
+  margin-left: px2rem(10px);
+  display: inline-block;
+  width: px2rem(110px);
+  height: px2rem(64px);
+  line-height: px2rem(64px);
+  color: #DF0000;
+  text-align: center;
+  background: #fce6e6;
+  border-radius: px2rem(32px);
 }
 </style>

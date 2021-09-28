@@ -430,6 +430,55 @@
 
         getViewPagerInfo : function(param){
             callHandler('getViewPagerInfo', param , null);
+        },
+        //开始录音
+        startRecord : function(callback){
+            callHandler('startRecord', null , function(response) {
+                callback && callback(response);
+            })
+        },
+
+        //停止录音
+        stopRecord : function(callback){
+            callHandler('stopRecord', null , function(response) {
+                callback && callback(response);
+            })
+        },
+
+        //开始播放
+        playVoice : function(param){
+            callHandler('playVoice', param , null);
+        },
+        
+        //结束播放
+        pauseVoice : function(param){
+            callHandler('pauseVoice', param , null);
+        },
+
+        //上传文件
+        uploadFile : function(param,callback){
+            callHandler('uploadFile', param , function(response) {
+                callback && callback(response);
+            })
+        },
+
+        //云闪付
+        appTLUnifyAllinpay : function(param){
+            callHandler('appTLUnifyAllinpay', param , null);
+        },
+
+        //浏览器返回劫持
+        stopUnload: function(param,callback){
+            callHandler('stopUnload', param , function(response) {
+                callback && callback(response);
+            })
+        },
+
+        //震动反馈
+        vibrateFeedback: function(param,callback){
+            callHandler('vibrateFeedback', param , function(response) {
+                callback && callback(response);
+            })
         }
     }
     window.SmartCity = new SmartCity();

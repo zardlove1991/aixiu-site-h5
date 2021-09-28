@@ -1,8 +1,10 @@
 import axios from 'axios'
+import { Toast } from 'mint-ui'
 import apiConfig from './config'
 // import { oauth } from '@/utils/userinfo'
 import STORAGE from '@/utils/storage'
 import { getAppInfo, getAPIfix, getApiFlag } from '@/utils/app'
+import { logger } from '@/utils/utils'
 import wechat from '@/sdk/wechat'
 import 'element-ui/lib/theme-chalk/index.css'
 import { Message } from 'element-ui'
@@ -41,6 +43,11 @@ const instance = axios.create({
 })
 // 请求前添加的过滤器
 instance.interceptors.request.use((config) => {
+  // 检测网络连接情况
+  if (!window.navigator.onLine) {
+    Toast('网络异常，请检查网络连接设置')
+    return false
+  }
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
@@ -65,6 +72,7 @@ instance.interceptors.request.use((config) => {
       config.params.guid = STORAGE.get('guid')
     }
   }
+  logger({memberId: userInfo.id, action: 'ajax:' + config.url})
   return config
 }, error => Promise.reject(error))
 
@@ -113,7 +121,6 @@ instance.interceptors.response.use((res, xhr) => {
       return Promise.reject(data)
     }
   }
-  console.log('res.status', res.status)
   const dom = document.getElementById('watting-wrap')
   if (STORAGE.get('userinfo') && dom) {
     dom.style.display = 'none'
@@ -128,18 +135,11 @@ instance.interceptors.response.use((res, xhr) => {
   const status = error.response && Number(error.response.status)
   const url = encodeURI(window.location.href)
   const isTimeout = error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1 // 请求超时
-  // if (isTimeout || status === 503 || status === 429 || status === 499) {
-  //   if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
-  //     window.location.href = `/waitting.html?origin=${url}`
-  //   } else {
-  //     store.dispatch('setDialogVisible', true)
-  //     return
-  //   }
-  // }
-
+  let userInfo = STORAGE.get('userinfo')
+  logger({memberId: userInfo.id, error: error.response})
+  // isTimeout || status === 503
   if (isTimeout || status === 503) {
-    // 临时注销掉
-    // window.location.href = `/error.html?origin=${url}`
+    window.location.href = `/error.html?origin=${url}`
   }
   if (status === 429 || status === 499) {
     if (apiConfig['OPEN_NEW_PAGE'].indexOf(currentApi) !== -1) {
@@ -263,6 +263,16 @@ export const createVote = (url, method, config = {}, api) => {
   })
 }
 
+export const createEnroll = (url, method, config = {}, api) => {
+  api = 'enroll'
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    ...config
+  })
+}
+
 export const createBase = (url, method, config = {}, api) => {
   return instance({
     url: getUrl(url, config, api),
@@ -280,6 +290,20 @@ export const createC4 = (url, method, config = {}, api) => {
     withCredentials: true,
     headers: {
       'x-member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
+    },
+    ...config
+  })
+}
+
+export const createLottery = (url, method, config = {}, api) => {
+  api = 'lottery'
+  console.log(getUrl(url, config, api), 'getUrl(url, config, api)')
+  return instance({
+    url: getUrl(url, config, api),
+    method,
+    withCredentials: true,
+    headers: {
+      'member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
     },
     ...config
   })

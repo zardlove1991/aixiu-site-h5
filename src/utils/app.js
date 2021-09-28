@@ -28,6 +28,10 @@ export const getAPIfix = (api) => {
       host = globalConfig['vote']
       break
     }
+    case 'lottery': {
+      host = globalConfig['lottery']
+      break
+    }
     case 'mlink': {
       host = globalConfig['mlink']
       break
@@ -46,6 +50,10 @@ export const getAPIfix = (api) => {
     }
     case 'news': {
       host = globalConfig['news']
+      break
+    }
+    case 'enroll': {
+      host = globalConfig['enroll']
       break
     }
     default: {

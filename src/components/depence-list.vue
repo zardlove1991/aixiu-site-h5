@@ -18,8 +18,7 @@
     <subject-header v-if="renderType === 'analysis'" :list="examList" :curIndex="currentSubjectIndex"></subject-header>
     <!-- 练习题倒计时 -->
     <div class="exercise-time-limit" v-if="examInfo.mark === 'examination@exercise'">
-      <div>
-        <el-progress type="circle" :width="60" :percentage="exerciseCountProgress" :status="timerStatus" :format="timeFormat"></el-progress>
+      <div class="circle">
         <div class="exercise-title-div number-div">{{exerciseCountTime}}</div>
         <div class="exercise-title-div wrong-div" v-if="successStatus === 2 || successStatus === 3">
           <img :src="require('@/assets/common/exam/progress-wrong.png')" alt="">
@@ -41,18 +40,10 @@
           :mode="renderType"
           :key="item.id">
         </subject-content>
-        <div class="shadow" v-if="item.isAnswer && examInfo.mark === 'examination@exercise'"></div>
+        <div class="shadow" v-if="exerciseCountTime < 1 && examInfo.mark === 'examination@exercise'"></div>
       </div>
       <!--底部跳转按钮-->
       <div class="btn-wrap">
-        <div
-          class="prev-wrap"
-          v-if="examInfo.mark !== 'examination@exercise'"
-          v-show="currentSubjectIndex !== 0"
-          :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
-          @click.stop="changeSubjectIndex('sub')">
-          上一题
-        </div>
         <!--语音问答题录音按钮区域-->
         <div class="btn-record-option-wrap"
           v-if="_dealShowBtn('record')">
@@ -65,24 +56,25 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <div style="display:none">是否显示提交{{isShowSubmitBtn}}--- 是否显示下一题{{nextExerciseBtn}}</div>
+        <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+          跳过本题
+        </div>
         <div class="next-wrap"
-          v-show="!nextExerciseBtn && successStatus === 0"
+          v-show="examInfo.mark !== 'examination@exercise'"
           @click.stop="saveCloud('add')">
            确认
         </div>
-        <div class="next-wrap" v-show="isShowSubmitBtn && currentSubjectIndex === examList.length-1 && successStatus !== 0 &&!showExerciseResultBtn" @click.stop="submitExam">
-          {{examInfo.limit.submit_text || examInfo.mark === 'examination@exercise' ? '查看分数' : '立即交卷'}}
+        <div class="next-wrap"
+          v-show="!nextExerciseBtn && successStatus === 0 && examInfo.mark === 'examination@exercise'"
+          @click.stop="saveCloud('add')">
+           确认
         </div>
-        <div class="next-wrap" v-show="showExerciseResultBtn&&examInfo.mark === 'examination@exercise'" @click.stop="showExamResult">
-          查看分数
-        </div>
-        <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1" @click.stop="exerciseNext">
+        <div class="next-wrap" v-show="nextExerciseBtn && currentSubjectIndex !== examList.length-1 && examInfo.mark === 'examination@exercise'" @click.stop="exerciseNext">
           下一题
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -114,7 +106,8 @@
       <div class="suspend-model" slot="content">
         <div class="tip-title">操作提示</div>
         <div class="tip-bg"></div>
-        <div class="tip">交卷时间已到，系统已默认帮你交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 2">本场作答已超时，系统已为您自动交卷</div>
+        <div class="tip" v-if="examInfo.submit_status === 4">本场单题作答已超时，系统已为您自动交卷</div>
         <div class="tip-btn"
           v-if="examInfo.limit && examInfo.limit.submit_rules && examInfo.limit.submit_rules.result"
           @click.stop="toStatistic">查看分数</div>
@@ -147,13 +140,12 @@
       :visible.sync="showOperateDialog"
       :dialogConfig="dialogConfig"/>
     </div>
-    <div style="display:none">isOpenAnswerAnalysis{{isOpenAnswerAnalysis}}-{{analysisData}}-{{examInfo.limit.answer_process_select}}</div>
-    <div class="analysis-div" v-if="isOpenAnswerAnalysis&&analysisData">
-      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_correctAnswer">
+    <div class="analysis-div" v-if="examInfo.mark === 'examination@exercise' && isOpenAnswerAnalysis&&analysisData">
+      <div class="item" v-if="examInfo.limit.answer_process_select && examInfo.limit.answer_process_select.is_show_correctAnswer">
         <span class="title">正确答案：</span>
         <span>{{analysisData.pageAnswer}}</span>
       </div>
-      <div class="item" v-if="examInfo.limit.answer_process_select.is_show_questionAnalysis">
+      <div class="item" v-if="examInfo.limit.answer_process_select && examInfo.limit.answer_process_select.is_show_questionAnalysis">
         <span class="title">答案解析：</span>
         <span>{{analysisData.analysis}}</span>
       </div>
@@ -168,6 +160,7 @@
 </template>
 
 <script>
+import { Indicator, Toast } from 'mint-ui'
 import API from '@/api/module/examination'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
@@ -248,7 +241,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos', 'answerList', 'apiPersonInfo',
-      'isShowSubjectList'
+      'isShowSubjectList', 'remainTime'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -331,6 +324,14 @@ export default {
           console.log(this.directlySubmit, '********this.directlySubmit*******')
           if (this.directlySubmit === '1') {
             this.clearTimer()
+            this.$refs.examHeader.confirmSubmitModel('noconfirm')
+          }
+        } else {
+          this.exerciseTotalTimeOut = false
+          this.setQusetionTimeToCloud()
+          // 检测是否有答题中断并自动定位到未答题上
+          this.checkExamBreak()
+          if (this.directlySubmit === '1') {
             this.$refs.examHeader.confirmSubmitModel('noconfirm')
           }
         }
@@ -466,7 +467,7 @@ export default {
     },
     submitExam () {
       if (this.examInfo.mark !== 'examination@exercise') {
-        this.changeSubjectIndex(this.currentSubjectIndex)
+        // this.changeSubjectIndex(this.currentSubjectIndex)
         this.isShowSubmitModel = true
       } else {
         this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
@@ -497,7 +498,7 @@ export default {
     },
     dealExamHeaderSelect ({subject, index}) {
       this.toggetSubjectList()
-      this.changeSubjectIndex(index)
+      this.changeSubjectIndex('to_' + index)
     },
     dealConfrimOption () {
       let isShowSubmitBtn = this.isShowSubmitBtn // 判断是否已经到交卷的题目了
@@ -539,12 +540,13 @@ export default {
       } else {
         _lastIndex = 0
       }
+      console.error('我返回的索引', _lastIndex)
       return _lastIndex
     },
     // 检测存在答题中断进行处理
     checkExamBreak () {
       // submit_status0未交卷 1 已交卷 2 超时交卷
-      if (this.apiPersonInfo.submit_status === 0) {
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark === 'examination@exercise') {
         // 如果检测考试未交卷 自动跳转到上次答题位置
         let totalTime = this.getExerciseTotalTime()
         let _lastIndex = this.getLastestAnswerRecordIndex()
@@ -556,12 +558,13 @@ export default {
           let usedTime = parseInt((_now - firstTime))
           console.error('第一次时间:' + firstTime + '最后进来时间:' + _now + '已使用时间:' + usedTime + '答题总时间:' + totalTime)
           if (usedTime >= totalTime) {
-            console.error('已经答题超时,需要自动交卷')
+            // console.error('已经答题超时,需要自动交卷')
+            Toast('本场作答已超时，系统已为您自动交卷')
             this.$refs.examHeader.autoExamSubmit()
             return false
           }
         }
-        console.error('本道题上一次进入时间戳', currentQuestionFirstTime)
+        console.error('本道题上一次进入时间戳', currentQuestionFirstTime, _lastIndex)
         if (currentQuestionFirstTime) {
           let usedTime = _now - parseInt(currentQuestionFirstTime)
           let { limit: { answer_submit_rules: answerSubmitRules } } = this.examInfo
@@ -572,18 +575,29 @@ export default {
           if (currentQuestion.remianTime === 0) {
             if (answerSubmitRules === 0) {
               console.error('answerSubmitRules已经答题超时,需要自动交卷')
+              Toast('本题答题超时，系统已经为您自动交卷')
               this.$refs.examHeader.autoExamSubmit()
+              return false
             } else {
               console.error('未开启答错交卷，当前题目答题时间已经超时')
             }
-            return false
           }
           console.error('********此流程结束**********')
         }
         this.changeSubjectIndex('to_' + _lastIndex)
       }
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark !== 'examination@exercise') {
+        let _lastIndex = this.getLastestAnswerRecordIndex()
+        if (this.remainTime > 0) {
+          console.error('答题剩余时间:' + this.remainTime)
+          this.changeSubjectIndex('to_' + _lastIndex)
+        } else {
+          Toast('本题答题超时，系统已经为您自动交卷')
+          this.$refs.examHeader.autoExamSubmit()
+        }
+      }
       // 如果试卷超时自动交卷
-      if (this.apiPersonInfo.submit_status === 2) {
+      if (this.apiPersonInfo.submit_status === 2 || this.apiPersonInfo.submit_status === 4) {
         this.$refs.examHeader.autoExamSubmit()
       }
     },
@@ -594,8 +608,9 @@ export default {
     },
     // 异常中断进入检测超时自动打开超时弹窗
     exerciseTimeOut () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
       this.exerciseTotalTimeOut = true
-      this.isShowexerciseTimeOut()
+      this.isShowexerciseTimeOut(apiPersonId)
       this.clearTimer()
     },
     _dealShowBtn (flag) {
@@ -614,27 +629,72 @@ export default {
     },
     async saveCloud (status = 'add') {
       console.log('saveCloud******', this.successStatus)
+      let saveStatus = status
+      if (this.saveClouding) return
       if (this.successStatus !== 0) return
       if (this.currentSubjectIndex === this.examList.length - 1) {
         status = this.currentSubjectIndex
       }
+      this.saveClouding = true
+      Indicator.open({ spinnerType: 'fading-circle' })
       await this.changeSubjectIndex(status).then(res => {
+        res.saveStatus = saveStatus
         // 练习题回调处理
         if (this.examInfo.mark === 'examination@exercise') {
           this.setExerciseResult(res)
+        } else {
+          this.questionAnswerCallBack(res)
         }
+        this.saveClouding = false
+        Indicator.close()
       }).catch(err => {
+        this.saveClouding = false
+        Indicator.close()
         if (err.error_code === 'member_submit') {
-          console.error('用户已交卷')
+          Toast('本场作答已超时，系统已经为您自动交卷')
+          this.showExamResult()
+        }
+        if (err.error_code === 'question_time_out') {
+          Toast('本题答题超时，系统已经为您自动交卷')
           this.showExamResult()
         }
       })
     },
+    questionAnswerCallBack (res) {
+      let { success } = res
+      if (res && res.error_code === 'member_submit') {
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        return false
+      }
+      if (success) {
+        this.$nextTick(() => {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+            // Toast('已经没有题目了~')
+            console.log('nextExerciseBtn', '已经没有题目了')
+            this.nextExerciseBtn = false
+          } else {
+            this.nextExerciseBtn = true
+            console.log('nextExerciseBtn', '还有题目')
+          }
+          setTimeout(() => {
+            // 如果不是最后一题 自动进入下一题
+            if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+              this.exerciseNext()
+            }
+          }, 0)
+        })
+      }
+    },
     setExerciseResult (res) {
-      let { success, data } = res
+      let { success, data, saveStatus } = res
       console.log('setExerciseResult+******', res)
       if (res && res.error_code === 'member_submit') {
-        console.error('用户已交卷')
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        this.showExamResult()
+        return false
+      }
+      if (res && res.error_code === 'question_time_out') {
+        Toast('本题答题超时，系统已经为您自动交卷')
         this.showExamResult()
         return false
       }
@@ -647,15 +707,19 @@ export default {
             console.log('res超时/答错直接交卷', res)
             let isOpenAnswerAnalysis = this.isOpenAnswerAnalysis
             this.currentPersonIdResult = res
+            // 震动提示
+            this.vibrateFeedback()
+            if (saveStatus === 'timeout') {
+              Toast('本题答题超时，系统已经为您自动交卷')
+            } else {
+              Toast('本题答错，系统已经为您自动交卷')
+            }
+            setTimeout(() => {
+              this.showExamResult()
+            }, 1000)
             // 如果开启答题解析 手动点查看分数
             if (+isOpenAnswerAnalysis) {
               this.showExerciseResultBtn = true
-            } else {
-              // 如果未开启答题解析 自动查看分数
-              console.log('未开启答题解析 自动查看分数')
-              setTimeout(() => {
-                this.showExamResult()
-              }, 1000)
             }
           } else {
             // 允许继续答题
@@ -667,20 +731,24 @@ export default {
               this.nextExerciseBtn = true
               console.log('nextExerciseBtn', '还有题目')
             }
+            setTimeout(() => {
+              // 如果是最后一题 确认后自动交卷
+              if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
+                // 震动提示
+                this.vibrateFeedback()
+                Toast('本题是最后一题,系统为您自动交卷中...')
+                this.$refs.examHeader.confirmSubmitModel('noconfirm')
+              }
+            }, 1000)
             // 如果未开启答题解析 自动进入下一题或交卷
             if (!this.isOpenAnswerAnalysis) {
               setTimeout(() => {
-                // 如果是最后一题 确认后自动交卷
-                if (this.isShowSubmitBtn && this.currentSubjectIndex === this.examList.length - 1 && this.successStatus !== 0) {
-                  console.log('未开启答题解析 最后一题自动交卷中')
-                  this.$refs.examHeader.confirmSubmitModel('noconfirm')
-                }
                 // 如果不是最后一题 自动进入下一题
                 if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
                   console.log('未开启答题解析 不是最后一题 自动进入下一题中')
                   this.exerciseNext()
                 }
-              }, 1000)
+              }, 500)
             }
             // 如果未开启答题解析 自动查看分数
             console.log('未开启答题解析 自动查看分数')
@@ -688,6 +756,7 @@ export default {
           if (!this.examList || this.examList.length < 1 || !data) return
           let currentQuestion = this.examList[this.currentSubjectIndex]
           currentQuestion.isAnswer = true
+          currentQuestion.answerOption = data[currentQuestion.hashid]
           this.analysisData = data[currentQuestion.hashid]
           console.log('this.analysisData********', this.analysisData, this.examList)
           let { answer } = this.analysisData
@@ -756,40 +825,61 @@ export default {
     // 启动倒计时
     startCountDown () {
       console.log('*****启动倒计时****', 'startCountDown')
+      this.clearTimer()
       let currentQuestion = this.examList[this.currentSubjectIndex]
       let limitTime = parseInt(currentQuestion.limit_time)
       this.exerciseCountTime = currentQuestion.remianTime !== undefined ? currentQuestion.remianTime : limitTime
-      this.clearTimer()
       console.error('startCountDown******倒计时时间剩余*****exerciseCountTime', this.exerciseCountTime)
       this.timeInterval = window.setInterval(() => {
         // console.log(this.exerciseCountTime, 'this.exerciseCountTime')
         if (this.exerciseCountTime <= 0 || this.exerciseTotalTimeOut) {
-          this.exerciseCountTime = 0
           this.clearTimer()
           console.log('*****倒计时时间已到****')
           this.saveCloud('timeout')
+          this.vibrateFeedback()
         } else {
           this.exerciseCountTime--
           this.exerciseCountProgress = 100 - parseInt(this.exerciseCountTime * 100 / limitTime)
           // console.log('倒计时中')
+          if (this.exerciseCountTime <= 10) {
+            this.vibrateFeedback()
+          }
         }
       }, 1000)
+    },
+    vibrateFeedback () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.vibrateFeedback('warning', function () {
+          console.log('warning')
+        })
+      }
     },
     clearTimer () {
       window.clearInterval(this.timeInterval)
       this.timeInterval = null
+      this.exerciseCountTime = 0
       console.log('******清除定时器*******')
     },
     timeFormat (percentage) {
       return this.exerciseCountTime
     },
-    exerciseNext () {
-      this.nextExerciseBtn = false
-      this.successStatus = 0
-      this.analysisData = null
+    toNextQuestion () {
       let num = this.currentSubjectIndex
-      this.setAnalysisAnswer('')
-      this.setCurrentSubjectIndex(++num)
+      this.changeSubjectIndex('to_' + ++num)
+    },
+    exerciseNext () {
+      if (this.exerciseNextIng) return
+      this.exerciseNextIng = true
+      setTimeout(() => {
+        this.exerciseNextIng = false
+        this.nextExerciseBtn = false
+        this.successStatus = 0
+        this.analysisData = null
+        let num = this.currentSubjectIndex
+        this.setAnalysisAnswer('')
+        this.setCurrentSubjectIndex(++num)
+      }, 500)
     },
     getExerciseStatistics (data) {
       this.exerciseResult = data
@@ -809,7 +899,7 @@ export default {
       }
     },
     setQusetionTimeToCloud () {
-      if (this.examInfo && this.examInfo.mark === 'examination@exercise') {
+      if (this.examInfo) {
         this.setQuestionTime()
       }
     },
@@ -849,7 +939,6 @@ export default {
         console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
         if (v !== 0) {
           this.nextExerciseBtn = false
-          console.log(this.examList && this.examList.length > 0, 'this.examList && this.examList.length > 0')
           if (this.examList && this.examList.length > 0) {
             console.log('调用-resetTimeLimit 启动定时器')
             this.resetTimeLimit()
@@ -879,27 +968,39 @@ export default {
   position: absolute;
   top: -5vw;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 1;
   background: #fff;
   border-radius: 50%;
-  >div{
+  margin-left:-7vw;
+  .circle{
     position: relative;
-    width: 100%;
-    height: 100%;
+    width:15vw;
+    height:15vw;
+    border-radius: 50%;
+    background: #FFA800;
   }
   .exercise-title-div{
-    position: absolute;
-    width: 10vw;
-    height: 10vw;
+    width: 15vw;
+    height: 15vw;
     z-index: 1;
     text-align: center;
-    line-height: 10vw;
+    line-height: 15vw;
     border-radius: 50%;
     background: #fff;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    position:absolute;
+    top:0;
+    left:0;
+    &.number-div {
+      width: 13vw;
+      height: 13vw;
+      z-index: 1;
+      text-align: center;
+      line-height: 13vw;
+      border-radius: 50%;
+      background: #fff;
+      margin-left:1vw;
+      margin-top:1vw;
+    }
     img {
       width: 7vw;
       height: auto;
@@ -911,14 +1012,12 @@ export default {
       width: 15vw;
       height: 15vw;
       line-height: 15vw;
-      top: 48%;
     }
     &.correct-div {
       background: #35B068;
       width: 15vw;
       height: 15vw;
       line-height: 15vw;
-      top: 48%;
     }
   }
 }

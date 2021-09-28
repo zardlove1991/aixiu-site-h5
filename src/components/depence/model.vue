@@ -92,6 +92,7 @@ export default {
       display: flex;
       width: 100%;
       padding: px2rem(30px);
+      justify-content: center;
       // height: px2rem(90px);
       // @include border('top',1px,solid,'lineColor');
       .confirm,.cancel{

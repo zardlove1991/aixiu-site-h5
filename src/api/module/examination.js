@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4 } from '@/api'
+import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4, createLottery, createEnroll } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -85,6 +85,16 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
+let lotteryDailUrl = {
+  getLotteryDetail: 'api/client/cj/{id}', // 转盘详情
+  getDraw: 'api/client/cj/draw/{id}', // 开始抽奖
+  getCheckDraw: 'api/client/cj/{id}/check', // 口令抽奖
+  getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
+  getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
+  getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
+  getShare: '/api/client/cj/live/share/{id}' // 分享
+
+}
 
 // 预约报名
 let enrollUrl = {
@@ -121,6 +131,7 @@ let configUrl = {
   ...enrollUrl,
   ...newsUrl,
   ...drawUrl,
+  ...lotteryDailUrl,
   setShare: 'setShare', // 分享活动时请求分享接口
   collectInfo: 'client/report/collect/{id}' // 收集信息
 }
@@ -186,16 +197,26 @@ export default {
   shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
   getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
   // 预约报名
-  getEnrollDetail: config => createVote(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
-  getMineEnrollList: config => createVote(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
-  saveEnrollInfo: config => createVote(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
-  remainEnroll: config => createVote(configUrl.remainEnroll, 'GET', config, API_FLAG),
-  getMyEnrollCount: config => createVote(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
+  getEnrollDetail: config => createEnroll(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
+  getMineEnrollList: config => createEnroll(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
+  saveEnrollInfo: config => createEnroll(configUrl.saveEnrollInfo, 'POST', config, API_FLAG),
+  remainEnroll: config => createEnroll(configUrl.remainEnroll, 'GET', config, API_FLAG),
+  getMyEnrollCount: config => createEnroll(configUrl.getMyEnrollCount, 'GET', config, API_FLAG),
   // 新闻
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+
+  // 大转盘、九宫格、盲盒
+  getLotteryDetail: config => createLottery(configUrl.getLotteryDetail, 'GET', config, 'lottery'),
+  getDraw: config => createLottery(configUrl.getDraw, 'POST', config, 'lottery'),
+  getCheckDraw: config => createLottery(configUrl.getCheckDraw, 'POST', config, 'lottery'),
+  getMyPrizeRecord: config => createLottery(configUrl.getMyPrizeRecord, 'GET', config, 'lottery'),
+  getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
+  getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
+  getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
+
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),

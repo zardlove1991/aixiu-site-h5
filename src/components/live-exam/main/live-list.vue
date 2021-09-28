@@ -4,6 +4,7 @@
       <!--头部组件-->
       <exam-header
         :list="examList"
+        ref="examHeader"
         :showSubmitModel.sync="isShowSubmitModel"
         :isOpenSubmitAll="isOpenSubmitAll"
         :curIndex="currentSubjectIndex"
@@ -24,23 +25,16 @@
           </subject-content>
         </div>
         <div class="btn-wrap">
-          <!--上一题按钮-->
-          <div class="prev-wrap" v-show="currentSubjectIndex !== 0"
-            :class="{ 'arrow-wrap-disabeld': currentSubjectIndex === 0 }"
-            @click.stop="changeSubjectIndex('sub')">
-            上一题
+          <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+            跳过本题
           </div>
           <div class="next-wrap"
-            v-show="!isShowSubmitBtn"
-            :class="{'arrow-wrap-disabeld': currentSubjectIndex === examList.length - 1 }"
-            @click.stop="changeSubjectIndex('add')">
-            下一题
-          </div>
-          <div class="next-wrap" v-show="isShowSubmitBtn" @click.stop="submitExam">
-            {{examInfo.limit.submit_text || '立即交卷'}}
+            v-show="examInfo.mark !== 'examination@exercise'"
+            @click.stop="saveCloud('add')">
+            确认
           </div>
         </div>
-        <div class="sumbit-btn" v-show="!isShowSubmitBtn" @click.stop="submitExam">
+        <div class="sumbit-btn" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
       </div>
@@ -98,7 +92,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { Indicator, Toast } from 'mint-ui'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { setBrowserTitle } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
@@ -109,6 +104,7 @@ import SubjectContent from '@/components/depence/subject-content'
 import SubjectList from '@/components/depence/subject-list'
 import MyModel from '@/components/live-exam/global/live-model'
 import LiveVideo from '@/components/live-exam/global/live-video'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'live-list',
@@ -116,6 +112,7 @@ export default {
   props: {
     id: String,
     rtp: String,
+    directlySubmit: String,
     restart: {
       type: String,
       default: 'none'
@@ -131,7 +128,11 @@ export default {
       isShowSuspendModel: false,
       isShowSuspendModels: false,
       isShowSubmitModel: false,
-      isOpenSubmitAll: false
+      isOpenSubmitAll: false,
+      successStatus: 0,
+      nextExerciseBtn: false,
+      exerciseTotalTimeOut: false, // 倒计时答题总时间超时
+      showExerciseResultBtn: false // 显示直接查看结果按钮
     }
   },
   components: {
@@ -144,7 +145,7 @@ export default {
   computed: {
     ...mapGetters('depence', [
       'examId', 'examInfo', 'curSubjectVideos', 'answerList',
-      'isShowSubjectList'
+      'isShowSubjectList', 'remainTime', 'apiPersonInfo'
     ]),
     isShowSubmitBtn () {
       let currentSubjectIndex = this.currentSubjectIndex
@@ -163,7 +164,7 @@ export default {
       setTimeout(() => {
         let examId = this.id
         this.$router.replace({
-          path: `/livestart/${examId}/statistic`
+          path: `/exam/statistic/${examId}`
         })
       }, 1000)
     },
@@ -184,12 +185,6 @@ export default {
       try {
         // 获取试卷详情
         await this.getExamDetail({ id: examId })
-        let status = this.examInfo.person_status
-        // 调用考试考试接口
-        if (this.rtp === 'exam' && status !== 2) {
-          let isRestart = this.restart === 'need'
-          await this.startExam({ id: examId, restart: isRestart })
-        }
         // 设置标题
         setBrowserTitle(this.examInfo.title)
         // 获取试卷列表
@@ -202,8 +197,13 @@ export default {
         if (isAll) {
           this.isOpenSubmitAll = true
         }
-        // 检查是否存在中断考试的情况
-        this.checkAnswerMaxQuestionId()
+        this.exerciseTotalTimeOut = false
+        this.setQusetionTimeToCloud()
+        // 检测是否有答题中断并自动定位到未答题上
+        this.checkExamBreak()
+        if (this.directlySubmit === '1') {
+          this.$refs.examHeader.confirmSubmitModel('noconfirm')
+        }
         this.sharePage()
       } catch (err) {
         console.log(err)
@@ -264,6 +264,51 @@ export default {
         mark: 'examination'
       })
     },
+    // 获取云端答题最后一道题的索引
+    getLastestAnswerRecordIndex () {
+      let list = this.examList
+      let _lastIndex = null
+      list.forEach((item, index) => {
+        if (item.value) _lastIndex = index
+      })
+      // 如果存在云端答题存储 则自动把答题索引下移到当前索引下一题 如果是最后一题直接保持为当前索引
+      if (_lastIndex !== null) {
+        _lastIndex = _lastIndex < this.examList.length - 1 ? _lastIndex + 1 : _lastIndex
+      } else {
+        _lastIndex = 0
+      }
+      console.error(_lastIndex, '_lastIndex')
+      return _lastIndex
+    },
+    // 检测存在答题中断进行处理
+    checkExamBreak () {
+      if (this.apiPersonInfo.submit_status === 0 && this.examInfo.mark !== 'examination@exercise') {
+        let _lastIndex = this.getLastestAnswerRecordIndex()
+        if (this.remainTime > 0) {
+          console.error('答题剩余时间:' + this.remainTime)
+          this.changeSubjectIndex('to_' + _lastIndex)
+        } else {
+          Toast('本题答题超时，系统已经为您自动交卷')
+          this.$refs.examHeader.autoExamSubmit()
+        }
+      }
+      // 如果试卷超时自动交卷
+      if (this.apiPersonInfo.submit_status === 2 || this.apiPersonInfo.submit_status === 4) {
+        this.$refs.examHeader.autoExamSubmit()
+      }
+    },
+    // 是否展示本场次超时交卷提示
+    isShowexerciseTimeOut (apiPersonId) {
+      let isTimeoutTip = STORAGE.get(apiPersonId + 'timeout_tip')
+      this.isShowSuspendModels = !isTimeoutTip
+    },
+    // 异常中断进入检测超时自动打开超时弹窗
+    exerciseTimeOut () {
+      let apiPersonId = this.apiPersonInfo.api_person_id
+      this.exerciseTotalTimeOut = true
+      this.isShowexerciseTimeOut(apiPersonId)
+      this.clearTimer()
+    },
     async confirmSuspendModel () {
       let examId = this.id
       let redirectParams = this.redirectParams
@@ -313,7 +358,7 @@ export default {
     },
     dealExamHeaderSelect ({subject, index}) {
       this.toggetSubjectList()
-      this.changeSubjectIndex(index)
+      this.changeSubjectIndex('to_' + index)
     },
     dealConfrimOption () {
       let isShowSubmitBtn = this.isShowSubmitBtn // 判断是否已经到交卷的题目了
@@ -322,22 +367,80 @@ export default {
         this.submitExam()
       } else {
         // 完成并到下一题
-        this.changeSubjectIndex('add')
-      }
-    },
-    checkAnswerMaxQuestionId () {
-      let examInfo = this.examInfo
-      let answerMaxQuestionId = examInfo.answer_max_question_id
-      let renderType = this.renderType
-      // 拿到当前答题的索引当前答题的索引
-      if (renderType === 'exam' && answerMaxQuestionId) {
-        let list = this.examList
-        let index = list.findIndex(item => item.id === answerMaxQuestionId)
-        if (index >= 0) this.changeSubjectIndex(index)
+        this.saveCloud('add')
       }
     },
     _dealLimitTimeTip (time) {
       return DEPENCE.dealLimitTimeTip(time)
+    },
+    async saveCloud (status = 'add') {
+      console.log('saveCloud******', this.successStatus)
+      let saveStatus = status
+      if (this.saveClouding) return
+      if (this.successStatus !== 0) return
+      if (this.currentSubjectIndex === this.examList.length - 1) {
+        status = this.currentSubjectIndex
+      }
+      this.saveClouding = true
+      Indicator.open({ spinnerType: 'fading-circle' })
+      await this.changeSubjectIndex(status).then(res => {
+        res.saveStatus = saveStatus
+        // 练习题回调处理
+        this.questionAnswerCallBack(res)
+        this.saveClouding = false
+        Indicator.close()
+      }).catch(err => {
+        this.saveClouding = false
+        Indicator.close()
+        if (err.error_code === 'member_submit') {
+          Toast('本场作答已超时，系统已经为您自动交卷')
+        }
+      })
+    },
+    questionAnswerCallBack (res) {
+      let { success } = res
+      if (res && res.error_code === 'member_submit') {
+        Toast('本场作答已超时，系统已经为您自动交卷')
+        return false
+      }
+      if (success) {
+        this.$nextTick(() => {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+            // Toast('已经没有题目了~')
+            console.log('nextExerciseBtn', '已经没有题目了')
+            this.nextExerciseBtn = false
+          } else {
+            this.nextExerciseBtn = true
+            console.log('nextExerciseBtn', '还有题目')
+          }
+          setTimeout(() => {
+            // 如果不是最后一题 自动进入下一题
+            if (this.nextExerciseBtn && this.currentSubjectIndex !== this.examList.length - 1) {
+              this.exerciseNext()
+            }
+          }, 0)
+        })
+      }
+    },
+    toNextQuestion () {
+      let num = this.currentSubjectIndex
+      this.changeSubjectIndex('to_' + ++num)
+    },
+    exerciseNext () {
+      if (this.exerciseNextIng) return
+      this.exerciseNextIng = true
+      setTimeout(() => {
+        this.exerciseNextIng = false
+        this.nextExerciseBtn = false
+        this.successStatus = 0
+        let num = this.currentSubjectIndex
+        this.setCurrentSubjectIndex(++num)
+      }, 500)
+    },
+    setQusetionTimeToCloud () {
+      if (this.examInfo) {
+        this.setQuestionTime()
+      }
     },
     ...mapActions('depence', {
       getExamList: 'GET_EXAMLIST',
@@ -345,8 +448,52 @@ export default {
       getExamDetail: 'GET_EXAM_DETAIL',
       startExam: 'START_EXAM',
       endExam: 'END_EXAM',
-      unlockCorse: 'UNLOCK_COURSE'
+      unlockCorse: 'UNLOCK_COURSE',
+      setQuestionTime: 'SET_QUESTION_TIME'
+    }),
+    ...mapMutations('depence', {
+      setCurrentSubjectIndex: 'SET_CURRENT_SUBJECT_INDEX',
+      setAnalysisAnswer: 'SET_ANALYSIS_ANSWER'
     })
+  },
+  watch: {
+    'examInfo': {
+      handler: function (v) {
+        console.log(v, '监听examInfo')
+        if (v && !this.loadList) {
+          this.setCurrentSubjectIndex(0)
+          this.loadList = true
+          this.$nextTick(() => {
+            this.initList()
+            this.nextExerciseBtn = false
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    'currentSubjectIndex': {
+      handler: function (v) {
+        console.log('%ccurrentSubjectIndex：' + v, 'color: red;font-size: 15px')
+        if (v !== 0) {
+          this.nextExerciseBtn = false
+          if (this.examList && this.examList.length > 0) {
+            // 记录云端时间
+            this.setQusetionTimeToCloud()
+          }
+          this.successStatus = 0
+          this.analysisData = null
+        }
+      },
+      immediate: true
+    },
+    'examList': {
+      handler: function (v) {
+        console.log(v, '监听examList')
+        // this.resetTimeLimit()
+      },
+      immediate: true
+    }
   }
 }
 </script>

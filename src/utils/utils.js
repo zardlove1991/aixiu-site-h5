@@ -104,6 +104,8 @@ export const setTheme = (id, name, isFirst) => {
         setClick(id, title, mark)
       }
     })
+  } else if (name.indexOf('lottery') !== -1) {
+    console.log('抽奖setTheme')
   } else {
     // 测评
     console.log('isFirst', isFirst)
@@ -570,4 +572,37 @@ export const getShareUrl = (...args) => {
     tmpLink += args[i]
   }
   return tmpLink
+}
+export const getDaysBetween = (dateString1, dateString2) => {
+  let startDate = Date.parse(dateString1)
+  let endDate = Date.parse(dateString2)
+  if (startDate > endDate) {
+    return 0
+  }
+  if (startDate === endDate) {
+    return 1
+  }
+  let days = (endDate - startDate) / (1 * 24 * 60 * 60 * 1000)
+  return days
+}
+
+export const logger = (info) => {
+  let route = window.$vue.$route
+  let logger = info || {}
+  let i = document.createElement('script')
+  let params = ''
+  logger.mod = route.meta.mod
+  logger.route = route.fullPath
+  logger.timestamp = new Date().getTime()
+  logger.userAgent = window.navigator.userAgent
+  for (let k in logger) {
+    params += '&' + k + '=' + logger[k]
+  }
+  i.src = '/static/js/logger.js?sys=ax' + params
+  i.onload = function () {
+    setTimeout(function () {
+      i.remove()
+    }, 20)
+  }
+  document.body.appendChild(i)
 }

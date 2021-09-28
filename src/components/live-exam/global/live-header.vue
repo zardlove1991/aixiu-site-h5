@@ -65,14 +65,6 @@
     </my-model>
     <link-dialog :isShowVideo="true" :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
     <pop-dialog :isShowVideo="true" :show="isPopSubmitSuccess" :pop="pop" @confirm="pageToStart()"></pop-dialog>
-    <luck-draw-dialog
-      :show="isLuckSubmitSuccess"
-      :isShowVideo="true"
-      :isLuckDraw="isLuckDraw"
-      :luckDrawTips="luckDrawTips"
-      @cancel="pageToStart()"
-      @confirm="pageToLuckDraw()">
-    </luck-draw-dialog>
   </div>
 </template>
 
@@ -81,8 +73,9 @@ import { mapActions, mapGetters } from 'vuex'
 import MyModel from '@/components/live-exam/global/live-model'
 import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
-import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import { formatTimeBySec } from '@/utils/utils'
+import API from '@/api/module/examination'
+import STORAGE from '@/utils/storage'
 
 export default {
   name: 'live-header',
@@ -119,14 +112,15 @@ export default {
     }
   },
   components: {
-    MyModel, PopDialog, LinkDialog, LuckDrawDialog
+    MyModel, PopDialog, LinkDialog
   },
   computed: {
     ...mapGetters('depence', [
       'examId', 'redirectParams',
       'currentSubjectInfo', 'examInfo',
       'essayAnswerInfo', 'oralAnswerInfo',
-      'subjectAnswerInfo', 'luckDrawLink'
+      'subjectAnswerInfo', 'luckDrawLink',
+      'remainTime'
     ]),
     currentIndex () {
       return this.curIndex + 1
@@ -156,7 +150,9 @@ export default {
   methods: {
     initCountTime () {
       let limitTime = this.examInfo.limit_time
-      this.duration = this.list[0].remain_time
+      if (this.remainTime) {
+        this.duration = this.remainTime
+      }
       let timeFun = () => {
         if (this.duration === 2) {
           this.$emit('notimeup')
@@ -182,62 +178,86 @@ export default {
         this.timeTip = '不限时间'
       }
     },
-    async confirmSubmitModel () {
-      // let subject = this.currentSubjectInfo
-      this.toggleSubmitModel()
-      try {
-        await this.endExam() // 提交试卷
-        clearInterval(this.timer)
-        let rules = this.examInfo.limit.submit_rules
-        if (rules) {
-          let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-          if (isOpenRaffle && isOpenRaffle !== 0) {
-            // 抽奖
-            this.isLuckSubmitSuccess = true
-            if (this.luckDrawLink) {
-              this.isLuckDraw = true
-              this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-            } else {
-              this.isLuckDraw = false
-              this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-            }
-          } else if (link) {
-            this.isSubmitSuccess = true
-            setTimeout(() => {
-              this.isSubmitSuccess = false
-              window.location.replace(link.url)
-            }, 1000)
-          } else if (result) {
-            let examId = this.examId
-            this.$router.replace({
-              path: `/livestart/${examId}/statistic`
+    async confirmSubmitModel (command) {
+      if (command !== 'noconfirm') {
+        this.toggleSubmitModel()
+      }
+      let _id = this.$route.params.id
+      // 提交试卷
+      let _result = await API.submitExam({
+        query: {
+          id: this.examId
+        }
+      })
+      clearInterval(this.timer)
+      if (_result) {
+        let {success} = _result
+        if (success) {
+          if (this.examInfo.mark === 'examination@exercise') {
+            // 获取测评结果
+            API.getExamDetailsStatistics({query: {id: _id}, params: {api_person_id: _result.api_person_id}}).then(res => {
+              let { correct_num: correctNum, points, score } = res
+              let exerciseResult = {
+                correctNum, points, score
+              }
+              this.$emit('update:showExerciseResult', true)
+              this.$emit('getExerciseStatistics', exerciseResult)
+              STORAGE.remove(_result.api_person_id)
             })
-          } else if (pop) {
-            this.isPopSubmitSuccess = true
-            this.pop = pop
           } else {
-            // 跳转去答题卡页面
-            this.pageToStart()
+            this.setResult(_result)
           }
         } else {
-          // 跳转去答题卡页面
-          this.pageToStart()
+          console.error('提交失败')
         }
-      } catch (err) {
-        console.log(err)
       }
     },
-    pageToLuckDraw () {
-      let link = this.luckDrawLink
-      if (link) {
-        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
-          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
+    async autoExamSubmit () {
+      // 提交试卷
+      let _result = await API.submitExam({
+        query: {
+          id: this.examId
         }
-        this.isLuckSubmitSuccess = false
-        window.location.replace(link)
-        this.setLuckDrawLink('')
+      })
+      clearInterval(this.timer)
+      if (_result) {
+        let {success} = _result
+        if (success) {
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.$emit('exerciseTimeOut')
+            console.error('autoExamSubmit-超时自动交卷exerciseTimeOut')
+          } else {
+            this.setResult(_result)
+          }
+        }
       } else {
-        this.isLuckSubmitSuccess = false
+        console.error('提交失败')
+      }
+    },
+    // 处理结果
+    setResult (res) {
+      let { limit: { submit_rules: { pop, result, link } } } = this.examInfo
+      // 提交设置:外链跳转
+      if (link) {
+        this.isSubmitSuccess = true
+        let { url } = link
+        setTimeout(() => {
+          this.isSubmitSuccess = false
+          window.location.replace(url)
+        }, 1000)
+      }
+      // 提交设置:弹窗提示
+      if (pop) {
+        this.isPopSubmitSuccess = true
+        this.pop = pop
+      }
+      // 提交设置:测评结果页
+      if (result) {
+        let examId = this.examId
+        this.$router.replace({
+          path: `/exam/statistic/${examId}`,
+          query: {api_person_id: res ? res.api_person_id : ''}
+        })
       }
     },
     pageToStart () {
