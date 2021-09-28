@@ -280,6 +280,16 @@
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- gift box -->
+    <div v-if='giftBoxType' class='gift-box-wrap'>
+      <img :src="imgs.giftBox" alt="" class='gift-box-img'>
+    </div>
+    <!-- lottery tips -->
+    <lottery-tips
+      :lotteryObj='lotteryObj'
+      :show="isLotteryTips"
+      @closeLotteryTipsFun='closeLotteryTipsFun'>
+    </lottery-tips>
   </div>
 </template>
 
@@ -310,6 +320,7 @@ import { fullSceneMap } from '@/utils/config'
 import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
+import LotteryTips from '@/components/vote/global/lottery-tips'
 
 export default {
   mixins: [mixins],
@@ -337,10 +348,15 @@ export default {
     LotteryVote,
     VoteReward,
     AreaVote,
-    ReportNumLimit
+    ReportNumLimit,
+    LotteryTips
   },
   data () {
     return {
+      giftBoxType: false,
+      imgs: {
+        giftBox: require('@/assets/vote/gift-box.png')
+      },
       isReportNumLimit: false,
       isShowVoteReward: false,
       curApp: '',
@@ -408,7 +424,9 @@ export default {
       isShowActiveTips: false,
       activeTips: [],
       scrollTop: 0, // 滚动条距离顶部距离
-      downloadLink: ''
+      downloadLink: '',
+      isLotteryTips: false,
+      lotteryObj: {}
     }
   },
   created () {
@@ -463,6 +481,17 @@ export default {
     }
   },
   methods: {
+    shareSuccess () {
+      API.shareOk({ query: {id: this.id} }).then(res => {
+
+      })
+    },
+    goLotteryList () {
+      this.$router.push({
+        name: 'lotterylist',
+        query: { id: this.id }
+      })
+    },
     closeReportNumLimit () {
       this.isReportNumLimit = false
     },
@@ -489,6 +518,18 @@ export default {
           query: { id: voteId }
         })
       }
+      // 判断显示gift box
+      let _lottery = res.lottery
+      let lotteryArr = []
+      this.lotteryObj = res.lottery
+      lotteryArr.push(_lottery.enroll.is_win)
+      lotteryArr.push(_lottery.enroll.raffle_num)
+      lotteryArr.push(_lottery.vote_relation.is_win)
+      lotteryArr.push(_lottery.vote_relation.raffle_num)
+      let isExistLottery = false
+      isExistLottery = lotteryArr.some(item => item > 0)
+      this.giftBoxType = isExistLottery
+
       let url = res.indexpic
       if (url) {
         let swipeList = []
@@ -671,6 +712,8 @@ export default {
       }, this.shareLottery)
     },
     shareLottery () {
+      this.shareLottery()
+
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
           query: {
@@ -1253,7 +1296,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      console.log(params, data)
+      // console.log(params, data)
       this.$router.push({
         name: page,
         params,
@@ -1361,6 +1404,9 @@ export default {
     searchClassify (val) {
       this.searchClassifyVal = val
       this.dealSearch('input-search', true)
+    },
+    closeLotteryTipsFun () {
+
     }
   }
 }
@@ -1938,6 +1984,17 @@ export default {
         border-radius: 15px;
         margin-top: -4px;
       }
+    }
+  }
+
+  .gift-box-wrap{
+    position: fixed;
+    bottom: px2rem(180px);
+    right: px2rem(10px);
+    z-index: 999;
+    .gift-box-img{
+      width: px2rem(160px);
+      height: px2rem(148px);
     }
   }
 </style>
