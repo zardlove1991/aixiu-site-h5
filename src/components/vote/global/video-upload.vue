@@ -175,7 +175,8 @@ export default {
           url,
           cover
         })
-        // console.log(this.fileList)
+        this.$emit('update:fileList', this.fileList)
+        console.log('this.fileList', this.fileList)
         this.$emit('changeFile')
         this.$emit('update:loading', false)
       })

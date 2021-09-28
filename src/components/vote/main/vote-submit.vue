@@ -18,7 +18,18 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+          <!-- <video-upload
+            :videoMode="videoMode"
+            :loading.sync="loading"
+            :fileList="fileList"
+            @changeFile="changeFile">
+          </video-upload> -->
+          <video-upload
+            :videoMode="videoMode"
+            :loading.sync="loading"
+            :fileList.sync="fileList"
+            @changeFile="changeFile">
+          </video-upload>
         </div>
       </div>
       <div v-if="showModel === 'video'" class="form-item">
@@ -295,75 +306,81 @@ export default {
           }
         }
       }
-      let { worksId } = this.$route.query
-      if (worksId) {
-        // 获取详情
-        API.getReportDetail({
-          query: {
-            id: this.id
-          }
-        }).then(res => {
-          if (!res) {
-            return
-          }
-          // 输入值得回显
-          let _extra = res.extra
-          for (let [key, value] of Object.entries(_extra)) {
-            for (let i of this.enrollForm.formFixList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
 
-            for (let i of this.enrollForm.visibleFieldList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
-          }
-          this.worksId = worksId
-          let flag = this.showModel
-          if (res.material) {
-            if (flag === 'picture') {
-              this.fileList = res.material.image
-              this.material.image = res.material.image
-            } else if (flag === 'video') {
-              let video = res.material.video
-              this.fileList = video
-              this.material.video = video
-              if (video && video.length) {
-                let url = video[0].cover_image
-                if (url) {
-                  this.videoCoverList = [{
-                    url
-                  }]
-                  this.videoCover = url
-                }
-              }
-            } else if (flag === 'audio') {
-              this.fileList = res.material.audio
-              this.material.audio = res.material.audio
-            }
-          }
-          this.examineData = {
-            name: res.name,
-            source: res.source,
-            introduce: res.introduce,
-            contact_name: res.contact_name,
-            contact_phone: res.contact_phone,
-            type_id: res.type_id,
-            type_name: res.type_name
-          }
-          if (res.full_scene_type) {
-            this.checkFullScene = String(res.full_scene_type)
-            this.showModel = this.fullSceneMap[res.full_scene_type][1]
-          }
-          this.getVoteTypeFid(res.type_id, res.type_name)
-        })
+      let { worksId } = this.$route.query
+      // 获取详情 【编辑时获取详情】
+      if (worksId) {
+        this.getWorksDetail(worksId)
       }
+      console.log('isOpenClassify', isOpenClassify)
       if (isOpenClassify) {
         this.initVoteType()
       }
+    },
+    getWorksDetail (worksId) {
+      // 获取详情
+      API.getReportDetail({
+        query: {
+          id: this.id
+        }
+      }).then(res => {
+        if (!res) {
+          return
+        }
+        // 输入值得回显
+        let _extra = res.extra
+        for (let [key, value] of Object.entries(_extra)) {
+          for (let i of this.enrollForm.formFixList) {
+            if (i.cid === key) {
+              i.inputValue = value
+            }
+          }
+
+          for (let i of this.enrollForm.visibleFieldList) {
+            if (i.cid === key) {
+              i.inputValue = value
+            }
+          }
+        }
+        this.worksId = worksId
+        let flag = this.showModel
+        if (res.material) {
+          if (flag === 'picture') {
+            this.fileList = res.material.image
+            this.material.image = res.material.image
+          } else if (flag === 'video') {
+            let video = res.material.video
+            this.fileList = video
+            this.material.video = video
+            if (video && video.length) {
+              let url = video[0].cover_image
+              if (url) {
+                this.videoCoverList = [{
+                  url
+                }]
+                this.videoCover = url
+              }
+            }
+          } else if (flag === 'audio') {
+            this.fileList = res.material.audio
+            this.material.audio = res.material.audio
+          }
+        }
+        this.examineData = {
+          name: res.name,
+          source: res.source,
+          introduce: res.introduce,
+          contact_name: res.contact_name,
+          contact_phone: res.contact_phone,
+          type_id: res.type_id,
+          type_name: res.type_name
+        }
+        if (res.full_scene_type) {
+          this.checkFullScene = String(res.full_scene_type)
+          this.showModel = this.fullSceneMap[res.full_scene_type][1]
+        }
+        this.getVoteTypeFid(res.type_id, res.type_name)
+      })
     },
     initVoteType () {
       API.getVoteType({
@@ -410,7 +427,6 @@ export default {
       document.body.scrollTop = 0
     },
     commitVote () {
-      debugger
       let id = this.id
       let examineData = this.examineData
       if (!id) {
@@ -420,6 +436,7 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
+      debugger
 
       let _extra = {}
       for (let i of this.enrollForm.formFixList) {
@@ -468,8 +485,8 @@ export default {
       if (this.worksId) {
         data.id = this.worksId
       }
-      this.disabled = true
 
+      this.disabled = true
       API.workReport({
         data
       }).then(res => {
