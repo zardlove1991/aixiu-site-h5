@@ -88,6 +88,21 @@
     <script>
       // 微信开发工具
       let vConsole = new VConsole()
+
+      // ios 回退强制刷新
+      $(function () {
+        var isPageHide = false;
+        window.addEventListener('pageshow', function () {
+          console.log('1111', isPageHide)
+          if (isPageHide) {
+            window.location.reload();
+          }
+        });
+        window.addEventListener('pagehide', function () {
+          console.log('2222', isPageHide)
+          isPageHide = true;
+        });
+      })
     </script>
   </body>
 </html>

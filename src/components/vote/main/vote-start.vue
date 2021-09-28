@@ -271,15 +271,17 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
-    <!-- 投票关联抽奖 -->
-    <vote-reward
-      :show="isShowVoteReward"
-      @close="isShowVoteReward = false">
-    </vote-reward>
+    <!-- 报名人数超过的提示 -->
     <report-num-limit
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- 投票关联抽奖 -->
+    <vote-reward
+      :lotteryObj='lotteryObj'
+      :show="isShowVoteReward"
+      @closeReward="isShowVoteReward = false">
+    </vote-reward>
     <!-- gift box -->
     <div v-if='giftBoxType' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
@@ -543,12 +545,13 @@ export default {
         this.swipeList = swipeList
       }
       this.detailInfo = res
+      let {rule} = res
       // 校验抽奖入口条件
-      let {lottery, rule, today_votes: todayVotes} = res
-      if (lottery) {
-        this.lottery = lottery
-        this.checkLotteryOpen(lottery, rule, todayVotes)
-      }
+      // let {lottery, rule, today_votes: todayVotes} = res
+      // if (lottery) {
+      //   this.lottery = lottery
+      //   this.checkLotteryOpen(lottery, rule, todayVotes)
+      // }
       STORAGE.set('detailInfo', res)
       setBrowserTitle(res.title)
       // 分享
@@ -1406,7 +1409,7 @@ export default {
       this.dealSearch('input-search', true)
     },
     closeLotteryTipsFun () {
-
+      this.isLotteryTips = false
     }
   }
 }
