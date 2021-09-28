@@ -90,9 +90,6 @@ export default {
     white-space: pre-line;
     line-height: px2rem(42px);
     margin-bottom: px2rem(30px);
-    p {
-     
-    }
     .container-img{
       width: px2rem(520px);
       height: px2rem(300px);

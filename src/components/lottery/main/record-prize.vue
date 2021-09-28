@@ -100,7 +100,7 @@ export default {
       ],
       loading: false,
       finished: false,
-      id: this.$route.query.id,
+      id: this.$route.params.id,
       currentPage: 1,
       currentCount: 100,
       total: null,

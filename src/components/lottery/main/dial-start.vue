@@ -651,8 +651,8 @@ export default {
     // 中奖纪录
     handleGo () {
       this.$router.push({
-        name: 'lotteryRotorRecord',
-        query: { id: this.id }
+        name: 'lotteryrotorRecord',
+        params: { id: this.id }
       })
     },
     sharePage (detailInfo) {
