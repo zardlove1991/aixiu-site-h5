@@ -121,6 +121,7 @@ var tncode = {
     }
   },
   _block_start_move: function (e) {
+    // console.log('stare-move', tncode._doing)
     if (tncode._doing || !tncode._img_loaded ) {
       return
     }
@@ -140,8 +141,10 @@ var tncode = {
     tncode._is_moving = true
   },
   _block_on_move: function (e) {
+    // console.log('move-1', tncode._doing, tncode._is_moving)
     if (!tncode._doing) return true
     if (!tncode._is_moving) return true
+    // console.log('move-2', e)
     e.preventDefault()
     tncode.isStopSlideType = false
     var theEvent = window.event || e
@@ -181,7 +184,7 @@ var tncode = {
     tncode._is_moving = false
   },
   checkSuccessType: function (data) {
-    console.log('tncode.isLoadType', tncode.isLoadType)
+    // console.log('tncode.isLoadType', tncode.isLoadType)
     if (tncode.isLoadType) {
       // 加载过不再加载
       return false
@@ -395,6 +398,7 @@ var tncode = {
       }
   },
   refresh: function () {
+    tncode._doing = false
     console.log('我被谁调用了：', tncode.refresh.caller)
     // var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
     // var _this = this
