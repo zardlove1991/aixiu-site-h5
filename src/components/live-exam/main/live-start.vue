@@ -125,14 +125,6 @@
     </div>
     <link-dialog :isShowVideo="true" :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
     <pop-dialog :isShowVideo="true" :show="isPopSubmitSuccess" :pop="pop" @confirm="isPopSubmitSuccess = false"></pop-dialog>
-    <luck-draw-dialog
-      :show="isLuckSubmitSuccess"
-      :isShowVideo="true"
-      :isLuckDraw="isLuckDraw"
-      :luckDrawTips="luckDrawTips"
-      @cancel="isLuckSubmitSuccess = false"
-      @confirm="pageToLuckDraw()">
-    </luck-draw-dialog>
     <draw-check-dialog
       :isShowVideo="true"
       :show="isShowDrawCheck"
@@ -142,6 +134,16 @@
       @success="goExamPage()"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
+    
+    <!-- 抽奖历史入口图标 -->
+    <div class="lottery_entrance" v-if="examInfo.raffle_num || examInfo.prize_num">
+      <div @click="goLotteryPage()">
+        <img :src="imgUrl" alt="">
+        <div class="info" v-if="examInfo.raffle_num">可抽奖{{examInfo.raffle_num}}次</div>
+        <div class="info" v-if="examInfo.prize_num&&!examInfo.raffle_num">查看中奖记录</div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -155,7 +157,6 @@ import mixins from '@/mixins/index'
 import MyModel from '@/components/live-exam/global/live-model'
 import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
-import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import LiveVideo from '@/components/live-exam/global/live-video'
 
@@ -191,11 +192,12 @@ export default {
       isLuckDraw: false, // 是否是有资格抽奖
       luckDrawTips: [], // 抽奖提示内容
       isLuckSubmitSuccess: false, // 抽奖页显隐
+      imgUrl: require('@/assets/vote/gift@3x.png'),
       isSubmitSuccess: false, // 外链弹窗显隐
       isPopSubmitSuccess: false // 弹窗显隐
     }
   },
-  components: { MyModel, DrawCheckDialog, LiveVideo, LinkDialog, PopDialog, LuckDrawDialog },
+  components: { MyModel, DrawCheckDialog, LiveVideo, LinkDialog, PopDialog },
   computed: {
     ...mapGetters('depence', ['examInfo', 'answerCardInfo', 'luckDrawLink']),
     examSubmitCount2 () {
@@ -241,54 +243,6 @@ export default {
       setTimeout(() => {
         this.goExamPage()
       }, 1000)
-    },
-    breakDoAction () {
-      let examInfo = this.examInfo
-      if (!examInfo || !examInfo.limit) {
-        return
-      }
-      let rules = examInfo.limit.submit_rules
-      if (rules) {
-        let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-        if (isOpenRaffle && isOpenRaffle !== 0) {
-          // 抽奖
-          this.isLuckSubmitSuccess = true
-          if (this.luckDrawLink) {
-            this.isLuckDraw = true
-            this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-          } else {
-            this.isLuckDraw = false
-            this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-          }
-        } else if (link) {
-          this.isSubmitSuccess = true
-          setTimeout(() => {
-            this.isSubmitSuccess = false
-            window.location.replace(link.url)
-          }, 1000)
-        } else if (result) {
-          let examId = examInfo.id
-          this.$router.replace({
-            path: `/exam/statistic/${examId}`
-          })
-        } else if (pop) {
-          this.isPopSubmitSuccess = true
-          this.pop = pop
-        }
-      }
-    },
-    pageToLuckDraw () {
-      let link = this.luckDrawLink
-      if (link) {
-        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
-          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
-        }
-        this.isLuckSubmitSuccess = false
-        window.location.replace(link)
-        this.setLuckDrawLink('')
-      } else {
-        this.isLuckSubmitSuccess = false
-      }
     },
     blurAction () {
       document.body.scrollTop = 0
@@ -370,6 +324,9 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    goLotteryPage (info) {
+      this.examGoLotteryPage(this.examInfo)
     },
     sharePage () {
       let examInfo = this.examInfo
@@ -981,6 +938,22 @@ export default {
         color: #fff;
         border: 0;
       }
+    }
+  }
+  .lottery_entrance{
+    position: absolute;
+    bottom: 6.5rem;
+    right: px2rem(30px);
+    text-align: center;
+    img {
+      width: 16vw;
+    }
+    .info{
+      background: linear-gradient(to bottom, #FF6944, #FF3A0B);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 15px;
+      margin-top: -4px;
     }
   }
 }
