@@ -55,13 +55,6 @@
     </my-model>
     <link-dialog :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
     <pop-dialog :show="isPopSubmitSuccess" :pop="pop" @confirm="pageToStart()"></pop-dialog>
-    <luck-draw-dialog
-      :show="isLuckSubmitSuccess"
-      :isLuckDraw="isLuckDraw"
-      :luckDrawTips="luckDrawTips"
-      @cancel="pageToStart()"
-      @confirm="pageToLuckDraw()">
-    </luck-draw-dialog>
   </div>
 </template>
 
@@ -70,7 +63,6 @@ import { mapActions, mapGetters } from 'vuex'
 import MyModel from './model'
 import LinkDialog from '../dialog/link-dialog'
 import PopDialog from '../dialog/pop-dialog'
-import LuckDrawDialog from '../dialog/luck-draw-dialog'
 // import { DEPENCE } from '@/common/currency'
 import { formatTimeBySec } from '@/utils/utils'
 import API from '@/api/module/examination'
@@ -114,7 +106,7 @@ export default {
     }
   },
   components: {
-    MyModel, PopDialog, LinkDialog, LuckDrawDialog
+    MyModel, PopDialog, LinkDialog
   },
   computed: {
     ...mapGetters('depence', [
@@ -193,9 +185,8 @@ export default {
       })
       clearInterval(this.timer)
       if (_result) {
-        let {success, raffle} = _result
+        let {success} = _result
         if (success) {
-          this.temporaryData = raffle
           if (this.examInfo.mark === 'examination@exercise') {
             // 获取测评结果
             API.getExamDetailsStatistics({query: {id: _id}, params: {api_person_id: _result.api_person_id}}).then(res => {
@@ -208,7 +199,8 @@ export default {
               STORAGE.remove(_result.api_person_id)
             })
           } else {
-            this.setResult(raffle, _result)
+            console.error(_result, '提交试卷_result')
+            this.setResult(_result)
           }
         } else {
           console.error('提交失败')
@@ -229,6 +221,8 @@ export default {
           if (this.examInfo.mark === 'examination@exercise') {
             this.$emit('exerciseTimeOut')
             console.error('autoExamSubmit-超时自动交卷exerciseTimeOut')
+          } else {
+            this.setResult(_result)
           }
         }
       } else {
@@ -236,52 +230,29 @@ export default {
       }
     },
     // 处理结果
-    setResult (raffle, res) {
-      if (!raffle) {
-        if (this.temporaryData) {
-          raffle = this.temporaryData
-        } else {
-          return
-        }
+    setResult (res) {
+      let { limit: { submit_rules: { pop, result, link } } } = this.examInfo
+      // 提交设置:外链跳转
+      if (link) {
+        this.isSubmitSuccess = true
+        let { url } = link
+        setTimeout(() => {
+          this.isSubmitSuccess = false
+          window.location.replace(url)
+        }, 1000)
       }
-      if (raffle) {
-        let _raffleUrl = raffle.raffle_url
-        let {
-          is_open_raffle: _openRaffle,
-          is_open_jump: _openJump,
-          jump_conditions: _jumpConditions,
-          result,
-          pop,
-          link
-        } = raffle
-        if (_openRaffle) {
-          if (_raffleUrl) {
-            this.isLuckDraw = true
-            this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-          } else {
-            this.isLuckDraw = false
-            this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-          }
-        } else if (link) {
-          this.isSubmitSuccess = true
-          let { url } = link
-          setTimeout(() => {
-            this.isSubmitSuccess = false
-            window.location.replace(url)
-          }, 1000)
-        } else if (result || _jumpConditions) {
-          console.log(result, '答题结果页')
-          let examId = this.examId
-          this.$router.replace({
-            path: `/exam/statistic/${examId}`,
-            query: {api_person_id: res ? res.api_person_id : ''}
-          })
-        } else if (pop) {
-          this.isPopSubmitSuccess = true
-          this.pop = pop
-        } else {
-          console.log('_openRaffle:', _openRaffle, '_openJump:', _openJump, 'result:', result, 'pop:', pop)
-        }
+      // 提交设置:弹窗提示
+      if (pop) {
+        this.isPopSubmitSuccess = true
+        this.pop = pop
+      }
+      // 提交设置:测评结果页
+      if (result) {
+        let examId = this.examId
+        this.$router.replace({
+          path: `/exam/statistic/${examId}`,
+          query: {api_person_id: res ? res.api_person_id : ''}
+        })
       }
     },
     // 获取答题记录
