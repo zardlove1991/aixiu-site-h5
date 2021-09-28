@@ -652,29 +652,27 @@ export default {
     },
     shareAddTimes () { // 分享成功回调
       const examId = this.examInfo.id
-      if (this.examInfo.limit.is_open_share) {
-        API.shareAddTimes({
-          query: {
-            id: examId
+      API.shareAddTimes({
+        query: {
+          id: examId
+        }
+      }).then(res => {
+        if (res.code === 1) {
+          this.showOperateDialog = true
+          this.dialogConfig = {
+            type: 'share', // 弹窗类型
+            tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+            showConfirmBtn: false, // 确认按钮
+            showNumber: 1,
+            cancelBtnText: '知道了'
           }
-        }).then(res => {
-          if (res.code === 1) {
-            this.showOperateDialog = true
-            this.dialogConfig = {
-              type: 'share', // 弹窗类型
-              tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
-              showConfirmBtn: false, // 确认按钮
-              showNumber: 1,
-              cancelBtnText: '知道了'
-            }
-            this.getExamDetail({id: examId}).then(res => {
-              this.tooltipsStr = this.getTooltipsStr()
-            })
-          } else {
-            // 已经分享过
-          }
-        })
-      }
+          this.getExamDetail({id: examId}).then(res => {
+            this.tooltipsStr = this.getTooltipsStr()
+          })
+        } else {
+          // 已经分享过
+        }
+      })
     },
     initAppShare () {
       let plat = getPlat()
