@@ -281,11 +281,13 @@
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
     <!-- gift box -->
-    <div class='gift-box-wrap'>
+    <div v-if='giftBoxType' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
-    <lottery-tips :show="isLotteryTips"
+    <lottery-tips
+      :lotteryObj='lotteryObj'
+      :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
     </lottery-tips>
   </div>
@@ -351,6 +353,7 @@ export default {
   },
   data () {
     return {
+      giftBoxType: false,
       imgs: {
         giftBox: require('@/assets/vote/gift-box.png')
       },
@@ -422,7 +425,8 @@ export default {
       activeTips: [],
       scrollTop: 0, // 滚动条距离顶部距离
       downloadLink: '',
-      isLotteryTips: true
+      isLotteryTips: false,
+      lotteryObj: {}
     }
   },
   created () {
@@ -477,6 +481,17 @@ export default {
     }
   },
   methods: {
+    shareSuccess () {
+      API.shareOk({ query: {id: this.id} }).then(res => {
+
+      })
+    },
+    goLotteryList () {
+      this.$router.push({
+        name: 'lotterylist',
+        query: { id: this.id }
+      })
+    },
     closeReportNumLimit () {
       this.isReportNumLimit = false
     },
@@ -503,6 +518,18 @@ export default {
           query: { id: voteId }
         })
       }
+      // 判断显示gift box
+      let _lottery = res.lottery
+      let lotteryArr = []
+      this.lotteryObj = res.lottery
+      lotteryArr.push(_lottery.enroll.is_win)
+      lotteryArr.push(_lottery.enroll.raffle_num)
+      lotteryArr.push(_lottery.vote_relation.is_win)
+      lotteryArr.push(_lottery.vote_relation.raffle_num)
+      let isExistLottery = false
+      isExistLottery = lotteryArr.some(item => item > 0)
+      this.giftBoxType = isExistLottery
+
       let url = res.indexpic
       if (url) {
         let swipeList = []
@@ -685,6 +712,8 @@ export default {
       }, this.shareLottery)
     },
     shareLottery () {
+      this.shareLottery()
+
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
           query: {
@@ -1267,7 +1296,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      console.log(params, data)
+      // console.log(params, data)
       this.$router.push({
         name: page,
         params,

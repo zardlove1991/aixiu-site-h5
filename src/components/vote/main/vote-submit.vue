@@ -206,7 +206,8 @@ export default {
       nameStr: '名称',
       describeStr: '描述',
       describeSuffix: '(选填)',
-      full_scene_type: ''
+      full_scene_type: '',
+      choiced_works_type: [] // 1 => video  2 => image 3 => text 4 => audio
     }
   },
   created () {
@@ -215,6 +216,8 @@ export default {
   },
   mounted () {
     this.judgeStatus()
+    this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
+    console.log('this.choiced_works_type', this.choiced_works_type)
   },
   methods: {
     mixinList () {
@@ -273,7 +276,8 @@ export default {
           }
         }
         if (detailInfo.mark === 'commonvote-fullscene') {
-          let arr = limit.full_scene_type
+          // let arr = limit.full_scene_type
+          let arr = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
           if (arr && arr.length) {
             let newArr = arr.filter(item => {
               if (item !== '4') {
@@ -284,6 +288,7 @@ export default {
               let key = newArr[0]
               // this.fullSceneType = newArr
               this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
+              console.log('00000', this.fullSceneType)
               this.checkFullScene = key
             //  this.showModel = this.fullSceneMap[key][1]
             }
@@ -298,12 +303,10 @@ export default {
             id: this.id
           }
         }).then(res => {
-          console.log('---res---', res)
           if (!res) {
             return
           }
           // 输入值得回显
-          console.log('--88--', this.enrollForm)
           let _extra = res.extra
           for (let [key, value] of Object.entries(_extra)) {
             for (let i of this.enrollForm.formFixList) {
@@ -407,6 +410,7 @@ export default {
       document.body.scrollTop = 0
     },
     commitVote () {
+      debugger
       let id = this.id
       let examineData = this.examineData
       if (!id) {
@@ -479,6 +483,8 @@ export default {
           name: 'votebegin',
           params: { id }
         })
+      }).catch(e => {
+        this.disabled = false
       })
     },
     changeFile () {

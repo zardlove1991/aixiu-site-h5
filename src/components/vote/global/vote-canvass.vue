@@ -75,7 +75,6 @@ export default {
   mounted () {
     let detailInfo = STORAGE.get('detailInfo')
     this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
-    console.log('detailInfo', detailInfo.rule.limitm.canvassing_poster.background_img)
     // this.worksBg = this.imgs.bgImg
   },
   methods: {

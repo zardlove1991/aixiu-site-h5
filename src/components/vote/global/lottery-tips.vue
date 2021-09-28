@@ -6,17 +6,19 @@
       <img :src="closeIcon" alt="">
     </div>
     <div class='lottery-list-wrap'>
-      <div v-for='(item, index) in lotteyList' :key='index' class='single-lottery-box'>
-        <div class='single-lottery-left'>
-          <img :src="item.img" alt="" class='img-box'>
-          <div>
-            <div>{{item.title}}</div>
-            <div>{{item.tips}}</div>
+      <template v-for='(item, index) in lotteyList'>
+        <div v-if='item.isShowBox' :key='index' class='single-lottery-box'>
+          <div class='single-lottery-left'>
+            <img :src="item.img" alt="" class='img-box'>
+            <div>
+              <div>{{item.title}}</div>
+              <div>可抽奖{{item.raffle_num}}次</div>
+            </div>
           </div>
+          <div v-if='item.isLotterNum' @click='goLotterFun(item)' class='btn-style'>去抽奖</div>
+          <div v-if='item.isLotterList' @click='goRecoredList(item)' class='btn-style'>中奖记录</div>
         </div>
-        <!-- <div class='btn-style'>去抽奖</div> -->
-        <div class='btn-style'>中奖记录</div>
-      </div>
+      </template>
 
     </div>
   </div>
@@ -29,6 +31,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    lotteryObj: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
@@ -41,13 +47,27 @@ export default {
       lotteyList: [
         {
           img: require('@/assets/vote/enroll.png'),
-          title: '幸运转盘抽大奖',
-          tips: '可抽奖8次'
+          title: '',
+          tips: '',
+          raffle_num: 0,
+          isShowBox: true,
+          isLotterNum: false,
+          isLotterList: false,
+          lotterListUrl: '',
+          goLotter: '',
+          data: {}
         },
         {
           img: require('@/assets/vote/vote.png'),
-          title: '幸运转盘抽大奖',
-          tips: '可抽奖8次'
+          title: '',
+          tips: '',
+          raffle_num: 0,
+          isShowBox: true,
+          isLotterNum: false,
+          isLotterList: false,
+          lotterListUrl: '',
+          goLotter: '',
+          data: {}
         }
       ]
 
@@ -56,9 +76,71 @@ export default {
   components: {
 
   },
+  mounted () {
+    this.renderList1()
+    this.renderList2()
+  },
   methods: {
     closeLotteryTipsFun () {
       this.$emit('closeLotteryTipsFun')
+    },
+    renderList1 () {
+      let _enroll = this.lotteryObj.enroll
+      this.lotteyList[0].title = _enroll.name
+      this.lotteyList[0].raffle_num = _enroll.raffle_num
+
+      this.lotteyList[0].lotterListUrl = 'lotteryRecord'
+      this.lotteyList[0].goLotter = 'lotteryDial'
+
+      this.lotteyList[0].data = _enroll
+      if (_enroll.raffle_num === 0 && _enroll.is_win === 0) {
+        this.lotteyList[0].isShowBox = false
+      } else {
+        this.lotteyList[0].isShowBox = true
+      }
+      if (_enroll.raffle_num > 0) {
+        this.lotteyList[0].isLotterNum = true // 抽奖
+        return false
+      } else {
+        if (_enroll.is_win > 0) {
+          this.lotteyList[0].isLotterList = true
+        }
+      }
+    },
+    renderList2 () {
+      let _voteRelation = this.lotteryObj.vote_relation
+      this.lotteyList[1].title = _voteRelation.name
+      this.lotteyList[1].raffle_num = _voteRelation.raffle_num
+
+      this.lotteyList[1].lotterListUrl = 'lotteryRecord'
+      this.lotteyList[1].goLotter = 'lotteryDial'
+
+      this.lotteyList[1].data = _voteRelation
+      if (_voteRelation.raffle_num === 0 && _voteRelation.is_win === 0) {
+        this.lotteyList[1].isShowBox = false
+      } else {
+        this.lotteyList[1].isShowBox = true
+      }
+      if (_voteRelation.raffle_num > 0) {
+        this.lotteyList[1].isLotterNum = true // 抽奖
+        return false
+      } else {
+        if (_voteRelation.is_win > 0) {
+          this.lotteyList[1].isLotterList = true
+        }
+      }
+    },
+    goLotterFun (data) {
+      this.$router.push({
+        name: data.goLotter,
+        query: { id: data.data.id }
+      })
+    },
+    goRecoredList (data) {
+      this.$router.push({
+        name: data.goLotter,
+        query: { id: data.data.id }
+      })
     }
   }
 }
