@@ -164,7 +164,9 @@ export default {
         }
       }).then(res => {
         if (!res || !res.url || !res.cover) {
-          this.getVideoUrl(videoId)
+          setTimeout(() => {
+            this.getVideoUrl(videoId)
+          }, 3000)
           return
         }
         let { id, url, cover } = res
