@@ -16,7 +16,9 @@
       <div class="container-title-on" :class="{ 'container-title':detailInfo.title.length > 5}" v-if="detailInfo.is_display_title">{{detailInfo.title}}</div>
       <!-- <div class="container-title" v-else-if='(detailInfo.remain_counts > 0 || detailInfo.user_integral_counts > 0)'>{{detailInfo.title}}</div> -->
       <div class="container-title-notice" :class="{'container-title-notice-off':disableBtn}">
-          <van-notice-bar class="notice" scrollable text="疯狂派“兑”，快来邀请好友一起来参与吧！"/>
+          <van-notice-bar class="notice" :scrollable="true" >
+            <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
+          </van-notice-bar>
       </div>
       <div class="dial-container-wrap">
         <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
@@ -90,8 +92,8 @@
     <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
     <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
       />
-    <Command :show.sync='isCommandShow' v-if="isCommandShow" @close ='isCommandShow = false' :data.sync="detailInfo.limit" :command.sync="command"
-      :id="id" @onCommandSuccess='onCommandSuccess'/>
+    <Command :show.sync='isCommandShow' v-if="isCommandShow" @close ='isCommandShow = false' :data.sync="detailInfo.limit"
+      :id="id" :isword.sync='detailInfo.is_word'/>
 
     <RecordDraw :show.sync='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"
       :data.sync="detailInfo.limit.integral_limit"/>
@@ -204,6 +206,7 @@ export default {
     DialDialog
   },
   computed: {
+    // 大转盘动画
     animationClass () {
       // 对应css样式中定义的class属性值,如果有更多的话可以继续添加  case 8:   return 'wr8'
       switch (this.winner) {
@@ -224,15 +227,10 @@ export default {
         case 7:
           return 'wr7'
       }
+    },
+    remainCounts () {
+      return this.detailInfo.remain_counts
     }
-    // listData () {
-    //   let awardTabel = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
-    //   awardTabel.map(item => {
-    //     if (item.type === 1) {}
-    //   })
-    //   return this.list
-    // }
-
   },
   props: {
     id: String
@@ -324,6 +322,7 @@ export default {
     }
   },
   watch: {
+    // 详细信息
     detailInfo: {
       handler: function (newValue, oldValue) {
         this.detailInfo = newValue
@@ -331,6 +330,17 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    // 抽奖次数
+    remainCounts (val) {
+      if (!val) {
+        let integralLimit = this.detailInfo.limit.integral_limit
+        if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+          this.isRecordDrawShow = true
+        } else {
+          this.isUnPrizeChanceShow = true
+        }
+      }
     }
   },
   async created () {
@@ -452,9 +462,14 @@ export default {
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.classList.remove(this.animationClass)
-        if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery) { // 口令抽奖
+        console.log(this.detailInfo.is_word, 'this.detailInfo.is_word')
+        if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery && this.detailInfo.is_word === 0) { // 口令抽奖
           this.isCommandShow = true
+          // console.log('kouling')
         } else {
+          this.specified = false
+          this.winner = this.random(0, this.list.length - 1)
+          this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
           this.ininData()
@@ -478,6 +493,13 @@ export default {
               if (item.uuid === uuid) {
                 this.winner = index
                 // console.log(this.winner, '库存..............')
+              }
+            })
+          } else if (res.type === 6) {
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '再来一次..............')
               }
             })
           } else if (res.type === 5) { // 积分
@@ -533,7 +555,7 @@ export default {
             }
             if (this.prizeData.give_aways === 1) { // 线下
               if (this.prizeData.award_time) {
-                this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
+                // this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
                 if (this.prizeData.award_time instanceof Array) {
                   this.prizeData.award_time = this.prizeData.award_time[0] + ' 至 ' + this.prizeData.award_time[1]
                   console.log(this.prizeData.award_time, 'this.prizeData.award_time')
@@ -584,145 +606,6 @@ export default {
         this.loading = true
       }
     },
-    // 口令抽奖判断
-    async onCommandSuccess (data) {
-      if (data) {
-        this.command = data
-        if (this.command) {
-          try {
-            const res = await API.getDraw({ query: { id: this.id } })
-            // console.log(res)
-            this.ininData()
-            this.specified = true // 指定获奖下标
-            if (this.specified) {
-              this.winner = this.winner
-              this.winCallback()
-            }
-            if (res.error_code === 'no_extract_prize') { // 未中奖
-              this.isUnDrawShow = true
-              this.list.map((item, index) => {
-                if (item.type === 7) {
-                  this.winner = index
-                  // console.log(this.winner, 'this.winnerthis.winnerthis.winner')
-                }
-              })
-            } else if (res.error_code === 'no_prize_num') { // 库存不足
-              // this.$toast.fail(res.error_message)
-              let uuid = res.error_message
-              this.list.map((item, index) => {
-                if (item.uuid === uuid) {
-                  this.winner = index
-                  // console.log(this.winner, '库存..............')
-                }
-              })
-            } else if (res.type === 6) {
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '再来一次..............')
-                }
-              })
-            } else if (res.type === 5) { // 积分
-              this.integralData = res
-              this.isIntegralShow = true
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '积分..............')
-                }
-              })
-            } else if (res.type === 4) { // 卡劵
-              this.cardViewData = res
-              if (this.cardViewData.qr_code instanceof Array) {
-                this.cardViewData.qr_code = this.cardViewData.qr_code ? this.getImage(this.cardViewData.qr_code[0]) : this.cardViewData.qr_code
-                // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
-              }
-              this.isCardViewShow = true
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '卡劵..............')
-                }
-              })
-              console.log(this.cardViewData, 'this.cardViewData ')
-            } else if (res.type === 3) { // 红包
-              this.packetData = res
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '红包..............')
-                }
-              })
-              this.isPacketShow = true
-              console.log(this.isPacketShow, 'this.isPacketShow this.isPacketShow ')
-            } else if (res.type === 2) { // 优惠劵
-              this.isCouponShow = true
-              this.couponData = res
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '优惠劵..............')
-                }
-              })
-            } else if (res.type === 1) { // 实物
-              this.prizeData = res
-              // console.log(this.prizeData)
-              if (this.prizeData.images instanceof Array || this.prizeData.images instanceof Array) {
-                let images = this.getImage(this.prizeData.images[0])
-                this.prizeData.images = this.prizeData.images ? images : this.prizeData.images
-                let code = this.getImage(this.prizeData.qr_code[0])
-                this.prizeData.qr_code = this.prizeData.qr_code ? code : this.prizeData.qr_code
-              }
-              if (this.prizeData.give_aways === 1) { // 线下
-                if (this.prizeData.award_time) {
-                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
-                  if (this.prizeData.award_time instanceof Array) {
-                    this.prizeData.award_time = this.prizeData.award_time[0] + ' 至 ' + this.prizeData.award_time[1]
-                    console.log(this.prizeData.award_time, 'this.prizeData.award_time')
-                  }
-                }
-                this.isPrizeVerificationcShow = true
-              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 0) { // 线上 && 未填地址
-                if (this.prizeData.award_time) {
-                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
-                  if (this.prizeData.award_time instanceof Array) {
-                    this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
-                  }
-                }
-                this.isPrizeShow = true
-                console.log(this.isPrizeShow)
-              } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 1) { // 线上 && 已填地址
-                if (this.prizeData.award_time) {
-                  this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
-                  if (this.prizeData.award_time instanceof Array) {
-                    this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
-                  }
-                }
-                this.isPrizeAddressShow = true
-              }
-              this.list.map((item, index) => {
-                if (item.type === res.type) {
-                  this.winner = index
-                  console.log(this.winner, '实物..............')
-                }
-              })
-            } else if (res.error_code === 'no_draw_counts') { // 没抽奖次数
-              let integralLimit = this.detailInfo.limit.integral_limit
-              if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
-                this.isRecordDrawShow = true
-              } else {
-                this.isUnPrizeChanceShow = true
-              }
-            }
-            this.isCommandShow = false
-          } catch (error) {
-            if (error) {
-              // this.$toast.error('接口异常')
-            }
-          }
-        }
-      }
-    },
     // 实物地址填写
     onAddress (value) {
       // console.log(value)
@@ -732,6 +615,7 @@ export default {
       }
       console.log(this.$refs['address'])
     },
+    // 实物核销码
     onLotteryCode (data) {
       if (data.cancel_code) {
         this.tempPrize = data
@@ -758,7 +642,7 @@ export default {
       setTimeout(() => {
         this.loading = false
         console.log(`恭喜你获得了${this.winner}`)
-      }, 1000)
+      }, 3000)
     },
     // 随机一个整数的方法
     random (min, max) {
@@ -767,7 +651,7 @@ export default {
     // 中奖纪录
     handleGo () {
       this.$router.push({
-        name: 'lotteryRecord',
+        name: 'lotteryRotorRecord',
         query: { id: this.id }
       })
     },
@@ -978,8 +862,8 @@ $time: 3s; //转动多少秒后停下的时间
   .container-title-notice{
     width: px2rem(525px);
     height: px2rem(44px);
-    opacity: 0.2;
-    background: #000000;
+    // opacity: 0.2;
+    background: #00000033;
     border-radius: px2rem(24px);
     margin: 0 auto px2rem(6px) auto;
     padding: (9px) auto;
@@ -995,7 +879,18 @@ $time: 3s; //转动多少秒后停下的时间
       font-weight: 400;
       text-align: left;
       color: #ffffff;
-      line-height: px2rem(26px)
+      line-height: px2rem(26px);
+      .notice-bar {
+        // width: 496px;
+        height: px2rem(26px);
+        opacity: 1 !important;
+        font-size: px2rem(26px);
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: #ffffff !important;
+        line-height: px2rem(26px);
+      }
     }
   }
   .container-title-notice-off {

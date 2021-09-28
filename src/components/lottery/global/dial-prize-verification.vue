@@ -11,9 +11,9 @@
                         <van-image class="gift" :src="prizeData.images"></van-image>
                     </div>
                     <div class="prize-bg">
-                        <span>{{prizeData.award_name}}</span>
+                        <span>{{prizeData && prizeData.award_name}}</span>
                     </div>
-                    <div class="prize-name">{{prizeData.award_content}}</div>
+                    <div class="prize-name">{{prizeData &&prizeData.award_content}}</div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
@@ -27,10 +27,11 @@
                 <div class="avatar-name">{{prizeData.is_merchants.merchant_info}}</div>
             </div>
             <div class="info">
-                <p>兑奖码： {{prizeData.code}}</p>
-                <p>门店地址：{{prizeData.select_merchant.address}} </p>
-                <p>营业时间：{{prizeData.select_merchant.start_time}} - {{prizeData.select_merchant.end_time}} </p>
-                <p>兑奖时间：{{prizeData.award_time}}</p>
+                <p>兑奖码： {{prizeData && prizeData.code || '--'}}</p>
+                <p>门店地址：{{prizeData &&prizeData.select_merchant.address || '--'}} </p>
+                <p v-if="prizeData.select_merchant.start_time && prizeData.select_merchant.end_time">营业时间：{{prizeData.select_merchant.start_time}} - {{prizeData.select_merchant.end_time}} </p>
+                <p v-else>营业时间：--</p>
+                <p>兑奖时间：{{prizeData &&prizeData.award_time || '--'}}</p>
             </div>
 
             <van-button  block  class="btn" v-if="prizeData.cancel_code" @click="onCancelCode">中奖二维码</van-button>

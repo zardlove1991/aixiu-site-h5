@@ -46,8 +46,8 @@ export default {
       type: String,
       required: true
     },
-    command: {
-      type: [String, Number],
+    isword: {
+      type: Number,
       required: true
     },
     data: {
@@ -98,9 +98,8 @@ export default {
       try {
         const res = await API.getCheckDraw({ query: { id: this.id }, data: { password: this.user.password } })
         this.$toast.success('验证成功')
-        // this.$emit('update:command', res.success)
-        this.$emit('onCommandSuccess', res.success)
-        console.log(res)
+        this.$emit('update:isword', res.success)
+        this.$parent.onDraw()
         this.onClose()
       } catch (error) {
         this.$toast.fail(error.error_message)

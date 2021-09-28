@@ -191,6 +191,7 @@ export default {
         // console.log(this.tempItem, 'tempItem')
         this.isCardOverduesShow = true
       } else if (item.prize_type === 1) {
+        console.log(item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中')
         this.tempItem = item
         if (item.prize_info.give_aways === 2) {
           this.isRecordInfoShow = true

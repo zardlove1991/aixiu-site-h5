@@ -319,8 +319,7 @@ const routes = [{
 },
 {
   path: '/lottery/rotor/index/:id',
-  // path: '/lottery/dial/index',
-  name: 'lotteryDial',
+  name: 'lotteryRotorDial',
   component: getOtherComponent('dial-start', 'lottery'),
   props: (route) => ({
     id: route.params.id
@@ -331,7 +330,7 @@ const routes = [{
 },
 {
   path: '/lottery/rotor/record/:id',
-  name: 'lotteryRecord',
+  name: 'lotteryRotorRecord',
   component: getOtherComponent('record-prize', 'lottery'),
   props: (route) => ({
     id: route.params.id

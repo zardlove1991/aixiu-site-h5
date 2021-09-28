@@ -2,8 +2,8 @@
   <DialDialog :show="show" @close="onClose">
     <div slot="tille-name" class="tille-name">活动规则</div>
     <div slot="container" class="container">
-      <div class="container-desc">
-        {{data}}
+      <div class="container-desc" v-html="data">
+        <!-- {{data}} -->
       </div>
       <!-- <div class="container-desc">活动时间：本活动为长期活动，具体在线时间以页面呈现为准抽奖细节：<br/>1. 每天每个微信号可投票十票，投票后点 击此链接幸运抽奖，进入抽奖页面。</div> -->
       <!-- <div class="container-img">
@@ -55,7 +55,18 @@ export default {
   }
 }
 </script>
-
+<style lang='scss'>
+.container {
+  .container-desc {
+    img {
+      // max-width: 100% !important;
+      width:auto;
+      height:auto;
+      object-fit: none;
+    }
+  }
+}
+</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
  .container{
@@ -79,6 +90,9 @@ export default {
     white-space: pre-line;
     line-height: px2rem(42px);
     margin-bottom: px2rem(30px);
+    p {
+     
+    }
     .container-img{
       width: px2rem(520px);
       height: px2rem(300px);

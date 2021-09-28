@@ -156,7 +156,8 @@ export default {
   }
   .divider{
     width: px2rem(600px);
-    height: px2rem(40px);
+    // height: px2rem(40px);
+    height: px2rem(42px);
     opacity: 1;
     @include img-retina("~@/assets/lottery/prizeRecord/split.png",
     "~@/assets/lottery/prizeRecord/split@2x.png", 100%, 100%);

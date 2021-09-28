@@ -15,19 +15,21 @@
                     </div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
+                    <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
                 </div>
                 <div class="content-pre-userInfo">
-                    <p>兑奖码：{{itemData.prize_info.code}} </p>
-                    <p>门店地址：{{itemData.prize_info.select_merchant.address}}</p>
-                    <p>营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
-                    <p>兑奖时间：{{itemData.prize_info.award_time}}</p>
+                    <p>兑奖码：{{itemData && itemData.prize_info.code || '--'}} </p>
+                    <p>门店地址：{{itemData &&itemData.prize_info.select_merchant.address || '--'}}</p>
+                    <p v-if="itemData.prize_info.select_merchant.start_time && itemData.prize_info.select_merchant.end_time">营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
+                    <p v-else>营业时间：--</p>
+                    <p>兑奖时间：{{itemData &&itemData.prize_info.award_time || '--'}}</p>
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
               <div class="grounp-btns-wrap">
                   <van-button  block  class="btn back" @click="onClose"><span>返回</span></van-button>
                   <van-button  block  class="btn lottery" v-if="itemData.status_name === '已抽中' " @click="isPrizeQrCodeShow=true"><span>中奖二维码</span></van-button>
-                  <van-button  block  class="btn due" disabled v-else-if="itemData.status_name === '已过期' "><span>中奖二维码</span></van-button>
+                  <van-button  block  class="btn due" disabled v-else-if="itemData.status_name === '已过期' ||  itemData.status_name === '已兑奖'"><span>中奖二维码</span></van-button>
               </div>
               <div class="record-code-wrap">
                   <div class="code-wrap" v-if="itemData.prize_info.qr_code">
@@ -183,6 +185,16 @@ export default {
                 position: absolute;
                 bottom: px2rem(30px);right: px2rem(210px);
                 z-index: 2;
+            }
+            .ticked-wrap{
+                width: px2rem(122px);
+                height: px2rem(102px);
+                opacity: 1;
+                @include img-retina("~@/assets/lottery/ticketed.png",
+                "~@/assets/lottery/ticketed@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                position: absolute;
+                top:px2rem(42px);right: px2rem(30px);
             }
              .content-pre-circle{
                 position: absolute;

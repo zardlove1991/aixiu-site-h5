@@ -7,10 +7,11 @@
                     <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image>
                 </div>
                 <div class="info">
-                    <p>兑奖码： {{lotteryCodeData.code}} </p>
-                    <p>门店地址：{{lotteryCodeData.select_merchant.address}}</p>
-                    <p>营业时间：{{lotteryCodeData.select_merchant.start_time}} - {{lotteryCodeData.select_merchant.end_time}}</p>
-                    <p>兑奖时间：{{lotteryCodeData.award_time}}</p>
+                    <p>兑奖码： {{lotteryCodeData && lotteryCodeData.code || '--'}} </p>
+                    <p>门店地址：{{lotteryCodeData && lotteryCodeData.select_merchant.address || '--'}}</p>
+                    <p v-if="lotteryCodeData.select_merchant.start_time && lotteryCodeData.select_merchant.end_time">营业时间：{{lotteryCodeData.select_merchant.start_time}} - {{lotteryCodeData.select_merchant.end_time}}</p>
+                    <p v-else>营业时间：--</p>
+                    <p>兑奖时间：{{lotteryCodeData && lotteryCodeData.award_time || '--'}}</p>
                 </div>
                 <div class="tips">
                     <p>请展示二维码图片给店员进行使用，长按图片可</p>

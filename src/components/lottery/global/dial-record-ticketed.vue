@@ -18,10 +18,11 @@
                     <div class="ticked-wrap"></div>
                 </div>
                 <div class="content-pre-userInfo">
-                    <p>兑奖码：{{itemData.prize_info.code}} </p>
-                    <p>门店地址：{{itemData.prize_info.select_merchant.address}}</p>
-                    <p>营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
-                    <p>兑奖时间：{{itemData.prize_info.award_time}}</p>
+                    <p>兑奖码：{{itemData && itemData.prize_info.code || '--'}} </p>
+                    <p>门店地址：{{itemData &&itemData.prize_info.select_merchant.address || '--'}}</p>
+                    <p v-if="itemData.prize_info.select_merchant.start_time && itemData.prize_info.select_merchant.end_time">营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
+                    <p v-else>营业时间：--</p>
+                    <p>兑奖时间：{{itemData &&itemData.prize_info.award_time || '--'}}</p>
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
@@ -201,7 +202,10 @@ export default {
                 width: px2rem(122px);
                 height: px2rem(102px);
                 opacity: 1;
-                background: linear-gradient(135deg,#ff8f68, #ff1a4a);
+                @include img-retina("~@/assets/lottery/ticketed.png",
+                "~@/assets/lottery/ticketed@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                // background: linear-gradient(135deg,#ff8f68, #ff1a4a);
                 position: absolute;
                 top:px2rem(42px);right: px2rem(30px);
             }

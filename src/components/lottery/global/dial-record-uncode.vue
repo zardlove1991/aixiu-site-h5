@@ -8,25 +8,28 @@
                <div class="content-pre-title">获得{{itemData.prize_info.award_content}}</div>
                 <div class="content-pre-wrap">
                     <div class="content-pre-circle">
-                        <van-image :src="itemData.prize_info.images" class="avatar"/>
+                        <van-image :src="itemData.prize_info.images" class="avatar" v-if="itemData.prize_info.images"/>
                     </div>
                     <div class="center-icon">
                         <span>{{itemData.prize_info.award_name}}</span>
                     </div>
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
+                    <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
                 </div>
                 <div class="content-pre-userInfo">
-                    <p>兑奖码：{{itemData.prize_info.code}} </p>
-                    <p>门店地址：{{itemData.prize_info.select_merchant.address}}</p>
-                    <p>营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
-                    <p>兑奖时间：{{itemData.prize_info.award_time}}</p>
+                    <p>兑奖码：{{itemData && itemData.prize_info.code || '--'}} </p>
+                    <p>门店地址：{{itemData && itemData.prize_info.select_merchant.address || '--'}}</p>
+                    <p v-if="itemData.prize_info.select_merchant.start_time && itemData.prize_info.select_merchant.end_time">营业时间：{{itemData.prize_info.select_merchant.start_time}} - {{itemData.prize_info.select_merchant.end_time}}</p>
+                    <p v-else>营业时间：--</p>
+                    <p>兑奖时间：{{itemData && itemData.prize_info.award_time || '--'}}</p>
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
               <div class="grounp-btns-wrap">
-                  <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
-                  <van-button  block  class="btn" v-if="itemData.status === '已抽中' " @click="isPrizeQrCodeShow = true"><span>中奖二维码</span></van-button>
+                  <van-button  block  class="btn back" @click="onClose"><span>返回</span></van-button>
+                  <van-button  block  class="btn lottery" v-if="itemData.status_name === '已抽中' " @click="isPrizeQrCodeShow = true"><span>中奖二维码</span></van-button>
+                  <van-button  block  class="btn due" disabled v-else-if="itemData.status_name === '已过期' ||  itemData.status_name === '已兑奖'"><span>中奖二维码</span></van-button>
               </div>
               <div class="tips-wrap">
                   <p>兑奖提示：请指定时间和门店地址进行核销超 </p>
@@ -58,12 +61,7 @@ export default {
       isPrizeQrCodeShow: false
     }
   },
-  computed: {},
-  watch: {
-    show (newState) {
-      // 更改当前是否显示遮罩的状态
-      this.setIsModelShow(newState)
-    },
+  computed: {
     itemData: {
       get () {
         return this.data
@@ -74,7 +72,13 @@ export default {
       }
     }
   },
-  created () {},
+  watch: {
+    show (newState) {
+      // 更改当前是否显示遮罩的状态
+      this.setIsModelShow(newState)
+    }
+  },
+  created () { console.log(this.itemData, 'itemData') },
   mounted () {},
   methods: {
     onClose () {
@@ -178,6 +182,16 @@ export default {
                 bottom: px2rem(30px);right: px2rem(210px);
                 z-index: 2;
             }
+            .ticked-wrap{
+                width: px2rem(122px);
+                height: px2rem(102px);
+                opacity: 1;
+                @include img-retina("~@/assets/lottery/ticketed.png",
+                "~@/assets/lottery/ticketed@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                position: absolute;
+                top:px2rem(42px);right: px2rem(30px);
+            }
              .content-pre-circle{
                 position: absolute;
                 top:px2rem(76px);
@@ -243,7 +257,7 @@ export default {
                 border-radius: px2rem(16px);
                 border: none;
                 text-align: center;
-                &:first-child{
+                &.back{
                     background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
                     box-shadow: 0 px2rem(16px) 0px 0px #e5b56b;
                     margin-left: px2rem(52px);
@@ -257,7 +271,7 @@ export default {
                         line-height: px2rem(72px);
                     }
                 }
-                &:last-child{
+                &.lottery{
                     background: linear-gradient(0deg,#ff214b 1%, #ff5368);
                     box-shadow: 0 px2rem(16px) 0px 0px #DE183D;
                     span{
@@ -266,6 +280,18 @@ export default {
                         font-weight: 500;
                         text-align: left;
                         color: #fff4e3;
+                        line-height: px2rem(72px);
+                    }
+                }
+                &.due{
+                    background: linear-gradient(0deg,#fff 1%, #b7b09b);
+                    box-shadow: 0 px2rem(16px) 0px 0px #b7b09b;
+                    span{
+                        font-size: px2rem(28px);
+                        font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+                        font-weight: 500;
+                        text-align: left;
+                        color: #4f0f0f;
                         line-height: px2rem(72px);
                     }
                 }
