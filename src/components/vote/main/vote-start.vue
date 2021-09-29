@@ -283,7 +283,7 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' class='gift-box-wrap'>
+    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
@@ -445,7 +445,15 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-
+    let isFirstUploadType = STORAGE.get('isFirstUpload')
+    const detailInfo = STORAGE.get('detailInfo')
+    let isLotteryType = detailInfo.rule.lottery_config.enroll.value
+    if (isFirstUploadType) {
+      if (isLotteryType === 1) {
+        this.isShowVoteReward = true
+      }
+      STORAGE.set('isFirstUpload', false)
+    }
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -483,6 +491,9 @@ export default {
     }
   },
   methods: {
+    showLotteryTips () {
+      this.isLotteryTips = true
+    },
     shareSuccess () {
       API.shareOk({ query: {id: this.id} }).then(res => {
 

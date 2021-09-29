@@ -228,7 +228,6 @@ export default {
   mounted () {
     this.judgeStatus()
     this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
-    console.log('this.choiced_works_type', this.choiced_works_type)
   },
   methods: {
     mixinList () {
@@ -262,6 +261,16 @@ export default {
     },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
+      // 判断是不是初次进入
+      let _mywork = detailInfo.mywork
+      if (STORAGE.get('isFirstUpload')) {
+        STORAGE.remove('isFirstUpload')
+      }
+      if (_mywork.length === 0) {
+        STORAGE.set('isFirstUpload', true)
+      } else {
+        STORAGE.set('isFirstUpload', false)
+      }
       let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
