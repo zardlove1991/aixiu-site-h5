@@ -42,7 +42,8 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+    }
   },
   computed: {
     itemData: {
@@ -202,7 +203,7 @@ export default {
   }
 }
 .record-info-next{
-  margin-top: px2rem(20px);
+  padding-top: px2rem(20px);
   .btn{
     width: px2rem(230px);
     height: px2rem(72px);

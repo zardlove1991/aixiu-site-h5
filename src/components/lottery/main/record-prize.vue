@@ -19,7 +19,7 @@
             >
               <div slot="title" class="title">{{ item.prize_content }}</div>
               <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
-              <div slot="default" class="jump" @click="onLook(item)">查看</div>
+              <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 5}">查看</div>
             </van-cell>
           </van-list>
         </van-pull-refresh>
@@ -381,6 +381,9 @@ export default {
           text-align: right;
           color: #333333;
           line-height: px2rem(100px);
+          &.is-hide{
+            display: none;
+          }
         }
         &::after {
           width: 100%;
