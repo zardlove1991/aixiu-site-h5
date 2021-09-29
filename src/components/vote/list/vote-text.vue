@@ -55,6 +55,7 @@ export default {
   },
   methods: {
     jumpPage (page, data, introduce) {
+      debugger
       if (introduce) {
         this.$emit('jump-page', page, data)
       }

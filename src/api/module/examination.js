@@ -59,6 +59,7 @@ let examUrl = {
 
 // 投票相关接口
 let voteUrl = {
+  shareOk: 'client/voting/{id}/share-ok', // 投票活动-分享成功回执
   getVoteAuthScope: 'client/voting/base/{id}', // 投票授权接口
   getVoteMember: 'client/voting/works/member', // 获取投票人员列表
   getVideoUrl: 'video/detail', // 获取视频地址
@@ -114,8 +115,15 @@ let drawUrl = {
   getMyDrawList: 'xiuzan/account/mine/'
 }
 
+// 我的报名  我的投票
+let jiluObj = {
+  voteUrl: 'client/voting/myrecords',
+  enrollUrl: 'client/voting/myworks'
+}
+
 // 不带GUID
 let configUrl = {
+  ...jiluObj,
   ...QCloundUrl,
   ...baseUrl,
   ...examUrl,
@@ -199,6 +207,7 @@ export default {
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
+
   // 大转盘、九宫格、盲盒
   getLotteryDetail: config => createLottery(configUrl.getLotteryDetail, 'GET', config, 'lottery'),
   getDraw: config => createLottery(configUrl.getDraw, 'POST', config, 'lottery'),
@@ -207,6 +216,7 @@ export default {
   getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
+
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
   saveIntoCloud: config => createAPI(configUrl.saveIntoCloud, 'post', config, API_FLAG),
@@ -215,5 +225,10 @@ export default {
   getPartyInfo: config => createAPI(configUrl.getPartyInfo, 'GET', config, API_FLAG),
   getExerciseRankList: config => createAPI(configUrl.getExerciseRankList, 'get', config, API_FLAG),
   getMyAnswerList: config => createAPI(configUrl.getAnswerList, 'GET', config, API_FLAG),
-  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG)
+  getPartyGameArea: config => createAPI(configUrl.getGameArea, 'GET', config, API_FLAG),
+  // 获取投票记录
+  getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
+  // 获取报名数据
+  getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG),
+  shareOk: config => createVote(configUrl.shareOk, 'POST', config, API_FLAG)
 }

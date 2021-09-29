@@ -117,7 +117,7 @@
       </div>
       <CustomTooltips class="tooltip-style" :content='tooltipsStr' :visible="tooltipsStr.length > 0 && examInfo.mark !== 'examination@rank'"/>
     </div>
-    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：每天最多提交{{examSubmitCount}}次</div>
+    <div class="start-exam-tips" v-if="isNoLimit && examInfo.mark !== 'examination@integral'">答题规范：{{examSubmitCount?'每天最多提交'+examSubmitCount+'次':''}} {{examInfo.limit.userid_limit_num?'全程最多提交'+examInfo.limit.userid_limit_num+'次':''}}</div>
     <my-model
       :show="App"
       :isLock="true"
@@ -170,13 +170,6 @@
     </div>
     <link-dialog :show="isSubmitSuccess" linkTips="提交成功，页面正在跳转..."></link-dialog>
     <pop-dialog :show="isPopSubmitSuccess" :pop="pop" @confirm="isPopSubmitSuccess = false"></pop-dialog>
-    <luck-draw-dialog
-      :show="isLuckSubmitSuccess"
-      :isLuckDraw="isLuckDraw"
-      :luckDrawTips="luckDrawTips"
-      @cancel="isLuckSubmitSuccess = false"
-      @confirm="pageToLuckDraw()">
-    </luck-draw-dialog>
     <draw-check-dialog
       :show="isShowDrawCheck"
       :checkDraw="checkDraw"
@@ -203,10 +196,11 @@
       :introduce="examInfo.brief"
       :themeColorName="colorName" />
     <!-- 抽奖历史入口图标 -->
-    <div class="lottery_entrance" v-if="showLotteryEntrance">
+    <div class="lottery_entrance" v-if="examInfo.raffle_num || examInfo.prize_num">
       <div @click="goLotteryPage()">
         <img :src="imgUrl" alt="">
-        <div class="info">{{lotteryMsg}}</div>
+        <div class="info" v-if="examInfo.raffle_num">可抽奖{{examInfo.raffle_num}}次</div>
+        <div class="info" v-if="examInfo.prize_num&&!examInfo.raffle_num">查看中奖记录</div>
       </div>
     </div>
     <!-- 未开始 -->
@@ -240,7 +234,6 @@ import mixins from '@/mixins/index'
 import MyModel from './depence/model'
 import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
-import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import PartyCheckDialog from '@/components/dialog/party-check-dialog'
 import CustomTooltips from './exam-components/custom-tooltips'
@@ -316,7 +309,6 @@ export default {
     DrawCheckDialog,
     LinkDialog,
     PopDialog,
-    LuckDrawDialog,
     CustomTooltips,
     OperateDialog,
     PageRule,
@@ -348,7 +340,7 @@ export default {
     },
     examSubmitCount () {
       let examInfo = this.examInfo
-      let count = 1
+      let count = 0
       if (examInfo && examInfo.limit) {
         let dayUserIdLimit = examInfo.limit.day_userid_limit_num
         if (dayUserIdLimit) {
@@ -527,56 +519,6 @@ export default {
       this.isShowBreak = false
       this.goExamPage(null, {special_status: 1})
     },
-    breakDoAction () {
-      let examInfo = this.examInfo
-      if (!examInfo || !examInfo.limit) {
-        return
-      }
-      let rules = examInfo.limit.submit_rules
-      if (rules) {
-        let { is_open_raffle: isOpenRaffle, link, result, pop } = rules
-        if (isOpenRaffle && isOpenRaffle !== 0) {
-          // 抽奖
-          this.isLuckSubmitSuccess = true
-          if (this.luckDrawLink) {
-            this.isLuckDraw = true
-            this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
-          } else {
-            this.isLuckDraw = false
-            this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
-          }
-        } else if (link) {
-          this.isSubmitSuccess = true
-          setTimeout(() => {
-            this.isSubmitSuccess = false
-            window.location.replace(link.url)
-          }, 1000)
-        } else if (result) {
-          let examId = examInfo.id
-          this.$router.replace({
-            path: `/exam/myAnswerList/${examId}`
-          })
-        } else if (pop) {
-          this.isPopSubmitSuccess = true
-          this.pop = pop
-        }
-      }
-    },
-    pageToLuckDraw () {
-      let link = this.luckDrawLink
-      if (link) {
-        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
-          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
-        }
-        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
-        link += '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl)
-        this.isLuckSubmitSuccess = false
-        window.location.replace(link)
-        this.setLuckDrawLink('')
-      } else {
-        this.isLuckSubmitSuccess = false
-      }
-    },
     blurAction () {
       document.body.scrollTop = 0
     },
@@ -635,16 +577,8 @@ export default {
             day_userid_limit_num: dayUserIdLimit,
             ip_limit_num: ipLimit,
             userid_limit_num: userIdLimit,
-            submit_rules: submitRules,
             color_scheme: setup
           } = info.limit
-          if (submitRules && submitRules.result) {
-            STORAGE.set('statInfo', submitRules.result)
-            if (submitRules.raffle_url) {
-              this.lotteryUrl = submitRules.raffle_url
-              this.checkLotteryOpen(submitRules)
-            }
-          }
           if (dayUserIdLimit !== 0 || ipLimit !== 0 || userIdLimit !== 0) {
             this.isNoLimit = true
           }
@@ -657,39 +591,8 @@ export default {
         console.log(err)
       }
     },
-    // 如果有中奖记录
-    async checkLotteryOpen (raffle) {
-      // 用户中奖记录
-      let res = await API.getUserLotteryList({
-        query: { id: raffle.raffle_id }
-      })
-      if (res.data.length > 0) {
-        this.lotteryEnterType = 'history'
-        this.lotteryMsg = '查看中奖情况'
-        this.showLotteryEntrance = true
-      }
-      // if (info.raffle) {
-      //   // 是否放开关联抽奖
-      //   if (info.raffle.is_open_raffle) {
-      //     // 是否可抽奖
-      //     if (info.raffle.raffle_url) {
-      //       this.lotteryEnterType = 'lottery'
-      //       this.lotteryMsg = '参与抽奖'
-      //       this.lotteryUrl = info.raffle.raffle_url
-      //       this.showLotteryEntrance = true
-      //     }
-      //   }
-      // }
-    },
-    goLotteryPage () {
-      if (this.lotteryUrl) {
-        let originUrl = encodeURIComponent(location.href)
-        let jumpUrl = this.lotteryUrl +
-        '?lotteryEnterType=' + this.lotteryEnterType +
-        '&time=' + new Date().getTime() +
-        '&backActionUtl=' + originUrl
-        window.location.href = jumpUrl
-      }
+    goLotteryPage (info) {
+      this.examGoLotteryPage(this.examInfo)
     },
     sharePage () {
       let examInfo = this.examInfo

@@ -96,7 +96,11 @@ export default {
               STORAGE.set('location', location)
             }
             resolve()
+          },
+          fail (e) {
+            reject(e)
           }
+
         })
       })
     },
@@ -147,6 +151,28 @@ export default {
       setTimeout(() => {
         auth()
       }, 1000)
+    },
+    examGoLotteryPage (info) {
+      let { limit: { submit_rules: { lottery_config: lotteryConfig } } } = info
+      let raffleNum = this.examInfo.raffle_num
+      let prizeNum = this.examInfo.prize_num
+      if (lotteryConfig && lotteryConfig.related_lottery && lotteryConfig.related_lottery.isOpen) {
+        let mark = lotteryConfig.related_lottery.mark
+        let id = lotteryConfig.related_lottery.id
+        let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+        console.error(flag, lotteryConfig, raffleNum)
+        if (raffleNum) {
+          this.$router.push({
+            name: 'lottery' + flag,
+            params: {id: id}
+          })
+        } else if (prizeNum) {
+          this.$router.push({
+            name: 'lottery' + flag + 'Record',
+            params: {id: id}
+          })
+        }
+      }
     },
     ...mapActions('depence', {
       getWeixinInfo: 'GET_WEIXIN_INFO',

@@ -260,19 +260,6 @@ export default {
         })
       }
     },
-    pageToLuckDraw () {
-      let link = this.luckDrawLink
-      if (link) {
-        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
-          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
-        }
-        this.isLuckSubmitSuccess = false
-        window.location.replace(link)
-        this.setLuckDrawLink('')
-      } else {
-        this.isLuckSubmitSuccess = false
-      }
-    },
     pageToStart () {
       let examId = this.examId
       this.$router.replace({

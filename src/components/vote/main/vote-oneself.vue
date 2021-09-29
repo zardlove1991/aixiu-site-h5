@@ -81,7 +81,7 @@ import VoteVideo from '@/components/vote/global/vote-video'
 import VoteAudio from '@/components/vote/global/vote-audio'
 import API from '@/api/module/examination'
 import SubjectMixin from '@/mixins/subject'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 import { fullSceneMap } from '@/utils/config'
 
 export default {
@@ -111,32 +111,38 @@ export default {
   },
   methods: {
     initDetail () {
-      let detailInfo = STORAGE.get('detailInfo')
-      if (detailInfo) {
-        if (detailInfo.text_setting) {
-          this.textSetting = detailInfo.text_setting
+      API.getVodeDetail({
+        query: { id: this.id }
+      }).then((res) => {
+        // let detailInfo = STORAGE.get('detailInfo')
+        let detailInfo = res
+        if (detailInfo) {
+          if (detailInfo.text_setting) {
+            this.textSetting = detailInfo.text_setting
+          }
+          let limit = detailInfo.rule.limit
+          if (limit.is_open_classify && limit.is_open_classify === 1) {
+            this.isOpenClassify = true
+          }
+          if (limit.show_mode) {
+            this.videoMode = limit.show_mode
+          }
+          // 判断图片模式
+          let pageSetup = detailInfo.rule.page_setup
+          console.log('let pageSetup', pageSetup.font_color)
+          if (pageSetup.image_ratio) {
+            this.imageRatio = 1
+          } else {
+            this.imageRatio = 0
+          }
+          if (pageSetup.font_color) {
+            this.darkMark = pageSetup.font_color
+          }
+          if (pageSetup.color_scheme) {
+            this.colorName = pageSetup.color_scheme.name
+          }
         }
-        let limit = detailInfo.rule.limit
-        if (limit.is_open_classify && limit.is_open_classify === 1) {
-          this.isOpenClassify = true
-        }
-        if (limit.show_mode) {
-          this.videoMode = limit.show_mode
-        }
-        // 判断图片模式
-        let pageSetup = detailInfo.rule.page_setup
-        if (pageSetup.image_ratio) {
-          this.imageRatio = 1
-        } else {
-          this.imageRatio = 0
-        }
-        if (pageSetup.font_color) {
-          this.darkMark = pageSetup.font_color
-        }
-        if (pageSetup.color_scheme) {
-          this.colorName = pageSetup.color_scheme.name
-        }
-      }
+      })
     },
     initForm () {
       this.initDetail()
