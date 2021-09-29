@@ -8,7 +8,8 @@
                 <div class="prize">
                     <div class="header"></div>
                     <div class="circle">
-                        <van-image class="gift" :src="prizeData.images"></van-image>
+                        <van-image class="gift" :src="prizeData.images">
+                        </van-image>
                     </div>
                     <div class="prize-bg">
                         <span>{{prizeData && prizeData.award_name}}</span>
@@ -183,6 +184,11 @@ export default {
                     position: absolute;
                     top: px2rem(20px); left: px2rem(33px);
                     z-index: 5;
+                   /deep/ .van-image__error-icon{
+                        display: inline-block;
+                        width: 100%;
+                        height: 100%;
+                    }
                 }
             }
             .prize-bg{
@@ -364,6 +370,7 @@ export default {
                 font-weight: 400;
                 text-align: left;
                 color: #fff4e3;
+                white-space:wrap;
                 line-height: px2rem(24px);
                 margin-bottom: px2rem(20px);
             }

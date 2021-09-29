@@ -5,16 +5,16 @@
                <span>中奖记录</span>
            </div>
           <div slot="content" class="record-info-pre">
-            <!-- <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}优惠券</div> -->
+            <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}优惠券</div>
               <div class="content-pre-wrap">
                   <div class="coupon">
-                      <!-- <span>{{itemData.prize_info.award_content}}</span> -->
+                      <span>{{itemData.prize_info.award_content}}</span>
                   </div>
                   <div class="overdues" v-if="itemData.status === '已过期'"></div>
               </div>
               <div class="content-pre-info">
-                    <!-- <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
-                    <p>{{itemData.prize_info.prize_date[1]}}</p> -->
+                    <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
+                    <p>{{itemData.prize_info.prize_date[1]}}</p>
                     <p>优惠券仅支持在本店铺使用，全场商品通用</p>
               </div>
           </div>

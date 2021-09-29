@@ -1,11 +1,12 @@
 <template>
   <DialDialog :show="show" @close="onClose">
     <div slot="container" class="container">
-      <div class="point"></div>
+      <!-- <div class="point"></div> -->
       <div class="img"></div>
       <div class="tips-error">没有抽中哦~</div>
       <div class="tips">好可惜，差点就抽中了</div>
-      <van-button  block  native-type="submit" class="btn" @click="onDrawAgain">再抽一次({{count}})</van-button>
+      <van-button  block  native-type="submit" class="btn" @click="onDrawAgain" v-if="count > 0">再抽一次({{count}})</van-button>
+      <van-button  block  native-type="submit" class="btn btn-notAllow" disabled v-else>再抽一次({{count}})</van-button>
       <div class="left-circle"></div>
       <div class="right-half-circle"></div>
     </div>
@@ -70,17 +71,18 @@ export default {
 .container{
     padding: 0 !important;
     .img{
-
         width: px2rem(313px);
         height: px2rem(246px);
         opacity: 1;
          @include img-retina("~@/assets/lottery/unDraw/bg_4.png",
         "~@/assets/lottery/unDraw/bg_4@2x.png", 100%,100%);
         background-repeat: no-repeat;
+        background-position-x: center;
         // position: absolute;
         margin-top: px2rem(-30px);
-        margin-left: px2rem(170px);
+        // margin-left: px2rem(170px);
         margin-right: auto;
+        margin-left: auto;
         margin-bottom: px2rem(10px);
     }
      .point{
@@ -131,6 +133,10 @@ export default {
         background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
         box-shadow: 0 px2rem(16px) 0px 0px #e5b56b;
         margin: auto;
+        &.btn-notAllow {
+          background: linear-gradient(0deg,#fff 1%, #b7b09b);
+          box-shadow: 0 px2rem(16px) 0px 0px #b7b09b;
+        }
     }
      .left-circle{
         width: px2rem(43px);
