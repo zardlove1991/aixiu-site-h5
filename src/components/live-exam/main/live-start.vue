@@ -134,7 +134,6 @@
       @success="goExamPage()"
       @close="isShowDrawCheck = false">
     </draw-check-dialog>
-    
     <!-- 抽奖历史入口图标 -->
     <div class="lottery_entrance" v-if="examInfo.raffle_num || examInfo.prize_num">
       <div @click="goLotteryPage()">
