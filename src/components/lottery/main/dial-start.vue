@@ -60,7 +60,7 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point">
+        <div class="wheel-point" v-if="sign !== 'wechat' && detailInfo.user_integral_counts">
           <div class="my">我的积分</div>
           <div class="point" v-if="detailInfo.user_integral_counts >= 0">{{detailInfo.user_integral_counts}}</div>
           <div class="point" v-else>0</div>
@@ -104,7 +104,7 @@
     <!-- <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/> -->
     <!-- <MoalImg :show="isWheelShow"/> -->
     <!-- <DialDialog :show="isWheelShow"/> -->
-    <!-- <DialogPage :show="isWheelShow"/> -->
+    <DialogPage :show="isWheelShow"/>
   </div>
 </template>
 
@@ -146,7 +146,7 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
-import { getDaysBetween, delUrlParams } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
     List,
@@ -299,6 +299,7 @@ export default {
       noStartDate: null, // 活动未开始时间
       disableBtn: false,
       drawTime: 3000,
+      sign: getAppSign(),
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
       btnImg: require('@/assets/lottery/wheel-pointer.png')
