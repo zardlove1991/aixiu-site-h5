@@ -25,6 +25,7 @@
         <div class="wheel-box">
           <div class="wheel-pointer"></div>
           <prize-list :list="list" :specified="specified" />
+          <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
         </div>
         <div class="wheel-tips" v-if="detailInfo.is_open_list">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
@@ -37,22 +38,6 @@
                 />
                 <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
               </li>
-              <!-- <li class="wheel-tips-item">
-                <img
-                  src="https://img01.yzcdn.cn/vant/cat.jpeg"
-                  alt=""
-                  class="wheel-item-avatar"
-                />
-                <div class="wheel-item-text">158****2062 获得颈椎牵引器</div>
-              </li>
-              <li class="wheel-tips-item">
-                <img
-                  src="https://img01.yzcdn.cn/vant/cat.jpeg"
-                  alt=""
-                  class="wheel-item-avatar"
-                />
-                <div class="wheel-item-text">158****2062 获得颈椎牵引器</div>
-              </li> -->
             </ul>
           </van-notice-bar>
           <van-notice-bar :scrollable="true" class="wheel-notice-bar" :delay='2'>
@@ -65,14 +50,6 @@
                 />
                 <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
               </li>
-              <!-- <li class="wheel-tips-item">
-                <img
-                  src="https://img01.yzcdn.cn/vant/cat.jpeg"
-                  alt=""
-                  class="wheel-item-avatar"
-                />
-                <div class="wheel-item-text">我**去 获得现金红包</div>
-              </li> -->
             </ul>
           </van-notice-bar>
         </div>
@@ -85,7 +62,8 @@
         </div>
         <div class="wheel-point">
           <div class="my">我的积分</div>
-          <div class="point">{{detailInfo.user_integral_counts}}</div>
+          <div class="point" v-if="detailInfo.user_integral_counts >= 0">{{detailInfo.user_integral_counts}}</div>
+          <div class="point" v-else>0</div>
         </div>
       </div>
     </div>
@@ -131,6 +109,7 @@
 </template>
 
 <script>
+import List from '@/components/lottery/global/list'
 import prizeList from '@/components/lottery/global/dial-prize-list'
 import ActivityRule from '@/components/lottery/global/dial-activity-rule'
 import Address from '@/components/lottery/global/dial-address'
@@ -170,6 +149,7 @@ import STORAGE from '@/utils/storage'
 import { getDaysBetween, delUrlParams } from '@/utils/utils'
 export default {
   components: {
+    List,
     prizeList,
     ActivityRule,
     Address,
@@ -317,7 +297,11 @@ export default {
       tempPrize: {}, // 临时提货凭证对象
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
-      disableBtn: false
+      disableBtn: false,
+      drawTime: 3000,
+      prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
+      // @/assets/lottery/integral/integral.png
+      btnImg: require('@/assets/lottery/wheel-pointer.png')
 
     }
   },
@@ -462,30 +446,33 @@ export default {
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.classList.remove(this.animationClass)
-        console.log(this.detailInfo.is_word, 'this.detailInfo.is_word')
+        // console.log(this.detailInfo.is_word, 'this.detailInfo.is_word')
         if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery && this.detailInfo.is_word === 0) { // 口令抽奖
           this.isCommandShow = true
           // console.log('kouling')
         } else {
           this.specified = false
-          this.winner = this.random(0, this.list.length - 1)
-          this.winCallback()
+          // this.winner = this.random(0, this.list.length - 1)
+          // this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
           this.ininData()
           this.specified = true // 指定获奖下标
-          if (this.specified) {
-            this.winner = this.winner
-            this.winCallback()
-          }
+          // if (this.specified) {
+          //   this.winner = this.winner
+          //   this.winCallback()
+          // }
           if (res.error_code === 'no_extract_prize') { // 未中奖
-            this.isUnDrawShow = true
             this.list.map((item, index) => {
               if (item.type === 7) {
                 this.winner = index
                 // console.log(this.winner, 'this.winnerthis.winnerthis.winner')
               }
             })
+            this.winCallback()
+            setTimeout(() => {
+              this.isUnDrawShow = true
+            }, this.drawTime)
           } else if (res.error_code === 'no_prize_num') { // 库存不足
             // this.$toast.fail(res.error_message)
             let uuid = res.error_message
@@ -495,36 +482,44 @@ export default {
                 // console.log(this.winner, '库存..............')
               }
             })
-          } else if (res.type === 6) {
+            this.winCallback()
+          } else if (res.type === 6) { // 再来一次
             this.list.map((item, index) => {
               if (item.type === res.type) {
                 this.winner = index
                 console.log(this.winner, '再来一次..............')
               }
             })
+            this.winCallback()
           } else if (res.type === 5) { // 积分
             this.integralData = res
-            this.isIntegralShow = true
             this.list.map((item, index) => {
               if (item.type === res.type) {
                 this.winner = index
                 console.log(this.winner, '积分..............')
               }
             })
+            this.winCallback()
+            setTimeout(() => {
+              this.isIntegralShow = true
+            }, this.drawTime)
           } else if (res.type === 4) { // 卡劵
             this.cardViewData = res
             if (this.cardViewData.qr_code instanceof Array) {
               this.cardViewData.qr_code = this.cardViewData.qr_code ? this.getImage(this.cardViewData.qr_code[0]) : this.cardViewData.qr_code
               // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
             }
-            this.isCardViewShow = true
             this.list.map((item, index) => {
               if (item.type === res.type) {
                 this.winner = index
                 console.log(this.winner, '卡劵..............')
               }
             })
-            console.log(this.cardViewData, 'this.cardViewData ')
+            this.winCallback()
+            setTimeout(() => {
+              this.isCardViewShow = true
+            }, this.drawTime)
+            // console.log(this.cardViewData, 'this.cardViewData ')
           } else if (res.type === 3) { // 红包
             this.packetData = res
             this.list.map((item, index) => {
@@ -533,10 +528,12 @@ export default {
                 console.log(this.winner, '红包..............')
               }
             })
-            this.isPacketShow = true
-            console.log(this.isPacketShow, 'this.isPacketShow this.isPacketShow ')
+            this.winCallback()
+            setTimeout(() => {
+              this.isPacketShow = true
+            }, this.drawTime)
+            // console.log(this.isPacketShow, 'this.isPacketShow this.isPacketShow ')
           } else if (res.type === 2) { // 优惠劵
-            this.isCouponShow = true
             this.couponData = res
             this.list.map((item, index) => {
               if (item.type === res.type) {
@@ -544,9 +541,20 @@ export default {
                 console.log(this.winner, '优惠劵..............')
               }
             })
+            this.winCallback()
+            setTimeout(() => {
+              this.isCouponShow = true
+            }, this.drawTime)
           } else if (res.type === 1) { // 实物
             this.prizeData = res
             // console.log(this.prizeData)
+            this.list.map((item, index) => {
+              if (item.type === res.type) {
+                this.winner = index
+                console.log(this.winner, '实物..............')
+              }
+            })
+            this.winCallback()
             if (this.prizeData.images instanceof Array || this.prizeData.images instanceof Array) {
               let images = this.getImage(this.prizeData.images[0])
               this.prizeData.images = this.prizeData.images ? images : this.prizeData.images
@@ -561,7 +569,9 @@ export default {
                   console.log(this.prizeData.award_time, 'this.prizeData.award_time')
                 }
               }
-              this.isPrizeVerificationcShow = true
+              setTimeout(() => {
+                this.isPrizeVerificationcShow = true
+              }, this.drawTime)
             } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 0) { // 线上 && 未填地址
               if (this.prizeData.award_time) {
                 this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
@@ -569,8 +579,11 @@ export default {
                   this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
                 }
               }
-              this.isPrizeShow = true
-              console.log(this.isPrizeShow)
+              setTimeout(() => {
+                this.isPrizeShow = true
+              }, this.drawTime)
+              // this.isPrizeShow = true
+              // console.log(this.isPrizeShow)
             } else if (this.prizeData.give_aways === 2 && this.detailInfo.collection_address === 1) { // 线上 && 已填地址
               if (this.prizeData.award_time) {
                 this.prizeData.award_time = JSON.parse(this.prizeData.award_time)
@@ -578,14 +591,11 @@ export default {
                   this.prizeData.award_time = getDaysBetween(this.prizeData.award_time[0], this.prizeData.award_time[1])
                 }
               }
-              this.isPrizeAddressShow = true
+              setTimeout(() => {
+                this.isPrizeAddressShow = true
+              }, this.drawTime)
+              // this.isPrizeAddressShow = true
             }
-            this.list.map((item, index) => {
-              if (item.type === res.type) {
-                this.winner = index
-                console.log(this.winner, '实物..............')
-              }
-            })
           } else if (res.error_code === 'no_draw_counts') { // 没抽奖次数
             let integralLimit = this.detailInfo.limit.integral_limit
             if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
@@ -638,11 +648,11 @@ export default {
         /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
         this.panziElement.classList.add(this.animationClass)
       }, 0)
-      // 因为动画时间为 1s ，所以这里1s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
+      // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
       setTimeout(() => {
         this.loading = false
         console.log(`恭喜你获得了${this.winner}`)
-      }, 3000)
+      }, this.drawTime)
     },
     // 随机一个整数的方法
     random (min, max) {
@@ -825,7 +835,9 @@ $time: 3s; //转动多少秒后停下的时间
     float: right;
     .btn-header {
       margin-right: px2rem(30px);
-      width: px2rem(140px);
+      // width: px2rem(140px);
+      padding-left:px2rem(18px);
+      padding-right:px2rem(18px);
       height: px2rem(54px);
       opacity: 0.5;
       background: #000000;
@@ -942,7 +954,7 @@ $time: 3s; //转动多少秒后停下的时间
   }
   .dial-container-wrap {
     display: block;
-    width: px2rem(750px);
+    // width: px2rem(750px);
     height: px2rem(1115px);
     position: absolute;
     top: px2rem(21px);
@@ -950,10 +962,11 @@ $time: 3s; //转动多少秒后停下的时间
     right: 0;
     bottom: 0;
     margin: auto;
-    // @include img-retina("~@/assets/lottery/dial.png",100%,100%);
-    background: url("../../../assets/lottery/dial.png");
+    @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
+    // background: url("../../../assets/lottery/dial.png");
     background-size: contain;
     background-repeat: no-repeat;
+    background-position-x: center;
     padding-top: px2rem(23px);
     text-align: center;
     box-sizing: border-box;
@@ -962,7 +975,7 @@ $time: 3s; //转动多少秒后停下的时间
     margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
-      width: px2rem(212px);
+      // width: px2rem(212px);
       height: px2rem(24px);
       opacity: 1;
       font-size: px2rem(24px);

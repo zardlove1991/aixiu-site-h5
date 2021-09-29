@@ -4,7 +4,9 @@
     <div class="back" @click="$router.back()">
       <div class="arrow-left"></div>
     </div>
+
     <div class="record-prize-content">
+      <div class="logo"></div>
       <h3>中奖记录</h3>
       <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -27,11 +29,10 @@
       <!-- <div class="container center" v-else>
       </div> -->
     </div>
-    <div class="logo"></div>
     <CardIntegral :show.sync='isCardIntegralShow' v-if="isCardIntegralShow" @close='isCardIntegralShow = false' :data.sync="tempItem"/>
     <CardIntegralPull :show.sync='isCardIintegralPullShow' v-if="isCardIintegralPullShow" @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
     <CardStock :show.sync='isCardStockShow' v-if="isCardStockShow" @close='isCardStockShow=false' :data.sync="tempItem"/>
-    <CardOverdues :show='isCardOverduesShow' @close='isCardOverduesShow = false' :data.sync="tempItem"/>
+    <CardOverdues :show.sync='isCardOverduesShow' v-if='isCardOverduesShow' @close='isCardOverduesShow = false' :data.sync="tempItem"/>
     <RecordUncode :show.sync='isRecordUncodeShow' v-if="isRecordUncodeShow" @close='isRecordUncodeShow = false' :data.sync="tempItem"/>
     <RecordCode :show.sync='isRecordCodeShow' v-if="isRecordCodeShow" @close='isRecordCodeShow = false' :data.sync="tempItem"/>
     <RecordTicketed :show.sync='isRecordTicketedShow' v-if="isRecordTicketedShow" @close='isRecordTicketedShow = false' :data.sync="tempItem"/>
@@ -270,6 +271,8 @@ export default {
   background: linear-gradient(181deg, #ff8f68 0%, #ff093f 100%);
   position: relative;
   display: flex;
+  flex-direction: column;
+  padding-top: px2rem(127px);
   .record-prize-header-bg {
     width: 100%;
     height: px2rem(213px);
@@ -320,9 +323,10 @@ export default {
     background: #ffffff;
     border-radius: px2rem(16px);
     box-shadow: 0px px2rem(6px) px2rem(14px) px2rem(2px) rgba(0, 0, 0, 0.12);
-    position: absolute;
-    top: px2rem(127px);
-    left: px2rem(30px);
+    // position: absolute;
+    // top: px2rem(127px);
+    // left: px2rem(30px);
+    margin: auto;
     padding-top: px2rem(66px);
     h3 {
       width: px2rem(160px);
@@ -413,22 +417,42 @@ export default {
         display: none;
       }
     }
+    .logo {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: px2rem(-154px);
+      // position: absolute;
+      // top: px2rem(40px);
+      // left: px2rem(205px);
+      // margin: auto;
+      @include img-retina(
+        "~@/assets/lottery/diallist/bg.png",
+        "~@/assets/lottery/diallist/bg@2x.png",
+        100%,
+        100%
+      );
+      background-position-x: right;
+      background-repeat: no-repeat;
+      width: px2rem(339px);
+      height: px2rem(157px);
+    }
   }
-  .logo {
-    position: absolute;
-    top: px2rem(40px);
-    left: px2rem(205px);
-    @include img-retina(
-      "~@/assets/lottery/diallist/bg.png",
-      "~@/assets/lottery/diallist/bg@2x.png",
-      100%,
-      100%
-    );
-    background-position-x: right;
-    background-repeat: no-repeat;
-    width: px2rem(339px);
-    height: px2rem(157px);
-  }
+  // .logo {
+  //   position: absolute;
+  //   // top: px2rem(40px);
+  //   // left: px2rem(205px);
+  //   margin: auto;
+  //   @include img-retina(
+  //     "~@/assets/lottery/diallist/bg.png",
+  //     "~@/assets/lottery/diallist/bg@2x.png",
+  //     100%,
+  //     100%
+  //   );
+  //   background-position-x: right;
+  //   background-repeat: no-repeat;
+  //   width: px2rem(339px);
+  //   height: px2rem(157px);
+  // }
 }
 .isShow {
   display: block !important;

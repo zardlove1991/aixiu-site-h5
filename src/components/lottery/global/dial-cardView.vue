@@ -38,7 +38,7 @@
             </div>
             <!-- <van-button  block  class="btn">去兑奖</van-button> -->
             <div class="container-bottom">
-                <div class="qr-code">
+                <div class="qr-code" v-if="cardViewData.qr_code">
                     <van-image class="code" :src="cardViewData.qr_code"></van-image>
                 </div>
                 <div class="tips">
