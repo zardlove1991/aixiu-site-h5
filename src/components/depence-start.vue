@@ -870,7 +870,7 @@ export default {
             let msg = ''
             if (this.examInfo.limit && this.examInfo.limit.free_times_setting) {
               const tmpMsg = this.examInfo.limit.free_times_setting.day_limit ? '今日的' : ''
-              msg = this.examInfo.limit.free_times_setting.is_open_limit ? `${tmpMsg}免费答题机会已用完可以使用积分继续答题哦~` : '参与答题需要消耗积分'
+              msg = this.examInfo.limit.free_times_setting.is_open_limit ? `${tmpMsg}答题机会已用完可以使用积分继续答题哦~` : '参与答题需要消耗积分'
             }
             this.dialogConfig = {
               type: 'integral', // 弹窗类型
@@ -946,11 +946,11 @@ export default {
           if (this.examInfo.user_integral_counts <= 0 || !this.examInfo.user_integral_counts) { // 无积分消耗次数
             return '积分兑换次数已达今日上限'
           } else {
-            return '免费次数已用完，可使用积分参与答题'
+            return '答题次数已用完，可使用积分参与答题'
           }
         }
         if (this.examInfo.remain_counts && this.examInfo.remain_counts > 0) { // 免费答题次数
-          return `${this.examInfo.remain_counts}次免费答题机会`
+          return `${this.examInfo.remain_counts}次答题机会`
         }
       } else {
         if (this.examInfo.remain_counts === 0) {
@@ -1338,8 +1338,7 @@ export default {
       border-radius: px2rem(45px) !important;
     }
     .tooltip-style {
-      top: px2rem(-72px);
-      left: px2rem(390px);
+      top: px2rem(-60px);
     }
     .integral-number {
       color: #fff;
