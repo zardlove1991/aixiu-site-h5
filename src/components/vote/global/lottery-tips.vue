@@ -19,7 +19,6 @@
           <div v-if='item.isLotterList' @click='goRecoredList(item)' class='btn-style'>中奖记录</div>
         </div>
       </template>
-
     </div>
   </div>
 </div>
@@ -131,15 +130,19 @@ export default {
       }
     },
     goLotterFun (data) {
+      let mark = data.data.mark
+      let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
       this.$router.push({
-        name: data.goLotter,
-        query: { id: data.data.id }
+        name: 'lottery' + flag,
+        params: {id: data.data.id}
       })
     },
     goRecoredList (data) {
+      let mark = data.data.mark
+      let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
       this.$router.push({
-        name: data.goLotter,
-        query: { id: data.data.id }
+        name: 'lottery' + flag + 'Record',
+        params: {id: data.data.id}
       })
     }
   }

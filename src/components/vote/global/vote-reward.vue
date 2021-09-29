@@ -7,9 +7,9 @@
     <div class='dialog-title-1'>恭喜您，报名成功</div>
     <div class='dialog-title-2'>作品正在审核中...</div>
     <div class='reward-btn-wrap'>
-       <div class='reward-btn'>参与抽奖</div>
+      <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
-    <div class='dialog-title-3'>有2次抽奖机会</div>
+    <div class='dialog-title-3'>有{{lotteryObj.enroll.raffle_num}}次抽奖机会</div>
   </div>
 </div>
 </template>
@@ -21,6 +21,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    lotteryObj: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
@@ -34,7 +38,16 @@ export default {
   },
   methods: {
     closeDialog () {
-      console.log('0000')
+      this.$emit('closeReward')
+    },
+    goRaffle () {
+      let id = ''
+      let mark = ''
+      let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+      this.$router.push({
+        name: 'lottery' + flag,
+        params: {id: id}
+      })
     }
   }
 }

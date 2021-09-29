@@ -271,17 +271,19 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
-    <!-- 投票关联抽奖 -->
-    <vote-reward
-      :show="isShowVoteReward"
-      @close="isShowVoteReward = false">
-    </vote-reward>
+    <!-- 报名人数超过的提示 -->
     <report-num-limit
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- 投票关联抽奖 -->
+    <vote-reward
+      :lotteryObj='lotteryObj'
+      :show="isShowVoteReward"
+      @closeReward="isShowVoteReward = false">
+    </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' class='gift-box-wrap'>
+    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
@@ -443,7 +445,15 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-
+    let isFirstUploadType = STORAGE.get('isFirstUpload')
+    const detailInfo = STORAGE.get('detailInfo')
+    let isLotteryType = detailInfo.rule.lottery_config.enroll.value
+    if (isFirstUploadType) {
+      if (isLotteryType === 1) {
+        this.isShowVoteReward = true
+      }
+      STORAGE.set('isFirstUpload', false)
+    }
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -481,6 +491,9 @@ export default {
     }
   },
   methods: {
+    showLotteryTips () {
+      this.isLotteryTips = true
+    },
     shareSuccess () {
       API.shareOk({ query: {id: this.id} }).then(res => {
 
@@ -543,12 +556,13 @@ export default {
         this.swipeList = swipeList
       }
       this.detailInfo = res
+      let {rule} = res
       // 校验抽奖入口条件
-      let {lottery, rule, today_votes: todayVotes} = res
-      if (lottery) {
-        this.lottery = lottery
-        this.checkLotteryOpen(lottery, rule, todayVotes)
-      }
+      // let {lottery, rule, today_votes: todayVotes} = res
+      // if (lottery) {
+      //   this.lottery = lottery
+      //   this.checkLotteryOpen(lottery, rule, todayVotes)
+      // }
       STORAGE.set('detailInfo', res)
       setBrowserTitle(res.title)
       // 分享
@@ -1406,7 +1420,7 @@ export default {
       this.dealSearch('input-search', true)
     },
     closeLotteryTipsFun () {
-
+      this.isLotteryTips = false
     }
   }
 }
