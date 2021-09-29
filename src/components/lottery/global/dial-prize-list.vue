@@ -3,8 +3,16 @@
       <div class="prize">
         <div
           class="prize-box-bg"
-          :style="`stransform: rotate(${-90 + 180 / list.length}deg)`"
+          :style="`transform: rotate(${-90 + 180 / list.length}deg)`"
         >
+          <!-- <div
+            class="prize-item-bg"
+            v-for="(i, index) in list"
+            :key="index"
+            :style="`transform: rotate(${
+              (-index * 360) / list.length
+            }deg) skew(${-90 + 360 / list.length}deg);`"
+          ></div> -->
           <div
             class="prize-item-bg"
             v-for="(i, index) in list"
@@ -48,7 +56,15 @@
             <img :src="i.img" alt />
           </div>
         </div> -->
-        <template  >
+        <template>
+          <!-- <div
+            class="prize-gift"
+            :style="`transform: rotate(${
+              (-index * 360) / list.length
+            }deg) translateY(-6rem);`"
+            v-for="(i, index) in list"
+            :key="index"
+            > -->
           <div
             class="prize-gift"
             :style="`transform: rotate(${
@@ -89,7 +105,7 @@
           </div>
         </template>
       </div>
-      <div class="start-btn" ></div>
+      <div class="start-btn"></div>
     </div>
 </template>
 
@@ -205,6 +221,10 @@ $time: 3s; //转动多少秒后停下的时间
   border-radius: 100%;
   margin-left: auto;
   margin-right: auto;
+  // transform: rotate(135deg);
+  &.rotate30 {
+    transform: rotate(30deg);
+  }
   /* 抽奖按钮 */
   .start-btn {
     display: inline-block;
@@ -225,6 +245,9 @@ $time: 3s; //转动多少秒后停下的时间
     box-sizing: border-box;
     position: relative;
     z-index: 2;
+    &.rotate30 {
+      transform: rotate(-30deg);
+    }
   }
   /* 盘子样式 */
   .prize {
@@ -241,6 +264,7 @@ $time: 3s; //转动多少秒后停下的时间
     // position: relative;
     // border: 10px solid #f74e4e;
     box-sizing: border-box;
+    // transform: rotate(30deg);
     /* 每个奖项的样式 */
     .prize-gift {
       position: absolute;
@@ -258,9 +282,12 @@ $time: 3s; //转动多少秒后停下的时间
         width: px2rem(124px);
         height: px2rem(111px);
         opacity: 1;
-        background-size: cover;
+        background-size: contain;
         margin: auto;
         position: relative;
+        &.physical-img-7 {
+           width: px2rem(100px);
+        }
       }
       .wechat-img{
         width: px2rem(110px);
@@ -499,5 +526,45 @@ $time: 3s; //转动多少秒后停下的时间
       transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 7));
     }
   }
+  // @keyframes play0 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 0));
+  //   }
+  // }
+  // @keyframes play1 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 1));
+  //   }
+  // }
+  // @keyframes play2 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 2));
+  //   }
+  // }
+  // @keyframes play3 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 3));
+  //   }
+  // }
+  // @keyframes play4 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 4));
+  //   }
+  // }
+  // @keyframes play5 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 5));
+  //   }
+  // }
+  // @keyframes play6 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 6));
+  //   }
+  // }
+  // @keyframes play7 {
+  //   to {
+  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 7));
+  //   }
+  // }
 }
 </style>
