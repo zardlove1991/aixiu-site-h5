@@ -278,6 +278,7 @@
     </report-num-limit>
     <!-- 投票关联抽奖 -->
     <vote-reward
+      v-if='voteRewardType'
       :lotteryObj='lotteryObj'
       :show="isShowVoteReward"
       @closeReward="isShowVoteReward = false">
@@ -288,6 +289,7 @@
     </div>
     <!-- lottery tips -->
     <lottery-tips
+      v-if='lotteryTipsType'
       :lotteryObj='lotteryObj'
       :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
@@ -355,6 +357,8 @@ export default {
   },
   data () {
     return {
+      lotteryTipsType: false,
+      voteRewardType: false,
       giftBoxType: false,
       imgs: {
         giftBox: require('@/assets/vote/gift-box.png')
@@ -445,16 +449,21 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
+    // this.voteRewardType = true
+    // this.isShowVoteReward = true
+
     let isFirstUploadType = STORAGE.get('isFirstUpload')
     const detailInfo = STORAGE.get('detailInfo')
-    let isLotteryType = detailInfo.rule.lottery_config.enroll.value
-    console.log('isFirstUploadType', isFirstUploadType)
+    let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
     if (isFirstUploadType) {
-      console.log('isLotteryType', isLotteryType)
       if (isLotteryType === 1) {
-        this.isShowVoteReward = true
+        this.voteRewardType = false
+        this.$nextTick(item => {
+          this.voteRewardType = true
+          this.isShowVoteReward = true
+        })
       }
-      STORAGE.set('isFirstUpload', false)
+      STORAGE.remove('isFirstUpload')
     }
   },
   computed: {
@@ -494,7 +503,11 @@ export default {
   },
   methods: {
     showLotteryTips () {
-      this.isLotteryTips = true
+      this.lotteryTipsType = false
+      this.$nextTick(item => {
+        this.lotteryTipsType = true
+        this.isLotteryTips = true
+      })
     },
     shareSuccess () {
       API.shareOk({ query: {id: this.id} }).then(res => {
@@ -535,6 +548,7 @@ export default {
       }
       // 判断显示gift box
       let _lottery = res.lottery
+      console.log('_lottery', _lottery)
       let lotteryArr = []
       this.lotteryObj = res.lottery
       lotteryArr.push(_lottery.enroll.is_win)
@@ -729,7 +743,6 @@ export default {
     },
     shareLottery () {
       this.shareLottery()
-
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
           query: {
