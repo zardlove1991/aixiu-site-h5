@@ -448,7 +448,9 @@ export default {
     let isFirstUploadType = STORAGE.get('isFirstUpload')
     const detailInfo = STORAGE.get('detailInfo')
     let isLotteryType = detailInfo.rule.lottery_config.enroll.value
+    console.log('isFirstUploadType', isFirstUploadType)
     if (isFirstUploadType) {
+      console.log('isLotteryType', isLotteryType)
       if (isLotteryType === 1) {
         this.isShowVoteReward = true
       }
@@ -790,8 +792,10 @@ export default {
       }
       // 当前展示类型
       let showModel = ''
+      // console.log('full_scene_type', detailInfo.rule.works_type_set)
       if (mark.indexOf('fullscene') !== -1) {
-        let arr = limit.full_scene_type
+        let arr = detailInfo.rule.works_type_set.choiced_works_type
+        // let arr = limit.full_scene_type
         if (arr && arr.length) {
           let key = arr[0]
           this.fullSceneType = arr
@@ -1310,7 +1314,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      // console.log(params, data)
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,
