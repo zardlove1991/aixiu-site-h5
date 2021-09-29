@@ -54,6 +54,19 @@ let smartcity = {
       id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
     }
     return id
+  },
+  applicationState () {
+    window.SmartCity.applicationState((res) => {
+      console.log(res)
+      if (+res.status === 0) {
+        // 页面激活
+        let url = window.location.href
+        window.location.href = url
+      }
+      if (+res.status === 2) {
+        console.log('程序退出')
+      }
+    })
   }
 }
 
@@ -64,6 +77,7 @@ export const oauth = (cbk) => {
   }
   let pathname = window.location.pathname
   let id = smartcity.getActiveId(pathname)
+  smartcity.applicationState()
   if (id) {
     // STORAGE.clear()
     STORAGE.remove('scope_limit')
