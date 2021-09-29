@@ -102,7 +102,7 @@
             <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
           </div>
           <div v-if='item.type == "singleText"' class="form-content">
-            <el-input v-model="item.inputValue" maxlength="40"></el-input>
+            <el-input v-model.trim="item.inputValue" maxlength="40"></el-input>
           </div>
           <textarea v-if='item.type == "mulText"'
             v-model.trim="item.inputValue"
@@ -193,6 +193,7 @@ export default {
         type_id: '',
         type_name: ''
       },
+      examineDataStr: '',
       material: {
         image: [],
         video: [],
@@ -222,6 +223,7 @@ export default {
     }
   },
   created () {
+    this.examineDataStr = JSON.stringify(this.examineData)
     this.mixinList()
     this.initForm()
   },
@@ -375,6 +377,7 @@ export default {
             this.material.audio = res.material.audio
           }
         }
+
         this.examineData = {
           name: res.name,
           source: res.source,
@@ -384,6 +387,7 @@ export default {
           type_id: res.type_id,
           type_name: res.type_name
         }
+        console.log('99999', this.examineData)
         if (res.full_scene_type) {
           this.checkFullScene = String(res.full_scene_type)
           this.showModel = this.fullSceneMap[res.full_scene_type][1]
@@ -445,7 +449,6 @@ export default {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
-      debugger
 
       let _extra = {}
       for (let i of this.enrollForm.formFixList) {
@@ -551,6 +554,7 @@ export default {
       }
     },
     fullSceneChange (key) {
+      console.log('-9999---', key)
       if (key) {
         this.fileList = []
         this.material = {
