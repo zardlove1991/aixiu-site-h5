@@ -195,6 +195,9 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         this.workDetail = res
+        if (this.$route.query.index && this.workDetail.index !== this.$route.query.index) {
+          this.workDetail.index = this.$route.query.index
+        }
         setBrowserTitle(res.name)
         // 调整详情页的分享
         this.sharePage(detailInfo, res)

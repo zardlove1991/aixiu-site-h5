@@ -65,7 +65,7 @@
             (videoMode === '3' && showModel === 'video') ? 'video-vertical' : '',
             darkMark === '2' ? 'light' : '']"
             v-for="(item, index) in rankList" :key="index"
-            @click.stop="jumpPage('votedetail', { worksId: item.id }, {type: item.voting_type, introduce:item.introduce})">
+            @click.stop="jumpPage('votedetail', { worksId: item.id, index: index + 1 }, {type: item.voting_type, introduce:item.introduce})">
             <i class="item-rank" :class="['rank-' + index]">{{index > 2 ? index + 1 : ' '}}</i>
             <div :class="['audio-play-icon', darkMark === '2' ? 'light' : '']" v-if="showModel === 'audio'">
               <div class="audio-icon"></div>
