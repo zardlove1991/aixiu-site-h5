@@ -2,7 +2,9 @@
   <div class="dialog" v-if="show">
       <div class="dialog-wrap">
         <div class="dialog-header">
-            <div slot="left" class="close" @click.stop="close()"></div>
+            <div slot="left" class="close-wrap" @click.stop="close()">
+              <div class="close"></div>
+            </div>
         </div>
         <div class="header-bg"></div>
         <slot class="container"  name='container'></slot>
@@ -72,24 +74,35 @@ export default {
 }
   .dialog-header{
     width: px2rem(600px);
+    height: px2rem(51px);
     background-color:linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
     position: relative;
     opacity: 1;
-    .close{
+    .close-wrap{
+      width: px2rem(50px);
+      height: px2rem(51px);
+      // padding-right: px2rem(30px);
+      // padding-top: px2rem(30px);
+      float: right;
+      cursor: pointer;
+      position: relative;
+      .close{
         width: px2rem(20px);
         height: px2rem(20px);
         // opacity: 0.4;
         @include img-retina("~@/assets/lottery/close_1.png",
         "~@/assets/lottery/close_1@2x.png", 100%, 100%);
-        background-position: top;
+        // background-position: top;
         background-repeat: no-repeat;
         position: absolute;
-        top:px2rem(30px); right:px2rem(30px);
+        top:px2rem(30px);
+        // right:px2rem(30px);
         cursor: pointer;
         &::after{
             color: #fff;
         }
         z-index: 10;
+      }
     }
   }
   .header-bg{

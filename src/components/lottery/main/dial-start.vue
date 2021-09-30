@@ -27,7 +27,7 @@
           <prize-list :list="list" :specified="specified" />
           <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
         </div>
-        <div class="wheel-tips" v-if="detailInfo.is_open_list">
+        <div class="wheel-tips" v-if="detailInfo.is_open_list && noticeData.length > 0">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
@@ -104,7 +104,7 @@
     <!-- <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/> -->
     <!-- <MoalImg :show="isWheelShow"/> -->
     <!-- <DialDialog :show="isWheelShow"/> -->
-    <DialogPage :show="isWheelShow"/>
+    <!-- <DialogPage :show="isWheelShow"/> -->
   </div>
 </template>
 
@@ -257,7 +257,7 @@ export default {
         }
       ],
       detailInfo: {}, // 大转盘详细信息
-      isWheelShow: false, // 控制开始抽奖状态
+      isWheelShow: true, // 控制开始抽奖状态
       isActivityShow: false, // 控制活动规则状态
       isAddressShow: false, // 控制收获地址状态
       isCommandShow: false, // 控制输入口令开始抽奖状态
@@ -298,7 +298,7 @@ export default {
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
       disableBtn: false,
-      drawTime: 3000,
+      drawTime: 5000,
       sign: getAppSign(),
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
@@ -796,7 +796,7 @@ $time: 3s; //转动多少秒后停下的时间
   height: px2rem(54px);
   padding-left: px2rem(30px);
   padding-right: px2rem(30px);
-  // margin-bottom: px2rem(24px);
+  margin-bottom: px2rem(24px);
   display: flex;
   align-items: center;
   .dial-header-icon {
@@ -866,17 +866,17 @@ $time: 3s; //转动多少秒后停下的时间
   width: 100%;
   height: 100%;
   // overflow-y: auto;
-  position: absolute;
-  top: px2rem(78px);
-  left: 0;
-  right: 0;
+  // position: absolute;
+  // top: px2rem(78px);
+  // left: 0;
+  // right: 0;
   // display: flex;
   // align-items: center;
   .container-title-notice{
     width: px2rem(525px);
     height: px2rem(44px);
     // opacity: 0.2;
-    background: #00000033;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: px2rem(24px);
     margin: 0 auto px2rem(6px) auto;
     padding: (9px) auto;
@@ -957,12 +957,12 @@ $time: 3s; //转动多少秒后停下的时间
     display: block;
     // width: px2rem(750px);
     height: px2rem(1115px);
-    position: absolute;
-    top: px2rem(21px);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
+    // position: absolute;
+    // top: px2rem(21px);
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    // margin: auto;
     @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
     // background: url("../../../assets/lottery/dial.png");
     background-size: contain;
@@ -973,7 +973,7 @@ $time: 3s; //转动多少秒后停下的时间
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
-    margin-top: px2rem(169px);
+    // margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
       // width: px2rem(212px);
@@ -1100,7 +1100,8 @@ $time: 3s; //转动多少秒后停下的时间
       border-radius: px2rem(12px);
       margin-left: auto;
       margin-right: auto;
-      margin-top: px2rem(16px);
+      // margin-top: px2rem(16px);
+      margin-top: px2rem(24px);
       padding-top: px2rem(10px);
       padding-bottom: px2rem(10px);
       display: flex;
