@@ -7,7 +7,7 @@
             <div class="left-point"></div>
             <div class="right-point"></div>
             <slot name="title"></slot>
-            <div  class="close-wrap" @click.stop="onClose">
+            <div class="close-wrap" @click.stop="onClose">
               <div class="close"></div>
             </div>
         </div>
@@ -93,20 +93,21 @@ export default {
         .close-wrap {
           width: px2rem(68px);
           height: px2rem(68px);
-          padding-right: px2rem(30px);
-          padding-top: px2rem(30px);
+          // padding-right: px2rem(30px);
+          // padding-top: px2rem(30px);
           float: right;
           cursor: pointer;
+          position: relative;
             .close{
               width: px2rem(20px);
               height: px2rem(20px);
               // opacity: 0.4;
               @include img-retina("~@/assets/lottery/activityRule/close.png",
               "~@/assets/lottery/activityRule/close@2x.png", 100%, 100%);
-              background-position: top;
+              // background-position: top;
               background-repeat: no-repeat;
-              // position: absolute;
-              // top:px2rem(30px); right:px2rem(30px);
+              position: absolute;
+              top:px2rem(30px); right:px2rem(30px);
               cursor: pointer;
           }
         }
@@ -119,7 +120,7 @@ export default {
           filter: blur(px2rem(50px));
           position: absolute;
           left: px2rem(30px);
-          z-index: 1;
+          // z-index: 1;
         }
         .right-top-wrap{
           width: px2rem(320px);
@@ -131,7 +132,7 @@ export default {
           // float: right;
           position: absolute;
           right: 0;
-          z-index: 1;
+          // z-index: 1;
         }
         .left-point{
           position: absolute;
