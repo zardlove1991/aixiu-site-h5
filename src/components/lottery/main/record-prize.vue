@@ -156,7 +156,7 @@ export default {
         this.currentPage++
       } catch (error) {
         console.log(error)
-        this.$toast(error)
+        // this.$toast(error)
       }
     },
     async onRefresh () {

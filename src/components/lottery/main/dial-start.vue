@@ -62,7 +62,7 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point" v-if="detailInfo.user_integral_counts >= 0">
+        <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
         </div>
@@ -305,6 +305,7 @@ export default {
       shareConfigData: {},
       drawTime: 5000,
       sign: getAppSign(),
+      isSourceshow: true,
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
       btnImg: require('@/assets/lottery/wheel-pointer.png')
@@ -334,15 +335,20 @@ export default {
     },
     isNoticeDataShow (newValue, oldValue) {
       this.isNoticeDataShow = newValue
+      if (this.noticeData.length > 0) {
+        this.isNoticeDataShow = false
+      } else {
+        this.isNoticeDataShow = true
+      }
     }
   },
   async created () {
     // if (this.isWheelShow) this.count = 3
     // const res = await API.getShare({ query: { id: this.id } })
-    // console.log(res)
     // if (res.code === 1) {
     //   this.$toast.success(res.msg)
     // }
+    // console.log(this.sign)
     this.ininData()
     // console.log(this.sign.indexOf('wechat') !== -1)
     // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
@@ -355,8 +361,8 @@ export default {
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
-    if (this.noticeData.length > 0) {
-      this.isNoticeDataShow = false
+    if (this.sign === 'wechat') {
+      this.isSourceshow = false
     }
   },
   beforeDestroy () {
@@ -412,7 +418,9 @@ export default {
         }
       })
       console.log(this.list)
-      this.sharePage(res)
+      if (this.detailInfo.limit.share_lottery_limit) {
+        this.sharePage(res)
+      }
     },
     getImage (image = {}, width, height) {
       if (image instanceof Array && image.length === 0) {
@@ -653,9 +661,9 @@ export default {
         const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
         // console.log(res)
         this.noticeData = res.data
-        if (this.noticeData.length > 0) {
-          this.isNoticeDataShow = false
-        }
+        // if (this.noticeData.length > 0) {
+        //   this.isNoticeDataShow = false
+        // }
       }, 300000)
     },
     // 中奖返回方法

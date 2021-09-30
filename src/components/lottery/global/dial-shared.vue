@@ -46,6 +46,7 @@ export default {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     }),
     onDrawChance () {
+      this.$parent.ininData()
       this.$parent.onDraw()
       this.onClose()
     }
