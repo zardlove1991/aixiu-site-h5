@@ -147,6 +147,7 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import mixins from '@/mixins/index'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
@@ -216,6 +217,7 @@ export default {
   props: {
     id: String
   },
+  mixins: [mixins],
   data () {
     return {
       winner: null, // 指定获奖下标 specified为true时生效
@@ -300,6 +302,7 @@ export default {
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
       disableBtn: false,
+      shareConfigData: {},
       drawTime: 5000,
       sign: getAppSign(),
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
@@ -409,7 +412,7 @@ export default {
         }
       })
       console.log(this.list)
-      // this.sharePage(res)
+      this.sharePage(res)
     },
     getImage (image = {}, width, height) {
       if (image instanceof Array && image.length === 0) {
@@ -683,18 +686,19 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { title, introduce, indexpic, rule, limit } = detailInfo
+      // let { title, introduce, indexpic, rule, limit } = detailInfo
+      let { title, introduce, indexpic, limit } = detailInfo
       let imgUrl = ''
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
       // let shareTitle = limit.share_settings.share_title
       // let shareBrief = limit.share_settings.share_brief
-      if (rule && rule.is_close_dialog) {
-        this.isCloseDialog = true
-      } else {
-        this.isCloseDialog = false
-      }
+      // if (rule && rule.is_close_dialog) {
+      //   this.isCloseDialog = true
+      // } else {
+      //   this.isCloseDialog = false
+      // }
       // if (rule && rule.share_settings) {
       if (limit && limit.share_settings) {
         // let share = rule.share_settings
@@ -750,7 +754,7 @@ export default {
         }
       }
       if (!shareLink) {
-        shareLink = delUrlParams(['code'])
+        shareLink = delUrlParams(['rotor'])
       } else {
         shareLink = this.getShareUrl(shareLink)
       }
