@@ -271,21 +271,25 @@
         <div class="info">{{lotteryMsg}}</div>
       </div>
     </div>
-    <!-- 投票关联抽奖 -->
-    <vote-reward
-      :show="isShowVoteReward"
-      @close="isShowVoteReward = false">
-    </vote-reward>
+    <!-- 报名人数超过的提示 -->
     <report-num-limit
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- 投票关联抽奖 -->
+    <vote-reward
+      v-if='voteRewardType'
+      :lotteryObj='lotteryObj'
+      :show="isShowVoteReward"
+      @closeReward="isShowVoteReward = false">
+    </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' class='gift-box-wrap'>
+    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
     <lottery-tips
+      v-if='lotteryTipsType'
       :lotteryObj='lotteryObj'
       :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
@@ -353,6 +357,8 @@ export default {
   },
   data () {
     return {
+      lotteryTipsType: false,
+      voteRewardType: false,
       giftBoxType: false,
       imgs: {
         giftBox: require('@/assets/vote/gift-box.png')
@@ -443,7 +449,24 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-
+    console.log('-----000---', STORAGE.get('detailInfo'))
+    try {
+      let isFirstUploadType = STORAGE.get('isFirstUpload')
+      const detailInfo = STORAGE.get('detailInfo')
+      let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
+      if (isFirstUploadType) {
+        if (isLotteryType === 1) {
+          this.voteRewardType = false
+          this.$nextTick(item => {
+            this.voteRewardType = true
+            this.isShowVoteReward = true
+          })
+        }
+        STORAGE.remove('isFirstUpload')
+      }
+    } catch (e) {
+      console.log(e)
+    }
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -481,6 +504,13 @@ export default {
     }
   },
   methods: {
+    showLotteryTips () {
+      this.lotteryTipsType = false
+      this.$nextTick(item => {
+        this.lotteryTipsType = true
+        this.isLotteryTips = true
+      })
+    },
     shareSuccess () {
       API.shareOk({ query: {id: this.id} }).then(res => {
 
@@ -520,6 +550,7 @@ export default {
       }
       // 判断显示gift box
       let _lottery = res.lottery
+      console.log('_lottery', _lottery)
       let lotteryArr = []
       this.lotteryObj = res.lottery
       lotteryArr.push(_lottery.enroll.is_win)
@@ -543,12 +574,13 @@ export default {
         this.swipeList = swipeList
       }
       this.detailInfo = res
+      let {rule} = res
       // 校验抽奖入口条件
-      let {lottery, rule, today_votes: todayVotes} = res
-      if (lottery) {
-        this.lottery = lottery
-        this.checkLotteryOpen(lottery, rule, todayVotes)
-      }
+      // let {lottery, rule, today_votes: todayVotes} = res
+      // if (lottery) {
+      //   this.lottery = lottery
+      //   this.checkLotteryOpen(lottery, rule, todayVotes)
+      // }
       STORAGE.set('detailInfo', res)
       setBrowserTitle(res.title)
       // 分享
@@ -713,7 +745,6 @@ export default {
     },
     shareLottery () {
       this.shareLottery()
-
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
           query: {
@@ -752,76 +783,82 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
-      let { limit, page_setup: setup } = rule
-      if (textSetting && textSetting.sign) {
-        let tmp = textSetting.sign.split('')
-        if (tmp.length >= 2) {
-          let signUnit = tmp[1]
-          if (signUnit === '力') {
-            this.signUnit = '助力值'
-          } else if (signUnit === '敬') {
-            this.signUnit = '致敬数'
-          } else {
-            this.signUnit = signUnit
-          }
-        }
-      }
-      // 是否显示榜单
-      if (limit.is_open_list === 0) {
-        this.isShowRank = false
-      }
-      if (setup && setup.color_scheme) {
-        this.colorName = setup.color_scheme.name
-      }
-      // 当前展示类型
-      let showModel = ''
-      if (mark.indexOf('fullscene') !== -1) {
-        let arr = limit.full_scene_type
-        if (arr && arr.length) {
-          let key = arr[0]
-          this.fullSceneType = arr
-          this.checkFullScene = key
-          showModel = this.fullSceneMap[key][1]
-        }
-      } else if (mark.indexOf('video') !== -1) {
-        showModel = 'video'
-      } else if (mark.indexOf('image') !== -1) {
-        showModel = 'picture'
-      } else if (mark.indexOf('audio') !== -1) {
-        showModel = 'audio'
-      } else {
-        showModel = 'text'
-      }
-      this.showModel = showModel
-      // 我的作品
-      if (myWork && myWork.id) {
-        this.myWorkStatus = myWork.audit_status
-        if (myWork.audit_status === 1) {
-          let key = this.checkFullScene
-          if (key) {
-            if (key === myWork.full_scene_type) {
-              this.myWork = myWork
+      try {
+        console.log('this.detailInfo-----', this.detailInfo)
+        let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
+        let { limit, page_setup: setup } = rule
+        if (textSetting && textSetting.sign) {
+          let tmp = textSetting.sign.split('')
+          if (tmp.length >= 2) {
+            let signUnit = tmp[1]
+            if (signUnit === '力') {
+              this.signUnit = '助力值'
+            } else if (signUnit === '敬') {
+              this.signUnit = '致敬数'
             } else {
-              this.myWork = {}
+              this.signUnit = signUnit
             }
-          } else {
-            this.myWork = myWork
           }
-          myWork.is_my = 1
-          this.setMyVote(myWork)
         }
-      }
-      if (limit.is_open_classify && limit.is_open_classify === 1) {
-        this.isOpenClassify = true
-      }
-      // 活动暂停
-      if (status === 3) {
-        if (!this.isModelShow) {
-          this.isShowPause = true
+        // 是否显示榜单
+        if (limit.is_open_list === 0) {
+          this.isShowRank = false
         }
-        this.setIsModelShow(true)
-        this.setIsBtnAuth(0)
+        if (setup && setup.color_scheme) {
+          this.colorName = setup.color_scheme.name
+        }
+        // 当前展示类型
+        let showModel = ''
+        if (mark.indexOf('fullscene') !== -1) {
+          let arr = detailInfo.rule.works_type_set.choiced_works_type
+          // let arr = limit.full_scene_type
+          if (arr && arr.length) {
+            let key = arr[0]
+            this.fullSceneType = arr
+            this.checkFullScene = key
+            showModel = this.fullSceneMap[key][1]
+          }
+        } else if (mark.indexOf('video') !== -1) {
+          showModel = 'video'
+        } else if (mark.indexOf('image') !== -1) {
+          showModel = 'picture'
+        } else if (mark.indexOf('audio') !== -1) {
+          showModel = 'audio'
+        } else {
+          showModel = 'text'
+        }
+        this.showModel = showModel
+        // 我的作品
+        if (myWork && myWork.id) {
+          this.myWorkStatus = myWork.audit_status
+          if (myWork.audit_status === 1) {
+            let key = this.checkFullScene
+            if (key) {
+              if (key === myWork.full_scene_type) {
+                this.myWork = myWork
+              } else {
+                this.myWork = {}
+              }
+            } else {
+              this.myWork = myWork
+            }
+            myWork.is_my = 1
+            this.setMyVote(myWork)
+          }
+        }
+        if (limit.is_open_classify && limit.is_open_classify === 1) {
+          this.isOpenClassify = true
+        }
+        // 活动暂停
+        if (status === 3) {
+          if (!this.isModelShow) {
+            this.isShowPause = true
+          }
+          this.setIsModelShow(true)
+          this.setIsBtnAuth(0)
+        }
+      } catch (e) {
+        console.log(e)
       }
     },
     setLocation () {
@@ -1296,7 +1333,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      // console.log(params, data)
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,
@@ -1406,7 +1443,7 @@ export default {
       this.dealSearch('input-search', true)
     },
     closeLotteryTipsFun () {
-
+      this.isLotteryTips = false
     }
   }
 }

@@ -23,7 +23,10 @@
       v-show="false">
     <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt=""
       @load='qrcodeFun' v-show="false">
-    <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
+    <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt=""
+      @load="resetPoster(3)" v-show="false">
+    <img @load='loadSponsorFun' crossOrigin='anonymous' :src="sponsorUrl"
+      alt="" ref='sponsorRef' v-show="false">
   </div>
 </template>
 
@@ -62,6 +65,8 @@ export default {
       worksDetailObj: {},
       curCtx: '',
       curCanvas: '',
+      sponsorUrl: '',
+      sponsorName: '',
       isTipsShow: false, // 控制通知框状态
       message: '<span>长按图片保存或转发朋友圈</span>' //  通知框内的信息
     }
@@ -156,6 +161,9 @@ export default {
           templateId = cavObj.template_id ? cavObj.template_id : ''
           sponsor = cavObj.sponsor ? cavObj.sponsor : ''
           sponsorLogo = cavObj.sponsor_logo ? cavObj.sponsor_logo : ''
+
+          this.sponsorUrl = cavObj.sponsor_logo // 赞助商图片地址
+          this.sponsorName = cavObj.sponsor
         }
         let params = {
           avatar: avatarUrl,
@@ -219,7 +227,6 @@ export default {
           voteTip: voteTip
         }
         // this.worksCode = params.
-        console.log('params', params, 'voteTip', voteTip)
         // this.renderPlaybill(params, voteTip)
 
         // API.shareMake({
@@ -244,7 +251,6 @@ export default {
       })
     },
     resetPoster (data) {
-      console.log(data, this.worksDetailObj.params)
       let indexType1 = false
       // let indexType2 = false
       let indexType3 = false
@@ -261,26 +267,21 @@ export default {
         if (data === 3) {
           indexType3 = true
         }
-
         if (indexType1 && indexType3) {
           this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
         }
       }
     },
-    loadImg (data) {
-      return new Promise((resolve, reject) => {
-        const _img = new Image()
-        // _img.setAttribute('crossOrigin', 'anonymous')
-        _img.src = data
-        _img.onload = () => {
-          resolve(_img)
-        }
-        _img.onerror = () => {
-          // eslint-disable-next-line prefer-promise-reject-errors
-          reject({status: 'error', title: '解析图片失败'})
-          Toast('解析图片失败')
-        }
-      })
+    loadSponsorFun () {
+      // 赞助商信息
+      let _sponsorName = this.sponsorName
+      if (this.sponsorUrl !== '') {
+        let _textHalf = Math.ceil(this.curCtx.measureText(_sponsorName).width / 2)
+        let imgObj1 = this.$refs['sponsorRef']
+        let _indexWidth = Math.ceil(320 - _textHalf - 45)
+        this.curCtx.drawImage(imgObj1, _indexWidth, 830, 40, 40)
+      }
+      this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
     async renderPlaybill (data) {
       try {
@@ -348,6 +349,16 @@ export default {
         QRCode.toDataURL(data.qrcode).then(res => {
           this.qrcodeImg = res
         })
+
+        // 赞助商信息
+        let _sponsorName = this.sponsorName
+        if (this.sponsorName !== '') {
+          ctx.font = '24px Arial'
+          ctx.fillStyle = '#999999'
+          ctx.textAlign = 'center'
+          console.log(222, ctx.measureText(_sponsorName))
+          ctx.fillText(_sponsorName, 320, 860)
+        }
       } catch (e) {
         Toast('生成分享图片失败')
         console.error(e)
@@ -355,14 +366,6 @@ export default {
     },
     qrcodeFun () {
       this.curCtx.drawImage(this.$refs['qrcodeImgRef'], 50, 685, 90, 90)
-      // this.curCtx.font = '20px Arial'
-      // this.curCtx.fillStyle = '#333333'
-      // this.curCtx.fillText('长按识别二维码', 160, 730)
-
-      // this.curCtx.font = '20px Arial'
-      // this.curCtx.fillStyle = '#333333'
-      // this.curCtx.fillText('查看作品详情', 160, 760)
-
       this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
     dealUrlConcat (params, detailInfo) {

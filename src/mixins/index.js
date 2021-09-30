@@ -154,8 +154,8 @@ export default {
     },
     examGoLotteryPage (info) {
       let { limit: { submit_rules: { lottery_config: lotteryConfig } } } = info
-      let raffleNum = this.examInfo.raffle_num
-      let prizeNum = this.examInfo.prize_num
+      let raffleNum = info.raffle_num
+      let prizeNum = info.prize_num
       if (lotteryConfig && lotteryConfig.related_lottery && lotteryConfig.related_lottery.isOpen) {
         let mark = lotteryConfig.related_lottery.mark
         let id = lotteryConfig.related_lottery.id

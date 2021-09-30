@@ -18,7 +18,18 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <video-upload :videoMode="videoMode" :loading.sync="loading" :fileList="fileList" @changeFile="changeFile"></video-upload>
+          <!-- <video-upload
+            :videoMode="videoMode"
+            :loading.sync="loading"
+            :fileList="fileList"
+            @changeFile="changeFile">
+          </video-upload> -->
+          <video-upload
+            :videoMode="videoMode"
+            :loading.sync="loading"
+            :fileList.sync="fileList"
+            @changeFile="changeFile">
+          </video-upload>
         </div>
       </div>
       <div v-if="showModel === 'video'" class="form-item">
@@ -38,11 +49,12 @@
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
-        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
+            :maxUploadImgNum='maxUploadImgNum'
             :imageRatio="imageRatio"
             :loading.sync="loading"
             :flag="showModel"
@@ -91,7 +103,7 @@
             <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
           </div>
           <div v-if='item.type == "singleText"' class="form-content">
-            <el-input v-model="item.inputValue" maxlength="40"></el-input>
+            <el-input v-model.trim="item.inputValue" maxlength="40"></el-input>
           </div>
           <textarea v-if='item.type == "mulText"'
             v-model.trim="item.inputValue"
@@ -169,6 +181,7 @@ export default {
   },
   data () {
     return {
+      maxUploadImgNum: 9,
       enrollForm: {},
       ZCIdType: false,
       showModel: this.flag,
@@ -182,6 +195,7 @@ export default {
         type_id: '',
         type_name: ''
       },
+      examineDataStr: '',
       material: {
         image: [],
         video: [],
@@ -211,13 +225,13 @@ export default {
     }
   },
   created () {
+    this.examineDataStr = JSON.stringify(this.examineData)
     this.mixinList()
     this.initForm()
   },
   mounted () {
     this.judgeStatus()
     this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
-    console.log('this.choiced_works_type', this.choiced_works_type)
   },
   methods: {
     mixinList () {
@@ -251,6 +265,31 @@ export default {
     },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
+      // 判断是不是初次进入
+      let _mywork = detailInfo.mywork
+      if (STORAGE.get('isFirstUpload')) {
+        STORAGE.remove('isFirstUpload')
+      }
+      if (_mywork.length === 0) {
+        STORAGE.set('isFirstUpload', true)
+      } else {
+        STORAGE.set('isFirstUpload', false)
+      }
+
+      // 图片上传数量的限制
+      try {
+        console.log('detailInfo', detailInfo.rule.works_type_set)
+        // 是否存在图片
+        const worksTypeSet = detailInfo.rule.works_type_set
+        const choicedWorksType = worksTypeSet.choiced_works_type
+        let _isExistImg = false
+        _isExistImg = choicedWorksType.some(item => item === '2')
+        if (_isExistImg) {
+          this.maxUploadImgNum = worksTypeSet.max_img_num
+        }
+      } catch (e) {
+        console.log(e)
+      }
       let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
@@ -288,82 +327,89 @@ export default {
               let key = newArr[0]
               // this.fullSceneType = newArr
               this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
-              console.log('00000', this.fullSceneType)
               this.checkFullScene = key
             //  this.showModel = this.fullSceneMap[key][1]
             }
           }
         }
       }
-      let { worksId } = this.$route.query
-      if (worksId) {
-        // 获取详情
-        API.getReportDetail({
-          query: {
-            id: this.id
-          }
-        }).then(res => {
-          if (!res) {
-            return
-          }
-          // 输入值得回显
-          let _extra = res.extra
-          for (let [key, value] of Object.entries(_extra)) {
-            for (let i of this.enrollForm.formFixList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
 
-            for (let i of this.enrollForm.visibleFieldList) {
-              if (i.cid === key) {
-                i.inputValue = value
-              }
-            }
-          }
-          this.worksId = worksId
-          let flag = this.showModel
-          if (res.material) {
-            if (flag === 'picture') {
-              this.fileList = res.material.image
-              this.material.image = res.material.image
-            } else if (flag === 'video') {
-              let video = res.material.video
-              this.fileList = video
-              this.material.video = video
-              if (video && video.length) {
-                let url = video[0].cover_image
-                if (url) {
-                  this.videoCoverList = [{
-                    url
-                  }]
-                  this.videoCover = url
-                }
-              }
-            } else if (flag === 'audio') {
-              this.fileList = res.material.audio
-              this.material.audio = res.material.audio
-            }
-          }
-          this.examineData = {
-            name: res.name,
-            source: res.source,
-            introduce: res.introduce,
-            contact_name: res.contact_name,
-            contact_phone: res.contact_phone,
-            type_id: res.type_id,
-            type_name: res.type_name
-          }
-          if (res.full_scene_type) {
-            this.checkFullScene = String(res.full_scene_type)
-            this.showModel = this.fullSceneMap[res.full_scene_type][1]
-          }
-          this.getVoteTypeFid(res.type_id, res.type_name)
-        })
+      let { worksId } = this.$route.query
+      // 获取详情 【编辑时获取详情】
+      if (worksId) {
+        this.getWorksDetail(worksId)
       }
+      console.log('isOpenClassify', isOpenClassify)
       if (isOpenClassify) {
         this.initVoteType()
       }
+    },
+    getWorksDetail (worksId) {
+      // 获取详情
+      API.getReportDetail({
+        query: {
+          id: this.id
+        }
+      }).then(res => {
+        if (!res) {
+          return
+        }
+        // 输入值得回显
+        let _extra = res.extra
+        for (let [key, value] of Object.entries(_extra)) {
+          for (let i of this.enrollForm.formFixList) {
+            if (i.cid === key) {
+              i.inputValue = value
+            }
+          }
+
+          for (let i of this.enrollForm.visibleFieldList) {
+            if (i.cid === key) {
+              i.inputValue = value
+            }
+          }
+        }
+        this.worksId = worksId
+        let flag = this.showModel
+        if (res.material) {
+          if (flag === 'picture') {
+            this.fileList = res.material.image
+            this.material.image = res.material.image
+          } else if (flag === 'video') {
+            let video = res.material.video
+            this.fileList = video
+            this.material.video = video
+            if (video && video.length) {
+              let url = video[0].cover_image
+              if (url) {
+                this.videoCoverList = [{
+                  url
+                }]
+                this.videoCover = url
+              }
+            }
+          } else if (flag === 'audio') {
+            this.fileList = res.material.audio
+            this.material.audio = res.material.audio
+          }
+        }
+
+        this.examineData = {
+          name: res.name,
+          source: res.source,
+          introduce: res.introduce,
+          contact_name: res.contact_name,
+          contact_phone: res.contact_phone,
+          type_id: res.type_id,
+          type_name: res.type_name
+        }
+        console.log('99999', this.examineData)
+        if (res.full_scene_type) {
+          this.checkFullScene = String(res.full_scene_type)
+          this.showModel = this.fullSceneMap[res.full_scene_type][1]
+        }
+        this.getVoteTypeFid(res.type_id, res.type_name)
+      })
     },
     initVoteType () {
       API.getVoteType({
@@ -410,7 +456,6 @@ export default {
       document.body.scrollTop = 0
     },
     commitVote () {
-      debugger
       let id = this.id
       let examineData = this.examineData
       if (!id) {
@@ -468,8 +513,8 @@ export default {
       if (this.worksId) {
         data.id = this.worksId
       }
-      this.disabled = true
 
+      this.disabled = true
       API.workReport({
         data
       }).then(res => {
@@ -525,6 +570,7 @@ export default {
       }
     },
     fullSceneChange (key) {
+      console.log('-9999---', key)
       if (key) {
         this.fileList = []
         this.material = {

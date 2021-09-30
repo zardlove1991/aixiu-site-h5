@@ -164,7 +164,9 @@ export default {
         }
       }).then(res => {
         if (!res || !res.url || !res.cover) {
-          this.getVideoUrl(videoId)
+          setTimeout(() => {
+            this.getVideoUrl(videoId)
+          }, 3000)
           return
         }
         let { id, url, cover } = res
@@ -173,7 +175,8 @@ export default {
           url,
           cover
         })
-        // console.log(this.fileList)
+        this.$emit('update:fileList', this.fileList)
+        console.log('this.fileList', this.fileList)
         this.$emit('changeFile')
         this.$emit('update:loading', false)
       })

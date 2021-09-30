@@ -251,7 +251,7 @@ export default {
         let examId = this.examId
         this.$router.replace({
           path: `/exam/statistic/${examId}`,
-          query: {api_person_id: res ? res.api_person_id : ''}
+          query: {api_person_id: res ? res.api_person_id : '', from: 'submitexam'}
         })
       }
     },

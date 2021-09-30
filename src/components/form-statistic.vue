@@ -136,11 +136,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="luck-pop" v-if="raffleUrl" @click="pageToLuckDraw()">
-        <div class="luck-pop-icon">
-          <div class="luck-pop-tips">点击抽奖</div>
-        </div>
-      </div> -->
       <share-dialog
         :show="isShowShare"
         :shareUrl="shareUrl"
@@ -154,6 +149,14 @@
     </div>
     <img :src="posterInfo.image" ref="posterBg" v-show="false" alt="" @load="resetPoster(1)" crossOrigin='anonymous'>
     <img :src="posterInfo.head" ref="posterHead" v-show="false" alt="" @load="resetPoster(2)" crossOrigin='anonymous'>
+    <!--抽奖弹窗-->
+    <luck-draw-dialog
+      :show="isShowLuckPop"
+      :isLuckDraw="isLuckDraw"
+      :luckDrawTips="luckDrawTips"
+      @cancel="closeLuckPop()"
+      @confirm="goLotteryPage()">
+    </luck-draw-dialog>
   </div>
 </template>
 
@@ -166,6 +169,8 @@ import StyleConfig from '@/styles/theme/default.scss'
 import { mapActions, mapGetters } from 'vuex'
 import SubjectMixin from '@/mixins/subject'
 import ShareDialog from '@/components/dialog/share-dialog'
+import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
+
 import {
   // formatDate,
   getPlat
@@ -176,7 +181,7 @@ import mixins from '@/mixins/index'
 export default {
   name: 'form-statistic',
   components: {
-    Pie, ShareDialog, OperateDialog
+    Pie, ShareDialog, OperateDialog, LuckDrawDialog
   },
   mixins: [ SubjectMixin, mixins ],
   props: ['params'],
@@ -226,7 +231,10 @@ export default {
       posterBgLoad: false,
       posterHeaderLoad: false,
       //
-      points: 0
+      points: 0,
+      isShowLuckPop: false, // 是否显示抽奖弹窗
+      isLuckDraw: false, // 是否显示抽奖按钮
+      luckDrawTips: []
     }
   },
   computed: {
@@ -314,6 +322,7 @@ export default {
   },
   mounted () {
     this.api_person_id = this.$route.query.api_person_id || this.examInfo.api_person_id
+    this.from = this.$route.query.from
   },
   methods: {
     initStatInfo (score, correctNum, total) {
@@ -384,32 +393,9 @@ export default {
         if (this.statMsgVisible) {
           this.initStatInfo(res.score, correctNum, count)
         }
-        if (this.examInfo && this.examInfo.limit && this.examInfo.limit.submit_rules) {
-          let submitRules = this.examInfo.limit.submit_rules
-          let raffleUrl = submitRules.raffle_url
-          let tempUrl = ''
-          // 开启抽奖
-          if (submitRules.is_open_raffle) {
-            let { type, value } = submitRules.jump_conditions
-            if (type && value) {
-              if (type === 'score') {
-                if (res.score >= value) {
-                  tempUrl = raffleUrl
-                }
-              } else {
-                let resul1 = (correctNum / count) * 100
-                if (resul1 >= value) {
-                  tempUrl = raffleUrl
-                }
-              }
-            } else {
-              tempUrl = raffleUrl
-            }
-          }
-          this.raffleUrl = tempUrl
-        }
         this.optionData = res
         console.log('获取的数据：', this.optionData)
+        this.checkOpenLottery()
         let questions = res.questions
         if (questions) {
           questions.forEach(item => {
@@ -643,17 +629,6 @@ export default {
         alert(err)
       }
     },
-    //
-    pageToLuckDraw () {
-      let link = this.raffleUrl
-      if (link) {
-        if (window.location.href.indexOf('/pre/') !== -1 && link.indexOf('/pre/') === -1) {
-          link = link.replace('xzh5.hoge.cn', 'xzh5.hoge.cn/pre')
-        }
-        let backUrl = location.origin + '/depencestart/' + this.$route.params.id
-        window.location.href = link + '?time=' + new Date().getTime() + '&backActionUtl=' + encodeURIComponent(backUrl) + '&canDraw=1'
-      }
-    },
     isCheckBox (val) {
       return ['checkbox', 'multiple', 'pictureMulti', 'judge'].includes(val)
     },
@@ -750,6 +725,30 @@ export default {
           this.shareAddTimes()
         })
       }
+    },
+    closeLuckPop () {
+      this.isShowLuckPop = false
+    },
+    // 检查是否有抽奖机会
+    checkOpenLottery () {
+      let isFromexamSubmit = this.from
+      console.error(this.optionData.raffle_num, 'this.optionData')
+      if (typeof (this.optionData.raffle_num) !== 'undefined' && isFromexamSubmit) {
+        if (this.optionData.raffle_num) {
+          this.isLuckDraw = true
+          this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
+        } else {
+          this.isLuckDraw = false
+          this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
+        }
+        this.isShowLuckPop = true
+      } else {
+        this.isShowLuckPop = false
+      }
+    },
+    goLotteryPage () {
+      this.examInfo.raffle_num = this.optionData.raffle_num
+      this.examGoLotteryPage(this.examInfo)
     }
   }
 }

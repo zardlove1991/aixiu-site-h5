@@ -149,6 +149,7 @@ export default {
       this.$emit('close')
     },
     async sureWorkVote () {
+      console.log('确定')
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
