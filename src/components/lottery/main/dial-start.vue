@@ -22,12 +22,14 @@
       </div>
       <div class="dial-container-wrap">
         <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
-        <div class="wheel-box">
-          <div class="wheel-pointer"></div>
+        <!-- <div class="wheel-box"> -->
+          <!-- <div class="wheel-pointer"></div> -->
+          <p class="wheel-p"></p>
           <prize-list :list="list" :specified="specified" />
           <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
-        </div>
-        <div class="wheel-tips" v-if="detailInfo.is_open_list && noticeData.length > 0">
+        <!-- </div> -->
+        <div class="empty-box"></div>
+        <div class="wheel-tips" v-if="detailInfo.is_open_list" :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
@@ -60,10 +62,9 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point" v-if="sign !== 'wechat' && detailInfo.user_integral_counts">
+        <div class="wheel-point" v-if="sign.indexOf('wechat') !== -1 && detailInfo.user_integral_counts  >= 0">
           <div class="my">我的积分</div>
-          <div class="point" v-if="detailInfo.user_integral_counts >= 0">{{detailInfo.user_integral_counts}}</div>
-          <div class="point" v-else>0</div>
+          <div class="point">{{detailInfo.all_credits}}</div>
         </div>
       </div>
     </div>
@@ -294,6 +295,7 @@ export default {
       couponData: {}, // 优惠劵中奖对象
       prizeData: {}, // 实物中奖对象
       noticeData: [], // 我的中奖通知
+      isNoticeDataShow: true,
       tempPrize: {}, // 临时提货凭证对象
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
@@ -345,6 +347,9 @@ export default {
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
+    if (this.noticeData.length > 0) {
+      this.isNoticeDataShow = false
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -640,6 +645,9 @@ export default {
         const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
         // console.log(res)
         this.noticeData = res.data
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
+        }
       }, 300000)
     },
     // 中奖返回方法
@@ -865,6 +873,7 @@ $time: 3s; //转动多少秒后停下的时间
 .dial-container {
   width: 100%;
   height: 100%;
+  overflow-y: scroll;
   // overflow-y: auto;
   // position: absolute;
   // top: px2rem(78px);
@@ -976,6 +985,7 @@ $time: 3s; //转动多少秒后停下的时间
     // margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
+      display: inline-block;
       // width: px2rem(212px);
       height: px2rem(24px);
       opacity: 1;
@@ -987,6 +997,10 @@ $time: 3s; //转动多少秒后停下的时间
       line-height: px2rem(24px);
       letter-spacing: px2rem(2px);
       // margin-bottom: px2rem(59px);
+      // margin-bottom: px2rem(22px);
+    }
+    .wheel-p {
+      height: px2rem(40px);
     }
     // 转盘盒子
     .wheel-box {
@@ -1091,6 +1105,9 @@ $time: 3s; //转动多少秒后停下的时间
         }
       }
     }
+    .empty-box {
+      height: px2rem(40px);
+    }
     // 中奖信息
     .wheel-tips {
       width: px2rem(400px);
@@ -1101,12 +1118,15 @@ $time: 3s; //转动多少秒后停下的时间
       margin-left: auto;
       margin-right: auto;
       // margin-top: px2rem(16px);
-      margin-top: px2rem(24px);
+      // margin-top: px2rem(24px);
       padding-top: px2rem(10px);
       padding-bottom: px2rem(10px);
       display: flex;
       flex-direction: column;
       justify-content: center;
+      &.is-hide{
+        display: none;
+      }
       .notice-swipe,
       .wheel-tips-item {
         height: px2rem(22px);

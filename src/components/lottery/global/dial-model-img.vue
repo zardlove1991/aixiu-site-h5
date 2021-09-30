@@ -107,7 +107,9 @@ export default {
     width: px2rem(600px);
     height: px2rem(115px);
     background-color:linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
-    position: relative;
+    // position: relative;
+    position: absolute;
+    top:0;
     opacity: 1;
     .close-wrap {
       float: right;
