@@ -23,7 +23,8 @@
       v-show="false">
     <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt=""
       @load='qrcodeFun' v-show="false">
-    <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt="" @load="resetPoster(3)" v-show="false">
+    <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt=""
+      @load="resetPoster(3)" v-show="false">
   </div>
 </template>
 
@@ -219,7 +220,6 @@ export default {
           voteTip: voteTip
         }
         // this.worksCode = params.
-        console.log('params', params, 'voteTip', voteTip)
         // this.renderPlaybill(params, voteTip)
 
         // API.shareMake({
@@ -267,21 +267,20 @@ export default {
         }
       }
     },
-    loadImg (data) {
-      return new Promise((resolve, reject) => {
-        const _img = new Image()
-        // _img.setAttribute('crossOrigin', 'anonymous')
-        _img.src = data
-        _img.onload = () => {
-          resolve(_img)
-        }
-        _img.onerror = () => {
-          // eslint-disable-next-line prefer-promise-reject-errors
-          reject({status: 'error', title: '解析图片失败'})
-          Toast('解析图片失败')
-        }
-      })
-    },
+    // loadImg (data) {
+    //   return new Promise((resolve, reject) => {
+    //     const _img = new Image()
+    //     _img.src = data
+    //     _img.onload = () => {
+    //       resolve(_img)
+    //     }
+    //     _img.onerror = () => {
+    //       // eslint-disable-next-line prefer-promise-reject-errors
+    //       reject({status: 'error', title: '解析图片失败'})
+    //       Toast('解析图片失败')
+    //     }
+    //   })
+    // },
     async renderPlaybill (data) {
       try {
         let canvas = document.createElement('canvas')

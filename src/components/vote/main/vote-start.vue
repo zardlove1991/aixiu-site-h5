@@ -449,9 +449,6 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-    // this.voteRewardType = true
-    // this.isShowVoteReward = true
-
     let isFirstUploadType = STORAGE.get('isFirstUpload')
     const detailInfo = STORAGE.get('detailInfo')
     let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit

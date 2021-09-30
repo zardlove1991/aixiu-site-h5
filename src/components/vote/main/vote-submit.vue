@@ -49,11 +49,12 @@
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">上传图片</div>
-        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
-        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传9张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
+            :maxUploadImgNum='maxUploadImgNum'
             :imageRatio="imageRatio"
             :loading.sync="loading"
             :flag="showModel"
@@ -180,6 +181,7 @@ export default {
   },
   data () {
     return {
+      maxUploadImgNum: 9,
       enrollForm: {},
       ZCIdType: false,
       showModel: this.flag,
@@ -273,6 +275,21 @@ export default {
       } else {
         STORAGE.set('isFirstUpload', false)
       }
+
+      // 图片上传数量的限制
+      try {
+        console.log('detailInfo', detailInfo.rule.works_type_set)
+        // 是否存在图片
+        const worksTypeSet = detailInfo.rule.works_type_set
+        const choicedWorksType = worksTypeSet.choiced_works_type
+        let _isExistImg = false
+        _isExistImg = choicedWorksType.some(item => item === '2')
+        if (_isExistImg) {
+          this.maxUploadImgNum = worksTypeSet.max_img_num
+        }
+      } catch (e) {
+        console.log(e)
+      }
       let isOpenClassify = false
       // 控制显隐分类
       if (detailInfo) {
@@ -310,7 +327,6 @@ export default {
               let key = newArr[0]
               // this.fullSceneType = newArr
               this.fullSceneType = rule.works_type_set.choiced_works_type // 作品类型
-              console.log('00000', this.fullSceneType)
               this.checkFullScene = key
             //  this.showModel = this.fullSceneMap[key][1]
             }
