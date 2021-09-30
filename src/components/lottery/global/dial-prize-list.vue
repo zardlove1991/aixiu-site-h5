@@ -209,7 +209,7 @@ $zp_size: px2rem(600px); //转盘尺寸
 // $btn_size: 7rem; //抽奖按钮尺寸
 $btn_sizeW: px2rem(189px); //抽奖按钮尺寸
 $btn_sizeH: px2rem(203px); //抽奖按钮尺寸
-$time: 3s; //转动多少秒后停下的时间
+$time: 5s; //转动多少秒后停下的时间
 .prize-box {
   user-select: none;
   display: flex;

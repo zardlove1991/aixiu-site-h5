@@ -2,10 +2,12 @@
  <div class="model" v-if="show">
     <div class="model-wrap">
         <div class="model-header">
-            <div slot="left" class="close" @click.stop="close()"></div>
-            <div class="left-point"></div>
-            <div class="right-point"></div>
+            <div slot="left" class="close-wrap" @click.stop="close()">
+              <div class="close"></div>
+            </div>
         </div>
+        <div class="left-point"></div>
+        <div class="right-point"></div>
         <div class="model-bg"></div>
         <div class="header-bg"></div>
         <slot class="container"  name='container'></slot>
@@ -72,29 +74,6 @@ export default {
     background: linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
     border-radius: px2rem(16px);
     position: relative;
-}
-  .model-header{
-    width: px2rem(600px);
-    height: px2rem(115px);
-    background-color:linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
-    position: relative;
-    opacity: 1;
-    .close{
-        width: px2rem(20px);
-        height: px2rem(20px);
-        // opacity: 0.4;
-        @include img-retina("~@/assets/lottery/close_1.png",
-        "~@/assets/lottery/close_1@2x.png", 100%, 100%);
-        background-position: top;
-        background-repeat: no-repeat;
-        position: absolute;
-        top:px2rem(30px); right:px2rem(30px);
-        cursor: pointer;
-        &::after{
-            color: #fff;
-        }
-        z-index: 10;
-    }
     .left-point{
         width: px2rem(44px);
         height: px2rem(44px);
@@ -104,7 +83,10 @@ export default {
         "~@/assets/lottery/activityRule/point@2x.png",'~@/assets/lottery/activityRule/point@3x.png' 100%, 100%);
         background-repeat: no-repeat;
         position: absolute;
-        top:px2rem(28px);left: px2rem(98px);
+        top:px2rem(28px);
+        left: px2rem(98px);
+        // margin-top: px2rem(28px);
+        // margin-left: px2rem(98px);
         color: #ffeeab;
     }
     .right-point{
@@ -120,6 +102,67 @@ export default {
         // border-radius: 50%;
         // filter: blur(50px);
     }
+}
+  .model-header{
+    width: px2rem(600px);
+    height: px2rem(115px);
+    background-color:linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
+    // position: relative;
+    position: absolute;
+    top:0;
+    opacity: 1;
+    .close-wrap {
+      float: right;
+      width: px2rem(50px);
+      height: px2rem(115px);
+      position: relative;
+      cursor: pointer;
+      .close{
+          width: px2rem(20px);
+          height: px2rem(20px);
+          // opacity: 0.4;
+          @include img-retina("~@/assets/lottery/close_1.png",
+          "~@/assets/lottery/close_1@2x.png", 100%, 100%);
+          background-position: top;
+          background-repeat: no-repeat;
+          position: absolute;
+          top:px2rem(30px);
+          // right:px2rem(30px);
+          cursor: pointer;
+          &::after{
+              color: #fff;
+          }
+          z-index: 10;
+      }
+    }
+    // .left-point{
+    //     width: px2rem(44px);
+    //     height: px2rem(44px);
+    //     opacity: 1;
+    //     // background-color: #ffeeab;
+    //      @include img-retina("~@/assets/lottery/activityRule/point.png",
+    //     "~@/assets/lottery/activityRule/point@2x.png",'~@/assets/lottery/activityRule/point@3x.png' 100%, 100%);
+    //     background-repeat: no-repeat;
+    //     // position: absolute;
+    //     // top:px2rem(28px);
+    //     // left: px2rem(98px);
+    //     // margin-top: px2rem(28px);
+    //     // margin-left: px2rem(98px);
+    //     color: #ffeeab;
+    // }
+    // .right-point{
+    //     width: px2rem(74px);
+    //     height: px2rem(34px);
+    //     @include img-retina("~@/assets/lottery/activityRule/point.png",
+    //     "~@/assets/lottery/activityRule/point@2x.png",'~@/assets/lottery/activityRule/point@3x.png' 100%, 100%);
+    //     background-repeat: no-repeat;
+    //     position: absolute;
+    //     top:px2rem(8px);right: px2rem(120px);
+    //     // opacity: 0.8;
+    //     // background: #ffb1ab;
+    //     // border-radius: 50%;
+    //     // filter: blur(50px);
+    // }
   }
   .model-bg{
     width: px2rem(426px);

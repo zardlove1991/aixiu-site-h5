@@ -22,12 +22,14 @@
       </div>
       <div class="dial-container-wrap">
         <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
-        <div class="wheel-box">
-          <div class="wheel-pointer"></div>
+        <!-- <div class="wheel-box"> -->
+          <!-- <div class="wheel-pointer"></div> -->
+          <p class="wheel-p"></p>
           <prize-list :list="list" :specified="specified" />
           <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
-        </div>
-        <div class="wheel-tips" v-if="detailInfo.is_open_list">
+        <!-- </div> -->
+        <div class="empty-box"></div>
+        <div class="wheel-tips" v-if="detailInfo.is_open_list" :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
@@ -60,10 +62,9 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point">
+        <div class="wheel-point" v-if="sign.indexOf('wechat') !== -1 && detailInfo.user_integral_counts  >= 0">
           <div class="my">我的积分</div>
-          <div class="point" v-if="detailInfo.user_integral_counts >= 0">{{detailInfo.user_integral_counts}}</div>
-          <div class="point" v-else>0</div>
+          <div class="point">{{detailInfo.all_credits}}</div>
         </div>
       </div>
     </div>
@@ -146,7 +147,7 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
-import { getDaysBetween, delUrlParams } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
     List,
@@ -257,7 +258,7 @@ export default {
         }
       ],
       detailInfo: {}, // 大转盘详细信息
-      isWheelShow: false, // 控制开始抽奖状态
+      isWheelShow: true, // 控制开始抽奖状态
       isActivityShow: false, // 控制活动规则状态
       isAddressShow: false, // 控制收获地址状态
       isCommandShow: false, // 控制输入口令开始抽奖状态
@@ -294,11 +295,13 @@ export default {
       couponData: {}, // 优惠劵中奖对象
       prizeData: {}, // 实物中奖对象
       noticeData: [], // 我的中奖通知
+      isNoticeDataShow: true,
       tempPrize: {}, // 临时提货凭证对象
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
       disableBtn: false,
-      drawTime: 3000,
+      drawTime: 5000,
+      sign: getAppSign(),
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
       btnImg: require('@/assets/lottery/wheel-pointer.png')
@@ -344,6 +347,9 @@ export default {
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
+    if (this.noticeData.length > 0) {
+      this.isNoticeDataShow = false
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -639,6 +645,9 @@ export default {
         const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
         // console.log(res)
         this.noticeData = res.data
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
+        }
       }, 300000)
     },
     // 中奖返回方法
@@ -795,7 +804,7 @@ $time: 3s; //转动多少秒后停下的时间
   height: px2rem(54px);
   padding-left: px2rem(30px);
   padding-right: px2rem(30px);
-  // margin-bottom: px2rem(24px);
+  margin-bottom: px2rem(24px);
   display: flex;
   align-items: center;
   .dial-header-icon {
@@ -864,18 +873,19 @@ $time: 3s; //转动多少秒后停下的时间
 .dial-container {
   width: 100%;
   height: 100%;
+  overflow-y: scroll;
   // overflow-y: auto;
-  position: absolute;
-  top: px2rem(78px);
-  left: 0;
-  right: 0;
+  // position: absolute;
+  // top: px2rem(78px);
+  // left: 0;
+  // right: 0;
   // display: flex;
   // align-items: center;
   .container-title-notice{
     width: px2rem(525px);
     height: px2rem(44px);
     // opacity: 0.2;
-    background: #00000033;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: px2rem(24px);
     margin: 0 auto px2rem(6px) auto;
     padding: (9px) auto;
@@ -956,12 +966,12 @@ $time: 3s; //转动多少秒后停下的时间
     display: block;
     // width: px2rem(750px);
     height: px2rem(1115px);
-    position: absolute;
-    top: px2rem(21px);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
+    // position: absolute;
+    // top: px2rem(21px);
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    // margin: auto;
     @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
     // background: url("../../../assets/lottery/dial.png");
     background-size: contain;
@@ -972,9 +982,10 @@ $time: 3s; //转动多少秒后停下的时间
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
-    margin-top: px2rem(169px);
+    // margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
+      display: inline-block;
       // width: px2rem(212px);
       height: px2rem(24px);
       opacity: 1;
@@ -986,6 +997,10 @@ $time: 3s; //转动多少秒后停下的时间
       line-height: px2rem(24px);
       letter-spacing: px2rem(2px);
       // margin-bottom: px2rem(59px);
+      // margin-bottom: px2rem(22px);
+    }
+    .wheel-p {
+      height: px2rem(40px);
     }
     // 转盘盒子
     .wheel-box {
@@ -1090,6 +1105,9 @@ $time: 3s; //转动多少秒后停下的时间
         }
       }
     }
+    .empty-box {
+      height: px2rem(40px);
+    }
     // 中奖信息
     .wheel-tips {
       width: px2rem(400px);
@@ -1099,12 +1117,16 @@ $time: 3s; //转动多少秒后停下的时间
       border-radius: px2rem(12px);
       margin-left: auto;
       margin-right: auto;
-      margin-top: px2rem(16px);
+      // margin-top: px2rem(16px);
+      // margin-top: px2rem(24px);
       padding-top: px2rem(10px);
       padding-bottom: px2rem(10px);
       display: flex;
       flex-direction: column;
       justify-content: center;
+      &.is-hide{
+        display: none;
+      }
       .notice-swipe,
       .wheel-tips-item {
         height: px2rem(22px);
