@@ -29,7 +29,7 @@
           <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
         <!-- </div> -->
         <div class="empty-box"></div>
-        <div class="wheel-tips" v-if="detailInfo.is_open_list" :class="{'is-hide':isNoticeDataShow}">
+        <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
@@ -62,7 +62,7 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point" v-if="sign.indexOf('wechat') !== -1 && detailInfo.user_integral_counts  >= 0">
+        <div class="wheel-point" v-if="detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
         </div>
@@ -328,6 +328,9 @@ export default {
           this.isUnPrizeChanceShow = true
         }
       }
+    },
+    isNoticeDataShow (newValue, oldValue) {
+      this.isNoticeDataShow = newValue
     }
   },
   async created () {
@@ -338,6 +341,8 @@ export default {
     //   this.$toast.success(res.msg)
     // }
     this.ininData()
+    // console.log(this.sign.indexOf('wechat') !== -1)
+    // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
   },
   async mounted () {
     // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
@@ -491,7 +496,7 @@ export default {
             this.winCallback()
           } else if (res.type === 6) { // 再来一次
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '再来一次..............')
               }
@@ -500,7 +505,7 @@ export default {
           } else if (res.type === 5) { // 积分
             this.integralData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '积分..............')
               }
@@ -516,7 +521,7 @@ export default {
               // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
             }
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '卡劵..............')
               }
@@ -529,7 +534,7 @@ export default {
           } else if (res.type === 3) { // 红包
             this.packetData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '红包..............')
               }
@@ -542,7 +547,7 @@ export default {
           } else if (res.type === 2) { // 优惠劵
             this.couponData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '优惠劵..............')
               }
@@ -555,7 +560,7 @@ export default {
             this.prizeData = res
             // console.log(this.prizeData)
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '实物..............')
               }
@@ -1000,7 +1005,8 @@ $time: 3s; //转动多少秒后停下的时间
       // margin-bottom: px2rem(22px);
     }
     .wheel-p {
-      height: px2rem(40px);
+      max-height: px2rem(40px);
+      min-height: px2rem(32px);
     }
     // 转盘盒子
     .wheel-box {
