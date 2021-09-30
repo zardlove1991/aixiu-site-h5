@@ -278,16 +278,18 @@
     </report-num-limit>
     <!-- 投票关联抽奖 -->
     <vote-reward
+      v-if='voteRewardType'
       :lotteryObj='lotteryObj'
       :show="isShowVoteReward"
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' class='gift-box-wrap'>
+    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
     <lottery-tips
+      v-if='lotteryTipsType'
       :lotteryObj='lotteryObj'
       :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
@@ -355,6 +357,8 @@ export default {
   },
   data () {
     return {
+      lotteryTipsType: false,
+      voteRewardType: false,
       giftBoxType: false,
       imgs: {
         giftBox: require('@/assets/vote/gift-box.png')
@@ -445,7 +449,19 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-
+    let isFirstUploadType = STORAGE.get('isFirstUpload')
+    const detailInfo = STORAGE.get('detailInfo')
+    let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
+    if (isFirstUploadType) {
+      if (isLotteryType === 1) {
+        this.voteRewardType = false
+        this.$nextTick(item => {
+          this.voteRewardType = true
+          this.isShowVoteReward = true
+        })
+      }
+      STORAGE.remove('isFirstUpload')
+    }
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -483,6 +499,13 @@ export default {
     }
   },
   methods: {
+    showLotteryTips () {
+      this.lotteryTipsType = false
+      this.$nextTick(item => {
+        this.lotteryTipsType = true
+        this.isLotteryTips = true
+      })
+    },
     shareSuccess () {
       API.shareOk({ query: {id: this.id} }).then(res => {
 
@@ -522,6 +545,7 @@ export default {
       }
       // 判断显示gift box
       let _lottery = res.lottery
+      console.log('_lottery', _lottery)
       let lotteryArr = []
       this.lotteryObj = res.lottery
       lotteryArr.push(_lottery.enroll.is_win)
@@ -716,7 +740,6 @@ export default {
     },
     shareLottery () {
       this.shareLottery()
-
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
           query: {
@@ -779,8 +802,10 @@ export default {
       }
       // 当前展示类型
       let showModel = ''
+      // console.log('full_scene_type', detailInfo.rule.works_type_set)
       if (mark.indexOf('fullscene') !== -1) {
-        let arr = limit.full_scene_type
+        let arr = detailInfo.rule.works_type_set.choiced_works_type
+        // let arr = limit.full_scene_type
         if (arr && arr.length) {
           let key = arr[0]
           this.fullSceneType = arr
@@ -1299,7 +1324,7 @@ export default {
         id: this.id,
         checkFullScene: this.checkFullScene
       }
-      // console.log(params, data)
+      console.log(params, data)
       this.$router.push({
         name: page,
         params,

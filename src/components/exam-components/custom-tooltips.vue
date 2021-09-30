@@ -1,7 +1,9 @@
 <template>
   <div class="custom-tooltips-wrap" v-if="visible">
-    <div class="tips-content">{{content}}</div>
-    <div class="triangle-icon"></div>
+    <div class="inner">
+      <div class="tips-content">{{content}}</div>
+      <div class="triangle-icon"></div>
+    </div>
   </div>
 </template>
 
@@ -26,14 +28,19 @@ export default {
 <style lang="scss">
 @import "@/styles/index.scss";
   .custom-tooltips-wrap {
-    max-width: px2rem(500px);
-    border-radius: 4px;
-    background: #f4dbc6;
-    padding: px2rem(10px);
+    width:100vw;
     position: absolute;
-    text-align: center;
+    padding:0 px2rem(30px);
+    .inner {
+      width:100%;
+      text-align: center;
+      display:flex;
+      justify-content:center;
+    }
     .tips-content {
-      display: inline-block;
+      border-radius: 4px;
+      background: #f4dbc6;
+      padding: px2rem(10px);
       font-size: px2rem(28px);
       line-height: px2rem(30px);
       @include font-color('bgColor');

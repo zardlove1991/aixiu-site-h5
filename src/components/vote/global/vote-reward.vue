@@ -9,7 +9,7 @@
     <div class='reward-btn-wrap'>
       <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
-    <div class='dialog-title-3'>有{{lotteryObj.enroll.raffle_num}}次抽奖机会</div>
+    <div class='dialog-title-3'>有{{enroll.raffle_num}}次抽奖机会</div>
   </div>
 </div>
 </template>
@@ -27,11 +27,25 @@ export default {
       default: () => {}
     }
   },
+  watch: {
+    lotteryObj: {
+      handler (newData, oldData) {
+        console.log('---000---', newData.enroll)
+        this.enroll = newData.enroll
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   data () {
     return {
+      enroll: {},
       rewardIcon: require('@/assets/vote/reward-bg.png'),
       closeIcon: require('@/assets/vote/close-icon.png')
     }
+  },
+  mounted () {
+    console.log(1111, this.lotteryObj)
   },
   components: {
     TipsDialog
@@ -41,13 +55,14 @@ export default {
       this.$emit('closeReward')
     },
     goRaffle () {
-      let id = ''
-      let mark = ''
+      let id = this.enroll.id
+      let mark = this.enroll.mark
       let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
       this.$router.push({
         name: 'lottery' + flag,
         params: {id: id}
       })
+      this.$emit('closeReward')
     }
   }
 }

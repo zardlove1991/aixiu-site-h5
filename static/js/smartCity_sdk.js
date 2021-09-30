@@ -479,6 +479,18 @@
             callHandler('vibrateFeedback', param , function(response) {
                 callback && callback(response);
             })
+        },
+        //状态管理
+        applicationState: function(callback){
+            callHandler('applicationState', null , function(response) {
+                callback && callback(response);
+            })
+        },
+        // 拍视频
+        videoRecording : function(param,callback) {
+            callHandler('videoRecording', param , function(response) {
+                callback && callback(response);
+            })
         }
     }
     window.SmartCity = new SmartCity();

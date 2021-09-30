@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <page-back :path="'/depencestart/' + id" title='返回上一页'/>
+    <page-back :path="'/depencestart/' + id" title='返回上一页' :themeColor="themeColor" />
   </div>
 </template>
 
@@ -65,7 +65,8 @@ export default {
       score_num: 0, // 答题总分数
       points_num: 0, // 答题总积分
       curTimeType: 1,
-      isIntegralType: false
+      isIntegralType: false,
+      themeColor: ''
     }
   },
   components: {
@@ -84,6 +85,9 @@ export default {
       this.isIntegralType = true
     } else {
       this.isIntegralType = false
+    }
+    if (this.examInfo.mark === 'examination@live') {
+      this.themeColor = this.examInfo.limit.color_scheme.content.theme_color
     }
   },
   methods: {

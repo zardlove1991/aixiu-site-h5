@@ -169,7 +169,7 @@ export default {
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
-  shareAddTimes: config => createAPI(configUrl.shareAddTimes, 'GET', config, API_FLAG),
+  shareAddTimes: config => createAPI(configUrl.shareAddTimes, 'POST', config, API_FLAG),
   getExamRankList: config => createAPI(configUrl.getExamRankList, 'GET', config, API_FLAG),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),

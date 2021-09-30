@@ -733,7 +733,7 @@ export default {
     checkOpenLottery () {
       let isFromexamSubmit = this.from
       console.error(this.optionData.raffle_num, 'this.optionData')
-      if (this.optionData.raffle_num !== 'undefined' && isFromexamSubmit) {
+      if (typeof (this.optionData.raffle_num) !== 'undefined' && isFromexamSubmit) {
         if (this.optionData.raffle_num) {
           this.isLuckDraw = true
           this.luckDrawTips = ['恭喜你，答题优秀', '获得抽奖机会']
@@ -742,6 +742,8 @@ export default {
           this.luckDrawTips = ['很遗憾，测验未合格', '错过了抽奖机会']
         }
         this.isShowLuckPop = true
+      } else {
+        this.isShowLuckPop = false
       }
     },
     goLotteryPage () {
