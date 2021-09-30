@@ -317,7 +317,8 @@ export default {
                 // line-height: 24px;
             }
             &:first-child{
-                margin-top: px2rem(21px);
+                // margin-top: px2rem(21px);
+                padding-top: px2rem(21px);
                 margin-bottom: px2rem(20px);
             }
             .righit-icon{

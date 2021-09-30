@@ -241,7 +241,8 @@ export default {
     .record-info-next{
         // padding-left: px2rem(50px);
         .grounp-btns-wrap{
-            margin-top: px2rem(21px);
+            // margin-top: px2rem(21px);
+            padding-top: px2rem(21px);
             margin-bottom: px2rem(38px);
             display: flex;
             justify-content: center;

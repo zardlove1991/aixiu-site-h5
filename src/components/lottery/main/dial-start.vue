@@ -29,7 +29,7 @@
           <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
         <!-- </div> -->
         <div class="empty-box"></div>
-        <div class="wheel-tips" v-if="detailInfo.is_open_list" :class="{'is-hide':isNoticeDataShow}">
+        <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
@@ -62,7 +62,7 @@
         <div v-else class="wheel-btn-off" >
           <span>立即抽奖</span>
         </div>
-        <div class="wheel-point" v-if="sign.indexOf('wechat') !== -1 && detailInfo.user_integral_counts  >= 0">
+        <div class="wheel-point" v-if="detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
         </div>
@@ -147,6 +147,7 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
+import mixins from '@/mixins/index'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
@@ -216,6 +217,7 @@ export default {
   props: {
     id: String
   },
+  mixins: [mixins],
   data () {
     return {
       winner: null, // 指定获奖下标 specified为true时生效
@@ -300,6 +302,7 @@ export default {
       interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
       disableBtn: false,
+      shareConfigData: {},
       drawTime: 5000,
       sign: getAppSign(),
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
@@ -328,6 +331,9 @@ export default {
           this.isUnPrizeChanceShow = true
         }
       }
+    },
+    isNoticeDataShow (newValue, oldValue) {
+      this.isNoticeDataShow = newValue
     }
   },
   async created () {
@@ -338,6 +344,8 @@ export default {
     //   this.$toast.success(res.msg)
     // }
     this.ininData()
+    // console.log(this.sign.indexOf('wechat') !== -1)
+    // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
   },
   async mounted () {
     // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
@@ -404,7 +412,7 @@ export default {
         }
       })
       console.log(this.list)
-      // this.sharePage(res)
+      this.sharePage(res)
     },
     getImage (image = {}, width, height) {
       if (image instanceof Array && image.length === 0) {
@@ -491,7 +499,7 @@ export default {
             this.winCallback()
           } else if (res.type === 6) { // 再来一次
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '再来一次..............')
               }
@@ -500,7 +508,7 @@ export default {
           } else if (res.type === 5) { // 积分
             this.integralData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '积分..............')
               }
@@ -516,7 +524,7 @@ export default {
               // this.$set(this.cardViewData, 'qr_code', this.getImage(this.cardViewData.qr_code[0]))
             }
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '卡劵..............')
               }
@@ -529,7 +537,7 @@ export default {
           } else if (res.type === 3) { // 红包
             this.packetData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '红包..............')
               }
@@ -542,7 +550,7 @@ export default {
           } else if (res.type === 2) { // 优惠劵
             this.couponData = res
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '优惠劵..............')
               }
@@ -555,7 +563,7 @@ export default {
             this.prizeData = res
             // console.log(this.prizeData)
             this.list.map((item, index) => {
-              if (item.type === res.type) {
+              if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
                 console.log(this.winner, '实物..............')
               }
@@ -678,18 +686,19 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { title, introduce, indexpic, rule, limit } = detailInfo
+      // let { title, introduce, indexpic, rule, limit } = detailInfo
+      let { title, introduce, indexpic, limit } = detailInfo
       let imgUrl = ''
       let shareLink = ''
       let shareTitle = title
       let shareBrief = introduce
       // let shareTitle = limit.share_settings.share_title
       // let shareBrief = limit.share_settings.share_brief
-      if (rule && rule.is_close_dialog) {
-        this.isCloseDialog = true
-      } else {
-        this.isCloseDialog = false
-      }
+      // if (rule && rule.is_close_dialog) {
+      //   this.isCloseDialog = true
+      // } else {
+      //   this.isCloseDialog = false
+      // }
       // if (rule && rule.share_settings) {
       if (limit && limit.share_settings) {
         // let share = rule.share_settings
@@ -745,7 +754,7 @@ export default {
         }
       }
       if (!shareLink) {
-        shareLink = delUrlParams(['code'])
+        shareLink = delUrlParams(['rotor'])
       } else {
         shareLink = this.getShareUrl(shareLink)
       }
@@ -1000,7 +1009,8 @@ $time: 3s; //转动多少秒后停下的时间
       // margin-bottom: px2rem(22px);
     }
     .wheel-p {
-      height: px2rem(40px);
+      max-height: px2rem(32px);
+      min-height: px2rem(24px);
     }
     // 转盘盒子
     .wheel-box {
@@ -1106,7 +1116,7 @@ $time: 3s; //转动多少秒后停下的时间
       }
     }
     .empty-box {
-      height: px2rem(40px);
+      height: px2rem(32px);
     }
     // 中奖信息
     .wheel-tips {
