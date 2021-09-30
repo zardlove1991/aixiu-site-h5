@@ -58,10 +58,10 @@ let smartcity = {
   applicationState () {
     window.SmartCity.applicationState((res) => {
       console.log(res)
-      if (+res.status === 0) {
+      if (+res.status === 0 || +res.status ===1) {
         // 页面激活
-        let url = window.location.href
-        window.location.href = url
+        console.log('页面隐藏/激活')
+        window.$vue.$router.go(window.$vue.$router.currentRoute)
       }
       if (+res.status === 2) {
         console.log('程序退出')
