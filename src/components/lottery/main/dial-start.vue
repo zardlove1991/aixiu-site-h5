@@ -1005,8 +1005,8 @@ $time: 3s; //转动多少秒后停下的时间
       // margin-bottom: px2rem(22px);
     }
     .wheel-p {
-      max-height: px2rem(40px);
-      min-height: px2rem(32px);
+      max-height: px2rem(32px);
+      min-height: px2rem(24px);
     }
     // 转盘盒子
     .wheel-box {
@@ -1112,7 +1112,7 @@ $time: 3s; //转动多少秒后停下的时间
       }
     }
     .empty-box {
-      height: px2rem(40px);
+      height: px2rem(32px);
     }
     // 中奖信息
     .wheel-tips {
