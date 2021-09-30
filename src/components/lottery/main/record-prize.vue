@@ -10,7 +10,7 @@
       <h3>中奖记录</h3>
       <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-          <van-list v-model="loading" :finished="finished" @load="onLoad">
+          <van-list v-model="loading" :finished="finished" @load="onLoad"  :error.sync="error" >
             <van-cell
               v-for="item in list"
               :key="item.id"
@@ -19,7 +19,7 @@
             >
               <div slot="title" class="title">{{ item.prize_content }}</div>
               <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
-              <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 5}">查看</div>
+              <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 6}" >查看</div>
             </van-cell>
           </van-list>
         </van-pull-refresh>
@@ -101,6 +101,7 @@ export default {
       ],
       loading: false,
       finished: false,
+      error: false,
       id: this.$route.params.id,
       currentPage: 1,
       currentCount: 100,
@@ -133,21 +134,27 @@ export default {
         this.list = []
         this.refreshing = false
       }
-      const res = await API.getMyPrizeRecord({ query: { id: this.id },
-        params: {
-          page: this.currentPage,
-          count: this.currentCount
-        } })
-      console.log(res)
-      this.loading = false
+      try {
+        const res = await API.getMyPrizeRecord({ query: { id: this.id },
+          params: {
+            page: this.currentPage,
+            count: this.currentCount
+          } })
+        console.log(res)
+        this.loading = false
 
-      if (res.data.length === 0) {
-        this.finished = true
-        return false
+        if (res.data.length === 0) {
+          this.finished = true
+          return false
+        }
+        this.list.push(...res.data)
+        this.total = res.total
+        this.currentPage++
+      } catch (error) {
+        console.log(error)
+        this.error = true
+        this.$toast('非法来源')
       }
-      this.list.push(...res.data)
-      this.total = res.total
-      this.currentPage++
     },
     async onRefresh () {
       // 清空列表数据
@@ -370,12 +377,15 @@ export default {
           text-align: left;
           color: #333333;
           opacity: 1;
-          font-size: px2rem(28px);
+          font-size: px2rem(24px);
           line-height: px2rem(100px);
+        }
+        .labelClass {
+          width: px2rem(60px);
         }
         .jump {
           opacity: 0.6;
-          font-size: px2rem(28px);
+          font-size: px2rem(24px);
           font-family: SourceHanSansCN, SourceHanSansCN-Regular;
           font-weight: 400;
           text-align: right;
