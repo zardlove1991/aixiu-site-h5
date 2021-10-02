@@ -267,7 +267,6 @@ export default {
 
       // 图片上传数量的限制
       try {
-        console.log('detailInfo', detailInfo.rule.works_type_set)
         // 是否存在图片
         const worksTypeSet = detailInfo.rule.works_type_set
         const choicedWorksType = worksTypeSet.choiced_works_type
@@ -328,7 +327,7 @@ export default {
       if (worksId) {
         this.getWorksDetail(worksId)
       }
-      console.log('isOpenClassify', isOpenClassify)
+      // console.log('isOpenClassify', isOpenClassify)
       if (isOpenClassify) {
         this.initVoteType()
       }
@@ -444,6 +443,47 @@ export default {
     blurAction () {
       document.body.scrollTop = 0
     },
+    checkValue (data) {
+      if (this.checkFullScene === '1') {
+        // 视频
+        if (this.material.video.length === 0) {
+          Toast('请上传视频')
+          return false
+        }
+      } else if (this.checkFullScene === '2') {
+        // 图片
+        if (this.material.image.length === 0) {
+          Toast('请上传图片')
+          return false
+        }
+      }
+      for (const i of this.enrollForm.formFixList) {
+        // 标题
+        if (i.unique_name === 'form_3') {
+          if (i.inputValue === '') {
+            Toast('请输入标题')
+            return true
+          }
+        }
+
+        // 先判断是是不是隐藏，再判断是否选中必填
+        if (i.unique_name === 'form_4' || i.unique_name === 'form_5') {
+          if (i.visibleAuthValue === 1 && i.inputValue === '') {
+            Toast(`请输入${i.formTitle}`)
+            return true
+          }
+        }
+      }
+
+      for (const j of this.enrollForm.visibleFieldList) {
+        if (j.nesWriteValue === 1 && j.inputValue === '') {
+          Toast(`请输入${j.fieldSuffix}`)
+          return true
+        }
+      }
+
+      return false
+    },
     commitVote () {
       let id = this.id
       let examineData = this.examineData
@@ -453,6 +493,11 @@ export default {
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
+      }
+
+      // 校验值
+      if (this.checkValue()) {
+        return false
       }
 
       let _extra = {}
@@ -570,7 +615,6 @@ export default {
       }
     },
     fullSceneChange (key) {
-      console.log('-9999---', key)
       if (key) {
         this.fileList = []
         this.material = {

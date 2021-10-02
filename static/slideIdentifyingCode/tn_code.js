@@ -142,7 +142,7 @@ var tncode = {
   },
   _block_on_move: function (e) {
     console.log('move-1', tncode._doing, tncode._is_moving)
-    // if (!tncode._doing) return true
+    if (!tncode._doing) return true
     if (!tncode._is_moving) return true
     console.log('block-on-move')
     e.preventDefault()
@@ -169,6 +169,7 @@ var tncode = {
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
+    console.log('_doing', tncode._doing)
     if (!tncode._doing) return true
     console.log('block-on-end')
     e.preventDefault()
@@ -230,7 +231,6 @@ var tncode = {
     tncode._is_draw_bg = true
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
-    console.log('2220', tncode._img)
     ctx_bg.drawImage(tncode._img, 0, 0, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_mark: function() {
@@ -311,6 +311,8 @@ var tncode = {
     console.log('hide')
     document.getElementById('tncode_div_bg').style.display="none";
     document.getElementById('tncode_div').style.display="none";
+
+    tncode._doing = false
   },
   _showmsg:function(msg,status){
     console.log('_showmsg')
@@ -485,10 +487,10 @@ var tncode = {
       // 点击按钮事件
       var objs = document.getElementByClassName('tncode',-1);
       for (var i in objs) {
-          var o = objs[i];
-          o.innerHTML = '点击按钮进行验证';
-          tncode._bind(o,'touchstart',_this.show);
-          tncode._bind(o,'click',_this.show);
+        var o = objs[i];
+        o.innerHTML = '点击按钮进行验证';
+        tncode._bind(o,'touchstart',_this.show);
+        tncode._bind(o,'click',_this.show);
       }
     }
   },
@@ -503,8 +505,8 @@ var tncode = {
 var $TN = tncode;
 var _old_onload = window.onload;
 window.onload = function(){
-    if(typeof _old_onload == 'function'){
-        _old_onload();
-    }
-    tncode.init();
+  if(typeof _old_onload == 'function'){
+    _old_onload();
+  }
+  tncode.init();
 }
