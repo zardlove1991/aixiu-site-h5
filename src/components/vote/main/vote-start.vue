@@ -49,7 +49,7 @@
           </div>
           <div class='num-box' :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
             <div class="vote-cols-icon"></div>
-            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <span class="vote-count">{{detailInfo.works_count}}</span>
             <span class="vote-desc">作品数</span>
           </div>
           <div class="vote-cols-wrap num-box">
