@@ -284,7 +284,7 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
+    <div v-if='giftBoxType' @click.stop='showLotteryTips' class='gift-box-wrap'>
       <img :src="imgs.giftBox" alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
@@ -505,6 +505,7 @@ export default {
   },
   methods: {
     showLotteryTips () {
+      console.log('点击了gift box')
       this.lotteryTipsType = false
       this.$nextTick(item => {
         this.lotteryTipsType = true
