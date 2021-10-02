@@ -266,6 +266,9 @@ export default {
               this.slideCode.checkSuccessType({type: 'fail'})
             }
             this.voteDisable = false
+            // 允许滑动
+            console.log('this.slideCode', this.slideCode)
+            this.slideCode._reset()
             return false
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message

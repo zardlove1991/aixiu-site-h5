@@ -170,7 +170,6 @@ var tncode = {
   },
   _block_on_end: function (e) {
     if (!tncode._doing) return true
-    tncode._is_moving = false
     console.log('block-on-end')
     e.preventDefault()
     var theEvent = window.event || e
@@ -179,7 +178,8 @@ var tncode = {
     }
 
     tncode.isStopSlideType = true
-    tncode._is_moving = false
+    // tncode._is_moving = false
+    console.log('isStopSlideType', tncode.isStopSlideType, tncode._is_moving)
   },
   checkSuccessType: function (data) {
     console.log('checkSuccessType')
@@ -219,6 +219,7 @@ var tncode = {
     // 绘画底部的背景图
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
+    // console.log('tncode._img', tncode._img)
     ctx_bg.drawImage(tncode._img, 0, tncode._img_h * 2, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_bg: function () {
@@ -229,6 +230,7 @@ var tncode = {
     tncode._is_draw_bg = true
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
+    console.log('2220', tncode._img)
     ctx_bg.drawImage(tncode._img, 0, 0, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_mark: function() {
@@ -452,37 +454,43 @@ var tncode = {
     obj = document.getElementByClassName('slide_block_text');
     obj.style.display="block";
   },
+  removeBindEvent: function () {
+    let _this = this;
+    // 移除事件
+    window.document.addEventListener('touchstart', _this._block_on_move, false)
+  },
   init:function(){
-      let _this = this;
-      if(!tncode._img){
-          tncode._html();
-          var obj = document.getElementByClassName('slide_block');
+    console.log('init')
+    let _this = this;
+    if(!tncode._img){
+      tncode._html();
+      var obj = document.getElementByClassName('slide_block');
 
-          tncode._bind(obj,'mousedown',_this._block_start_move);
-          tncode._bind(document,'mousemove',_this._block_on_move);
-          // tncode._bind(document,'mouseup',_this._block_on_end);
+      tncode._bind(obj,'mousedown',_this._block_start_move);
+      tncode._bind(document,'mousemove',_this._block_on_move);
+      // tncode._bind(document,'mouseup',_this._block_on_end);
 
-          tncode._bind(obj,'touchstart',_this._block_start_move);
-          tncode._bind(document,'touchmove',_this._block_on_move);
-          tncode._bind(document,'touchend',_this._block_on_end);
+      tncode._bind(obj,'touchstart',_this._block_start_move);
+      tncode._bind(document,'touchmove',_this._block_on_move);
+      tncode._bind(document,'touchend',_this._block_on_end);
 
-          var obj = document.getElementByClassName('tncode_close');
-          tncode._bind(obj,'touchstart',_this.hide);
-          // tncode._bind(obj,'click',_this.hide);
-          var obj = document.getElementByClassName('tncode_refresh');
+      var obj = document.getElementByClassName('tncode_close');
+      tncode._bind(obj,'touchstart',_this.hide);
+      // tncode._bind(obj,'click',_this.hide);
+      var obj = document.getElementByClassName('tncode_refresh');
 
-          tncode._bind(obj,'touchstart',_this.refresh);
-          // tncode._bind(obj,'click',_this.refresh);
+      tncode._bind(obj,'touchstart',_this.refresh);
+      // tncode._bind(obj,'click',_this.refresh);
 
-          // 点击按钮事件
-          var objs = document.getElementByClassName('tncode',-1);
-          for (var i in objs) {
-              var o = objs[i];
-              o.innerHTML = '点击按钮进行验证';
-              tncode._bind(o,'touchstart',_this.show);
-              tncode._bind(o,'click',_this.show);
-          }
+      // 点击按钮事件
+      var objs = document.getElementByClassName('tncode',-1);
+      for (var i in objs) {
+          var o = objs[i];
+          o.innerHTML = '点击按钮进行验证';
+          tncode._bind(o,'touchstart',_this.show);
+          tncode._bind(o,'click',_this.show);
       }
+    }
   },
   result:function(){
     return tncode._result;

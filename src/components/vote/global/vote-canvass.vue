@@ -17,10 +17,11 @@
       @close="isShowLottery = false"></lottery-vote>
     <div v-show='false' id='qrcode'></div>
     <!-- 图片的存储容器 -->
+    <img crossOrigin='anonymous'  @load="resetPoster(5)"
+      :src="worksBg" ref="worksBgRef" alt=""
+      v-show="false">
     <img crossOrigin='anonymous' :src="worksImg" ref="worksImgRef" alt=""
       @load="resetPoster(1)" v-show="false">
-    <img crossOrigin='anonymous' :src="worksBg" ref="worksBgRef" alt=""
-      v-show="false">
     <img crossOrigin='anonymous' :src="qrcodeImg" ref="qrcodeImgRef" alt=""
       @load='qrcodeFun' v-show="false">
     <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt=""
@@ -68,7 +69,10 @@ export default {
       sponsorUrl: '',
       sponsorName: '',
       isTipsShow: false, // 控制通知框状态
-      message: '<span>长按图片保存或转发朋友圈</span>' //  通知框内的信息
+      message: '<span>长按图片保存或转发朋友圈</span>', //  通知框内的信息
+      indexType1: false,
+      indexType3: false,
+      indexType5: false
     }
   },
   watch: {
@@ -78,9 +82,10 @@ export default {
     }
   },
   mounted () {
-    let detailInfo = STORAGE.get('detailInfo')
-    this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
-    // this.worksBg = this.imgs.bgImg
+    // const canvas = document.createElement('canvas')
+    // const ctx = canvas.getContext('2d')
+    // this.curCtx = ctx
+    // this.curCanvas = canvas
   },
   methods: {
     saveSharer (worksId) {
@@ -128,6 +133,8 @@ export default {
         let tips1 = ''
         let tips2 = ''
         let numbering = ''
+        console.log('---res---', res)
+
         if (signUnit === '助力值') {
           tips1 = '第2名还差' + Math.abs(res.last_votes) + '次助力就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + '次助力'
@@ -137,13 +144,16 @@ export default {
           tips2 = ''
           numbering = '向' + res.numbering + '号英雄致敬'
         } else {
-          tips1 =
-            '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
+          tips1 = '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
           numbering = '快来帮' + res.numbering + '号投票吧'
         }
         let voteTip = res.index === 1 ? tips1 : tips2
-        if (detailInfo.works_count === 1) voteTip = '目前是第一名，坚持就是胜利'
+        console.log('detailInfo', detailInfo)
+        if (detailInfo.works_count === 1) {
+          voteTip = '目前是第一名，坚持就是胜利'
+        }
+
         let qrcode = this.dealUrlConcat({
           sign: 'invotefriend',
           invotekey: code,
@@ -226,6 +236,10 @@ export default {
           params: params,
           voteTip: voteTip
         }
+
+        // 设置分享海报背景图片
+        this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
+
         // this.worksCode = params.
         // this.renderPlaybill(params, voteTip)
 
@@ -251,23 +265,29 @@ export default {
       })
     },
     resetPoster (data) {
-      let indexType1 = false
-      // let indexType2 = false
-      let indexType3 = false
       // 判断用户头像是否存在
       if (this.worksDetailObj.params.avatar === '') {
         if (data === 1) {
+          this.indexType1 = true
+        }
+        if (data === 5) {
+          this.indexType5 = true
+        }
+        if (this.indexType1 && this.indexType5) {
           this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
         }
       } else {
         // 头像存在
         if (data === 1) {
-          indexType1 = true
+          this.indexType1 = true
         }
         if (data === 3) {
-          indexType3 = true
+          this.indexType3 = true
         }
-        if (indexType1 && indexType3) {
+        if (data === 5) {
+          this.indexType5 = true
+        }
+        if (this.indexType1 && this.indexType3 && this.indexType5) {
           this.renderPlaybill(this.worksDetailObj.params, this.worksDetailObj.voteTip)
         }
       }
@@ -290,6 +310,9 @@ export default {
         // 绘制背景图
         canvas.width = 640
         canvas.height = 897
+
+        this.curCtx = ctx
+        this.curCanvas = canvas
 
         let bgImg = this.$refs['worksBgRef']
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)
@@ -342,9 +365,6 @@ export default {
         ctx.font = '24px Arial'
         ctx.fillStyle = '#333333'
         ctx.fillText(`${userInfo.nick_name}的邀请`, offwidthNum, 635)
-
-        this.curCtx = ctx
-        this.curCanvas = canvas
 
         QRCode.toDataURL(data.qrcode).then(res => {
           this.qrcodeImg = res

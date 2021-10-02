@@ -18,12 +18,6 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <!-- <video-upload
-            :videoMode="videoMode"
-            :loading.sync="loading"
-            :fileList="fileList"
-            @changeFile="changeFile">
-          </video-upload> -->
           <video-upload
             :videoMode="videoMode"
             :loading.sync="loading"
@@ -74,6 +68,7 @@
         <div class="form-content">
           <!-- <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input> -->
           <textarea  v-model.trim="examineData.introduce"
+            style="-webkit-user-select:text !important"
             @blur="blurAction()"
             class='font-ctx-wrap'
             rows="5" cols="20">
@@ -106,6 +101,7 @@
             <el-input v-model.trim="item.inputValue" maxlength="40"></el-input>
           </div>
           <textarea v-if='item.type == "mulText"'
+            style="-webkit-user-select:text !important"
             v-model.trim="item.inputValue"
             class='font-ctx-wrap'
             rows="5" cols="20">
@@ -126,6 +122,7 @@
           </div>
           <div v-if='item.type === "mulText"' class="form-content">
             <textarea  v-model.trim="item.inputValue"
+              style="-webkit-user-select:text !important"
               @blur="blurAction()"
               class='font-ctx-wrap'
               rows="5" cols="20">
@@ -181,6 +178,7 @@ export default {
   },
   data () {
     return {
+      curDetailInfo: {},
       maxUploadImgNum: 9,
       enrollForm: {},
       ZCIdType: false,
@@ -230,6 +228,7 @@ export default {
     this.initForm()
   },
   mounted () {
+    this.curDetailInfo = STORAGE.get('detailInfo')
     this.judgeStatus()
     this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
   },
@@ -265,16 +264,6 @@ export default {
     },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
-      // 判断是不是初次进入
-      let _mywork = detailInfo.mywork
-      if (STORAGE.get('isFirstUpload')) {
-        STORAGE.remove('isFirstUpload')
-      }
-      if (_mywork.length === 0) {
-        STORAGE.set('isFirstUpload', true)
-      } else {
-        STORAGE.set('isFirstUpload', false)
-      }
 
       // 图片上传数量的限制
       try {
@@ -512,6 +501,17 @@ export default {
       }
       if (this.worksId) {
         data.id = this.worksId
+      }
+
+      // 判断是不是初次进入
+      let _mywork = this.curDetailInfo.mywork
+      if (STORAGE.get('isFirstUpload')) {
+        STORAGE.remove('isFirstUpload')
+      }
+      if (_mywork.length === 0) {
+        STORAGE.set('isFirstUpload', true)
+      } else {
+        STORAGE.set('isFirstUpload', false)
       }
 
       this.disabled = true
