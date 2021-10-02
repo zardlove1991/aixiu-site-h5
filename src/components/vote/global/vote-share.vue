@@ -209,17 +209,21 @@ export default {
     },
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
-      console.log('_needCode', _needCode, this.curDetailInfo.rule)
-      this.codeObj = {}
-      if (_needCode === 1) {
-        this.initTnObj()
-        this.slideCode.show() // 显示二维码
-        this.codeObj.tn_x = 0
-        // eslint-disable-next-line no-undef
-        this.codeObj.request_id = $TN._request_id // 获取请求的id
-      } else {
-        this.saveShare(memberId)
+      try {
+        let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        console.log('_needCode', _needCode, this.curDetailInfo.rule)
+        this.codeObj = {}
+        if (_needCode === 1) {
+          this.initTnObj()
+          this.slideCode.show() // 显示二维码
+          this.codeObj.tn_x = 0
+          // eslint-disable-next-line no-undef
+          this.codeObj.request_id = $TN._request_id // 获取请求的id
+        } else {
+          this.saveShare(memberId)
+        }
+      } catch (e) {
+        console.errpr(e)
       }
     },
     saveShare (memberId = '') {
