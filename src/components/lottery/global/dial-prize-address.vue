@@ -125,6 +125,7 @@ export default {
       const res = await API.getAddress({
         query: { id: this.id },
         data: {
+          code: this.prizeData.code,
           name: this.prizeData.address[0],
           mobile: this.prizeData.address[1],
           address: this.prizeData.address[2]

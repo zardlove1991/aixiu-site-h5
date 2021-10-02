@@ -148,6 +148,7 @@ import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
+import { isIphoneX } from '@/utils/app'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
@@ -220,6 +221,7 @@ export default {
   mixins: [mixins],
   data () {
     return {
+      isInIphoneX: isIphoneX(),
       winner: null, // 指定获奖下标 specified为true时生效
       specified: false, // 是否指定获奖结果，false时为随机
       loading: false, // 抽奖执行状态，防止用户多次点击

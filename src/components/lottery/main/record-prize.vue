@@ -126,7 +126,6 @@ export default {
   },
   created () {},
   mounted () {
-    // this.onLoad()
   },
   methods: {
     async onLoad () {
