@@ -285,7 +285,7 @@
     </vote-reward>
     <!-- gift box -->
     <div v-if='giftBoxType' @click.stop='showLotteryTips' class='gift-box-wrap'>
-      <img :src="imgs.giftBox" alt="" class='gift-box-img'>
+      <img :src="imgs.giftBox" @click.stop='showLotteryTips' alt="" class='gift-box-img'>
     </div>
     <!-- lottery tips -->
     <lottery-tips
@@ -2029,7 +2029,7 @@ export default {
     position: fixed;
     bottom: px2rem(180px);
     right: px2rem(10px);
-    z-index: 999;
+    z-index: 9999;
     .gift-box-img{
       width: px2rem(160px);
       height: px2rem(148px);
