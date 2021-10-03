@@ -149,6 +149,7 @@ export default {
       this.$emit('close')
     },
     async sureWorkVote () {
+      console.log('确定')
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo) {
         return
@@ -208,17 +209,21 @@ export default {
     },
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
-      console.log('_needCode', _needCode, this.curDetailInfo.rule)
-      this.codeObj = {}
-      if (_needCode === 1) {
-        this.initTnObj()
-        this.slideCode.show() // 显示二维码
-        this.codeObj.tn_x = 0
-        // eslint-disable-next-line no-undef
-        this.codeObj.request_id = $TN._request_id // 获取请求的id
-      } else {
-        this.saveShare(memberId)
+      try {
+        let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        console.log('_needCode', _needCode, this.curDetailInfo.rule)
+        this.codeObj = {}
+        if (_needCode === 1) {
+          this.initTnObj()
+          this.slideCode.show() // 显示二维码
+          this.codeObj.tn_x = 0
+          // eslint-disable-next-line no-undef
+          this.codeObj.request_id = $TN._request_id // 获取请求的id
+        } else {
+          this.saveShare(memberId)
+        }
+      } catch (e) {
+        console.errpr(e)
       }
     },
     saveShare (memberId = '') {
@@ -265,6 +270,9 @@ export default {
               this.slideCode.checkSuccessType({type: 'fail'})
             }
             this.voteDisable = false
+            // 允许滑动
+            console.log('this.slideCode', this.slideCode)
+            this.slideCode._reset()
             return false
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message

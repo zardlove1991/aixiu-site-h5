@@ -45,7 +45,7 @@ export default {
     }
   },
   mounted () {
-    console.log(1111, this.lotteryObj)
+    console.log(1114441, this.lotteryObj)
   },
   components: {
     TipsDialog

@@ -18,12 +18,6 @@
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
-          <!-- <video-upload
-            :videoMode="videoMode"
-            :loading.sync="loading"
-            :fileList="fileList"
-            @changeFile="changeFile">
-          </video-upload> -->
           <video-upload
             :videoMode="videoMode"
             :loading.sync="loading"
@@ -74,6 +68,7 @@
         <div class="form-content">
           <!-- <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input> -->
           <textarea  v-model.trim="examineData.introduce"
+            style="-webkit-user-select:text !important"
             @blur="blurAction()"
             class='font-ctx-wrap'
             rows="5" cols="20">
@@ -106,6 +101,7 @@
             <el-input v-model.trim="item.inputValue" maxlength="40"></el-input>
           </div>
           <textarea v-if='item.type == "mulText"'
+            style="-webkit-user-select:text !important"
             v-model.trim="item.inputValue"
             class='font-ctx-wrap'
             rows="5" cols="20">
@@ -126,6 +122,7 @@
           </div>
           <div v-if='item.type === "mulText"' class="form-content">
             <textarea  v-model.trim="item.inputValue"
+              style="-webkit-user-select:text !important"
               @blur="blurAction()"
               class='font-ctx-wrap'
               rows="5" cols="20">
@@ -181,6 +178,7 @@ export default {
   },
   data () {
     return {
+      curDetailInfo: {},
       maxUploadImgNum: 9,
       enrollForm: {},
       ZCIdType: false,
@@ -230,6 +228,7 @@ export default {
     this.initForm()
   },
   mounted () {
+    this.curDetailInfo = STORAGE.get('detailInfo')
     this.judgeStatus()
     this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
   },
@@ -265,20 +264,9 @@ export default {
     },
     async initForm () {
       let detailInfo = STORAGE.get('detailInfo')
-      // 判断是不是初次进入
-      let _mywork = detailInfo.mywork
-      if (STORAGE.get('isFirstUpload')) {
-        STORAGE.remove('isFirstUpload')
-      }
-      if (_mywork.length === 0) {
-        STORAGE.set('isFirstUpload', true)
-      } else {
-        STORAGE.set('isFirstUpload', false)
-      }
 
       // 图片上传数量的限制
       try {
-        console.log('detailInfo', detailInfo.rule.works_type_set)
         // 是否存在图片
         const worksTypeSet = detailInfo.rule.works_type_set
         const choicedWorksType = worksTypeSet.choiced_works_type
@@ -339,7 +327,7 @@ export default {
       if (worksId) {
         this.getWorksDetail(worksId)
       }
-      console.log('isOpenClassify', isOpenClassify)
+      // console.log('isOpenClassify', isOpenClassify)
       if (isOpenClassify) {
         this.initVoteType()
       }
@@ -455,6 +443,47 @@ export default {
     blurAction () {
       document.body.scrollTop = 0
     },
+    checkValue (data) {
+      if (this.checkFullScene === '1') {
+        // 视频
+        if (this.material.video.length === 0) {
+          Toast('请上传视频')
+          return false
+        }
+      } else if (this.checkFullScene === '2') {
+        // 图片
+        if (this.material.image.length === 0) {
+          Toast('请上传图片')
+          return false
+        }
+      }
+      for (const i of this.enrollForm.formFixList) {
+        // 标题
+        if (i.unique_name === 'form_3') {
+          if (i.inputValue === '') {
+            Toast('请输入标题')
+            return true
+          }
+        }
+
+        // 先判断是是不是隐藏，再判断是否选中必填
+        if (i.unique_name === 'form_4' || i.unique_name === 'form_5') {
+          if (i.visibleAuthValue === 1 && i.inputValue === '') {
+            Toast(`请输入${i.formTitle}`)
+            return true
+          }
+        }
+      }
+
+      for (const j of this.enrollForm.visibleFieldList) {
+        if (j.nesWriteValue === 1 && j.inputValue === '') {
+          Toast(`请输入${j.fieldSuffix}`)
+          return true
+        }
+      }
+
+      return false
+    },
     commitVote () {
       let id = this.id
       let examineData = this.examineData
@@ -464,6 +493,11 @@ export default {
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
+      }
+
+      // 校验值
+      if (this.checkValue()) {
+        return false
       }
 
       let _extra = {}
@@ -512,6 +546,17 @@ export default {
       }
       if (this.worksId) {
         data.id = this.worksId
+      }
+
+      // 判断是不是初次进入
+      let _mywork = this.curDetailInfo.mywork
+      if (STORAGE.get('isFirstUpload')) {
+        STORAGE.remove('isFirstUpload')
+      }
+      if (_mywork.length === 0) {
+        STORAGE.set('isFirstUpload', true)
+      } else {
+        STORAGE.set('isFirstUpload', false)
       }
 
       this.disabled = true
@@ -570,7 +615,6 @@ export default {
       }
     },
     fullSceneChange (key) {
-      console.log('-9999---', key)
       if (key) {
         this.fileList = []
         this.material = {

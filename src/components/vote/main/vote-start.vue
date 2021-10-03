@@ -49,7 +49,7 @@
           </div>
           <div class='num-box' :class="['vote-cols-wrap', detailInfo.mark === 'commonvote-fullscene' ? 'fullscene-text' : showModel + '-text']">
             <div class="vote-cols-icon"></div>
-            <span class="vote-count">{{detailInfo.report_count}}</span>
+            <span class="vote-count">{{detailInfo.works_count}}</span>
             <span class="vote-desc">作品数</span>
           </div>
           <div class="vote-cols-wrap num-box">
@@ -284,9 +284,14 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if='giftBoxType' @click='showLotteryTips' class='gift-box-wrap'>
-      <img :src="imgs.giftBox" alt="" class='gift-box-img'>
+    <div v-if="giftBoxType" class="lottery_entrance" style='border: 1px solid red;'>
+      <div @click="showLotteryTips()">
+        <img :src="imgs.giftBox" alt="" class='gift-box-img'>
+      </div>
     </div>
+    <!-- <div v-if='giftBoxType' @click.stop='showLotteryTips' class='gift-box-wrap'>
+      <img :src="imgs.giftBox" @click.stop='showLotteryTips' alt="" class='gift-box-img'>
+    </div> -->
     <!-- lottery tips -->
     <lottery-tips
       v-if='lotteryTipsType'
@@ -449,19 +454,7 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-    let isFirstUploadType = STORAGE.get('isFirstUpload')
-    const detailInfo = STORAGE.get('detailInfo')
-    let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
-    if (isFirstUploadType) {
-      if (isLotteryType === 1) {
-        this.voteRewardType = false
-        this.$nextTick(item => {
-          this.voteRewardType = true
-          this.isShowVoteReward = true
-        })
-      }
-      STORAGE.remove('isFirstUpload')
-    }
+    this.worksStatus()
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -499,7 +492,48 @@ export default {
     }
   },
   methods: {
+    worksStatus () {
+      API.getVodeDetail({
+        query: { id: this.id }
+      }).then((res) => {
+        // 初次加载的弹窗
+        try {
+          let isFirstUploadType = STORAGE.get('isFirstUpload')
+          const detailInfo = res
+          let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
+          if (isFirstUploadType) {
+            if (isLotteryType === 1) {
+              this.voteRewardType = false
+              this.lotteryObj = res.lottery
+              console.info('----this.lotteryObj---', this.lotteryObj)
+              this.$nextTick(item => {
+                this.voteRewardType = true
+                this.isShowVoteReward = true
+              })
+            }
+            STORAGE.remove('isFirstUpload')
+          }
+        } catch (e) {
+          console.log(e)
+        }
+
+        // 显示礼盒
+        // 判断显示gift box
+        let _lottery = res.lottery
+        console.log('res.lottery', _lottery)
+        let lotteryArr = []
+        this.lotteryObj = _lottery
+        lotteryArr.push(_lottery.enroll.is_win)
+        lotteryArr.push(_lottery.enroll.raffle_num)
+        lotteryArr.push(_lottery.vote_relation.is_win)
+        lotteryArr.push(_lottery.vote_relation.raffle_num)
+        let isExistLottery = false
+        isExistLottery = lotteryArr.some(item => item > 0)
+        this.giftBoxType = isExistLottery
+      })
+    },
     showLotteryTips () {
+      console.log('点击了gift box')
       this.lotteryTipsType = false
       this.$nextTick(item => {
         this.lotteryTipsType = true
@@ -507,6 +541,7 @@ export default {
       })
     },
     shareSuccess () {
+      // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
 
       })
@@ -543,18 +578,6 @@ export default {
           query: { id: voteId }
         })
       }
-      // 判断显示gift box
-      let _lottery = res.lottery
-      console.log('_lottery', _lottery)
-      let lotteryArr = []
-      this.lotteryObj = res.lottery
-      lotteryArr.push(_lottery.enroll.is_win)
-      lotteryArr.push(_lottery.enroll.raffle_num)
-      lotteryArr.push(_lottery.vote_relation.is_win)
-      lotteryArr.push(_lottery.vote_relation.raffle_num)
-      let isExistLottery = false
-      isExistLottery = lotteryArr.some(item => item > 0)
-      this.giftBoxType = isExistLottery
 
       let url = res.indexpic
       if (url) {
@@ -778,78 +801,81 @@ export default {
       if (!detailInfo) {
         return false
       }
-      let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
-      let { limit, page_setup: setup } = rule
-      if (textSetting && textSetting.sign) {
-        let tmp = textSetting.sign.split('')
-        if (tmp.length >= 2) {
-          let signUnit = tmp[1]
-          if (signUnit === '力') {
-            this.signUnit = '助力值'
-          } else if (signUnit === '敬') {
-            this.signUnit = '致敬数'
-          } else {
-            this.signUnit = signUnit
-          }
-        }
-      }
-      // 是否显示榜单
-      if (limit.is_open_list === 0) {
-        this.isShowRank = false
-      }
-      if (setup && setup.color_scheme) {
-        this.colorName = setup.color_scheme.name
-      }
-      // 当前展示类型
-      let showModel = ''
-      // console.log('full_scene_type', detailInfo.rule.works_type_set)
-      if (mark.indexOf('fullscene') !== -1) {
-        let arr = detailInfo.rule.works_type_set.choiced_works_type
-        // let arr = limit.full_scene_type
-        if (arr && arr.length) {
-          let key = arr[0]
-          this.fullSceneType = arr
-          this.checkFullScene = key
-          showModel = this.fullSceneMap[key][1]
-        }
-      } else if (mark.indexOf('video') !== -1) {
-        showModel = 'video'
-      } else if (mark.indexOf('image') !== -1) {
-        showModel = 'picture'
-      } else if (mark.indexOf('audio') !== -1) {
-        showModel = 'audio'
-      } else {
-        showModel = 'text'
-      }
-      this.showModel = showModel
-      // 我的作品
-      if (myWork && myWork.id) {
-        this.myWorkStatus = myWork.audit_status
-        if (myWork.audit_status === 1) {
-          let key = this.checkFullScene
-          if (key) {
-            if (key === myWork.full_scene_type) {
-              this.myWork = myWork
+      try {
+        let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
+        let { limit, page_setup: setup } = rule
+        if (textSetting && textSetting.sign) {
+          let tmp = textSetting.sign.split('')
+          if (tmp.length >= 2) {
+            let signUnit = tmp[1]
+            if (signUnit === '力') {
+              this.signUnit = '助力值'
+            } else if (signUnit === '敬') {
+              this.signUnit = '致敬数'
             } else {
-              this.myWork = {}
+              this.signUnit = signUnit
             }
-          } else {
-            this.myWork = myWork
           }
-          myWork.is_my = 1
-          this.setMyVote(myWork)
         }
-      }
-      if (limit.is_open_classify && limit.is_open_classify === 1) {
-        this.isOpenClassify = true
-      }
-      // 活动暂停
-      if (status === 3) {
-        if (!this.isModelShow) {
-          this.isShowPause = true
+        // 是否显示榜单
+        if (limit.is_open_list === 0) {
+          this.isShowRank = false
         }
-        this.setIsModelShow(true)
-        this.setIsBtnAuth(0)
+        if (setup && setup.color_scheme) {
+          this.colorName = setup.color_scheme.name
+        }
+        // 当前展示类型
+        let showModel = ''
+        if (mark.indexOf('fullscene') !== -1) {
+          let arr = detailInfo.rule.works_type_set.choiced_works_type
+          // let arr = limit.full_scene_type
+          if (arr && arr.length) {
+            let key = arr[0]
+            this.fullSceneType = arr
+            this.checkFullScene = key
+            showModel = this.fullSceneMap[key][1]
+          }
+        } else if (mark.indexOf('video') !== -1) {
+          showModel = 'video'
+        } else if (mark.indexOf('image') !== -1) {
+          showModel = 'picture'
+        } else if (mark.indexOf('audio') !== -1) {
+          showModel = 'audio'
+        } else {
+          showModel = 'text'
+        }
+        this.showModel = showModel
+        // 我的作品
+        if (myWork && myWork.id) {
+          this.myWorkStatus = myWork.audit_status
+          if (myWork.audit_status === 1) {
+            let key = this.checkFullScene
+            if (key) {
+              if (key === myWork.full_scene_type) {
+                this.myWork = myWork
+              } else {
+                this.myWork = {}
+              }
+            } else {
+              this.myWork = myWork
+            }
+            myWork.is_my = 1
+            this.setMyVote(myWork)
+          }
+        }
+        if (limit.is_open_classify && limit.is_open_classify === 1) {
+          this.isOpenClassify = true
+        }
+        // 活动暂停
+        if (status === 3) {
+          if (!this.isModelShow) {
+            this.isShowPause = true
+          }
+          this.setIsModelShow(true)
+          this.setIsBtnAuth(0)
+        }
+      } catch (e) {
+        console.log(e)
       }
     },
     setLocation () {
@@ -908,7 +934,6 @@ export default {
           this.curApp = i.name
         }
       }
-      console.log('curApp', this.curApp)
       this.isShowArea = true
     },
     initVoteReportTime () {
@@ -2019,7 +2044,7 @@ export default {
     position: fixed;
     bottom: px2rem(180px);
     right: px2rem(10px);
-    z-index: 999;
+    z-index: 9999;
     .gift-box-img{
       width: px2rem(160px);
       height: px2rem(148px);
