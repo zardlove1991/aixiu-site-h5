@@ -68,6 +68,20 @@
         </div>
       </div>
     </div>
+    <my-model
+      :show="App"
+      :isLock="true"
+      :showBtn="false">
+      <div class="suspend-model" slot="content">
+        <div class="app-bg"></div>
+        <div class="tip">
+          请在{{limitSource}}内参与活动
+          <div class="err-tip" v-show="errTips">{{errTips}}</div>
+        </div>
+        <div class="tip-btn" @click.stop="goDownload()">去下载</div>
+        <div class="close-icon" @click.stop="closeDownload()"></div>
+      </div>
+    </my-model>
     <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
     <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
       />
@@ -145,14 +159,18 @@ import CardIntegral from '@/components/lottery/global/dial-card-integral'
 import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
 import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
+import MyModel from '@/components/lottery/global/live-model'
+import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
 import API from '@/api/module/examination'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { isIphoneX } from '@/utils/app'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
     List,
+    MyModel,
+    DrawCheckDialog,
     prizeList,
     ActivityRule,
     Address,
@@ -310,7 +328,11 @@ export default {
       isSourceshow: true,
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
-      btnImg: require('@/assets/lottery/wheel-pointer.png')
+      btnImg: require('@/assets/lottery/wheel-pointer.png'),
+      limitSource: '',
+      App: false,
+      errTips: '',
+      appDownloadUrl: ''
 
     }
   },
@@ -378,6 +400,7 @@ export default {
       let lotteryId = this.id
       const res = await API.getLotteryDetail({ query: { id: lotteryId } })
       this.detailInfo = res
+      // 活动状态
       if (res.activity_vp_status === 'activity_close') {
         this.isActivityPauseShow = true
         this.disableBtn = true
@@ -393,7 +416,7 @@ export default {
         this.isActivityEndShow = true
         this.disableBtn = true
       }
-      STORAGE.set('detailInfo', res)
+      // STORAGE.set('detailInfo', res)
       this.list = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
       this.list.map((item, index) => {
         if (item.type === 1) {
@@ -420,8 +443,15 @@ export default {
         }
       })
       console.log(this.list)
+      // 分享活动
       if (this.detailInfo.limit.share_lottery_limit) {
         this.sharePage(res)
+      }
+      if (res.app_source) {
+        this.limitSource = res.app_source.limit_source
+        this.appDownloadUrl = res.app_source.app_download_link
+        this.App = true
+        this.disableBtn = true
       }
     },
     getImage (image = {}, width, height) {
@@ -467,6 +497,7 @@ export default {
     // 开始抽奖
     async onDraw () {
       this.loading = false
+
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.classList.remove(this.animationClass)
@@ -795,6 +826,18 @@ export default {
         this.isSharedShow = true
         this.$toast.success(res.msg)
       }
+    },
+    goDownload () {
+      if (this.appDownloadUrl) {
+        this.errTips = ''
+        window.location.href = this.appDownloadUrl
+      } else {
+        this.errTips = '未找到下载地址'
+      }
+    },
+    closeDownload () {
+      this.App = false
+      this.errTips = ''
     }
   }
 }
@@ -1269,5 +1312,148 @@ $time: 3s; //转动多少秒后停下的时间
       }
     }
   }
+}
+// 测评模块弹框样式
+.live-model-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 99;
+  &.lock{
+    pointer-events: none;
+  }
+  .model-content {
+    // margin-top: px2rem(414px);
+    min-width: px2rem(560px);
+    border-radius: px2rem(8px);
+    pointer-events: auto;
+    background-color:#fff;
+    .btn-wrap{
+      display: flex;
+      width: 100%;
+      padding: px2rem(30px);
+      // height: px2rem(90px);
+      // @include border('top',1px,solid,'lineColor');
+      .confirm,.cancel{
+        // flex:1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width:px2rem(275px);
+        height:px2rem(90px);
+        line-height: px2rem(90px);
+        text-align: center;
+        color:#fff;
+        border-radius: px2rem(12px);
+        // @include font-dpr(15px);
+        font-size:px2rem(32px);
+      }
+      .confirm {
+        // border: 1px solid #FFA46A;
+        // color: #FFA46A;
+        @include border('all', px2rem(1px), solid, 'highColor');
+        @include font-color('highColor');
+        margin-right: px2rem(21px);
+        // @include font-color('titleColor');
+        // @include border('right',1px,solid,'lineColor');
+      }
+      .cancel {
+        color: #fff;
+        @include bg-color('themeColor');
+        // @include font-color('themeColor');
+      }
+    }
+  }
+}
+.suspend-model {
+    position: relative;
+    padding:px2rem(49px) px2rem(51px) px2rem(41px);
+    box-sizing: border-box;
+    .tip-title {
+      color: #333333;
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+      text-align: center;
+    }
+    .tip-bg {
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .app-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/Bitmap@2x.png","~@/assets/common/Bitmap@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      // font-weight: bold;
+      text-align: center;
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
+      position: relative;
+      &.tip-center {
+        margin: px2rem(20px) 0;
+      }
+      .err-tip {
+        position: absolute;
+        top: px2rem(40px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: red;
+        font-size: px2rem(28px);
+      }
+    }
+    .desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .tip-btn {
+      width:px2rem(305px);
+      height:px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      color:#fff;
+      // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include bg-color('themeColor');
+      @include font-dpr(16px);
+      margin:0 auto;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -ms-border-radius: 5px;
+      -o-border-radius: 5px;
+    }
+    .tip-btn-top {
+      margin-top: px2rem(50px);
+    }
+    .close-icon {
+      position: absolute;
+      right: px2rem(20px);
+      top: px2rem(20px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
 }
 </style>
