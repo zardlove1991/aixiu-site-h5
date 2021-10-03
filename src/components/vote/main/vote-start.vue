@@ -284,7 +284,7 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if="giftBoxType" class="lottery_entrance">
+    <div v-if="giftBoxType" class="lottery_entrance" style='border: 1px solid red;'>
       <div @click="showLotteryTips()">
         <img :src="imgs.giftBox" alt="" class='gift-box-img'>
       </div>
@@ -454,24 +454,7 @@ export default {
     this.clearSetInterval()
   },
   mounted () {
-    console.log('-----000---', STORAGE.get('detailInfo'))
-    try {
-      let isFirstUploadType = STORAGE.get('isFirstUpload')
-      const detailInfo = STORAGE.get('detailInfo')
-      let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
-      if (isFirstUploadType) {
-        if (isLotteryType === 1) {
-          this.voteRewardType = false
-          this.$nextTick(item => {
-            this.voteRewardType = true
-            this.isShowVoteReward = true
-          })
-        }
-        STORAGE.remove('isFirstUpload')
-      }
-    } catch (e) {
-      console.log(e)
-    }
+    this.worksStatus()
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -509,6 +492,46 @@ export default {
     }
   },
   methods: {
+    worksStatus () {
+      API.getVodeDetail({
+        query: { id: this.id }
+      }).then((res) => {
+        // 初次加载的弹窗
+        try {
+          let isFirstUploadType = STORAGE.get('isFirstUpload')
+          const detailInfo = res
+          let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
+          if (isFirstUploadType) {
+            if (isLotteryType === 1) {
+              this.voteRewardType = false
+              this.lotteryObj = res.lottery
+              console.info('----this.lotteryObj---', this.lotteryObj)
+              this.$nextTick(item => {
+                this.voteRewardType = true
+                this.isShowVoteReward = true
+              })
+            }
+            STORAGE.remove('isFirstUpload')
+          }
+        } catch (e) {
+          console.log(e)
+        }
+
+        // 显示礼盒
+        // 判断显示gift box
+        let _lottery = res.lottery
+        console.log('res.lottery', _lottery)
+        let lotteryArr = []
+        this.lotteryObj = _lottery
+        lotteryArr.push(_lottery.enroll.is_win)
+        lotteryArr.push(_lottery.enroll.raffle_num)
+        lotteryArr.push(_lottery.vote_relation.is_win)
+        lotteryArr.push(_lottery.vote_relation.raffle_num)
+        let isExistLottery = false
+        isExistLottery = lotteryArr.some(item => item > 0)
+        this.giftBoxType = isExistLottery
+      })
+    },
     showLotteryTips () {
       console.log('点击了gift box')
       this.lotteryTipsType = false
@@ -518,6 +541,7 @@ export default {
       })
     },
     shareSuccess () {
+      // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
 
       })
@@ -554,18 +578,6 @@ export default {
           query: { id: voteId }
         })
       }
-      // 判断显示gift box
-      let _lottery = res.lottery
-      console.log('_lottery', _lottery)
-      let lotteryArr = []
-      this.lotteryObj = res.lottery
-      lotteryArr.push(_lottery.enroll.is_win)
-      lotteryArr.push(_lottery.enroll.raffle_num)
-      lotteryArr.push(_lottery.vote_relation.is_win)
-      lotteryArr.push(_lottery.vote_relation.raffle_num)
-      let isExistLottery = false
-      isExistLottery = lotteryArr.some(item => item > 0)
-      this.giftBoxType = isExistLottery
 
       let url = res.indexpic
       if (url) {
@@ -790,7 +802,6 @@ export default {
         return false
       }
       try {
-        console.log('this.detailInfo-----', this.detailInfo)
         let { mark, rule, my_work: myWork, text_setting: textSetting, status } = detailInfo
         let { limit, page_setup: setup } = rule
         if (textSetting && textSetting.sign) {
@@ -923,7 +934,6 @@ export default {
           this.curApp = i.name
         }
       }
-      console.log('curApp', this.curApp)
       this.isShowArea = true
     },
     initVoteReportTime () {
