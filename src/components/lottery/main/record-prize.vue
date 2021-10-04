@@ -126,7 +126,6 @@ export default {
   },
   created () {},
   mounted () {
-    // this.onLoad()
   },
   methods: {
     async onLoad () {
@@ -141,6 +140,10 @@ export default {
             count: this.currentCount
           } })
         console.log(res)
+        if (res.error_code) {
+          this.error = true
+          this.$toast(res.error_message)
+        }
         this.loading = false
 
         if (res.data.length === 0) {
@@ -152,8 +155,7 @@ export default {
         this.currentPage++
       } catch (error) {
         console.log(error)
-        this.error = true
-        this.$toast('非法来源')
+        // this.$toast(error)
       }
     },
     async onRefresh () {
@@ -199,8 +201,16 @@ export default {
         // console.log(this.tempItem, 'tempItem')
         this.isCardOverduesShow = true
       } else if (item.prize_type === 1) {
-        console.log(item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中')
+        // console.log(item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中')
         this.tempItem = item
+        if (this.tempItem.prize_info.qr_code instanceof Array || this.tempItem.prize_info.images instanceof Array) {
+          let code = this.getImage(this.tempItem.prize_info.qr_code[0])
+          this.tempItem.prize_info.qr_code = this.tempItem.prize_info.qr_code ? code : this.tempItem.prize_info.qr_code
+          let images = this.getImage(this.tempItem.prize_info.images[0])
+          this.tempItem.prize_info.images = this.tempItem.prize_info.images ? images : this.tempItem.prize_info.images
+          this.$set(this.tempItem, 'prize_info', this.tempItem.prize_info)
+        }
+        console.log(item.prize_info)
         if (item.prize_info.give_aways === 2) {
           this.isRecordInfoShow = true
           // this.isRecordTicketedShow = true

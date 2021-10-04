@@ -59,6 +59,10 @@ export default {
     activityId: {
       type: String,
       require: true
+    },
+    prize: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -85,7 +89,9 @@ export default {
       this.setIsModelShow(newState)
     }
   },
-  created () {},
+  created () {
+    console.log(this.prize, 'prize')
+  },
   mounted () {},
   methods: {
     onClose () {
@@ -104,6 +110,7 @@ export default {
         const res = await API.getAddress({
           query: { id: this.activityId },
           data: {
+            code: this.prize.code,
             name: this.user.name,
             mobile: this.user.mobile,
             address: this.user.address
@@ -118,6 +125,7 @@ export default {
           this.onClose()
         }
       } catch (error) {
+        this.$toast.fail(error.error_message)
         // console.log(error)
       }
     },
