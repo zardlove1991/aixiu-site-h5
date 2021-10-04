@@ -644,7 +644,7 @@ export default {
     checkVoteNum () {
       // 是否提示活动报名数
       // 开启了限制且数量为0
-      if (this.detailInfo.rule.is_works_upload_limit || this.detailInfo.remains_reports === 0) {
+      if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
         this.isReportNumLimit = true
         this.isForbidClick = true
       } else {
