@@ -6,7 +6,10 @@
       <div class="tips-logo" :class="`${dialogConfig.type}-logo`"></div>
       <div class="tips-content" v-html="dialogConfig.tips" v-if="dialogConfig.type !== 'share'"></div>
       <div class="share-tips-content" v-if="dialogConfig.type === 'share'">
-        <div class="number-tips">获得<span class="special-text">&nbsp;{{dialogConfig.showNumber}}次&nbsp;</span>答题的机会</div>
+        <div class="number-tips">
+        获得<span v-if="dialogConfig.examNumber"><span class="special-text">&nbsp;{{dialogConfig.examNumber}}次&nbsp;</span>答题的机会</span>
+        <span v-if="dialogConfig.lotteryNumber"><span class="special-text">&nbsp;{{dialogConfig.lotteryNumber}}次&nbsp;</span>抽奖的机会</span>
+        </div>
         <div>{{dialogConfig.tips}}</div>
       </div>
       <el-checkbox v-if="dialogConfig.type === 'integral'" v-model="checked">每次参与答题需消耗{{dialogConfig.reduce_integral}}积分，每天最多兑换{{dialogConfig.times}}次</el-checkbox>
@@ -86,6 +89,7 @@ export default {
       background: #fff;
       border-radius: 16px;
       padding: px2rem(40px) 0 px2rem(60px);
+      z-index:10000;
       .close-btn {
         float: right;
         width: px2rem(24px);
