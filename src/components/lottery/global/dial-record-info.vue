@@ -23,21 +23,6 @@
                 </div>
            </div>
           <div slot="content-next" class="record-info-next">
-            <div v-if="itemData.address[0]">
-                <div class="content-next-wrap">
-                  <input type="text" placeholder="姓名" class="label" v-model="itemData.prize_info.address[0]" :readonly='edit' />
-                  <input type="text" v-model="itemData.prize_info.address[1]" :readonly='edit' class="value" placeholder="手机号" :maxlength="11"
-                    />
-                    <!-- @input="itemData.address[1] = itemData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')" -->
-              </div>
-              <div class="content-next-wrap">
-                  <input type="text" class="address" v-model="itemData.prize_info.address[2]" :readonly='edit' placeholder="详细地址"/>
-                  <!-- <textarea name="" id="" cols="30" rows="10" class="address">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea> -->
-                 <div class="righit-icon" v-if="edit" @click="onEdit"></div>
-                 <div class="righit-icon" @click="onSubmit" v-else></div>
-              </div>
-            </div>
-            <div v-else>
               <div class="content-next-wrap">
                   <input type="text" placeholder="姓名" class="label" v-model="itemData.prize_info.address[0]" :readonly='edit' />
                   <input type="text" v-model="itemData.prize_info.address[1]" :readonly='edit' class="value" placeholder="手机号" :maxlength="11"
@@ -50,7 +35,6 @@
                  <div class="righit-icon" v-if="edit" @click="onEdit"></div>
                  <div class="righit-icon" @click="onSubmit" v-else></div>
               </div>
-            </div>
                <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
        </DialogPage>

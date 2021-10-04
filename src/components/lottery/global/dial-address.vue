@@ -1,48 +1,50 @@
 <template>
-  <DialDialog :show="show" @close="onClose" ref="address">
-    <div slot="tille-name" class="tille-name">收获地址</div>
-    <div slot="container" class="container">
-      <span class="tips">请务必填写以下信息，奖品才能送到您手中</span>
-      <van-form
-        @submit="onSubmit"
-        @failed="onFailed"
-        :show-error="false"
-        :show-error-message="false"
-        :validate-first="true"
-        class="form"
-      >
-        <van-field
-          v-model="user.name"
-          name="真实姓名"
-          placeholder="真实姓名"
-          :rules="formRules.name"
-          class="form-input"
-        />
-        <van-field
-          v-model="user.mobile"
-          name="手机号"
-          placeholder="手机号"
-          :rules="formRules.mobile"
-          :maxlength="11"
-          class="form-input"
-        />
-        <van-field
-          type="textarea"
-          v-model="user.address"
-          name="详细地址"
-          placeholder="详细地址"
-          :rules="formRules.address"
-          class="address"
-          autosize
-        />
-        <div class="form-sub">
-          <van-button round block  native-type="submit" class="form-btn"
-            >确认</van-button
-          >
-        </div>
-      </van-form>
-    </div>
-  </DialDialog>
+  <div class="dial-address">
+    <DialDialog :show="show" @close="onClose" ref="address">
+      <div slot="tille-name" class="tille-name">收获地址</div>
+      <div slot="container" class="container">
+        <span class="tips">请务必填写以下信息，奖品才能送到您手中</span>
+        <van-form
+          @submit="onSubmit"
+          @failed="onFailed"
+          :show-error="false"
+          :show-error-message="false"
+          :validate-first="true"
+          class="form"
+        >
+          <van-field
+            v-model="user.name"
+            name="真实姓名"
+            placeholder="真实姓名"
+            :rules="formRules.name"
+            class="form-input"
+          />
+          <van-field
+            v-model="user.mobile"
+            name="手机号"
+            placeholder="手机号"
+            :rules="formRules.mobile"
+            :maxlength="11"
+            class="form-input"
+          />
+          <van-field
+            type="textarea"
+            v-model="user.address"
+            name="详细地址"
+            placeholder="详细地址"
+            :rules="formRules.address"
+            class="address"
+            autosize
+          />
+          <div class="form-sub">
+            <van-button round block  native-type="submit" class="form-btn"
+              >确认</van-button
+            >
+          </div>
+        </van-form>
+      </div>
+    </DialDialog>
+  </div>
 </template>
 
 <script>
@@ -93,7 +95,8 @@ export default {
   created () {
     console.log(this.prize, 'prize')
   },
-  mounted () {},
+  mounted () {
+  },
   methods: {
     onClose () {
       this.$emit('close')
@@ -135,13 +138,35 @@ export default {
       this.$toast({
         message: error.errors[0].message
       })
+    },
+    inputHandle () {
+      let inputs = document.getElementsByTagName('input')
+      for (let i = 0; i < inputs.length; i++) {
+        let item = inputs[i]
+        item.addEventListener('blur', () => {
+          setTimeout(() => {
+            window.scrollTo(0, 0)
+          }, 100)
+        })
+      }
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-@import "@/styles/index.scss";
+<style lang="scss">
+.dial-address {
+  textarea{
+    -webkit-user-select: auto !important;
+  }
+  /deep/.address {
+    .van-field__control{
+      -webkit-user-select: auto !important;
+    }
+  }
+}
+</style>
+<style scoped lang='scss'>
+@import '@/styles/index.scss';
 .container {
   padding-top: px2rem(50px);
   padding-left: px2rem(40px);
