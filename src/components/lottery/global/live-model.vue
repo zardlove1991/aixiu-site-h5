@@ -67,7 +67,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/styles/index.scss";
-
 .live-model-wrap {
   position: fixed;
   left: 0;
@@ -85,6 +84,7 @@ export default {
   }
   .model-content {
     // margin-top: px2rem(414px);
+    margin-top: 0;
     min-width: px2rem(560px);
     border-radius: px2rem(8px);
     pointer-events: auto;
