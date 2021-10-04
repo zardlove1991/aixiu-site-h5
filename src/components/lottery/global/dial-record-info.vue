@@ -26,9 +26,8 @@
               <div class="content-next-wrap">
                   <input type="text" placeholder="姓名" class="label" v-model="itemData.prize_info.address[0]" :readonly='edit' />
                   <input type="text" v-model="itemData.prize_info.address[1]" :readonly='edit' class="value" placeholder="手机号" :maxlength="11"
-                    @input="itemData.address[1] = itemData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')"/>
-                  <!-- <span class="label">肖沾沾</span>
-                  <span class="value">15850602022</span> -->
+                    />
+                    <!-- @input="itemData.address[1] = itemData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')" -->
               </div>
               <div class="content-next-wrap">
                   <input type="text" class="address" v-model="itemData.prize_info.address[2]" :readonly='edit' placeholder="详细地址"/>
@@ -113,10 +112,18 @@ export default {
         this.$toast.fail(err)
         return false
       }
-      console.log(this.itemData.prize_info.address[0])
+      if (this.itemData.prize_info.address[1]) {
+        let res = this.checkMobile(this.itemData.prize_info.address[1])
+        if (!res) {
+          this.$toast('手机号格式错误')
+          return false
+        }
+      }
+      console.log(this.itemData.prize_info)
       const res = await API.getAddress({
         query: { id: this.activityId },
         data: {
+          code: this.itemData.prize_info.code,
           name: this.itemData.prize_info.address[0],
           mobile: this.itemData.prize_info.address[1],
           address: this.itemData.prize_info.address[2]
@@ -125,6 +132,15 @@ export default {
       console.log(res)
       if (res.success === 1) this.$toast.success('编辑成功')
       this.edit = true
+    },
+    // 手机校验
+    checkMobile (val) {
+      let reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
+      if (!reg.test(val)) {
+        return false
+      } else {
+        return true
+      }
     }
   }
 }

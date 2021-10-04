@@ -21,7 +21,8 @@ let baseUrl = {
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
-  setShare: 'setShare' // 分享活动时请求分享接口
+  setShare: 'setShare', // 分享活动时请求分享接口
+  getCollection: 'collection/form/record/cj/{id}' // 分享
 }
 
 let examUrl = {
@@ -85,6 +86,7 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
+// 大转盘
 let lotteryDailUrl = {
   getLotteryDetail: 'api/client/cj/{id}', // 转盘详情
   getDraw: 'api/client/cj/draw/{id}', // 开始抽奖
@@ -92,8 +94,8 @@ let lotteryDailUrl = {
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
   getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
-  getShare: '/api/client/cj/live/share/{id}' // 分享
-
+  getShare: 'api/client/cj/live/share/{id}' // 分享
+  // getCollection: 'collection/form/record/cj/{id}' // 分享
 }
 
 // 预约报名
@@ -171,6 +173,7 @@ export default {
   setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
   shareAddTimes: config => createAPI(configUrl.shareAddTimes, 'POST', config, API_FLAG),
   getExamRankList: config => createAPI(configUrl.getExamRankList, 'GET', config, API_FLAG),
+  getCollection: config => createBase(configUrl.getCollection, 'POST', config, 'public'),
   // 投票
   getVideoUrl: config => createBase(configUrl.getVideoUrl, 'GET', config, 'mlink'),
   getUploadSign: config => createSumbit(configUrl.getUploadSign, 'GET', config, API_FLAG),
@@ -216,6 +219,7 @@ export default {
   getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
+  // getCollection: config => createLottery(configUrl.getCollection, 'POST', config, 'lottery'),
 
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
