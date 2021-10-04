@@ -663,7 +663,8 @@ export default {
             type: 'share', // 弹窗类型
             tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
             showConfirmBtn: false, // 确认按钮
-            showNumber: 1,
+            examNumber: res.is_share,
+            lotteryNumber: res.is_raffle_share,
             cancelBtnText: '知道了'
           }
           this.getExamDetail({id: examId}).then(res => {
