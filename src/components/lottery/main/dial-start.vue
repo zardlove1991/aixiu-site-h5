@@ -175,7 +175,6 @@ import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
 import CollectInfo from '@/components/lottery/global/dial-collect-info'
 // import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
-import DrawCheckDialog from '@/components/lottery/global/draw-check-dialog'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -186,7 +185,6 @@ export default {
     List,
     MyModel,
     CollectInfo,
-    DrawCheckDialog,
     prizeList,
     ActivityRule,
     Address,
