@@ -694,19 +694,19 @@ export default {
     },
     shareAddTimes () { // 分享成功回调
       const examId = this.examInfo.id
-      if (this.examInfo.limit.is_open_share) {
-        API.shareAddTimes({
-          query: {
-            id: examId
-          }
-        }).then(res => {
-          if (res.code === 1) {
-            this.showOperateDialog = true
-          } else {
-            // 已经分享过
-          }
-        })
-      }
+      API.shareAddTimes({
+        query: {
+          id: examId
+        }
+      }).then(res => {
+        if (res.code === 1) {
+          this.showOperateDialog = true
+          this.dialogConfig.examNumber = res.is_share
+          this.dialogConfig.lotteryNumber = res.is_raffle_share
+        } else {
+          // 已经分享过
+        }
+      })
     },
     initAppShare () {
       let plat = getPlat()

@@ -87,14 +87,18 @@
           <div class="ops-tip">跳过本题,可稍后作答</div>
         </div>
       </transition>
+      <OperateDialog
+      :visible.sync="showOperateDialog"
+      :dialogConfig="dialogConfig" />
     </div>
   </div>
 </template>
 
 <script>
+import API from '@/api/module/examination'
 import { Indicator, Toast } from 'mint-ui'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { setBrowserTitle } from '@/utils/utils'
+import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
 import { DEPENCE } from '@/common/currency'
 import mixins from '@/mixins/index'
@@ -105,6 +109,7 @@ import SubjectList from '@/components/depence/subject-list'
 import MyModel from '@/components/live-exam/global/live-model'
 import LiveVideo from '@/components/live-exam/global/live-video'
 import STORAGE from '@/utils/storage'
+import OperateDialog from '@/components/exam-components/operate-dialog'
 
 export default {
   name: 'live-list',
@@ -132,7 +137,15 @@ export default {
       successStatus: 0,
       nextExerciseBtn: false,
       exerciseTotalTimeOut: false, // 倒计时答题总时间超时
-      showExerciseResultBtn: false // 显示直接查看结果按钮
+      showExerciseResultBtn: false, // 显示直接查看结果按钮
+      showOperateDialog: false,
+      dialogConfig: {
+        type: 'share', // 弹窗类型
+        tips: '每天最多获得1次，需在当日使用，过期作废', // 提示文案
+        showConfirmBtn: false, // 确认按钮
+        showNumber: 1,
+        cancelBtnText: '知道了'
+      }
     }
   },
   components: {
@@ -140,7 +153,8 @@ export default {
     SubjectContent,
     SubjectList,
     MyModel,
-    LiveVideo
+    LiveVideo,
+    OperateDialog
   },
   computed: {
     ...mapGetters('depence', [
@@ -204,6 +218,10 @@ export default {
         if (this.directlySubmit === '1') {
           this.$refs.examHeader.confirmSubmitModel('noconfirm')
         }
+        if (getPlat() === 'smartcity') {
+          this.initAppShare()
+        }
+        // 分享
         this.sharePage()
       } catch (err) {
         console.log(err)
@@ -227,15 +245,16 @@ export default {
         desc = share.share_brief ? share.share_brief : examInfo.brief
         let picObj = share.share_indexpic
         let indexObj = examInfo.indexpic
+        const protocol = window.location.protocol
         if (picObj) {
           if (picObj.constructor === Object && picObj.host && picObj.filename) {
-            imgUrl = picObj.host + picObj.filename
+            imgUrl = protocol + picObj.host + picObj.filename
           } else if (picObj.constructor === String) {
             imgUrl = picObj
           }
         } else if (indexObj) {
           if (indexObj.host && indexObj.filename) {
-            imgUrl = indexObj.host + indexObj.filename
+            imgUrl = protocol + indexObj.host + indexObj.filename
           } else if (indexObj.url) {
             imgUrl = indexObj.url
           }
@@ -244,9 +263,9 @@ export default {
       if (!link) {
         let local = window.location
         let pathname = local.pathname
-        let index = pathname.indexOf('depencelist')
+        let index = pathname.indexOf('livelist')
         if (index !== -1) {
-          pathname = pathname.replace(/depencelist/, 'depencestart')
+          pathname = pathname.replace(/livelist/, 'livestart')
         }
         link = this.getShareUrl(local.origin, pathname)
       } else {
@@ -262,7 +281,41 @@ export default {
         indexpic: imgUrl,
         link,
         mark: 'examination'
+      }, this.shareAddTimes)
+    },
+    shareAddTimes () { // 分享成功回调
+      const examId = this.examInfo.id
+      API.shareAddTimes({
+        query: {
+          id: examId
+        }
+      }).then(res => {
+        if (res.code === 1) {
+          this.showOperateDialog = true
+          this.dialogConfig.examNumber = res.is_share
+          this.dialogConfig.lotteryNumber = res.is_raffle_share
+        } else {
+          // 已经分享过
+        }
       })
+    },
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        // const shareSettings = this.examInfo.limit.share_settings
+        // const settings = {
+        //   showShareButton: true, // 是否显示右上角的分享按钮
+        //   updateShareData: true, // 是否弹出分享视图
+        //   title: shareSettings.share_title,
+        //   brief: shareSettings.share_brief,
+        //   contentURL: shareSettings.share_url ? shareSettings.share_url : window.location.href,
+        //   imageLink: shareSettings.share_indexpic
+        // }
+        // window.SmartCity.shareTo(settings)
+        window.SmartCity.onShareSuccess((res) => {
+          this.shareAddTimes()
+        })
+      }
     },
     // 获取云端答题最后一道题的索引
     getLastestAnswerRecordIndex () {
