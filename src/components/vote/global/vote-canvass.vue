@@ -134,7 +134,6 @@ export default {
         let tips2 = ''
         let numbering = ''
         console.log('---res---', res)
-
         if (signUnit === '助力值') {
           tips1 = '第2名还差' + Math.abs(res.last_votes) + '次助力就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + '次助力'
@@ -239,6 +238,8 @@ export default {
 
         // 设置分享海报背景图片
         this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
+
+        console.log('params', params)
 
         // this.worksCode = params.
         // this.renderPlaybill(params, voteTip)
