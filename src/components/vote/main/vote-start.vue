@@ -284,14 +284,11 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if="giftBoxType" class="lottery_entrance" style='border: 1px solid red;'>
+    <div v-if="giftBoxType" class="lottery_entrance">
       <div @click="showLotteryTips()">
         <img :src="imgs.giftBox" alt="" class='gift-box-img'>
       </div>
     </div>
-    <!-- <div v-if='giftBoxType' @click.stop='showLotteryTips' class='gift-box-wrap'>
-      <img :src="imgs.giftBox" @click.stop='showLotteryTips' alt="" class='gift-box-img'>
-    </div> -->
     <!-- lottery tips -->
     <lottery-tips
       v-if='lotteryTipsType'
@@ -759,9 +756,10 @@ export default {
         indexpic: imgUrl,
         link: shareLink,
         mark: detailInfo.mark
-      }, this.shareLottery)
+      }, this.shareSuccess)
     },
     shareLottery () {
+      console.log('shareLottery')
       this.shareLottery()
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
@@ -1432,7 +1430,7 @@ export default {
           from: this.shareConfigData.from,
           mark: this.shareConfigData.mark
         }).then(
-          this.shareLottery()
+          this.shareSuccess()
         )
       }
     },

@@ -240,6 +240,8 @@ export default {
       }
 
       this.voteDisable = true
+      // eslint-disable-next-line no-undef
+      this.codeObj.request_id = $TN._request_id // 刷新时重新赋值
       let obj = {
         ...this.codeObj,
         ...config,
