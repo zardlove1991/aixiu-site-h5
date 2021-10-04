@@ -1,4 +1,5 @@
 <template>
+<div class="collect-info">
   <DialDialog :show='show' @close='onClose' ref='address'>
     <div slot="tille-name" class="tille-name">个人信息</div>
     <div slot="container" class="container">
@@ -115,6 +116,7 @@
       </van-form>
     </div>
   </DialDialog>
+</div>
 </template>
 
 <script>
@@ -194,7 +196,6 @@ const idCardNoUtil = {
       return false
     }
   },
-
   /* 计算校检码 */
   getParityBit (idCardNo) {
     var id17 = idCardNo.substring(0, 17)
@@ -207,7 +208,6 @@ const idCardNoUtil = {
     var mod = power % 11
     return idCardNoUtil.parityBit[mod]
   },
-
   /* 验证校检码 */
   checkParityBit (idCardNo) {
     var parityBit = idCardNo.charAt(17).toUpperCase()
@@ -217,7 +217,6 @@ const idCardNoUtil = {
       return false
     }
   },
-
   /* 校验15位或18位的身份证号码 */
   checkIdCardNo (idCardNo) {
     // 15位和18位身份证号码的基本校验
@@ -232,7 +231,6 @@ const idCardNoUtil = {
       return false
     }
   },
-
   // 校验15位的身份证号码
   check15IdCardNo (idCardNo) {
     // 15位身份证号码的基本校验
@@ -249,7 +247,6 @@ const idCardNoUtil = {
     // 验证校检码
     return idCardNoUtil.checkParityBit(idCardNo)
   },
-
   // 校验18位的身份证号码
   check18IdCardNo (idCardNo) {
     // 18位身份证号码的基本格式校验
@@ -266,14 +263,12 @@ const idCardNoUtil = {
     // 验证校检码
     return idCardNoUtil.checkParityBit(idCardNo)
   },
-
   formateDateCN (day) {
     var yyyy = day.substring(0, 4)
     var mm = day.substring(4, 6)
     var dd = day.substring(6)
     return yyyy + '-' + mm + '-' + dd
   },
-
   // 获取信息
   getIdCardInfo (idCardNo) {
     var idCardInfo = {
@@ -309,7 +304,6 @@ const idCardNoUtil = {
       return null
     }
   },
-
   /* 15位转18位 */
   getId18 (idCardNo) {
     if (idCardNo.length === 15) {
@@ -579,7 +573,13 @@ export default {
   }
 }
 </script>
-
+<style lang="scss">
+.collect-info {
+  textarea {
+    -webkit-user-select: auto !important;
+  }
+}
+</style>
 <style scoped lang='scss'>
 @import '@/styles/index.scss';
 .container {

@@ -41,13 +41,16 @@
             <form action="#">
                 <p class="name">
                     <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit'  placeholder="姓名"/>
-                    <input type="text" v-model="prizeData.address[1]" :readonly='edit' :maxlength="11" placeholder="手机号"
-                    @input="prizeData.address[1] = prizeData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')"/>
+                    <input type="text" v-model="prizeData.address[1]" :readonly='edit' :maxlength="11" placeholder="手机号"/>
                 </p>
                 <div class="address-warp">
                     <input type="text" class="p" v-model="prizeData.address[2]" :readonly='edit' placeholder="收获地址"/>
-                    <div class="icon" @click="onEdit" v-if="edit"></div>
-                    <div class="icon" @click="onSubmit" v-else></div>
+                    <div class="btn-icon" v-if="edit" @click="onEdit">
+                      <div class="icon"  ></div>
+                    </div>
+                    <div class="btn-icon" v-else @click="onSubmit" >
+                      <div class="icon" ></div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -122,6 +125,13 @@ export default {
         this.$toast.fail(err)
         return false
       }
+      if (this.prizeData.address[1]) {
+        let res = this.checkMobile(this.prizeData.address[1])
+        if (!res) {
+          this.$toast('手机号格式错误')
+          return false
+        }
+      }
       const res = await API.getAddress({
         query: { id: this.id },
         data: {
@@ -132,7 +142,17 @@ export default {
         }
       })
       console.log(res)
+      if (res.success === 1) this.$toast.success('编辑成功')
       this.edit = true
+    },
+    // 手机校验
+    checkMobile (val) {
+      let reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
+      if (!reg.test(val)) {
+        return false
+      } else {
+        return true
+      }
     }
   }
 }
@@ -421,26 +441,27 @@ export default {
     }
     .name{
             .span{
-                width: px2rem(72px);
-                height: px2rem(24px);
+                width: px2rem(120px);
+                // width: px2rem(72px);
+                // height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
                 font-family: PingFangSC, PingFangSC-Regular;
                 font-weight: 400;
                 text-align: left;
                 color: #fff4e3;
-                line-height: px2rem(24px);
+                // line-height: px2rem(24px);
                 margin-right: px2rem(16px);
             }
                 // width: 154px;
-            height: px2rem(24px);
+            // height: px2rem(24px);
             opacity: 0.8;
             font-size: px2rem(24px);
             font-family: PingFangSC, PingFangSC-Regular;
             font-weight: 400;
             text-align: left;
             color: #fff4e3;
-            line-height: px2rem(24px);
+            // line-height: px2rem(24px);
             margin-bottom: px2rem(20px);
             padding-left: px2rem(39px);
     }
@@ -461,6 +482,9 @@ export default {
             word-break:break-all;
             // @include bg-color('bgColor');
             margin-right: px2rem(72px);
+        }
+        .btn-icon {
+          width: px2rem(63px);
         }
         .icon{
             width: px2rem(22px);
