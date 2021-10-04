@@ -756,9 +756,10 @@ export default {
         indexpic: imgUrl,
         link: shareLink,
         mark: detailInfo.mark
-      }, this.shareLottery)
+      }, this.shareSuccess)
     },
     shareLottery () {
+      console.log('shareLottery')
       this.shareLottery()
       if (this.lottery.link && this.isOpenShare) {
         API.shareLottery({
@@ -1429,7 +1430,7 @@ export default {
           from: this.shareConfigData.from,
           mark: this.shareConfigData.mark
         }).then(
-          this.shareLottery()
+          this.shareSuccess()
         )
       }
     },
