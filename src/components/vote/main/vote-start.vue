@@ -7,7 +7,7 @@
           isReportAuth === 1">
         <div class="report-top-wrap" v-if="isExamine === 0 && status !== statusCode.voteStatus">
           <div class="report-msg"><span class="tips">我也要参加</span></div>
-          <div class="report-btn" @click="jumpPage('votesubmit')">立即报名</div>
+          <div class="report-btn" :class='{"is-forbid-click": isForbidClick}' @click="jumpPage('votesubmit')">立即报名</div>
         </div>
         <div class="report-top-wrap" v-if="isExamine === 1">
           <div class="report-msg" v-if="myWorkStatus === 3">
@@ -359,6 +359,7 @@ export default {
   },
   data () {
     return {
+      isForbidClick: false,
       lotteryTipsType: false,
       voteRewardType: false,
       giftBoxType: false,
@@ -502,7 +503,7 @@ export default {
             if (isLotteryType === 1) {
               this.voteRewardType = false
               this.lotteryObj = res.lottery
-              console.info('----this.lotteryObj---', this.lotteryObj)
+              // console.info('----this.lotteryObj---', this.lotteryObj)
               this.$nextTick(item => {
                 this.voteRewardType = true
                 this.isShowVoteReward = true
@@ -517,7 +518,7 @@ export default {
         // 显示礼盒
         // 判断显示gift box
         let _lottery = res.lottery
-        console.log('res.lottery', _lottery)
+        // console.log('res.lottery', _lottery)
         let lotteryArr = []
         this.lotteryObj = _lottery
         lotteryArr.push(_lottery.enroll.is_win)
@@ -530,7 +531,6 @@ export default {
       })
     },
     showLotteryTips () {
-      console.log('点击了gift box')
       this.lotteryTipsType = false
       this.$nextTick(item => {
         this.lotteryTipsType = true
@@ -603,6 +603,8 @@ export default {
       this.setLocation()
       // 其他限制
       this.handleVoteData()
+      // 判断是否投票次数是否0
+      this.checkVoteNum()
       // 作品列表
       this.getVoteWorks('', false, '', true, true)
       // 索引图尺寸比例
@@ -639,8 +641,18 @@ export default {
         this.initReportTime()
       }
     },
-    // 如果有中奖记录和抽奖次数 默认显示
+    checkVoteNum () {
+      // 是否提示活动报名数
+      // 开启了限制且数量为0
+      if (this.detailInfo.rule.is_works_upload_limit || this.detailInfo.remains_reports === 0) {
+        this.isReportNumLimit = true
+        this.isForbidClick = true
+      } else {
+        this.isForbidClick = false
+      }
+    },
     async checkLotteryOpen (lottery, rule, todayVotes) {
+      // 如果有中奖记录和抽奖次数 默认显示
       let openLottery = false
       // 用户中奖记录
       let res = await API.getUserLotteryList({
@@ -1333,10 +1345,6 @@ export default {
     jumpPage (page, data) {
       if (page === 'votesubmit') {
         this.sourceLimit()
-        // 是否提示活动报名数
-        if (this.detailInfo.remains_reports === 0) {
-          this.isReportNumLimit = true
-        }
         if (this.isShowActiveTips) {
           return
         }
@@ -1465,6 +1473,13 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .is-forbid-click{
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.8;
+    background: #666666 !important;
+    color: #ffffff !important;
+  }
   .vote-start-wrap {
     width: 100%;
     height: 100vh;
