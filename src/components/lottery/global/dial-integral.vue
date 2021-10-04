@@ -92,7 +92,9 @@ export default {
     }
   },
   created () {},
-  mounted () {},
+  mounted () {
+    this.$parent.ininData()
+  },
   methods: {
     onClose () {
       this.$emit('close')

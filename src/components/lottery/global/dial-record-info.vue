@@ -27,13 +27,15 @@
                   <input type="text" placeholder="姓名" class="label" v-model="itemData.prize_info.address[0]" :readonly='edit' />
                   <input type="text" v-model="itemData.prize_info.address[1]" :readonly='edit' class="value" placeholder="手机号" :maxlength="11"
                     />
-                    <!-- @input="itemData.address[1] = itemData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')" -->
               </div>
               <div class="content-next-wrap">
-                  <input type="text" class="address" v-model="itemData.prize_info.address[2]" :readonly='edit' placeholder="详细地址"/>
-                  <!-- <textarea name="" id="" cols="30" rows="10" class="address">南京市雨花区安德门大街57号楚翘城3号 商务楼6楼</textarea> -->
-                 <div class="righit-icon" v-if="edit" @click="onEdit"></div>
-                 <div class="righit-icon" @click="onSubmit" v-else></div>
+                <input type="text" class="address" v-model="itemData.prize_info.address[2]" :readonly='edit' placeholder="详细地址"/>
+                 <div v-if="edit" class="edit" @click="onEdit">
+                    <div class="righit-icon"></div>
+                 </div>
+                  <div v-else class="edit" @click="onSubmit">
+                    <div class="righit-icon"></div>
+                  </div>
               </div>
                <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
           </div>
@@ -300,25 +302,25 @@ export default {
             // align-items: center;
             .label{
                 width: px2rem(140px);
-                height: px2rem(24px);
+                // height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
                 font-family: PingFangSC, PingFangSC-Regular;
                 font-weight: 400;
                 text-align: left;
                 color: #4f0f0f;
-                 line-height: px2rem(24px);
+                //  line-height: px2rem(24px);
                 margin-right: px2rem(16px);
             }
             .value{
-                height: px2rem(24px);
+                // height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
                 font-family: PingFangSC, PingFangSC-Regular;
                 font-weight: 400;
                 text-align: left;
                 color: #4f0f0f;
-                line-height: px2rem(24px);
+                // line-height: px2rem(24px);
             }
             .address{
                 width: px2rem(426px);
@@ -336,6 +338,9 @@ export default {
                 // margin-top: px2rem(21px);
                 padding-top: px2rem(21px);
                 margin-bottom: px2rem(20px);
+            }
+            .edit {
+              width: px2rem(72px);
             }
             .righit-icon{
                 width: px2rem(22px);
@@ -356,7 +361,7 @@ export default {
             margin-left: px2rem(135px);
             border: none;
             margin-right: auto;
-            margin-top: px2rem(40px);
+            margin-top: px2rem(20px);
             text-align: center;
             span{
                 font-size: px2rem(28px);
