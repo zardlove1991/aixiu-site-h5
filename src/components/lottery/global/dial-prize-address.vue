@@ -40,12 +40,12 @@
             <van-divider  :dashed="true" class="line"/>
             <form action="#">
                 <p class="name">
-                    <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit' />
-                    <input type="text" v-model="prizeData.address[1]" :readonly='edit'
+                    <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit'  placeholder="姓名"/>
+                    <input type="text" v-model="prizeData.address[1]" :readonly='edit' :maxlength="11" placeholder="手机号"
                     @input="prizeData.address[1] = prizeData.address[1].replace(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, '')"/>
                 </p>
                 <div class="address-warp">
-                    <input type="text" class="p" v-model="prizeData.address[2]" :readonly='edit'/>
+                    <input type="text" class="p" v-model="prizeData.address[2]" :readonly='edit' placeholder="收获地址"/>
                     <div class="icon" @click="onEdit" v-if="edit"></div>
                     <div class="icon" @click="onSubmit" v-else></div>
                 </div>

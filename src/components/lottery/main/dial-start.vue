@@ -2,7 +2,7 @@
   <div class="dial-start-wrap">
     <van-cell size="small" class="dial-header" :border="false">
       <div class="dial-header-icon" slot="title">
-        <div class="circle">
+        <div class="circle" >
           <img :src="detailInfo.page_setup.rankpic" alt="" />
         </div>
       </div>
@@ -82,9 +82,17 @@
         <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
+    <!-- <draw-check-dialog
+      :isShowVideo="true"
+      :show="isShowDrawCheck"
+      :checkDraw="checkDraw"
+      :isGetDept="isGetDept"
+      :examId="id"
+      @close="isShowDrawCheck = false">
+    </draw-check-dialog> -->
     <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
     <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
-      />
+      :prize.sync='prizeData'/>
     <Command :show.sync='isCommandShow' v-if="isCommandShow" @close ='isCommandShow = false' :data.sync="detailInfo.limit"
       :id="id" :isword.sync='detailInfo.is_word'/>
 
@@ -107,6 +115,11 @@
     <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
     <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
+
+    <!-- <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
+    :activityId='id' :collectInfo='collectInfo'/> -->
+    <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
+    :activityId='id' :collectInfo.sync='checkDraw' />
     <!-- <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/> -->
     <!-- <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/> -->
     <!-- <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/> -->
@@ -160,9 +173,11 @@ import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull
 import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
-import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
+import CollectInfo from '@/components/lottery/global/dial-collect-info'
+// import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
+import DrawCheckDialog from '@/components/lottery/global/draw-check-dialog'
 import API from '@/api/module/examination'
-// import STORAGE from '@/utils/storage'
+import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { isIphoneX } from '@/utils/app'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
@@ -170,6 +185,7 @@ export default {
   components: {
     List,
     MyModel,
+    CollectInfo,
     DrawCheckDialog,
     prizeList,
     ActivityRule,
@@ -329,10 +345,16 @@ export default {
       prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
       // @/assets/lottery/integral/integral.png
       btnImg: require('@/assets/lottery/wheel-pointer.png'),
-      limitSource: '',
-      App: false,
-      errTips: '',
-      appDownloadUrl: ''
+      limitSource: '', // app来源名称
+      App: false, // 控制app来源模态框
+      errTips: '', // 无下载地址时提示框
+      appDownloadUrl: '', // app下载地址
+      isShowDrawCheck: false,
+      checkDraw: [],
+      collectInfo: {},
+      config: {},
+      isGetDept: false, // 是否动态获取部门
+      lotteryFirst: STORAGE.get('lotteryFirst') || null
 
     }
   },
@@ -347,22 +369,130 @@ export default {
       immediate: true
     },
     // 抽奖次数
-    remainCounts (val) {
-      if (!val) {
-        let integralLimit = this.detailInfo.limit.integral_limit
-        if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
-          this.isRecordDrawShow = true
-        } else {
-          this.isUnPrizeChanceShow = true
-        }
-      }
-    },
+    // remainCounts (val) {
+    //   if (!val) {
+    //     let integralLimit = this.detailInfo.limit.integral_limit
+    //     if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+    //       this.isRecordDrawShow = true
+    //     } else {
+    //       this.isUnPrizeChanceShow = true
+    //     }
+    //   }
+    // },
+    // 显隐中奖名单
     isNoticeDataShow (newValue, oldValue) {
-      this.isNoticeDataShow = newValue
+      // this.isNoticeDataShow = newValue
       if (this.noticeData.length > 0) {
         this.isNoticeDataShow = false
       } else {
         this.isNoticeDataShow = true
+      }
+    },
+    // 实物线下
+    isPrizeVerificationcShow (val) {
+      this.isPrizeVerificationcShow = val
+      // 控制中奖后状态
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 实物线上--已填写地址
+    isPrizeAddressShow (val) {
+      this.isPrizeAddressShow = val
+      // 控制中奖后状态
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 收获地址
+    isAddressShow (val) {
+      this.isAddressShow = val
+      // console.log(!val && !this.detailInfo.collection_status, 'this.isAddressShow')
+      // 控制中奖后状态
+      if (!val) {
+        if (!val && !this.detailInfo.collection_status) {
+          this.onLotteryAfter()
+        }
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 优惠劵
+    isCouponShow (val) {
+      this.isCouponShow = val
+      // 控制中奖后状态
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 红包
+    isPacketShow (val) {
+      this.isPacketShow = val
+      // 控制中奖后状态
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 微信卡劵
+    isCardViewShow (val) {
+      this.isCardViewShow = val
+      // 控制中奖后状态
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
+      }
+    },
+    // 积分
+    isIntegralShow (val) {
+      this.isIntegralShow = val
+      if (!val && !this.detailInfo.collection_status) {
+        this.onLotteryAfter()
+      }
+      // 控制抽奖次数状态
+      let integralLimit = this.detailInfo.limit.integral_limit
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+        this.isRecordDrawShow = true
+      } else if (!val && !this.detailInfo.remain_counts) {
+        this.isUnPrizeChanceShow = true
       }
     }
   },
@@ -373,11 +503,11 @@ export default {
     //   this.$toast.success(res.msg)
     // }
     // console.log(this.sign)
-    this.ininData()
     // console.log(this.sign.indexOf('wechat') !== -1)
     // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
   },
   async mounted () {
+    this.ininData()
     // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
     // var(--nums) 实现css动画根据奖品个数，动态改变
     let root = document.querySelector(':root')
@@ -385,9 +515,17 @@ export default {
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
-    if (this.sign === 'wechat') {
+    console.log(this.sign === 'wechat', 'signsignsignsignsignsignsignsignsign')
+    if (this.detailInfo.app_source) {
       this.isSourceshow = false
+    } else {
+      this.isSourceshow = true
     }
+    if (this.noticeData.length > 0) {
+      this.isNoticeDataShow = false
+    }
+    // this.isShowCheckDraw()
+    // this.onCollectInfo()
   },
   beforeDestroy () {
     // 清除定时器
@@ -397,61 +535,65 @@ export default {
   },
   methods: {
     async ininData () {
-      let lotteryId = this.id
-      const res = await API.getLotteryDetail({ query: { id: lotteryId } })
-      this.detailInfo = res
-      // 活动状态
-      if (res.activity_vp_status === 'activity_close') {
-        this.isActivityPauseShow = true
-        this.disableBtn = true
-      } else if (res.activity_vp_status === 'activity_no_start') {
-        // let nowDate = parseInt(new Date().getTime() / 1000)
-        let nowDate = parseInt(new Date().getTime())
-        let activityStart = (res.start_time * 1000)
-        this.noStartDate = (activityStart - nowDate)
-        this.isActivityStartShow = true
-        // console.log(this.noStartDate, ' this.noStartDate')
-        this.disableBtn = true
-      } else if (res.activity_vp_status === 'activity_end') {
-        this.isActivityEndShow = true
-        this.disableBtn = true
-      }
-      // STORAGE.set('detailInfo', res)
-      this.list = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
-      this.list.map((item, index) => {
-        if (item.type === 1) {
-          if (item.images instanceof Array) {
-            item.images = item.images ? this.getImage(item.images[0]) : item.images
-          }
-          item.images = item.images || ''
-        } else if (item.type === 2) {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/tocket.png')
-        } else if (item.type === 3) {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wx-packet.png')
-        } else if (item.type === 4) {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wechat.png')
-        } else if (item.type === 5) {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/integral/integral.png')
-        } else if (item.type === 6) {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/face.png')
-          item.choose_award.is_prize_name = '再来一次'
-        } else {
-          item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/thanking.png')
-          item.type = 7
-          // item.type = undefined
-          item.choose_award.is_prize_name = '谢谢参与'
+      try {
+        let lotteryId = this.id
+        const res = await API.getLotteryDetail({ query: { id: lotteryId } })
+        this.detailInfo = res
+        // 活动状态
+        if (res.activity_vp_status === 'activity_close') {
+          this.isActivityPauseShow = true
+          this.disableBtn = true
+        } else if (res.activity_vp_status === 'activity_no_start') {
+          // let nowDate = parseInt(new Date().getTime() / 1000)
+          let nowDate = parseInt(new Date().getTime())
+          let activityStart = (res.start_time * 1000)
+          this.noStartDate = (activityStart - nowDate)
+          this.isActivityStartShow = true
+          // console.log(this.noStartDate, ' this.noStartDate')
+          this.disableBtn = true
+        } else if (res.activity_vp_status === 'activity_end') {
+          this.isActivityEndShow = true
+          this.disableBtn = true
         }
-      })
-      console.log(this.list)
-      // 分享活动
-      if (this.detailInfo.limit.share_lottery_limit) {
-        this.sharePage(res)
-      }
-      if (res.app_source) {
-        this.limitSource = res.app_source.limit_source
-        this.appDownloadUrl = res.app_source.app_download_link
-        this.App = true
-        this.disableBtn = true
+        // STORAGE.set('detailInfo', res)
+        this.list = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
+        this.list.map((item, index) => {
+          if (item.type === 1) {
+            if (item.images instanceof Array) {
+              item.images = item.images ? this.getImage(item.images[0]) : item.images
+            }
+            item.images = item.images || ''
+          } else if (item.type === 2) {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/tocket.png')
+          } else if (item.type === 3) {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wx-packet.png')
+          } else if (item.type === 4) {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wechat.png')
+          } else if (item.type === 5) {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/integral/integral.png')
+          } else if (item.type === 6) {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/face.png')
+            item.choose_award.is_prize_name = '再来一次'
+          } else {
+            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/thanking.png')
+            item.type = 7
+            // item.type = undefined
+            item.choose_award.is_prize_name = '谢谢参与'
+          }
+        })
+        console.log(this.list)
+        // 分享活动
+        if (this.detailInfo.limit.share_lottery_limit) {
+          this.sharePage(res)
+        }
+        if (res.app_source) {
+          this.limitSource = res.app_source.limit_source
+          this.appDownloadUrl = res.app_source.app_download_link
+          this.App = true
+          this.disableBtn = true
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
     getImage (image = {}, width, height) {
@@ -497,7 +639,11 @@ export default {
     // 开始抽奖
     async onDraw () {
       this.loading = false
-
+      let { limit } = this.detailInfo
+      if (limit.collection_form.is_open_collect === 2 && !this.detailInfo.collection_status) {
+        this.isShowCheckDraw()
+        return false
+      }
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.classList.remove(this.animationClass)
@@ -694,9 +840,9 @@ export default {
         const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
         // console.log(res)
         this.noticeData = res.data
-        // if (this.noticeData.length > 0) {
-        //   this.isNoticeDataShow = false
-        // }
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
+        }
       }, 300000)
     },
     // 中奖返回方法
@@ -838,6 +984,97 @@ export default {
     closeDownload () {
       this.App = false
       this.errTips = ''
+    },
+    onCollectInfo () {
+      let { limit, collection_status: status } = this.detailInfo
+      if (limit.collection_form && limit.collection_form.is_open_collect && status === 0) {
+        this.collectInfo = limit.collection_form
+        this.isShowDrawCheck = true
+        console.log(this.collectInfo, 'collectInfo')
+      }
+    },
+    isShowCheckDraw () {
+      // 判断是否需要信息采集
+      let { limit } = this.detailInfo
+      if (limit.collection_form && limit.collection_form.is_open_collect && this.detailInfo.collection_status === 0) {
+        let obj = limit.collection_form.user_info_settings
+        if (obj && obj.length) {
+          let checkDraw = [...obj]
+          let indexAddress = -1
+          let addressObj = null
+          let isArr = [false, false, false]
+          for (let i = 0; i < checkDraw.length; i++) {
+            let item = checkDraw[i]
+            if (item.unique_name === 'name') {
+              item.maxlength = 20
+              item.type = 'text'
+              isArr[0] = true
+            } else if (item.unique_name === 'work_number') {
+              item.maxlength = 50
+              item.type = 'text'
+              isArr[1] = true
+            } else if (item.unique_name === 'address') {
+              item.maxlength = 50
+              item.type = 'text'
+              // indexAddress = i
+              // addressObj = {
+              //   name: '详细地址',
+              //   unique_name: 'detail_address',
+              //   type: 'textarea',
+              //   maxlength: 500
+              // }
+            } else if (item.unique_name === 'mobile') {
+              item.maxlength = 11
+              item.type = 'text'
+            } else {
+              item.maxlength = 100
+              item.type = 'text'
+              let value = item.value
+              if (item.unique_name === 'department') {
+                isArr[2] = true
+              }
+              if (value && value.length > 0) {
+                let valueArr = []
+                // value.forEach((item, index) => {
+                //   if (index > 0) {
+                //     valueArr.push(item.value)
+                //   }
+                // })
+                item.default_select = valueArr[0]
+                item.type = 'select'
+                item.select_data = [{
+                  flex: 1,
+                  values: valueArr,
+                  className: item.unique_name + '_' + i,
+                  defaultIndex: 0
+                }]
+              }
+            }
+          }
+          if (indexAddress !== -1) {
+            checkDraw.splice(indexAddress + 1, 0, addressObj)
+          }
+          if (limit.collection_form.is_open_check === 1) {
+            if (isArr[0] && isArr[1] && isArr[2]) {
+              this.isGetDept = true
+            }
+          }
+          this.isShowDrawCheck = true
+          this.checkDraw = checkDraw
+          console.log(this.checkDraw, 'checkDraw')
+        } else {
+          // this.goExamPage()
+        }
+      } else {
+        // this.goExamPage()
+      }
+    },
+    onLotteryAfter () {
+      let { limit } = this.detailInfo
+      if (limit.collection_form.is_open_collect === 1 && !this.detailInfo.collection_status) {
+        this.isShowCheckDraw()
+        return false
+      }
     }
   }
 }
