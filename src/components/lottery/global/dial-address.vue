@@ -138,17 +138,6 @@ export default {
       this.$toast({
         message: error.errors[0].message
       })
-    },
-    inputHandle () {
-      let inputs = document.getElementsByTagName('input')
-      for (let i = 0; i < inputs.length; i++) {
-        let item = inputs[i]
-        item.addEventListener('blur', () => {
-          setTimeout(() => {
-            window.scrollTo(0, 0)
-          }, 100)
-        })
-      }
     }
   }
 }
