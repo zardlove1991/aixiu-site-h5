@@ -313,6 +313,7 @@ var tncode = {
     document.getElementById('tncode_div').style.display="none";
 
     tncode._doing = false
+    tncode.removeBindEvent()
   },
   _showmsg:function(msg,status){
     console.log('_showmsg')

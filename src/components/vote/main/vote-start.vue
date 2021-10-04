@@ -284,14 +284,11 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if="giftBoxType" class="lottery_entrance" style='border: 1px solid red;'>
+    <div v-if="giftBoxType" class="lottery_entrance">
       <div @click="showLotteryTips()">
         <img :src="imgs.giftBox" alt="" class='gift-box-img'>
       </div>
     </div>
-    <!-- <div v-if='giftBoxType' @click.stop='showLotteryTips' class='gift-box-wrap'>
-      <img :src="imgs.giftBox" @click.stop='showLotteryTips' alt="" class='gift-box-img'>
-    </div> -->
     <!-- lottery tips -->
     <lottery-tips
       v-if='lotteryTipsType'
