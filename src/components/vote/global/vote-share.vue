@@ -150,28 +150,32 @@ export default {
     },
     async sureWorkVote () {
       console.log('确定')
-      let detailInfo = STORAGE.get('detailInfo')
-      if (!detailInfo) {
-        return
-      }
-      let { rule, id } = detailInfo
-      let { collect_member_info: collectMemberInfo } = rule
-      // 是否验证投票
-      if (collectMemberInfo && collectMemberInfo.length > 0) {
-        let status = await this.getIsCollect(id)
-        if (status) {
-          let newCheckVote = {}
-          for (let coll of collectMemberInfo) {
-            newCheckVote[coll] = true
+      try {
+        let detailInfo = STORAGE.get('detailInfo')
+        if (!detailInfo) {
+          return
+        }
+        let { rule, id } = detailInfo
+        let { collect_member_info: collectMemberInfo } = rule
+        // 是否验证投票
+        if (collectMemberInfo && collectMemberInfo.length > 0) {
+          let status = await this.getIsCollect(id)
+          if (status) {
+            let newCheckVote = {}
+            for (let coll of collectMemberInfo) {
+              newCheckVote[coll] = true
+            }
+            this.checkVote = newCheckVote
+            this.$emit('close')
+            this.isCheckVote = true
+          } else {
+            this.isCanvassShare()
           }
-          this.checkVote = newCheckVote
-          this.$emit('close')
-          this.isCheckVote = true
         } else {
           this.isCanvassShare()
         }
-      } else {
-        this.isCanvassShare()
+      } catch (e) {
+        console.log(e)
       }
     },
     getIsCollect (id) {
@@ -240,6 +244,8 @@ export default {
       }
 
       this.voteDisable = true
+      // eslint-disable-next-line no-undef
+      this.codeObj.request_id = $TN._request_id // 刷新时重新赋值
       let obj = {
         ...this.codeObj,
         ...config,

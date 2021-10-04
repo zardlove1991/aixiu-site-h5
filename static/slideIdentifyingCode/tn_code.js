@@ -313,6 +313,7 @@ var tncode = {
     document.getElementById('tncode_div').style.display="none";
 
     tncode._doing = false
+    tncode.removeBindEvent()
   },
   _showmsg:function(msg,status){
     console.log('_showmsg')
@@ -462,36 +463,40 @@ var tncode = {
     window.document.addEventListener('touchstart', _this._block_on_move, false)
   },
   init:function(){
-    console.log('init')
-    let _this = this;
-    if(!tncode._img){
-      tncode._html();
-      var obj = document.getElementByClassName('slide_block');
+    console.log('init-code')
+    try {
+      let _this = this;
+      if(!tncode._img){
+        tncode._html();
+        var obj = document.getElementByClassName('slide_block');
 
-      tncode._bind(obj,'mousedown',_this._block_start_move);
-      tncode._bind(document,'mousemove',_this._block_on_move);
-      // tncode._bind(document,'mouseup',_this._block_on_end);
+        tncode._bind(obj,'mousedown',_this._block_start_move);
+        tncode._bind(document,'mousemove',_this._block_on_move);
+        // tncode._bind(document,'mouseup',_this._block_on_end);
 
-      tncode._bind(obj,'touchstart',_this._block_start_move);
-      tncode._bind(document,'touchmove',_this._block_on_move);
-      tncode._bind(document,'touchend',_this._block_on_end);
+        tncode._bind(obj,'touchstart',_this._block_start_move);
+        tncode._bind(document,'touchmove',_this._block_on_move);
+        tncode._bind(document,'touchend',_this._block_on_end);
 
-      var obj = document.getElementByClassName('tncode_close');
-      tncode._bind(obj,'touchstart',_this.hide);
-      // tncode._bind(obj,'click',_this.hide);
-      var obj = document.getElementByClassName('tncode_refresh');
+        var obj = document.getElementByClassName('tncode_close');
+        tncode._bind(obj,'touchstart',_this.hide);
+        // tncode._bind(obj,'click',_this.hide);
+        var obj = document.getElementByClassName('tncode_refresh');
 
-      tncode._bind(obj,'touchstart',_this.refresh);
-      // tncode._bind(obj,'click',_this.refresh);
+        tncode._bind(obj,'touchstart',_this.refresh);
+        // tncode._bind(obj,'click',_this.refresh);
 
-      // 点击按钮事件
-      var objs = document.getElementByClassName('tncode',-1);
-      for (var i in objs) {
-        var o = objs[i];
-        o.innerHTML = '点击按钮进行验证';
-        tncode._bind(o,'touchstart',_this.show);
-        tncode._bind(o,'click',_this.show);
+        // 点击按钮事件
+        var objs = document.getElementByClassName('tncode',-1);
+        for (var i in objs) {
+          var o = objs[i];
+          o.innerHTML = '点击按钮进行验证';
+          tncode._bind(o,'touchstart',_this.show);
+          tncode._bind(o,'click',_this.show);
+        }
       }
+    } catch (e) {
+      console.log(e)
     }
   },
   result:function(){

@@ -114,7 +114,6 @@ export default {
       if (!detailInfo) {
         return
       }
-      console.log('shareMake', worksId)
       API.getVoteWorksDetail({
         query: {
           id: detailInfo.id,
@@ -134,7 +133,6 @@ export default {
         let tips2 = ''
         let numbering = ''
         console.log('---res---', res)
-
         if (signUnit === '助力值') {
           tips1 = '第2名还差' + Math.abs(res.last_votes) + '次助力就要赶超'
           tips2 = '距离上一名还差' + Math.abs(res.last_votes) + '次助力'
@@ -144,12 +142,11 @@ export default {
           tips2 = ''
           numbering = '向' + res.numbering + '号英雄致敬'
         } else {
-          tips1 = '第2名还差' + Math.abs(res.last_votes) + this.signUnit + '就要赶超'
-          tips2 = '距离上一名还差' + Math.abs(res.last_votes) + this.signUnit
+          tips1 = '第2名还差' + Math.abs(res.last_votes - res.total_votes) + this.signUnit + '就要赶超'
+          tips2 = '距离上一名还差' + Math.abs(res.last_votes - res.total_votes) + this.signUnit
           numbering = '快来帮' + res.numbering + '号投票吧'
         }
         let voteTip = res.index === 1 ? tips1 : tips2
-        console.log('detailInfo', detailInfo)
         if (detailInfo.works_count === 1) {
           voteTip = '目前是第一名，坚持就是胜利'
         }
@@ -240,6 +237,8 @@ export default {
         // 设置分享海报背景图片
         this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
 
+        console.log('params', params, this.worksDetailObj)
+
         // this.worksCode = params.
         // this.renderPlaybill(params, voteTip)
 
@@ -320,6 +319,7 @@ export default {
         ctx.font = '26px Arial'
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
+        console.log(999, data.lastvotes)
         ctx.fillText(data.lastvotes, 300, 80)
 
         ctx.font = '26px Arial'
