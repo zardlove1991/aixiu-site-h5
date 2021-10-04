@@ -109,8 +109,8 @@
       @close='isPrizeVerificationcShow = false' :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
     <PrizeQrCode :show.sync='isPrizeQrCodeShow' v-if="isPrizeQrCodeShow"  @close='isPrizeQrCodeShow = false' :data.sync='tempPrize'/>
     <Coupon :show='isCouponShow' @close='isCouponShow = false' :coupon='couponData'/>
-    <CardView :show='isCardViewShow' @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
-    <Integral :show='isIntegralShow' @close='isIntegralShow = false' :integral.sync='integralData'/>
+    <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
+    <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show='isPacketShow' @close='isPacketShow = false' :packet.sync='packetData'/>
     <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
@@ -175,7 +175,6 @@ import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
 import CollectInfo from '@/components/lottery/global/dial-collect-info'
 // import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
-import DrawCheckDialog from '@/components/lottery/global/draw-check-dialog'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -186,7 +185,6 @@ export default {
     List,
     MyModel,
     CollectInfo,
-    DrawCheckDialog,
     prizeList,
     ActivityRule,
     Address,
@@ -397,7 +395,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -412,7 +410,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -430,7 +428,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -445,7 +443,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -460,7 +458,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -475,7 +473,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -489,7 +487,7 @@ export default {
       }
       // 控制抽奖次数状态
       let integralLimit = this.detailInfo.limit.integral_limit
-      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+      if (!val && integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
         this.isRecordDrawShow = true
       } else if (!val && !this.detailInfo.remain_counts) {
         this.isUnPrizeChanceShow = true
@@ -582,7 +580,7 @@ export default {
           }
         })
         console.log(this.list)
-        // 分享活动
+        // 开启分享才会送抽奖次数
         if (this.detailInfo.limit.share_lottery_limit) {
           this.sharePage(res)
         }
@@ -799,7 +797,7 @@ export default {
             }
           } else if (res.error_code === 'no_draw_counts') { // 没抽奖次数
             let integralLimit = this.detailInfo.limit.integral_limit
-            if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
+            if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts && !this.detailInfo.remain_counts) {
               this.isRecordDrawShow = true
             } else {
               this.isUnPrizeChanceShow = true

@@ -267,6 +267,8 @@ $time: 5s; //转动多少秒后停下的时间
     // transform: rotate(30deg);
     /* 每个奖项的样式 */
     .prize-gift {
+      width: auto;
+      height: auto;
       position: absolute;
       .title {
         // font-weight: bold;
@@ -526,45 +528,5 @@ $time: 5s; //转动多少秒后停下的时间
       transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 7));
     }
   }
-  // @keyframes play0 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 0));
-  //   }
-  // }
-  // @keyframes play1 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 1));
-  //   }
-  // }
-  // @keyframes play2 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 2));
-  //   }
-  // }
-  // @keyframes play3 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 3));
-  //   }
-  // }
-  // @keyframes play4 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 4));
-  //   }
-  // }
-  // @keyframes play5 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 5));
-  //   }
-  // }
-  // @keyframes play6 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 6));
-  //   }
-  // }
-  // @keyframes play7 {
-  //   to {
-  //     transform: rotate(calc(var(--nums) * 360deg + 360deg / var(--nums) * 7));
-  //   }
-  // }
 }
 </style>

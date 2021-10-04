@@ -32,7 +32,8 @@
           name="详细地址"
           placeholder="详细地址"
           :rules="formRules.address"
-          class="form-textarea"
+          class="address"
+          autosize
         />
         <div class="form-sub">
           <van-button round block  native-type="submit" class="form-btn"
@@ -198,6 +199,12 @@ export default {
         margin: auto;
         // box-shadow: 0 10px 8px -8px #ECBD7B;
         box-shadow: 0 px2rem(16px) 0px 0px #e5b56b;
+    }
+    .address {
+      padding:  0 px2rem(30px);
+      background: #f8efdc;
+      border-radius: px2rem(8px);
+      margin-bottom:px2rem(30px);
     }
   }
 }
