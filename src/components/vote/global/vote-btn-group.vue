@@ -1,6 +1,7 @@
 <template>
   <div class="vote-btn-group-wrap">
-    <button class="option-invote" @click.stop="btnClick(data, index, 'invote')">{{getShareTxt}}</button>
+    <button class="option-invote" v-if='isShowCanvass'
+    @click.stop="btnClick(data, index, 'invote')">{{getShareTxt}}</button>
     <button class="options-vote"
       :class="{ disabled: !remainVotes || isBtnAuth !== 1 }"
       :disabled="!remainVotes || isBtnAuth !== 1"
@@ -44,11 +45,23 @@ export default {
     return {
       isShowActiveTips: false,
       activeTips: [],
-      downloadLink: ''
+      downloadLink: '',
+      isShowCanvass: true,
+      curDetailInfo: {}
     }
   },
   mounted () {
-    console.log('!remainVotes', !this.remainVotes, 'isBtnAuth', this.isBtnAuth)
+    try {
+      this.curDetailInfo = STORAGE.get('detailInfo')
+      const isShowCanvass = this.curDetailInfo.rule.is_show_canvass
+      if (isShowCanvass === 1) {
+        this.isShowCanvass = true
+      } else {
+        this.isShowCanvass = false
+      }
+    } catch (e) {
+      console.log(e)
+    }
   },
   computed: {
     ...mapGetters('vote', ['isBtnAuth']),
