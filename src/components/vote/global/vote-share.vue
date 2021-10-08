@@ -123,8 +123,6 @@ export default {
   },
   mounted () {
     this.getDetailInfo()
-    console.log('00000----000')
-    console.log('2---22---2', this.show, this.config, this.textSetting)
 
     // this.curDetailInfo = STORAGE.get('detailInfo')
 
