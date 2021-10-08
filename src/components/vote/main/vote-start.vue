@@ -217,6 +217,7 @@
     </tips-dialog>
     <share-vote
       ref="shareVote"
+      :id='id'
       :show="isShowWorkVote"
       :config="{
         voting_id: detailInfo.id,

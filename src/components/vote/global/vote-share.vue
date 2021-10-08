@@ -65,6 +65,10 @@ import { Toast } from 'mint-ui'
 
 export default {
   props: {
+    id: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: false
@@ -100,6 +104,14 @@ export default {
         }
       },
       deep: true
+    },
+    id: {
+      handler (newData, oldData) {
+        this.getDetailInfo(newData)
+        console.log('----newData999', newData)
+      },
+      deep: true,
+      immediate: true
     }
   },
   data () {
@@ -122,8 +134,6 @@ export default {
     }
   },
   mounted () {
-    this.getDetailInfo()
-
     // this.curDetailInfo = STORAGE.get('detailInfo')
 
     // eslint-disable-next-line no-undef
@@ -142,9 +152,10 @@ export default {
     this.slideCode.member = userStr
   },
   methods: {
-    getDetailInfo () {
+    getDetailInfo (data) {
+      console.log('this.config.voting_id', data)
       API.getVodeDetail({
-        query: { id: this.config.voting_id }
+        query: { id: data }
       }).then((res) => {
         this.curDetailInfo = res
       })
