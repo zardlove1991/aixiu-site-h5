@@ -473,8 +473,8 @@ export default {
       }
     }
   },
-  // 路由钩子函数，在离开页面之前进行调用
   beforeRouteLeave (to, from, next) {
+    // 路由钩子函数，在离开页面之前进行调用
     let position = document.getElementById('commvoteView').scrollTop // 记录离开页面时的位置
     if (position == null) position = 0
     this.$store.commit('vote/SET_SCROllY', position) // 离开路由时把位置存起来
@@ -918,7 +918,7 @@ export default {
         let detailInfo = STORAGE.get('detailInfo')
         let _area = []
         _area = detailInfo.rule.area_limit.area
-        console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
+        // console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
         if (_area !== undefined && _area.length !== 0) {
           this.getLocation().then(res => {
             // if (Object.keys(res).length === 0) {

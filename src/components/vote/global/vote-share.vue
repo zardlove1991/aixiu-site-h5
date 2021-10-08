@@ -122,7 +122,12 @@ export default {
     }
   },
   mounted () {
-    this.curDetailInfo = STORAGE.get('detailInfo')
+    this.getDetailInfo()
+    console.log('00000----000')
+    console.log('2---22---2', this.show, this.config, this.textSetting)
+
+    // this.curDetailInfo = STORAGE.get('detailInfo')
+
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 对象的清空
@@ -139,6 +144,13 @@ export default {
     this.slideCode.member = userStr
   },
   methods: {
+    getDetailInfo () {
+      API.getVodeDetail({
+        query: { id: this.config.voting_id }
+      }).then((res) => {
+        this.curDetailInfo = res
+      })
+    },
     initTnObj () {
       // 滑块信息的清空
       this.slideCode.requestUrl = ''
