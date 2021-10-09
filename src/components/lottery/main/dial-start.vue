@@ -111,7 +111,7 @@
     <Coupon :show='isCouponShow' @close='isCouponShow = false' :coupon='couponData'/>
     <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
-    <Packet :show='isPacketShow' @close='isPacketShow = false' :packet.sync='packetData'/>
+    <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
     <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
     <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
