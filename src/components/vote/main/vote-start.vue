@@ -541,7 +541,9 @@ export default {
     shareSuccess () {
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
-
+        if (res.success === 1) {
+          Toast('分享成功')
+        }
       })
     },
     goLotteryList () {
