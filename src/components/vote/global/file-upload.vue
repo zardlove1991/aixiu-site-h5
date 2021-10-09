@@ -423,6 +423,9 @@ export default {
       .el-icon-plus {
         @include font-dpr(30px);
       }
+      &.hide {
+        display: none;
+      }
     }
     &.vote-upload-vertical .el-upload {
       height: calc(6.25rem * 5.6 / 4);

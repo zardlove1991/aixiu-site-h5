@@ -123,6 +123,7 @@ export default {
       this.initForm()
     },
     initForm () {
+      let detailInfo = STORAGE.get('detailInfo')
       API.getReportDetail({
         query: {
           id: this.id
@@ -139,6 +140,11 @@ export default {
         let fullSceneType = res.full_scene_type
         if (fullSceneType && fullSceneType !== '0') {
           this.showModel = this.fullSceneMap[fullSceneType][1]
+        }
+        // 控制用户多次报名的次数
+        if (this.is_open_enroll_limit) {
+          this.enroll_limit_MaxNum = detailInfo.rule.limit.enroll_limit_MaxNum
+          this.is_open_enroll_limit = res.data.length < this.enroll_limit_MaxNum
         }
         res.data.forEach(item => (item.format_time = item.create_time.split(' ')[0]))
         this.dateArr = [...new Set(res.data.map(item => item.format_time).concat(this.dateArr))].sort((a, b) => {
