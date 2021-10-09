@@ -309,7 +309,7 @@ var tncode = {
   },
   hide:function(e){
     console.log('hide', e)
-    e.stopPropagation()
+    // e.stopPropagation()
 
     document.getElementById('tncode_div_bg').style.display="none";
     document.getElementById('tncode_div').style.display="none";
