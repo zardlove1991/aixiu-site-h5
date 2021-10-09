@@ -309,13 +309,14 @@ var tncode = {
   },
   hide:function(e){
     console.log('hide', e)
+    e.stopPropagation()
 
     document.getElementById('tncode_div_bg').style.display="none";
     document.getElementById('tncode_div').style.display="none";
 
     tncode._doing = false
     tncode.removeBindEvent()
-    return false
+    // return false
   },
   _showmsg:function(msg,status){
     console.log('_showmsg')
