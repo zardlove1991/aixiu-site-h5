@@ -60,11 +60,15 @@ import AreaVote from '@/components/vote/global/vote-area'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
-import { Toast } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 // import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
+    id: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: false
@@ -100,6 +104,14 @@ export default {
         }
       },
       deep: true
+    },
+    id: {
+      handler (newData, oldData) {
+        this.getDetailInfo(newData)
+        console.log('----newData999', newData)
+      },
+      deep: true,
+      immediate: true
     }
   },
   data () {
@@ -122,7 +134,8 @@ export default {
     }
   },
   mounted () {
-    this.curDetailInfo = STORAGE.get('detailInfo')
+    // this.curDetailInfo = STORAGE.get('detailInfo')
+
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 对象的清空
@@ -139,6 +152,14 @@ export default {
     this.slideCode.member = userStr
   },
   methods: {
+    getDetailInfo (data) {
+      console.log('this.config.voting_id', data)
+      API.getVodeDetail({
+        query: { id: data }
+      }).then((res) => {
+        this.curDetailInfo = res
+      })
+    },
     initTnObj () {
       // 滑块信息的清空
       this.slideCode.requestUrl = ''
@@ -218,16 +239,20 @@ export default {
         console.log('_needCode', _needCode, this.curDetailInfo.rule)
         this.codeObj = {}
         if (_needCode === 1) {
+          Indicator.open({ spinnerType: 'fading-circle' })
           this.initTnObj()
           this.slideCode.show() // 显示二维码
           this.codeObj.tn_x = 0
           // eslint-disable-next-line no-undef
           this.codeObj.request_id = $TN._request_id // 获取请求的id
+          setTimeout(() => {
+            Indicator.close()
+          }, 1500)
         } else {
           this.saveShare(memberId)
         }
       } catch (e) {
-        console.errpr(e)
+        console.error(e)
       }
     },
     saveShare (memberId = '') {
@@ -277,7 +302,6 @@ export default {
             }
             this.voteDisable = false
             // 允许滑动
-            console.log('this.slideCode', this.slideCode)
             this.slideCode._reset()
             return false
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
@@ -317,7 +341,6 @@ export default {
         // 抽奖
         let lottery = res.lottery
         if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
-          console.log('抽奖！！')
           this.isShowLottery = true
           this.lottery = lottery
           this.$emit('close')
@@ -398,5 +421,8 @@ export default {
         color: #F36E4E;
       }
     }
+  }
+  .mint-indicator-wrapper{
+    z-index: 9999 !important;
   }
 </style>

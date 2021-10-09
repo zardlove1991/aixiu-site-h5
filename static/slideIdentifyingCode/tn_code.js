@@ -307,13 +307,16 @@ var tncode = {
     document.getElementById('tncode_div_bg').style.display="block";
     document.getElementById('tncode_div').style.display="block";
   },
-  hide:function(){
-    console.log('hide')
+  hide:function(e){
+    console.log('hide', e)
+    // e.stopPropagation()
+
     document.getElementById('tncode_div_bg').style.display="none";
     document.getElementById('tncode_div').style.display="none";
 
     tncode._doing = false
     tncode.removeBindEvent()
+    // return false
   },
   _showmsg:function(msg,status){
     console.log('_showmsg')
@@ -479,8 +482,8 @@ var tncode = {
         tncode._bind(document,'touchend',_this._block_on_end);
 
         var obj = document.getElementByClassName('tncode_close');
-        tncode._bind(obj,'touchstart',_this.hide);
-        // tncode._bind(obj,'click',_this.hide);
+        // tncode._bind(obj,'touchstart',_this.hide);
+        tncode._bind(obj,'click',_this.hide);
         var obj = document.getElementByClassName('tncode_refresh');
 
         tncode._bind(obj,'touchstart',_this.refresh);
