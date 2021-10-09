@@ -153,7 +153,8 @@ export default {
                 border-bottom-color: rgba(79, 15, 15,.2);
                 width: px2rem(474px);
                 .prize-name{
-                    width: px2rem(182px);
+                    // width: px2rem(182px);
+                    width: auto;
                     height: px2rem(28px);
                     opacity: 1;
                     font-size: px2rem(28px);
@@ -185,7 +186,8 @@ export default {
                 justify-content: center;
                 align-items: center;
                 span{
-                    width: px2rem(212px);
+                    // width: px2rem(212px);
+                    width: auto;
                     height: px2rem(44px);
                     opacity: 1;
                     font-size: px2rem(44px);
