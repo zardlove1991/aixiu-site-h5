@@ -504,7 +504,6 @@ export default {
             if (isLotteryType === 1) {
               this.voteRewardType = false
               this.lotteryObj = res.lottery
-              // console.info('----this.lotteryObj---', this.lotteryObj)
               this.$nextTick(item => {
                 this.voteRewardType = true
                 this.isShowVoteReward = true
@@ -519,7 +518,6 @@ export default {
         // 显示礼盒
         // 判断显示gift box
         let _lottery = res.lottery
-        // console.log('res.lottery', _lottery)
         let lotteryArr = []
         this.lotteryObj = _lottery
         lotteryArr.push(_lottery.enroll.is_win)
@@ -555,8 +553,8 @@ export default {
     closeReportNumLimit () {
       this.isReportNumLimit = false
     },
-    // 记录滚动位置
     isTabRoute () {
+      // 记录滚动位置
       if (this.$route.name === 'votebegin') {
         this.$nextTick(() => {
           setTimeout(() => {
@@ -607,7 +605,7 @@ export default {
       // 其他限制
       this.handleVoteData()
       // 判断是否投票次数是否0
-      this.checkVoteNum()
+      // this.checkVoteNum()
       // 作品列表
       this.getVoteWorks('', false, '', true, true)
       // 索引图尺寸比例
@@ -1352,7 +1350,14 @@ export default {
           return
         }
       }
-      console.log(page)
+
+      // 是否提示活动报名数
+      // 开启了限制且数量为0
+      if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
+        this.isReportNumLimit = true
+        return false
+      }
+
       let params = {
         flag: this.showModel,
         id: this.id,
