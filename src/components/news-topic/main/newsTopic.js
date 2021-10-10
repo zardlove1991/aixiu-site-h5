@@ -5,16 +5,15 @@ import CardBtnSwipe from '../comp/CardBtnSwipe.vue'
 import InfoList from '../comp/InfoList.vue'
 // import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
+import { Indicator, Toast } from 'mint-ui'
 export default {
   props: {
     id: String
   },
   data () {
     return {
-      info: {},
       detailInfo: {},
-      topicDisplayValue: 1,
-      baseInfo: {},
+      topicDisplayValue: '',
       limitObj: {},
       topicDisplay: {}
     }
@@ -32,13 +31,19 @@ export default {
   methods: {
     initData () {
       let _curId = this.id
+      Indicator.open()
       API.getMobileNewsDetail({ query: { id: _curId } }).then(res => {
-        this.detailInfo = res
-        this.limitObj = this.detailInfo.limit
-        this.baseInfo = this.limitObj.base_info // 基本信息
-        const _topicDisplay = this.limitObj.topic_display
-        this.topicDisplay = _topicDisplay // 专题布局
-        this.topicDisplayValue = _topicDisplay.topic_display_value
+        Indicator.close()
+        try {
+          this.detailInfo = res
+          this.limitObj = this.detailInfo.limit // 类型按钮
+          const _topicDisplay = this.limitObj.topic_display
+          this.topicDisplayValue = _topicDisplay.topic_display_value // 轮播的不同的状态
+        } catch (e) {
+          Toast('加载失败')
+        }
+      }).catch(() => {
+        Indicator.close()
       })
     }
   }

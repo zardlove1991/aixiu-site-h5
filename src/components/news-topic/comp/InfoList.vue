@@ -1,10 +1,43 @@
 <template>
 <div class='info-card-list'>
+
   <!-- 标准列表-混合样式 -->
-  <!-- <div></div> -->
+  <div v-if='columnTypeValue === 1' class='standard-style'>
+    <div class='img-font-header'>
+      <div>
+        <span></span>
+        <span>媒体关注</span>
+      </div>
+      <div>
+        <img :src="arrIcon" alt="" class='arr-img-wrap'>
+      </div>
+    </div>
+    <div class='column-1'>
+      <div class='column-left'>
+        <div>苹果卡内基图书馆获美国建筑 ，奖馆内开设苹果零售店</div>
+        <div>
+          <span>网易新闻</span>
+          <span>2小时前</span>
+          <span>94评</span>
+        </div>
+      </div>
+      <div class='column-right'>
+        <img src="" alt="">
+      </div>
+    </div>
+    <div class='column-2'>
+
+    </div>
+    <div class='column-3'>
+
+    </div>
+    <div class='column-4'>
+
+    </div>
+  </div>
 
   <!-- 等高样式-上图下文字 -->
-  <div class='img-font-wrap'>
+  <div v-if='columnTypeValue === 2' class='img-font-wrap'>
     <div class='img-font-header'>
       <div>
         <span></span>
@@ -26,7 +59,7 @@
   </div>
 
   <!-- 卡片样式-文字在图上 -->
-  <!-- <div class='card-font-img'>
+  <div v-if='columnTypeValue === 3' class='card-font-img'>
     <div class='card-font-header'>
       <div>
         <img src="" alt="">
@@ -54,18 +87,37 @@
         <span></span>
       </div>
     </div>
-  </div> -->
+  </div>
 
 </div>
 </template>
 
 <script>
 export default {
+  props: {
+    infoDetail: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  watch: {
+    infoDetail: {
+      handler (newData, oldData) {
+        this.initRender(newData)
+      },
+      deep: true
+    }
+  },
   data () {
     return {
-      infoList: new Array(4),
-      arrIcon: require('@/assets/news-topic/arr.png')
-
+      infoList: [],
+      arrIcon: require('@/assets/news-topic/arr.png'),
+      columnTypeValue: 1
+    }
+  },
+  methods: {
+    initRender (data) {
+      console.log('da---ta', data)
     }
   }
 }
@@ -73,37 +125,57 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+
+  .standard-style{
+    width: px2rem(710px);
+    border-radius: px2rem(12px);
+    box-shadow: 0px 4px px2rem(14px) px2rem(2px) rgba(0,0,0,0.04);
+    .column-1{
+      margin-top: px2rem(40px);
+      background: #ffffff;
+      .column-left{
+
+      }
+      .column-right{
+
+      }
+    }
+  }
+
+  .img-font-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fbfbfb;
+    width: px2rem(710px);
+    &>div:nth-child(1){
+      &>span:nth-child(1) {
+        display: inline-block;
+        width: px2rem(5px);
+        height: px2rem(32px);
+        border-radius: px2rem(6px);
+        background: #D90000;
+        vertical-align: middle;
+      }
+      &>span:nth-child(2) {
+        display: inline-block;
+        font-weight: 500;
+        color: #333333;
+        font-size: px2rem(32px);
+        line-height: px2rem(48px);
+        vertical-align: middle;
+        margin-left: px2rem(10px);
+      }
+    }
+  }
+
 .info-card-list{
   margin-bottom: px2rem(30px);
   margin-top: px2rem(20px);
+  padding: 0 px2rem(20px);
+  background: #fbfbfb;
   .img-font-wrap{
     background: #fbfbfb;
-    .img-font-header{
-      padding: 0 px2rem(30px);
-      display: flex;
-      justify-content: space-between;
-      background: #ffffff;
-      &>div:nth-child(1){
-        &>span:nth-child(1) {
-          display: inline-block;
-          width: px2rem(5px);
-          height: px2rem(32px);
-          border-radius: px2rem(6px);
-          background: #D90000;
-          vertical-align: middle;
-        }
-        &>span:nth-child(2) {
-          display: inline-block;
-          font-weight: 500;
-          color: #333333;
-          font-size: px2rem(32px);
-          line-height: px2rem(48px);
-          vertical-align: middle;
-          margin-left: px2rem(10px);
-        }
-      }
-    }
-
     .imgfont-list-wrap{
       display: flex;
       flex-direction: row;

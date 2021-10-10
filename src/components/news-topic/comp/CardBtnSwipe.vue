@@ -4,7 +4,7 @@
     <template v-if='columnChangeStatus === 1'>
       <div v-for='(item, index) in columnList' :key='index'
         @click='choiceColumnList(item)'
-        :class='{"choiced-btn" : true}'
+        :class='{"choiced-btn" : item.isChecked}'
         class='single-btn-wrap'>{{item.title}}</div>
     </template>
 
@@ -38,11 +38,14 @@ export default {
   watch: {
     activeObj: {
       handler (newData, oldData) {
-        this.columnList = newData.column_set.column_list
+        this.columnList = JSON.parse(JSON.stringify(newData.column_set.column_list))
+        for (let i of this.columnList) {
+          this.$set(i, 'isChecked', false)
+        }
+        this.columnList[0].isChecked = true
         this.columnChangeStatus = newData.topic_display.column_change_status
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
   },
   data () {

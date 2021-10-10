@@ -1,9 +1,12 @@
 <template>
 <div class='header-mode-1'>
-  <BaseHeader :title='baseInfo.title' :topicDisplay='topicDisplay'>
+  <BaseHeader :infoDetail='infoDetail' :topicDisplay='topicDisplay'>
     <div slot="circleCardBox" class='circle-card-box'>
-      {{blockStr}}...
-      <span class='all-title' @click='togleBtn'>全部</span>
+      <span>{{blockStr}}...</span>
+      <span class='all-title' @click='showBlockTitle'>全部</span>
+      <van-popup v-model="showTotalTitle">
+        <div class='title-total-wrap'>{{allSummary}}</div>
+      </van-popup>
     </div>
   </BaseHeader>
 </div>
@@ -16,46 +19,47 @@ export default {
     infoDetail: {
       type: Object,
       default: () => {}
+    },
+    topicDisplay: {
+      type: Object,
+      default: () => {}
     }
-    // baseInfo: {
-    //   type: Object,
-    //   default: () => {}
-    // },
-    // topicDisplay: {
-    //   type: Object,
-    //   default: () => {}
-    // }
   },
   data () {
     return {
       blockStr: '',
-      btnTitle: '全部'
+      allSummary: '',
+      btnTitle: '全部',
+      baseInfo: {},
+      showTotalTitle: false
     }
   },
   watch: {
     infoDetail: {
       handler (newData, oldData) {
-        console.log('900000', newData)
-        // this.baseInfo = newData
-        // this.blockStr = this.baseInfo.summary.substring(0, 40)
+        this.baseInfo = newData
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   components: {
     BaseHeader
   },
   mounted () {
-
+    console.log('99999----infoDetail', this.infoDetail)
+    this.initRender()
   },
   methods: {
-    togleBtn () {
-      if (this.btnTitle === '全部') {
-        this.btnTitle = '收起'
-        this.blockStr = this.baseInfo.summary
+    showBlockTitle () {
+      this.showTotalTitle = true
+    },
+    initRender () {
+      this.allSummary = this.infoDetail.abstract
+      if (this.allSummary.length > 40) {
+        this.blockStr = this.allSummary.substring(0, 40)
       } else {
-        this.btnTitle = '全部'
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
+        this.blockStr = this.allSummary
       }
     }
   }
@@ -75,19 +79,19 @@ export default {
     padding: px2rem(30px);
     padding-bottom: 0;
     font-size: px2rem(30px);
-    // text-overflow: -o-ellipsis-lastline;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    // display: -webkit-box;
-    // -webkit-line-clamp: 2;
-    // line-clamp: 2;
-    // -webkit-box-orient: vertical;
   }
 
   .all-title{
     color: #D90000;
     font-size: px2rem(30px);
     font-weight: 400;
+  }
+
+  .title-total-wrap{
+    background: #ffffff;
+    width: 70vw;
+    border-radius: px2rem(10px);
+    padding: px2rem(30px);
   }
 }
 </style>

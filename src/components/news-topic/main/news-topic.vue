@@ -1,13 +1,22 @@
 <template>
   <div class='news-topic'>
+    <!-- 头部轮播 -->
     <HeaderMode1
       v-if='topicDisplayValue === 1'
-      :infoDetail='info'>
+      :infoDetail='detailInfo'>
     </HeaderMode1>
-    <HeaderMode2 v-if='topicDisplayValue === 2' :baseInfo='baseInfo'></HeaderMode2>
-    <HeaderMode3 v-if='topicDisplayValue === 3' :baseInfo='baseInfo'></HeaderMode3>
+    <HeaderMode2
+      v-if='topicDisplayValue === 2'
+      :infoDetail='detailInfo'>
+    </HeaderMode2>
+    <HeaderMode3
+      v-if='topicDisplayValue === 3'
+      :infoDetail='detailInfo'>
+    </HeaderMode3>
+    <!-- 类型按钮 -->
     <CardBtnSwipe :activeObj='limitObj'></CardBtnSwipe>
-    <InfoList></InfoList>
+    <!-- 列表 -->
+    <InfoList :infoDetail='detailInfo'></InfoList>
   </div>
 </template>
 

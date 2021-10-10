@@ -1,12 +1,10 @@
 <template>
 <div class='base-header-wrap'>
   <div class='swipe-wrap'>
-    <van-swipe class="my-swipe" :autoplay="3000"
-      indicator-color="white">
-      <van-swipe-item>1</van-swipe-item>
-      <!-- <van-swipe-item>2</van-swipe-item>
-      <van-swipe-item>3</van-swipe-item>
-      <van-swipe-item>4</van-swipe-item> -->
+    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+      <van-swipe-item v-for='(item, index) in bannerList' :key='index'>
+        <img :src="item" alt="">
+      </van-swipe-item>
     </van-swipe>
     <div class='news-title'>
       <div class='topic-tips'>专题</div>
@@ -21,22 +19,21 @@
 <script>
 export default {
   props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    topicDisplay: {
+    infoDetail: {
       type: Object,
       default: () => {}
     }
   },
   data () {
     return {
-
+      title: '',
+      bannerList: []
     }
   },
   mounted () {
-    console.log('90-0', this.topicDisplay)
+    this.bannerList = []
+    this.bannerList = this.infoDetail.limit.topic_display.topic_cover_img
+    this.title = this.infoDetail.title
   }
 }
 </script>
