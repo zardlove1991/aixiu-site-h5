@@ -850,8 +850,8 @@ export default {
     vibrateFeedback () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        window.SmartCity.vibrateFeedback('warning', function () {
-          console.log('warning')
+        window.SmartCity.vibrateFeedback('error', function () {
+          console.log('error')
         })
       }
     },
