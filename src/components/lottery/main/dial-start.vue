@@ -25,8 +25,20 @@
         <!-- <div class="wheel-box"> -->
           <!-- <div class="wheel-pointer"></div> -->
           <p class="wheel-p"></p>
+            <!-- <img :src="require('@/assets/lottery/dial.png')" width="100%" /> -->
+            <!-- <LuckyWheel
+              class="luck-draw"
+              ref="LuckyWheel"
+              width="300px"
+              height="300px"
+              :default-style="defaultStyle"
+              :blocks="blocks"
+              :prizes="prizes"
+              :buttons="buttons"
+              @start="startCallBack"
+              @end="endCallBack"
+            /> -->
           <prize-list :list="list" :specified="specified" />
-          <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
         <!-- </div> -->
         <div class="empty-box"></div>
         <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
@@ -82,14 +94,6 @@
         <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
-    <!-- <draw-check-dialog
-      :isShowVideo="true"
-      :show="isShowDrawCheck"
-      :checkDraw="checkDraw"
-      :isGetDept="isGetDept"
-      :examId="id"
-      @close="isShowDrawCheck = false">
-    </draw-check-dialog> -->
     <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
     <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
       :prize.sync='prizeData'/>
@@ -137,7 +141,6 @@
 </template>
 
 <script>
-import List from '@/components/lottery/global/list'
 import prizeList from '@/components/lottery/global/dial-prize-list'
 import ActivityRule from '@/components/lottery/global/dial-activity-rule'
 import Address from '@/components/lottery/global/dial-address'
@@ -182,7 +185,6 @@ import { isIphoneX } from '@/utils/app'
 import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
 export default {
   components: {
-    List,
     MyModel,
     CollectInfo,
     prizeList,
@@ -340,9 +342,6 @@ export default {
       drawTime: 5000,
       sign: getAppSign(),
       isSourceshow: true,
-      prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
-      // @/assets/lottery/integral/integral.png
-      btnImg: require('@/assets/lottery/wheel-pointer.png'),
       limitSource: '', // app来源名称
       App: false, // 控制app来源模态框
       errTips: '', // 无下载地址时提示框
@@ -352,7 +351,20 @@ export default {
       collectInfo: {},
       config: {},
       isGetDept: false, // 是否动态获取部门
-      lotteryFirst: STORAGE.get('lotteryFirst') || null
+      lotteryFirst: STORAGE.get('lotteryFirst') || null,
+      prizes: [],
+      buttons: [{
+        radius: '45px',
+        imgs: [{ src: require('@/assets/lottery/wheel-pointer.png'), width: '102%', top: '-127%' }]
+      }],
+      blocks: [
+        { padding: '3px', background: '#a70c1b' },
+        { padding: '6px', background: '#ffb633' }
+      ],
+      defaultStyle: {
+        fontColor: '#a70c1b',
+        fontSize: '10px'
+      }
 
     }
   },
@@ -494,15 +506,7 @@ export default {
       }
     }
   },
-  async created () {
-    // if (this.isWheelShow) this.count = 3
-    // const res = await API.getShare({ query: { id: this.id } })
-    // if (res.code === 1) {
-    //   this.$toast.success(res.msg)
-    // }
-    // console.log(this.sign)
-    // console.log(this.sign.indexOf('wechat') !== -1)
-    // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
+  created () {
   },
   async mounted () {
     this.ininData()
@@ -524,6 +528,7 @@ export default {
     }
     // this.isShowCheckDraw()
     // this.onCollectInfo()
+    this.getPrizesList()
   },
   beforeDestroy () {
     // 清除定时器
@@ -1073,6 +1078,51 @@ export default {
         this.isShowCheckDraw()
         return false
       }
+    },
+    getPrizesList () {
+      const prizes = []
+      // let data = [
+      //   { name: '谢谢参与', img: require('@/assets/lottery/thanking.png') },
+      //   { name: '抽奖次数+3', img: require('@/assets/lottery/face.png') },
+      //   { name: '红包', img: require('@/assets/lottery/wx-packet.png') },
+      //   { name: '礼物', img: require('@/assets/lottery/tocket.png') },
+      //   { name: '谢谢参与', img: require('@/assets/lottery/thanking.png') },
+      //   { name: '红包', img: require('@/assets/lottery/wx-packet.png') },
+      //   { name: '抽奖次数+3', img: require('@/assets/lottery/face.png') },
+      //   { name: '礼物', img: require('@/assets/lottery/tocket.png') }
+      // ]
+      // data.forEach((item, index) => {
+      //   prizes.push({
+      //     name: item.name,
+      //     // background: index % 2 === 0 ? '#ffd099' : '#fff',
+      //     background: index % 2 === 0 ? '#fffcb9' : '#FFF1D8',
+      //     fonts: [{ text: item.name, top: '8%' }],
+      //     imgs: [ { src: item.img, width: '10%', height: '30%', top: '30%' } ]
+      //   })
+      // })
+      this.list.forEach((item, index) => {
+        prizes.push({
+          name: item.is_award_name,
+          // background: index % 2 === 0 ? '#ffd099' : '#fff',
+          background: index % 2 === 0 ? '#fffcb9' : '#FFF1D8',
+          fonts: [{ text: item.is_award_name, top: '8%' }],
+          imgs: [ { src: item.images, width: '30%', height: '30%', top: '30%' } ]
+        })
+      })
+      // this.prizes = prizes
+      this.prizes = prizes
+    },
+    startCallBack () {
+      this.$refs.LuckyWheel.play()
+      setTimeout(() => {
+        // this.$refs.LuckyWheel.stop(Math.random() * 8 >> 0)
+        this.onDraw()
+        this.$refs.LuckyWheel.stop(this.winner >> 0)
+      }, 6000)
+    },
+    endCallBack (prize) {
+      // alert(`恭喜你获得${prize.name}`)
+      this.onDraw()
     }
   }
 }
@@ -1299,6 +1349,23 @@ $time: 3s; //转动多少秒后停下的时间
     .wheel-p {
       max-height: px2rem(32px);
       min-height: px2rem(24px);
+    }
+    .box {
+      position: relative;
+      width: 310px;
+      height: 310px;
+    }
+    .luck-draw {
+      width: 300px;
+      height: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      // position: absolute;
+      // left: 49%;
+      // top: 48%;
+      // left: 50%;
+      // top: 50%;
+      // transform: translate(-50%, -50%)
     }
     // 转盘盒子
     .wheel-box {
