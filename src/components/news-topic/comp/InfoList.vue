@@ -1,6 +1,5 @@
 <template>
 <div class='info-card-list'>
-
   <!-- 标准列表-混合样式 -->
   <div v-if='columnTypeValue === 1' class='standard-style'>
     <div class='img-font-header'>
@@ -12,7 +11,7 @@
         <img :src="arrIcon" alt="" class='arr-img-wrap'>
       </div>
     </div>
-    <div class='column-1'>
+    <div class='column-1 base-box-style'>
       <div class='column-left'>
         <div>苹果卡内基图书馆获美国建筑 ，奖馆内开设苹果零售店</div>
         <div>
@@ -22,16 +21,37 @@
         </div>
       </div>
       <div class='column-right'>
-        <img src="" alt="">
+        <img :src="mgURL" alt="">
       </div>
     </div>
-    <div class='column-2'>
-
+    <div class='column-2 base-box-style'>
+      <div>苹果卡内基图书馆获美国建筑，奖馆内开设苹 果零售店</div>
+      <div class='coloumn-2-2'>
+        <img :src="mgURL" alt="" class='img-wrap'>
+        <img :src="mgURL" alt="" class='img-wrap'>
+        <img :src="mgURL" alt="" class='img-wrap'>
+      </div>
+      <div class='coloumn-2-3'>
+        <span>网易新闻</span>
+        <span>2小时前</span>
+        <span>94评</span>
+      </div>
     </div>
-    <div class='column-3'>
-
+    <div class='column-3 base-box-style'>
+      <div class='column-3-left'>
+        <img src="" alt="">
+        <span></span>
+      </div>
+      <div class='column-3-right'>
+        <div>卡内基图书馆随后也正式更名 为苹果卡内基图书馆</div>
+        <div>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
-    <div class='column-4'>
+    <div class='column-4 base-box-style'>
 
     </div>
   </div>
@@ -111,6 +131,7 @@ export default {
   data () {
     return {
       infoList: [],
+      mgURL: require('@/assets/news/normal-bg.png'),
       arrIcon: require('@/assets/news-topic/arr.png'),
       columnTypeValue: 1
     }
@@ -128,18 +149,81 @@ export default {
 
   .standard-style{
     width: px2rem(710px);
-    border-radius: px2rem(12px);
-    box-shadow: 0px 4px px2rem(14px) px2rem(2px) rgba(0,0,0,0.04);
-    .column-1{
-      margin-top: px2rem(40px);
+    .base-box-style {
+      padding: px2rem(24px);
       background: #ffffff;
+      border-radius: px2rem(12px);
+      box-shadow: 0px 4px px2rem(14px) px2rem(2px) rgba(0,0,0,0.04);
+    }
+    .base-box-style + .base-box-style{
+      margin-top: px2rem(30px);
+    }
+    .column-1{
+      display: flex;
+      justify-content: space-between;
       .column-left{
-
+        &>div:nth-child(1) {
+          font-size: px2rem(32px);
+          color: #333333;
+        }
+        &>div:nth-child(2) {
+          font-size: px2rem(24px);
+          color: #999999;
+          &>span:nth-child(2) {
+            margin: 0 px2rem(10px);
+            margin-top: px2rem(20px);
+          }
+        }
       }
       .column-right{
-
+        width: px2rem(216px);
+        margin-left: px2rem(30px);
+        &>img{
+          width: px2rem(216px);
+          height: px2rem(162px);
+          border-radius: px2rem(8px);
+        }
       }
     }
+
+    .column-2 {
+      &>div:nth-child(1) {
+        color: #333333;
+        font-size: px2rem(32px);
+      }
+      .coloumn-2-2{
+        margin-top: px2rem(20px);
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: row;
+        .img-wrap{
+          width: px2rem(206px);
+          height: px2rem(162px);
+          border-radius: px2rem(8px);
+        }
+        .img-wrap + .img-wrap{
+          margin-left: px2rem(7px);
+        }
+      }
+
+      .coloumn-2-3{
+        margin-top: px2rem(20px);
+        color: #999999;
+        font-size: px2rem(24px);
+        &>span:nth-child(2) {
+          margin: 0 px2rem(10px);
+        }
+      }
+    }
+
+    .column-3{
+      .column-3-left {
+
+      }
+
+    }
+
+
   }
 
   .img-font-header{
@@ -148,6 +232,7 @@ export default {
     align-items: center;
     background: #fbfbfb;
     width: px2rem(710px);
+    margin: px2rem(20px) 0;
     &>div:nth-child(1){
       &>span:nth-child(1) {
         display: inline-block;
