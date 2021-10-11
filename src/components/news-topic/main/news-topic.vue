@@ -14,9 +14,13 @@
       :infoDetail='detailInfo'>
     </HeaderMode3>
     <!-- 类型按钮 -->
-    <CardBtnSwipe :activeObj='limitObj'></CardBtnSwipe>
+    <CardBtnSwipe
+      :activeObj='limitObj'
+      :infoDetail='detailInfo'
+      @changeList='changeList'>
+    </CardBtnSwipe>
     <!-- 列表 -->
-    <InfoList :infoDetail='detailInfo'></InfoList>
+    <InfoList :infoDetail='detailInfo' :changeChildListObj='changeChildListObj'></InfoList>
   </div>
 </template>
 

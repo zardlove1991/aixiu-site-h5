@@ -15,7 +15,8 @@ export default {
       detailInfo: {},
       topicDisplayValue: '',
       limitObj: {},
-      topicDisplay: {}
+      topicDisplay: {},
+      changeChildListObj: {}
     }
   },
   components: {
@@ -29,6 +30,9 @@ export default {
     this.initData()
   },
   methods: {
+    changeList (data) {
+      this.changeChildListObj = data
+    },
     initData () {
       let _curId = this.id
       Indicator.open()

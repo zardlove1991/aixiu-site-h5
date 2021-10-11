@@ -29,7 +29,6 @@ export default {
     return {
       blockStr: '',
       allSummary: '',
-      btnTitle: '全部',
       baseInfo: {},
       showTotalTitle: false
     }

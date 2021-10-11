@@ -5,54 +5,61 @@
     <div class='img-font-header'>
       <div>
         <span></span>
-        <span>媒体关注</span>
+        <span>{{title}}</span>
       </div>
       <div>
         <img :src="arrIcon" alt="" class='arr-img-wrap'>
       </div>
     </div>
-    <div class='column-1 base-box-style'>
-      <div class='column-left'>
-        <div>苹果卡内基图书馆获美国建筑 ，奖馆内开设苹果零售店</div>
-        <div>
-          <span>网易新闻</span>
+    <div v-for='(item, index) in worksList' :key='index'>
+      <div v-if='item[0] !== undefined' class='column-1 base-box-style'>
+        <div class='column-left'>
+          <div>{{item[0].title}}</div>
+          <div>
+            <span>{{item[0].source}}</span>
+            <span>2小时前</span>
+            <span>94评</span>
+          </div>
+        </div>
+        <div class='column-right'>
+          <img :src="mgURL" alt="">
+          <span>16:27</span>
+        </div>
+      </div>
+      <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
+        <div>{{item[1].title}}</div>
+        <div v-if='Array.isArray(item[1].material)' class='coloumn-2-2'>
+          <img v-for='(item, index) in item[1].material'
+            :key='index' :src="item" alt="" class='img-wrap'>
+        </div>
+        <div class='coloumn-2-3'>
+          <span>{{item[1].source}}</span>
           <span>2小时前</span>
           <span>94评</span>
         </div>
       </div>
-      <div class='column-right'>
-        <img :src="mgURL" alt="">
-      </div>
-    </div>
-    <div class='column-2 base-box-style'>
-      <div>苹果卡内基图书馆获美国建筑，奖馆内开设苹 果零售店</div>
-      <div class='coloumn-2-2'>
-        <img :src="mgURL" alt="" class='img-wrap'>
-        <img :src="mgURL" alt="" class='img-wrap'>
-        <img :src="mgURL" alt="" class='img-wrap'>
-      </div>
-      <div class='coloumn-2-3'>
-        <span>网易新闻</span>
-        <span>2小时前</span>
-        <span>94评</span>
-      </div>
-    </div>
-    <div class='column-3 base-box-style'>
-      <div class='column-3-left'>
-        <img src="" alt="">
-        <span></span>
-      </div>
-      <div class='column-3-right'>
-        <div>卡内基图书馆随后也正式更名 为苹果卡内基图书馆</div>
-        <div>
-          <span></span>
-          <span></span>
-          <span></span>
+      <div v-if='item[2] !== undefined' class='column-3 base-box-style'>
+        <div v-if='Array.isArray(item[2].material) && item[2].material.length !== 0' class='column-3-left'>
+          <img :src="item[2].material[0]" alt=""/>
+          <span>{{item[2].material.length}}图</span>
+        </div>
+        <div class='column-3-right'>
+          <div>{{item[2].title}}</div>
+          <div>
+            <span>{{item[2].source}}</span>
+            <span>7小时前</span>
+            <span>94评</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class='column-4 base-box-style'>
-
+      <div v-if='item[3] !== undefined' class='column-4 base-box-style'>
+        <div>{{item[3].title}}</div>
+        <div>
+          <span>{{item[3].source}}</span>
+          <span>7小时前</span>
+          <span>94评</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -61,7 +68,7 @@
     <div class='img-font-header'>
       <div>
         <span></span>
-        <span>媒体关注</span>
+        <span>{{title}}</span>
       </div>
       <div>
         <img :src="arrIcon" alt="" class='arr-img-wrap'>
@@ -118,12 +125,22 @@ export default {
     infoDetail: {
       type: Object,
       default: () => {}
+    },
+    changeChildListObj: {
+      type: Object,
+      default: () => {}
     }
   },
   watch: {
     infoDetail: {
       handler (newData, oldData) {
         this.initRender(newData)
+      },
+      deep: true
+    },
+    changeChildListObj: {
+      handler (newData, oldData) {
+        this.reRenderList(newData)
       },
       deep: true
     }
@@ -133,12 +150,47 @@ export default {
       infoList: [],
       mgURL: require('@/assets/news/normal-bg.png'),
       arrIcon: require('@/assets/news-topic/arr.png'),
-      columnTypeValue: 1
+      columnTypeValue: 1,
+      worksList: [],
+      informationContentData: [],
+      title: ''
     }
   },
   methods: {
     initRender (data) {
-      console.log('da---ta', data)
+      // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
+      this.columnTypeValue = data.limit.column_set.all_column_display
+      if (this.columnTypeValue !== 1) {
+        this.columnTypeValue = data.limit.column_set.column_list[0].columnDisplay
+      }
+      // console.log('this.columnTypeValue', data.limit.column_set.column_list[0].columnDisplay)
+
+      // 默认获取第一个
+      this.informationContentData = data.information_content_data
+      this.worksList = []
+      this.worksList = this.informationContentData[0].data
+      this.title = this.informationContentData[0].title
+
+      if (this.columnTypeValue === 1) {
+        this.blendData(this.informationContentData[0].data)
+      }
+    },
+    blendData (data) {
+      // 每4个元素组装成一个单位
+      let itemArr = []
+      this.worksList = []
+      for (let i = 0; i < data.length; i++) {
+        itemArr.push(data[i])
+        if ((i + 1) % 4 === 0) {
+          this.worksList.push(itemArr)
+          itemArr = []
+        }
+      }
+      console.log('this.worksList', this.worksList)
+    },
+    reRenderList (data) {
+      let _data = data.data
+      this.blendData(_data)
     }
   }
 }
@@ -169,23 +221,39 @@ export default {
         &>div:nth-child(2) {
           font-size: px2rem(24px);
           color: #999999;
+          margin-top: px2rem(20px);
           &>span:nth-child(2) {
             margin: 0 px2rem(10px);
-            margin-top: px2rem(20px);
           }
         }
       }
       .column-right{
         width: px2rem(216px);
         margin-left: px2rem(30px);
+        position: relative;
         &>img{
           width: px2rem(216px);
           height: px2rem(162px);
           border-radius: px2rem(8px);
         }
+
+        &>span{
+          position: absolute;
+          bottom: px2rem(19px);
+          right: px2rem(19px);
+          display: inline-block;
+          width: px2rem(76px);
+          height: px2rem(34px);
+          line-height: px2rem(34px);
+          border-radius: px2rem(17px);
+          text-align: center;
+          position: absolute;
+          color: #ffffff;
+          background: rgba(0, 0 , 0, .7);
+          font-size: px2rem(22px);
+        }
       }
     }
-
     .column-2 {
       &>div:nth-child(1) {
         color: #333333;
@@ -197,7 +265,7 @@ export default {
         justify-content: flex-start;
         flex-direction: row;
         .img-wrap{
-          width: px2rem(206px);
+          width: px2rem(216px);
           height: px2rem(162px);
           border-radius: px2rem(8px);
         }
@@ -217,13 +285,67 @@ export default {
     }
 
     .column-3{
+      display: flex;
+      justify-content: flex-start;
       .column-3-left {
+        width: px2rem(216px);
+        margin-right: px2rem(26px);
+        position: relative;
+        &>img:nth-of-type(1) {
+          width: px2rem(216px);
+          height: px2rem(162px);
+          vertical-align: middle;
+          border-radius: px2rem(8px);
+        }
 
+        &>span:nth-of-type(1) {
+          position: absolute;
+          bottom: px2rem(14px);
+          right: px2rem(14px);
+          display: inline-block;
+          width: px2rem(64px);
+          height: px2rem(34px);
+          line-height: px2rem(34px);
+          text-align: center;
+          border-radius: px2rem(17px);
+          color: #FFFFFF;
+          background: rgba(0, 0, 0, 0.7);
+          font-size: px2rem(22px);
+        }
       }
 
+      .column-3-right{
+        &>div:nth-child(1) {
+          font-size: px2rem(32px);
+          color: #333333;
+        }
+
+        &>div:nth-child(2) {
+          margin-top: px2rem(20px);
+          color: #999999;
+          font-size: px2rem(24px);
+          &>span:nth-child(2) {
+            margin: 0 px2rem(10px);
+          }
+        }
+      }
     }
 
+    .column-4{
+      &>div:nth-child(1) {
+        color: #333333;
+        font-size: px2rem(32px);
+      }
 
+      &>div:nth-child(2) {
+        margin-top: px2rem(20px);
+        color: #999999;
+        font-size: px2rem(24px);
+        &>span:nth-child(2) {
+          margin: 0 px2rem(10px);
+        }
+      }
+    }
   }
 
   .img-font-header{

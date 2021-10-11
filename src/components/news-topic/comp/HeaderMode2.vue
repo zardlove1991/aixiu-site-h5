@@ -1,9 +1,12 @@
 <template>
 <div class='header-mode-2'>
-  <BaseHeader :title='baseInfo.title'>
+  <BaseHeader :infoDetail='infoDetail' :topicDisplay='topicDisplay'>
     <div slot="squareCardBox" class='square-card-box'>
-      {{blockStr}}...
-      <span class='all-title' @click='togleBtn'>全部</span>
+      <span>{{blockStr}}...</span>
+      <span class='all-title' @click='showBlockTitle'>全部</span>
+      <van-popup v-model="showTotalTitle">
+        <div class='title-total-wrap'>{{allSummary}}</div>
+      </van-popup>
     </div>
   </BaseHeader>
 </div>
@@ -13,7 +16,11 @@
 import BaseHeader from './BaseHeader.vue'
 export default {
   props: {
-    baseInfo: {
+    infoDetail: {
+      type: Object,
+      default: () => {}
+    },
+    topicDisplay: {
       type: Object,
       default: () => {}
     }
@@ -21,32 +28,35 @@ export default {
   data () {
     return {
       blockStr: '',
-      btnTitle: '全部'
+      baseInfo: {},
+      showTotalTitle: false
     }
   },
   watch: {
-    baseInfo: {
+    infoDetail: {
       handler (newData, oldData) {
         this.baseInfo = newData
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   components: {
     BaseHeader
   },
   mounted () {
-
+    this.initRender()
   },
   methods: {
-    togleBtn () {
-      if (this.btnTitle === '全部') {
-        this.btnTitle = '收起'
-        this.blockStr = this.baseInfo.summary
+    showBlockTitle () {
+      this.showTotalTitle = true
+    },
+    initRender () {
+      this.allSummary = this.infoDetail.abstract
+      if (this.allSummary.length > 80) {
+        this.blockStr = this.allSummary.substring(0, 80)
       } else {
-        this.btnTitle = '全部'
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
+        this.blockStr = this.allSummary
       }
     }
   }
@@ -59,7 +69,7 @@ export default {
   position: relative;
   .square-card-box{
     width: px2rem(690px);
-    height: px2rem(257px);
+    // height: px2rem(257px);
     border-radius: px2rem(8px);
     box-shadow: 0px px2rem(4px) px2rem(14px) px2rem(2px) rgba(0,0,0,0.04);
     background: #ffffff;
@@ -67,7 +77,7 @@ export default {
     position: absolute;
     left: px2rem(30px);
     padding: px2rem(30px);
-    padding-bottom: 0;
+    // padding-bottom: 0;
     font-size: px2rem(28px);
     color: #666666;
   }
@@ -76,6 +86,13 @@ export default {
     color: #D90000;
     font-size: px2rem(30px);
     font-weight: 400;
+  }
+
+  .title-total-wrap{
+    background: #ffffff;
+    width: 70vw;
+    border-radius: px2rem(10px);
+    padding: px2rem(30px);
   }
 }
 </style>

@@ -1,56 +1,71 @@
 <template>
   <div class='header-mode-3'>
-    <van-swipe class="my-swipe" :autoplay="3000"
-      indicator-color="white">
-      <van-swipe-item>1</van-swipe-item>
-      <van-swipe-item>2</van-swipe-item>
-      <van-swipe-item>3</van-swipe-item>
-      <van-swipe-item>4</van-swipe-item>
+    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+      <van-swipe-item v-for='(item, index) in imgArr' :key='index'>
+        <img :src="item" alt="">
+      </van-swipe-item>
     </van-swipe>
     <div class='title-name'>
       <div class='topic-tips'>专题</div>
       <div>{{baseInfo.title}}</div>
     </div>
     <div class='topic-descri'>
-      {{blockStr}}...
-      <span class='all-title' @click='togleBtn'>全部</span>
+      <span>{{blockStr}}...</span>
+      <span class='all-title' @click='showBlockTitle'>全部</span>
+      <van-popup v-model="showTotalTitle">
+        <div class='title-total-wrap'>{{allSummary}}</div>
+      </van-popup>
     </div>
-
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    baseInfo: {
+    infoDetail: {
+      type: Object,
+      default: () => {}
+    },
+    topicDisplay: {
       type: Object,
       default: () => {}
     }
   },
   data () {
     return {
+      imgArr: [],
       blockStr: '',
-      btnTitle: '全部'
+      allSummary: '',
+      btnTitle: '全部',
+      baseInfo: {},
+      showTotalTitle: false
     }
   },
   watch: {
-    baseInfo: {
+    infoDetail: {
       handler (newData, oldData) {
+        console.log('90909', newData)
         this.baseInfo = newData
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
+        this.imgArr = this.baseInfo.limit.topic_display.topic_cover_img
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
+  mounted () {
+    this.initRender()
+  },
   methods: {
-    togleBtn () {
-      if (this.btnTitle === '全部') {
-        this.btnTitle = '收起'
-        this.blockStr = this.baseInfo.summary
+    initRender () {
+      this.allSummary = this.infoDetail.abstract
+      if (this.allSummary.length > 40) {
+        this.blockStr = this.allSummary.substring(0, 40)
       } else {
-        this.btnTitle = '全部'
-        this.blockStr = this.baseInfo.summary.substring(0, 40)
+        this.blockStr = this.allSummary
       }
+    },
+    showBlockTitle () {
+      this.showTotalTitle = true
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class='card-btn-swipe'>
+  <div class='card-btn-swipe' :ckass='{"display-value-2": topicDisplayValue == 2}'>
     <!-- 单行 -->
     <template v-if='columnChangeStatus === 1'>
       <div v-for='(item, index) in columnList' :key='index'
@@ -33,6 +33,10 @@ export default {
     activeObj: {
       type: Object,
       default: () => {}
+    },
+    infoDetail: {
+      type: Object,
+      default: () => {}
     }
   },
   watch: {
@@ -46,21 +50,32 @@ export default {
         this.columnChangeStatus = newData.topic_display.column_change_status
       },
       deep: true
+    },
+    infoDetail: {
+      handler (newData, oldData) {
+        console.log('8', newData.limit.topic_display)
+        this.topicDisplayValue = newData.limit.topic_display.topic_display_value
+      },
+      deep: true
     }
   },
   data () {
     return {
       columnList: [],
       columnChangeStatus: 1, // 1单行 2多行
-      topicDisplay: {}
+      topicDisplay: {},
+      topicDisplayValue: 1
     }
   },
   mounted () {
-
+    this.topicDisplayValue = ''
   },
   methods: {
     choiceColumnList (data) {
-      console.log('data', data)
+      // eslint-disable-next-line no-return-assign
+      this.columnList.map(item => item.isChecked = false)
+      data.isChecked = true
+      this.$emit('changeList', data)
     }
   }
 }
@@ -68,8 +83,11 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .display-value-2{
+    margin-top: px2rem(230px) !important;
+  }
   .card-btn-swipe {
-    margin-top: px2rem(100px);
+    margin-top: px2rem(20px);
     padding: 0 px2rem(30px);
     width: 100%;
     overflow-x: auto;
