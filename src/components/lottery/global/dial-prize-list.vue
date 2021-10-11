@@ -22,49 +22,7 @@
             }deg) skew(${-90 + 360 / list.length}deg);`"
           ></div>
         </div>
-        <!-- <div
-          class="prize-gift"
-          :style="`transform: rotate(${
-            (-index * 360) / list.length
-          }deg) translateY(-6rem);`"
-          v-for="(i, index) in list"
-          :key="index">
-          <span class="circle"></span>
-          <span class="title">{{ i.title }}</span>
-          <div class="wechat-img" v-if="i.type ==='wechat' ">
-            <img :src="i.img" alt />
-            <div class="wechat center"  v-if="i.desc.length === 5">{{i.desc}}</div>
-            <div class="wechat" v-else >{{i.desc}}</div>
-          </div>
-          <div class="tocket-img" v-if="i.type ==='tocket' ">
-            <img :src="i.img" alt />
-            <div class="tocket center" v-if="i.desc.length === 4" >{{i.desc}}</div>
-            <div class="tocket" v-else >{{i.desc}}</div>
-          </div>
-          <div class="integral-img" v-if="i.type ==='integral' ">
-            <img :src="i.img" alt />
-            <div class="integral"  >{{i.desc}}</div>
-            <div class="integral-name">积分</div>
-          </div>
-          <div class="wx-packet-img" v-if="i.type ==='wx-packet' ">
-            <img :src="i.img" alt />
-          </div>
-          <div class="thanking-img" v-if="i.type ==='thanking' ">
-            <img :src="i.img" alt />
-          </div>
-          <div class="again-img" v-if="i.type ==='again' ">
-            <img :src="i.img" alt />
-          </div>
-        </div> -->
         <template>
-          <!-- <div
-            class="prize-gift"
-            :style="`transform: rotate(${
-              (-index * 360) / list.length
-            }deg) translateY(-6rem);`"
-            v-for="(i, index) in list"
-            :key="index"
-            > -->
           <div
             class="prize-gift"
             :style="`transform: rotate(${
