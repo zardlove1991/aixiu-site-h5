@@ -25,18 +25,23 @@
           </subject-content>
         </div>
         <div class="btn-wrap">
-          <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+          <!--<div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
             跳过本题
-          </div>
+          </div>-->
           <div class="next-wrap"
-            v-show="examInfo.mark !== 'examination@exercise'"
+            v-show="examInfo.mark !== 'examination@exercise'&& currentSubjectIndex !== examList.length-1"
             @click.stop="saveCloud('add')">
             确认
           </div>
+          <div class="next-wrap"
+          v-show="examInfo.mark !== 'examination@exercise' && currentSubjectIndex === examList.length-1"
+          @click.stop="saveCloud('add')">
+           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
-        <div class="sumbit-btn" v-show="isShowSubmitBtn" @click.stop="submitExam">
+        </div>
+        <!--<div class="sumbit-btn" v-show="isShowSubmitBtn" @click.stop="submitExam">
           {{examInfo.limit.submit_text || '立即交卷'}}
-        </div>
+        </div>-->
       </div>
       <!--题号情况展示-->
       <div class="answer-list-info" v-show="isShowSubjectList" >
@@ -458,7 +463,7 @@ export default {
       }
       if (success) {
         this.$nextTick(() => {
-          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex >= this.examList.length - 1) {
             // Toast('已经没有题目了~')
             console.log('nextExerciseBtn', '已经没有题目了')
             this.nextExerciseBtn = false
@@ -472,6 +477,10 @@ export default {
               this.exerciseNext()
             }
           }, 0)
+          // 如果是最后一提，自动提交试卷
+          if (this.currentSubjectIndex === this.examList.length - 1) {
+            this.submitExam()
+          }
         })
       }
     },

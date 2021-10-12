@@ -55,6 +55,9 @@
       @include font-dpr(16px);
       @include font-color('titleColor');
     }
+    .ml20 {
+      margin-left:px2rem(20px);
+    }
     .btn-wrap{
       width: 100%;
       display: flex;
