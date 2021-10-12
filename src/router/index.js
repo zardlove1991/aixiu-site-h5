@@ -339,7 +339,7 @@ const routes = [{
     id: route.params.id
   }),
   meta: {
-    title: '幸运大转盘'
+    title: ''
   }
 },
 {
