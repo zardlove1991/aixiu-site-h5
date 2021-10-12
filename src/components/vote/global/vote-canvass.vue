@@ -89,7 +89,6 @@ export default {
   },
   methods: {
     saveSharer (worksId) {
-      console.log(worksId)
       this.show = true
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo || !worksId) {
@@ -190,30 +189,18 @@ export default {
         }
         if (res.material) {
           let isLongCover = false
-          if (
-            this.flag === 'picture' &&
-            res.material.image &&
-            res.material.image.length
-          ) {
+          if (this.flag === 'picture' && res.material.image && res.material.image.length) {
             let img = res.material.image[0]
             params.cover = img.url + coverExt
             if (img.width && img.height) {
               isLongCover = img.height > img.width
             }
-          } else if (
-            this.flag === 'video' &&
-            res.material.video &&
-            res.material.video.length
-          ) {
+          } else if (this.flag === 'video' && res.material.video && res.material.video.length) {
             let cover = res.material.video[0].cover_image
               ? res.material.video[0].cover_image
               : res.material.video[0].cover
             params.cover = cover + coverExt
-          } else if (
-            this.flag === 'audio' &&
-            res.material.audio &&
-            res.material.audio.length
-          ) {
+          } else if (this.flag === 'audio' && res.material.audio && res.material.audio.length) {
             params.audioTime = res.material.audio[0].duration
             params.cover =
               '//xzh5.hoge.cn/new-vote/images/poster_audio_bg.png' + coverExt
@@ -320,7 +307,6 @@ export default {
         ctx.font = '26px Arial'
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
-        console.log(999, data.lastvotes)
         ctx.fillText(data.lastvotes, 300, 80)
 
         ctx.font = '26px Arial'
@@ -331,6 +317,34 @@ export default {
         let imgObj = this.$refs['worksImgRef']
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
 
+        ctx.save()
+        if (this.flag === 'text') {
+          // 文本类型需要显示introduce
+          let textCtx = this.worksDetailObj.params.content
+          ctx.font = '24px Arial'
+          ctx.fillStyle = '#333333'
+          ctx.textAlign = 'left'
+
+          let textCtxLength = Math.floor(ctx.measureText(textCtx).width)
+          if (textCtxLength < 380) {
+            ctx.fillText(textCtx, 130, 220, 380)
+          } else {
+            let middleStr = ''
+            let lineHeight = 30
+            let loopNum = 0
+            for (let i = 0; i < textCtx.length; i++) {
+              let measureFontWidth = Math.floor(ctx.measureText(middleStr).width)
+              if (measureFontWidth !== 0 && measureFontWidth >= 380) {
+                loopNum += 1
+                ctx.fillText(middleStr, 130, 220 + (loopNum - 1) * lineHeight, 380)
+                middleStr = ''
+                ctx.save()
+              } else {
+                middleStr = middleStr + textCtx[i]
+              }
+            }
+          }
+        }
         ctx.restore()
         ctx.save()
 
