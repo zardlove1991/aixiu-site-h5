@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     getDetailInfo (data) {
-      console.log('this.config.voting_id', data)
       API.getVodeDetail({
         query: { id: data }
       }).then((res) => {
@@ -235,7 +234,9 @@ export default {
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
       try {
-        let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        // let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        let _detailInfo = STORAGE.get('detailInfo')
+        let _needCode = _detailInfo.rule.need_code // 0 => 未开始 1 => 开启
         console.log('_needCode', _needCode, this.curDetailInfo.rule)
         this.codeObj = {}
         if (_needCode === 1) {
@@ -261,7 +262,7 @@ export default {
       if (!config || !detailInfo) {
         return
       }
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      let _needCode = detailInfo.rule.need_code // 0 => 未开始 1 => 开启
       if (_needCode === 0) {
         // 不需要滑动验证码
         this.codeObj = {}
