@@ -168,7 +168,7 @@ import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { isIphoneX } from '@/utils/app'
-import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle } from '@/utils/utils'
 export default {
   components: {
     Wheel,
@@ -580,6 +580,7 @@ export default {
           this.App = true
           this.disableBtn = true
         }
+        setBrowserTitle(this.detailInfo.title)
       } catch (error) {
         console.log(error)
       }
@@ -1118,6 +1119,7 @@ $time: 3s; //转动多少秒后停下的时间
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: px2rem(8px);
       &img {
         display: block;
         border-radius: 50%;
