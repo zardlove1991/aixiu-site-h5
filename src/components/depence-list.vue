@@ -56,13 +56,18 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+        <!--<div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
           跳过本题
-        </div>
+        </div>-->
         <div class="next-wrap"
-          v-show="examInfo.mark !== 'examination@exercise'"
+          v-show="examInfo.mark !== 'examination@exercise' && currentSubjectIndex !== examList.length-1"
           @click.stop="saveCloud('add')">
            确认
+        </div>
+        <div class="next-wrap"
+          v-show="examInfo.mark !== 'examination@exercise' && currentSubjectIndex === examList.length-1"
+          @click.stop="saveCloud('add')">
+           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
         <div class="next-wrap"
           v-show="!nextExerciseBtn && successStatus === 0 && examInfo.mark === 'examination@exercise'"
@@ -74,7 +79,7 @@
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise' && currentSubjectIndex !== examList.length-1" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -667,8 +672,9 @@ export default {
         return false
       }
       if (success) {
+        console.log(this.currentSubjectIndex, 'this.currentSubjectIndex')
         this.$nextTick(() => {
-          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex >= this.examList.length - 1) {
             // Toast('已经没有题目了~')
             console.log('nextExerciseBtn', '已经没有题目了')
             this.nextExerciseBtn = false
@@ -682,6 +688,10 @@ export default {
               this.exerciseNext()
             }
           }, 0)
+          // 如果是最后一提，自动提交试卷
+          if (this.currentSubjectIndex === this.examList.length - 1) {
+            this.submitExam()
+          }
         })
       }
     },
@@ -850,8 +860,8 @@ export default {
     vibrateFeedback () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        window.SmartCity.vibrateFeedback('warning', function () {
-          console.log('warning')
+        window.SmartCity.vibrateFeedback('error', function () {
+          console.log('error')
         })
       }
     },

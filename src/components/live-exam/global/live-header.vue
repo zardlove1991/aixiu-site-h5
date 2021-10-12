@@ -73,7 +73,7 @@ import { mapActions, mapGetters } from 'vuex'
 import MyModel from '@/components/live-exam/global/live-model'
 import LinkDialog from '@/components/dialog/link-dialog'
 import PopDialog from '@/components/dialog/pop-dialog'
-import { formatTimeBySec } from '@/utils/utils'
+import { formatTimeBySec, getPlat } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 
@@ -167,6 +167,9 @@ export default {
         }
         this.timeTip = formatTimeBySec(this.duration, true)
         this.duration--
+        if (this.duration <= 10) {
+          this.vibrateFeedback()
+        }
       }
       // 执行倒计时 首先判断是否有考试时间
       if (limitTime > 0) {
@@ -176,6 +179,14 @@ export default {
         timeFun()
       } else {
         this.timeTip = '不限时间'
+      }
+    },
+    vibrateFeedback () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.vibrateFeedback('error', function () {
+          console.log('error')
+        })
       }
     },
     async confirmSubmitModel (command) {

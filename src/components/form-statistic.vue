@@ -172,7 +172,7 @@ import ShareDialog from '@/components/dialog/share-dialog'
 import LuckDrawDialog from '@/components/dialog/luck-draw-dialog'
 
 import {
-  // formatDate,
+  formatDate,
   getPlat
 } from '@/utils/utils'
 import OperateDialog from './exam-components/operate-dialog'
@@ -620,7 +620,7 @@ export default {
         context.fillText(this.posterInfo.total_score + '分', 300, _baseHeight + 150)
         if (this.posterInfo.use_time) {
           context.fillText('考试用时', 60, _baseHeight + 200)
-          context.fillText(this.posterInfo.use_time, 300, _baseHeight + 200)
+          context.fillText(formatDate(this.posterInfo.use_time, 'mm分ss秒'), 300, _baseHeight + 200)
         }
         // 生成图片地址
         this.shareUrl = canvas.toDataURL('image/png', 1)
