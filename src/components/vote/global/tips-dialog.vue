@@ -68,6 +68,7 @@ export default {
       @include img-retina('~@/assets/vote/tips-dialog-bg@2x.png', '~@/assets/vote/tips-dialog-bg@3x.png', px2rem(600px), px2rem(89px));
       background-repeat: no-repeat;
       background-position: bottom;
+      // z-index: 2000;
     }
     .btn-wrap {
       width: 100%;

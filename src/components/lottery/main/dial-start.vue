@@ -9,7 +9,7 @@
       <div slot="default" class="dial-header-right">
         <van-button plain class="btn-header" @click="isActivityShow=true">活动规则</van-button>
         <!-- <van-button plain class="btn-header" @click="isPrizeRecord=true">中奖纪录</van-button> -->
-        <van-button plain class="btn-header" @click="handleGo">中奖纪录</van-button>
+        <van-button plain class="btn-header" @click="handleGo">中奖记录</van-button>
       </div>
     </van-cell>
     <div class="dial-container">
@@ -23,11 +23,9 @@
       <div class="dial-container-wrap">
         <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
         <!-- <div class="wheel-box"> -->
-          <!-- <div class="wheel-pointer"></div> -->
           <p class="wheel-p"></p>
-          <prize-list :list="list" :specified="specified" />
-          <!-- <List :prizeList='list' :prizeName='prizeName' :prizeWidth='50'  :prizePaddingTop='10' /> -->
-        <!-- </div> -->
+          <!-- <prize-list :list="list" :specified="specified" :winner='winner'/> -->
+          <Wheel :winner='winner' :list="list"/>
         <div class="empty-box"></div>
         <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
@@ -82,14 +80,6 @@
         <div class="close-icon" @click.stop="closeDownload()"></div>
       </div>
     </my-model>
-    <!-- <draw-check-dialog
-      :isShowVideo="true"
-      :show="isShowDrawCheck"
-      :checkDraw="checkDraw"
-      :isGetDept="isGetDept"
-      :examId="id"
-      @close="isShowDrawCheck = false">
-    </draw-check-dialog> -->
     <ActivityRule :show.sync='isActivityShow'  v-if="isActivityShow"  :data.sync='detailInfo.introduce' @close="isActivityShow = false"/>
     <Address :show.sync='isAddressShow' v-if="isAddressShow" @close="isAddressShow = false"  :activityId='id'
       :prize.sync='prizeData'/>
@@ -111,7 +101,7 @@
     <Coupon :show='isCouponShow' @close='isCouponShow = false' :coupon='couponData'/>
     <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
-    <Packet :show='isPacketShow' @close='isPacketShow = false' :packet.sync='packetData'/>
+    <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
     <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
     <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
@@ -137,7 +127,6 @@
 </template>
 
 <script>
-import List from '@/components/lottery/global/list'
 import prizeList from '@/components/lottery/global/dial-prize-list'
 import ActivityRule from '@/components/lottery/global/dial-activity-rule'
 import Address from '@/components/lottery/global/dial-address'
@@ -174,15 +163,15 @@ import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
 import CollectInfo from '@/components/lottery/global/dial-collect-info'
-// import DrawCheckDialog from '@/components/dialog/draw-check-dialog'
+import Wheel from '@/components/lottery/global/wheel'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { isIphoneX } from '@/utils/app'
-import { getDaysBetween, delUrlParams, getAppSign } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle } from '@/utils/utils'
 export default {
   components: {
-    List,
+    Wheel,
     MyModel,
     CollectInfo,
     prizeList,
@@ -340,9 +329,6 @@ export default {
       drawTime: 5000,
       sign: getAppSign(),
       isSourceshow: true,
-      prizeName: '3177e8e2ebdb6336bd6a8715d9616c73',
-      // @/assets/lottery/integral/integral.png
-      btnImg: require('@/assets/lottery/wheel-pointer.png'),
       limitSource: '', // app来源名称
       App: false, // 控制app来源模态框
       errTips: '', // 无下载地址时提示框
@@ -352,7 +338,20 @@ export default {
       collectInfo: {},
       config: {},
       isGetDept: false, // 是否动态获取部门
-      lotteryFirst: STORAGE.get('lotteryFirst') || null
+      lotteryFirst: STORAGE.get('lotteryFirst') || null,
+      prizes: [],
+      buttons: [{
+        radius: '45px',
+        imgs: [{ src: require('@/assets/lottery/wheel-pointer.png'), width: '102%', top: '-127%' }]
+      }],
+      blocks: [
+        { padding: '3px', background: '#a70c1b' },
+        { padding: '6px', background: '#ffb633' }
+      ],
+      defaultStyle: {
+        fontColor: '#a70c1b',
+        fontSize: '10px'
+      }
 
     }
   },
@@ -494,15 +493,7 @@ export default {
       }
     }
   },
-  async created () {
-    // if (this.isWheelShow) this.count = 3
-    // const res = await API.getShare({ query: { id: this.id } })
-    // if (res.code === 1) {
-    //   this.$toast.success(res.msg)
-    // }
-    // console.log(this.sign)
-    // console.log(this.sign.indexOf('wechat') !== -1)
-    // console.log(this.sign.indexOf('wechat') !== -1 && this.detailInfo.user_integral_counts >= 0)
+  created () {
   },
   async mounted () {
     this.ininData()
@@ -510,10 +501,11 @@ export default {
     // var(--nums) 实现css动画根据奖品个数，动态改变
     let root = document.querySelector(':root')
     root.style.setProperty('--nums', this.list.length)
+    console.log(root.style.setProperty('--nums', this.list.length), "root.style.setProperty('--nums', this.list.length)")
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
-    console.log(this.sign === 'wechat', 'signsignsignsignsignsignsignsignsign')
+    // console.log(this.sign === 'wechat', 'signsignsignsignsignsignsignsignsign')
     if (this.detailInfo.app_source) {
       this.isSourceshow = false
     } else {
@@ -522,8 +514,6 @@ export default {
     if (this.noticeData.length > 0) {
       this.isNoticeDataShow = false
     }
-    // this.isShowCheckDraw()
-    // this.onCollectInfo()
   },
   beforeDestroy () {
     // 清除定时器
@@ -590,6 +580,7 @@ export default {
           this.App = true
           this.disableBtn = true
         }
+        setBrowserTitle(this.detailInfo.title)
       } catch (error) {
         console.log(error)
       }
@@ -644,7 +635,9 @@ export default {
       }
       if (!this.loading) {
         this.panziElement = document.querySelector('.prize')
-        this.panziElement.classList.remove(this.animationClass)
+        this.panziElement.style.transform = 'none'
+        this.panziElement.style.transition = 'none'
+        // this.panziElement.classList.remove(this.animationClass)
         // console.log(this.detailInfo.is_word, 'this.detailInfo.is_word')
         if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery && this.detailInfo.is_word === 0) { // 口令抽奖
           this.isCommandShow = true
@@ -652,14 +645,14 @@ export default {
         } else {
           this.specified = false
           // this.winner = this.random(0, this.list.length - 1)
-          // this.winCallback()
+          this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
           this.ininData()
           this.specified = true // 指定获奖下标
           // if (this.specified) {
           //   this.winner = this.winner
-          //   this.winCallback()
+          this.winCallback()
           // }
           if (res.error_code === 'no_extract_prize') { // 未中奖
             this.list.map((item, index) => {
@@ -807,7 +800,7 @@ export default {
         // if (this.specified) {
         //   // 此处可指定后端返回的指定奖品
         //   this.winner = this.winner
-        //   // this.winCallback()
+        //  // this.winCallback()
         // } else {
         //   this.winner = this.random(0, this.list.length - 1)
         //   this.winCallback()
@@ -848,7 +841,11 @@ export default {
       setTimeout(() => {
         /* 此处是为了解决当下次抽中的奖励与这次相同，动画不重新执行的 */
         /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
-        this.panziElement.classList.add(this.animationClass)
+        // this.panziElement.classList.add(this.animationClass)
+        // this.panziElement.style.transform = `rotate(calc(5 * 360deg + 360deg / ${this.list.length - 1} * ${this.winner + 1} - 360deg / ${this.list.length} / 2))`
+        this.panziElement.style.transform = `rotate(calc(-5 * 360deg + -360deg / ${this.list.length} * ${this.winner} + -360deg / ${this.list.length} / 2))`
+        this.panziElement.style.transition = `transform 5s ease`
+        console.log(this.list.length, 'this.list.length')
       }, 0)
       // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
       setTimeout(() => {
@@ -1122,6 +1119,7 @@ $time: 3s; //转动多少秒后停下的时间
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: px2rem(8px);
       &img {
         display: block;
         border-radius: 50%;
@@ -1274,7 +1272,8 @@ $time: 3s; //转动多少秒后停下的时间
     background-size: contain;
     background-repeat: no-repeat;
     background-position-x: center;
-    padding-top: px2rem(23px);
+    // padding-top: px2rem(23px);
+    padding-top: px2rem(19px);
     text-align: center;
     box-sizing: border-box;
     margin-left: auto;
@@ -1282,16 +1281,16 @@ $time: 3s; //转动多少秒后停下的时间
     // margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
-      display: inline-block;
+      // display: inline-block;
       // width: px2rem(212px);
-      height: px2rem(24px);
+      // height: px2rem(24px);
       opacity: 1;
-      font-size: px2rem(24px);
+      font-size: px2rem(28px);
       font-family: PingFangSC, PingFangSC-Medium;
       font-weight: 500;
       text-align: left;
       color: #fff4e3;
-      line-height: px2rem(24px);
+      // line-height: px2rem(24px);
       letter-spacing: px2rem(2px);
       // margin-bottom: px2rem(59px);
       // margin-bottom: px2rem(22px);
@@ -1300,6 +1299,23 @@ $time: 3s; //转动多少秒后停下的时间
       max-height: px2rem(32px);
       min-height: px2rem(24px);
     }
+    // .box {
+    //   position: relative;
+    //   width: 310px;
+    //   height: 310px;
+    // }
+    // .luck-draw {
+    //   width: 300px;
+    //   height: 300px;
+    //   margin-left: auto;
+    //   margin-right: auto;
+    //   // position: absolute;
+    //   // left: 49%;
+    //   // top: 48%;
+    //   // left: 50%;
+    //   // top: 50%;
+    //   // transform: translate(-50%, -50%)
+    // }
     // 转盘盒子
     .wheel-box {
       width: px2rem(660px);
@@ -1473,6 +1489,7 @@ $time: 3s; //转动多少秒后停下的时间
         100%,
         100%
       );
+      background-position: bottom;
       span {
       // width: 168px;
       // height: 40px;
@@ -1501,7 +1518,8 @@ $time: 3s; //转动多少秒后停下的时间
       background-repeat: no-repeat;
       // background: url('~@/assets/lottery/wheel-btn.png') no-repeat;
       background-size: contain;
-      background-position-y: 80%;
+      background-position: bottom;
+      // background-position-y: 80%;
       cursor: pointer;
       span {
         font-size: px2rem(40px);
@@ -1509,8 +1527,8 @@ $time: 3s; //转动多少秒后停下的时间
         font-weight: 700;
         text-align: left;
         color: #d10000;
-        // line-height: px2rem(166px);
-        line-height: px2rem(145px);
+        line-height: px2rem(166px);
+        // line-height: px2rem(145px);
         letter-spacing: px2rem(2px);
         text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
       }

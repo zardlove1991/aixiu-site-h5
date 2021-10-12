@@ -6,7 +6,7 @@
       <div class="tips-error">没有抽中哦~</div>
       <div class="tips">好可惜，差点就抽中了</div>
       <van-button  block  native-type="submit" class="btn" @click="onDrawAgain" v-if="count > 0">再抽一次({{count}})</van-button>
-      <van-button  block  native-type="submit" class="btn btn-notAllow" disabled v-else>再抽一次({{count}})</van-button>
+      <!-- <van-button  block  native-type="submit" class="btn btn-notAllow" disabled v-else>再抽一次({{count}})</van-button> -->
       <div class="left-circle"></div>
       <div class="right-half-circle"></div>
     </div>
