@@ -2,6 +2,8 @@
 // let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
 // let requestUrl = 'http://localhost:8080/api/votinghy'
 
+// import { Indicator } from 'mint-ui'
+
 let requestUrl = `${window.location.protocol}//${window.location.host}/api/votinghy`
 
 if (!document.getElementByClassName) {
@@ -294,6 +296,7 @@ var tncode = {
     obj.style.cssText = "transform: translate(0px, 0px)";
   },
   show:function(){
+    // console.log('vv', Indicator)
     console.log('---show---')
     tncode.isLoadType = false
     var obj = document.getElementByClassName('hgroup');
