@@ -13,12 +13,12 @@
               (-index * 360) / list.length
             }deg) skew(${-90 + 360 / list.length}deg);`"
           ></div> -->
-          <div
+              <div
             class="prize-item-bg"
             v-for="(i, index) in list"
             :key="index"
             :style="`transform: rotate(${
-              (-index * 360) / list.length
+              (-index * 360) / list.length - (360 / list.length)
             }deg) skew(${-90 + 360 / list.length}deg);`"
           ></div>
         </div>
@@ -94,7 +94,7 @@ export default {
   },
   data () {
     return {
-      panziElement: null,
+      // panziElement: null,
       length: ''
     }
   },
@@ -163,8 +163,8 @@ export default {
 <style scoped lang='scss'>
 @import "@/styles/index.scss";
 // $zp_size: 23rem; //转盘尺寸
-$zp_size: px2rem(600px); //转盘尺寸
 // $btn_size: 7rem; //抽奖按钮尺寸
+$zp_size: px2rem(600px); //转盘尺寸
 $btn_sizeW: px2rem(189px); //抽奖按钮尺寸
 $btn_sizeH: px2rem(203px); //抽奖按钮尺寸
 $time: 5s; //转动多少秒后停下的时间
@@ -180,9 +180,6 @@ $time: 5s; //转动多少秒后停下的时间
   margin-left: auto;
   margin-right: auto;
   // transform: rotate(135deg);
-  &.rotate30 {
-    transform: rotate(30deg);
-  }
   /* 抽奖按钮 */
   .start-btn {
     display: inline-block;
@@ -203,9 +200,6 @@ $time: 5s; //转动多少秒后停下的时间
     box-sizing: border-box;
     position: relative;
     z-index: 2;
-    &.rotate30 {
-      transform: rotate(-30deg);
-    }
   }
   /* 盘子样式 */
   .prize {
@@ -223,6 +217,14 @@ $time: 5s; //转动多少秒后停下的时间
     // border: 10px solid #f74e4e;
     box-sizing: border-box;
     // transform: rotate(30deg);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    -ms-perspective: 1000;
+    perspective: 1000;
     /* 每个奖项的样式 */
     .prize-gift {
       width: auto;
@@ -383,8 +385,7 @@ $time: 5s; //转动多少秒后停下的时间
     left: 0;
     top: 0;
     border-radius: 100%;
-    /* 转盘扇形背景 */
-    .prize-item-bg {
+    .prize-item-bg1 {
       box-sizing: border-box;
       position: absolute;
       width: 100%;
@@ -393,18 +394,37 @@ $time: 5s; //转动多少秒后停下的时间
       top: -50%;
       left: 50%;
       transform-origin: 0% 100%;
+      &:nth-child(2n){
+        background: linear-gradient(297deg,#e47f43 17%, #ffbe81);
+      }
+      &:nth-child(2n+1){
+        background: linear-gradient(297deg,#e47f43 17%, #ffbe81);
+      }
+    }
+    /* 转盘扇形背景 */
+    .prize-item-bg {
+      box-sizing: border-box;
+      position: absolute;
+      width: 99%;
+      height: 99%;
+      opacity: 1;
+      top: -50%;
+      left: 50%;
+      transform-origin: 0% 100%;
     }
     /* 转盘背景色 */
     .prize-item-bg:nth-child(2n) {
-      background: #fffcb9;
+      // background: #fffcb9;
       // background: linear-gradient(116deg, #ffe2b7 17%, #fff5e2);
       // background: linear-gradient(243deg,#ff0045, #ff4e2b 81%);
       // background: linear-gradient(60deg  #FF2638 10%, #FFEDD1 90%);
+      background: linear-gradient(243deg,#ffe2b7, #fff5e2 81%);
 
     }
     .prize-item-bg:nth-child(2n + 1) {
-      background: #FFF1D8;
+      // background: #FFF1D8;
       // background: linear-gradient(297deg, #e47f43 17%, #ffbe81);
+      background: linear-gradient(297deg,#ffe2b7 18%, #fff5e2);
     }
   }
   /* 下面的css样式为每个奖品的旋转动画，这里写了对应8个奖品的动画，如果想要更多的话，可以添加 */
