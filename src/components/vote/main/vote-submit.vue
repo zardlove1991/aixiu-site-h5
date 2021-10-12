@@ -67,12 +67,6 @@
         <div class="form-title">{{textTitle}}</div>
         <div class="form-content">
           <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input>
-          <!-- <textarea  v-model.trim="examineData.introduce"
-            style="-webkit-user-select:text !important"
-            @blur="blurAction()"
-            class='font-ctx-wrap'
-            rows="5" cols="20">
-          </textarea> -->
         </div>
       </div>
       <div class="form-item" v-if="isOpenClassify">
@@ -91,7 +85,7 @@
       <!-- 字段列表 -->
       <template v-for='item in enrollForm.formFixList'>
         <div :key='item.unique_name'
-          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1'
+          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1 && item.unique_name !== "form_6"'
           class="form-item">
           <div class="form-title">
             {{item.formTitle}}
@@ -100,17 +94,18 @@
           <div v-if='item.type == "singleText"' class="form-content">
             <el-input v-model.trim="item.inputValue" maxlength="40"></el-input>
           </div>
-          <textarea v-if='item.type == "mulText"'
-            style="-webkit-user-select:text !important"
-            v-model.trim="item.inputValue"
-            class='font-ctx-wrap'
-            rows="5" cols="20">
-          </textarea>
+          <div class="form-content">
+            <el-input type='textarea' v-if='item.type == "mulText"'
+              v-model.trim="item.inputValue"
+              rows="5" cols="20">
+            </el-input >
+          </div>
         </div>
       </template>
       <!-- 收集信息 -->
-      <template v-for='(item, index11) in enrollForm.visibleFieldList'>
-        <div :key='index11' class="form-item">
+      <template>
+        <div v-for='(item, index) in enrollForm.visibleFieldList'
+          :key='index' class="form-item">
           <div class="form-title">
             {{item.fieldSuffix}}
             <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
@@ -121,12 +116,11 @@
             </el-input>
           </div>
           <div v-if='item.type === "mulText"' class="form-content">
-            <textarea  v-model.trim="item.inputValue"
-              style="-webkit-user-select:text !important"
+            <el-input type='textarea'  v-model.trim="item.inputValue"
               @blur="blurAction()"
               class='font-ctx-wrap'
               rows="5" cols="20">
-            </textarea>
+            </el-input>
           </div>
           <div v-if='item.type === "downSelect"' class="form-content">
             <el-select v-model="item.inputValue" placeholder="请选择" style='width: 100%;'>
@@ -247,6 +241,7 @@ export default {
         for (let i of this.enrollForm.visibleFieldList) {
           this.$set(i, 'inputValue', '')
         }
+        this.titleReSet()
       } catch (e) {
         console.log(e)
       }
@@ -335,6 +330,13 @@ export default {
         this.initVoteType()
       }
     },
+    titleReSet () {
+      // 名称的重新赋值
+      let _formFixList = this.enrollForm.formFixList
+      this.videoTitle = _formFixList[0].formTitle
+      this.imgTitle = _formFixList[1].formTitle
+      this.textTitle = _formFixList[2].formTitle
+    },
     getWorksDetail (worksId) {
       // 获取详情
       API.getReportDetail({
@@ -346,15 +348,7 @@ export default {
           return
         }
 
-        // 名称的重新赋值
-        let _formFixList = this.enrollForm.formFixList
-        this.videoTitle = _formFixList[0].formTitle
-        this.imgTitle = _formFixList[1].formTitle
-        // this.textTitle = _formFixList[2].formTitle
-
-        // audioTitle: '上传音频'
-        // textTitle: '文字内容'
-
+        this.titleReSet()
         // 输入值得回显
         let _extra = res.extra
         for (let [key, value] of Object.entries(_extra)) {
@@ -469,11 +463,19 @@ export default {
           return false
         }
       }
+
       for (const i of this.enrollForm.formFixList) {
+        if (i.unique_name === 'form_6') {
+          i.inputValue = this.examineData.introduce
+          if (i.inputValue === '') {
+            Toast(`请输入${i.formTitle}`)
+            return true
+          }
+        }
         // 标题
         if (i.unique_name === 'form_3') {
           if (i.inputValue === '') {
-            Toast('请输入标题')
+            Toast(`请输入${i.formTitle}`)
             return true
           }
         }
