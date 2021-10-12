@@ -247,7 +247,7 @@ export default {
           this.codeObj.request_id = $TN._request_id // 获取请求的id
           setTimeout(() => {
             Indicator.close()
-          }, 1500)
+          }, 800)
         } else {
           this.saveShare(memberId)
         }
@@ -262,7 +262,6 @@ export default {
         return
       }
       let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
-      console.log('1', _needCode, this.curDetailInfo)
       if (_needCode === 0) {
         // 不需要滑动验证码
         this.codeObj = {}
@@ -294,6 +293,7 @@ export default {
         data: obj
       }).then(res => {
         let errCode = res.error_code
+        console.log('errCode', errCode)
         if (errCode) {
           if (errCode === 'INVALID_CODE') {
             // 滑动验证码失败
@@ -312,20 +312,36 @@ export default {
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           } else if (errCode === 'NO_REMAIN_VOTES') {
             Toast('对当前作品的投票次数已用完')
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             this.voteDisable = false
             return
           } else {
             Toast(res.error_message)
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           }
         }
