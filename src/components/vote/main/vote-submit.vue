@@ -14,7 +14,7 @@
         </div>
       </div>
       <div v-if="showModel === 'video'" class="form-item">
-        <div class="form-title">上传视频</div>
+        <div class="form-title">{{videoTitle}}</div>
         <div class="form-tips-div" v-if="videoMode === '3'">视频格式为MP4，建议大小不超过50M，尺寸3:4.5</div>
         <div class="form-tips-div" v-else>视频格式为MP4，建议大小不超过50M，尺寸16:9</div>
         <div class="form-content">
@@ -42,7 +42,7 @@
         </div>
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
-        <div class="form-title">上传图片</div>
+        <div class="form-title">{{imgTitle}}</div>
         <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
@@ -58,21 +58,21 @@
         </div>
       </div>
       <div v-if="showModel === 'audio'" class="form-item">
-        <div class="form-title">上传音频<span class="form-tips">(音频格式为MP3)</span></div>
+        <div class="form-title">{{audioTitle}}<span class="form-tips">(音频格式为MP3)</span></div>
         <div class="form-content">
           <file-upload :loading.sync="loading" :flag="showModel" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
       <div v-if="showModel === 'text'" class="form-item">
-        <div class="form-title">文字内容</div>
+        <div class="form-title">{{textTitle}}</div>
         <div class="form-content">
-          <!-- <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input> -->
-          <textarea  v-model.trim="examineData.introduce"
+          <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input>
+          <!-- <textarea  v-model.trim="examineData.introduce"
             style="-webkit-user-select:text !important"
             @blur="blurAction()"
             class='font-ctx-wrap'
             rows="5" cols="20">
-          </textarea>
+          </textarea> -->
         </div>
       </div>
       <div class="form-item" v-if="isOpenClassify">
@@ -178,6 +178,10 @@ export default {
   },
   data () {
     return {
+      imgTitle: '上传图片',
+      videoTitle: '上传视频',
+      audioTitle: '上传音频',
+      textTitle: '文字内容',
       curDetailInfo: {},
       maxUploadImgNum: 9,
       enrollForm: {},
@@ -327,7 +331,6 @@ export default {
       if (worksId) {
         this.getWorksDetail(worksId)
       }
-      // console.log('isOpenClassify', isOpenClassify)
       if (isOpenClassify) {
         this.initVoteType()
       }
@@ -342,6 +345,16 @@ export default {
         if (!res) {
           return
         }
+
+        // 名称的重新赋值
+        let _formFixList = this.enrollForm.formFixList
+        this.videoTitle = _formFixList[0].formTitle
+        this.imgTitle = _formFixList[1].formTitle
+        // this.textTitle = _formFixList[2].formTitle
+
+        // audioTitle: '上传音频'
+        // textTitle: '文字内容'
+
         // 输入值得回显
         let _extra = res.extra
         for (let [key, value] of Object.entries(_extra)) {
@@ -391,7 +404,6 @@ export default {
           type_id: res.type_id,
           type_name: res.type_name
         }
-        console.log('99999', this.examineData)
         if (res.full_scene_type) {
           this.checkFullScene = String(res.full_scene_type)
           this.showModel = this.fullSceneMap[res.full_scene_type][1]
