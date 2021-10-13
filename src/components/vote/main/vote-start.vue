@@ -448,12 +448,12 @@ export default {
       })
     }
   },
+  mounted () {
+    this.worksStatus()
+  },
   beforeDestroy () {
     // 清除定时器
     this.clearSetInterval()
-  },
-  mounted () {
-    this.worksStatus()
   },
   computed: {
     ...mapGetters('vote', ['isModelShow', 'myVote', 'isBtnAuth']),
@@ -570,7 +570,8 @@ export default {
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
-      let res = STORAGE.get('detailInfo')
+      let res = await this.syncGetVodeDetail()
+      // let res = STORAGE.get('detailInfo')
       if (!res || res.id !== voteId) {
         res = await API.getVodeDetail({
           query: { id: voteId }
@@ -919,7 +920,6 @@ export default {
         let detailInfo = STORAGE.get('detailInfo')
         let _area = []
         _area = detailInfo.rule.area_limit.area
-        // console.log('is_area_limit', detailInfo.rule.area_limit.is_area_limit)
         if (_area !== undefined && _area.length !== 0) {
           this.getLocation().then(res => {
             // if (Object.keys(res).length === 0) {
@@ -1207,6 +1207,11 @@ export default {
         STORAGE.set('detailInfo', res)
       }).catch(err => {
         console.log(err)
+      })
+    },
+    syncGetVodeDetail (id) {
+      return API.getVodeDetail({
+        query: { id: this.id }
       })
     },
     getRemainVotes (id) {
