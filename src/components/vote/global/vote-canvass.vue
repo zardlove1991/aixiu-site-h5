@@ -420,7 +420,7 @@ export default {
           ctx.font = '24px Arial'
           ctx.fillStyle = '#999999'
           ctx.textAlign = 'center'
-          ctx.fillText(_sponsorName, 320, 840)
+          ctx.fillText(_sponsorName, 320, 845)
         }
       } catch (e) {
         Toast('生成分享图片失败')
