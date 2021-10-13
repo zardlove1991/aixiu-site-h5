@@ -320,8 +320,7 @@ export default {
         ctx.save()
         if (this.flag === 'text') {
           // 文本类型需要显示introduce
-          // let textCtx = this.worksDetailObj.params.content
-          let textCtx = '代末，三点，代末，三点，代末，三点，代末，三点，99klqwjdlasjdlknm,asnd,mas你，妙三多，单，马上电脑年代末，三点，没撒旦那没事，安德门，撒单词的'
+          let textCtx = this.worksDetailObj.params.content
           ctx.font = '24px Arial'
           ctx.fillStyle = '#6c5333'
           ctx.textAlign = 'left'
