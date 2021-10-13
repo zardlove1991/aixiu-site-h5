@@ -26,7 +26,7 @@
       @load='qrcodeFun' v-show="false">
     <img crossOrigin='anonymous' :src="userIcon" ref="userIconRef" alt=""
       @load="resetPoster(3)" v-show="false">
-    <img @load='loadSponsorFun' crossOrigin='anonymous' :src="sponsorUrl"
+    <img  @load='loadSponsorFun' crossOrigin='anonymous' :src="sponsorUrl"
       alt="" ref='sponsorRef' v-show="false">
   </div>
 </template>
@@ -89,6 +89,16 @@ export default {
   },
   methods: {
     saveSharer (worksId) {
+      this.indexType1 = false
+      this.indexType3 = false
+      this.indexType5 = false
+      this.sharePoster = '' // 清除图片
+      // this.worksBg = ''
+      this.worksImg = ''
+      this.qrcodeImg = ''
+      // this.userIcon = ''
+      this.sponsorUrl = ''
+
       this.show = true
       let detailInfo = STORAGE.get('detailInfo')
       if (!detailInfo || !worksId) {
@@ -110,6 +120,8 @@ export default {
     },
     shareMake (worksId, code) {
       let detailInfo = STORAGE.get('detailInfo')
+      console.log('--000--', detailInfo.id)
+      this.worksDetailObj = {}
       if (!detailInfo) {
         return
       }
@@ -124,9 +136,8 @@ export default {
         }
         let coverExt = '?x-oss-process=image/resize,m_fixed,w_560,h_350,color_EAD5BA'
         let avatar = STORAGE.get('userinfo').avatar
-        let avatarUrl = avatar
-          ? avatar + '?x-oss-process=image/circle,r_104/format,png'
-          : ''
+
+        let avatarUrl = avatar ? avatar + '?x-oss-process=image/circle,r_104/format,png' : ''
         let signUnit = this.signUnit
         let tips1 = ''
         let tips2 = ''
@@ -219,6 +230,7 @@ export default {
         }
 
         this.worksImg = params.cover
+        this.worksDetailObj = {}
         this.worksDetailObj = {
           params: params,
           voteTip: voteTip
@@ -283,12 +295,17 @@ export default {
       // 赞助商信息
       let _sponsorName = this.sponsorName
       if (this.sponsorUrl !== '') {
-        let _textHalf = Math.ceil(this.curCtx.measureText(_sponsorName).width / 2)
-        let imgObj1 = this.$refs['sponsorRef']
-        let _indexWidth = Math.ceil(320 - _textHalf - 45)
-        this.curCtx.drawImage(imgObj1, _indexWidth, 830, 40, 40)
+        console.log('this.curCtx', this.curCtx)
+        this.$nextTick(item => {
+          let _textHalf = Math.ceil(this.curCtx.measureText(_sponsorName).width / 2)
+          let imgObj1 = this.$refs['sponsorRef']
+          let _indexWidth = Math.ceil(320 - _textHalf - 45)
+          this.curCtx.arc(_indexWidth + 15, 835, 15, 0, 2 * Math.PI)
+          this.curCtx.clip()
+          this.curCtx.drawImage(imgObj1, _indexWidth, 820, 40, 40)
+          this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
+        })
       }
-      this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
     },
     async renderPlaybill (data) {
       try {
@@ -307,12 +324,17 @@ export default {
         ctx.font = '26px Arial'
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
-        ctx.fillText(data.lastvotes, 300, 80)
+        ctx.fillText(data.lastvotes, 330, 80)
+        ctx.restore()
+        ctx.save()
 
         ctx.font = '26px Arial'
         ctx.fillStyle = '#333333'
         ctx.textAlign = 'center'
-        ctx.fillText(data.numbering, 300, 120)
+        ctx.fillText(data.numbering, 330, 120)
+        ctx.restore()
+        ctx.save()
+
         // 绘制作品图片
         let imgObj = this.$refs['worksImgRef']
         ctx.drawImage(imgObj, 50, 150, canvas.width - 100, canvas.height - 550)
@@ -398,8 +420,7 @@ export default {
           ctx.font = '24px Arial'
           ctx.fillStyle = '#999999'
           ctx.textAlign = 'center'
-          console.log(222, ctx.measureText(_sponsorName))
-          ctx.fillText(_sponsorName, 320, 860)
+          ctx.fillText(_sponsorName, 320, 840)
         }
       } catch (e) {
         Toast('生成分享图片失败')

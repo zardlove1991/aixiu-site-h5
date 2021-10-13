@@ -21,7 +21,7 @@
       <div class="info-source">
         <span v-if="isOpenClassify && info.type_name">{{info.type_name}}<span class="span-line">|</span></span>{{info.source}}</div>
     </div>
-    <div class="detail-options-wrap">
+    <div v-if='isShowInvote' class="detail-options-wrap">
       <button class="option-invote"
         @click.stop="triggerMenu('invote')">
         {{textSetting.share ? textSetting.share : '帮ta拉票'}}
@@ -33,7 +33,19 @@
       <button class="option-vote"
         :class="{ disabled: !info.remain_votes || isBtnAuth !== 1 }"
         :disabled="!info.remain_votes || isBtnAuth  !== 1"
-        @click.stop="triggerMenu('vote')">{{textSetting.vote ? textSetting.vote : '给ta投票'}}</button>
+        @click.stop="triggerMenu('vote')">
+        {{textSetting.vote ? textSetting.vote : '给ta投票'}}
+      </button>
+    </div>
+    <!-- 隐藏帮ta拉票 -->
+    <div v-if='!isShowInvote' class='btn-line-ctx'>
+      <button class="btn-line-wrap"
+      :class="{ disabled: !info.remain_votes || isBtnAuth !== 1 }"
+      :disabled="!info.remain_votes || isBtnAuth  !== 1"
+      @click.stop="triggerMenu('vote')">
+      <span class='btn-title-1'>{{textSetting.vote ? textSetting.vote : '给ta投票'}}</span>
+      <span class='btn-title-2'>可投{{info.remain_votes}}票</span>
+      </button>
     </div>
     <active-vote
       :show="isShowActiveTips"
@@ -82,7 +94,9 @@ export default {
       interval: null,
       isShowActiveTips: false,
       activeTips: [],
-      downloadLink: ''
+      downloadLink: '',
+      isShowInvote: true,
+      curDetailInfo: {}
     }
   },
   computed: {
@@ -92,6 +106,13 @@ export default {
     info: 'getVoteList'
   },
   mounted () {
+    this.curDetailInfo = STORAGE.get('detailInfo')
+    let isShowCanvass = this.curDetailInfo.rule.is_show_canvass
+    if (isShowCanvass === 1) {
+      this.isShowInvote = true
+    } else {
+      this.isShowInvote = false
+    }
   },
   beforeDestroy () {
     // 清除定时器
@@ -195,6 +216,32 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .btn-line-ctx{
+    display: flex;
+    justify-content: center;
+  }
+  .btn-line-wrap{
+    width: px2rem(690px);
+    height: px2rem(88px);
+    line-height: px2rem(88px);
+    text-align: center;
+    border-radius: px2rem(44px);
+    @include font-dpr(15px);
+    color: #fff;
+    margin-top: px2rem(20px);
+    border: none;
+    pointer-events: auto;
+    background-color: #F36E4E;
+    margin-bottom: px2rem(50px);
+    .btn-title-1{
+      font-size: px2rem(32px);
+      font-weight: 500;
+    }
+    .btn-title-2{
+      margin-left: px2rem(16px);
+      font-weight: px2rem(24px);
+    }
+  }
   .common-page-detail-wrap {
     position: absolute;
     bottom: 0;
