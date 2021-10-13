@@ -73,7 +73,7 @@
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
         <div class="form-title" v-else>分类</div>
         <div class="form-content classify-wrap">
-          <el-input v-model="examineData.type_name"
+          <el-input v-model.trim="examineData.type_name"
             :readonly="true"
             placeholder="请选择"
             @focus="showClassifyAction()"
@@ -111,7 +111,7 @@
             <span class="form-tips">{{item.nesWriteValue == 1 ? '' : '(选填)'}}</span>
           </div>
           <div v-if='item.type === "singleText"' class="form-content">
-            <el-input v-model="item.inputValue"
+            <el-input v-model.trim="item.inputValue"
               @blur="blurAction()" maxlength="20">
             </el-input>
           </div>
@@ -456,16 +456,20 @@ export default {
           Toast('请上传视频')
           return true
         }
-      } else if (this.checkFullScene === '2') {
+      } else if (this.checkFullScene === '2' || this.curDetailInfo.mark === 'commonvote-image') {
         // 图片
         if (this.material.image.length === 0) {
           Toast('请上传图片')
           return true
         }
+        // 最少上传图片判断
+        let minImgNum = this.curDetailInfo.rule.works_type_set.min_img_num
+        if (this.material.image.length < minImgNum) {
+          Toast(`至少上传${minImgNum}图片`)
+          return true
+        }
       }
 
-      // console.log('888', this.enrollForm.formFixList)
-      // console.log('999', this.enrollForm.visibleFieldList)
       for (const i of this.enrollForm.formFixList) {
         // if (i.unique_name === 'form_6') {
         //   i.inputValue = this.examineData.introduce
@@ -498,6 +502,18 @@ export default {
           return true
         }
       }
+      // 不论手机号码是否是选填必填，都需要校验
+      for (const j of this.enrollForm.visibleFieldList) {
+        // 手机号码的校验
+        if (j.value === 'phone') {
+          let regex = /^(13[0-9]|14[5-9]|15[012356789]|166|17[0-8]|18[0-9]|19[8-9])[0-9]{8}$/ // 手机号码校验规则
+          if (!regex.test(j.inputValue)) {
+            Toast('手机格式有误，请输入正确的手机号')
+          }
+          return true
+        }
+      }
+
       return false
     },
     commitVote () {
