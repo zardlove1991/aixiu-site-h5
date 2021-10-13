@@ -465,13 +465,13 @@ export default {
       }
 
       for (const i of this.enrollForm.formFixList) {
-        if (i.unique_name === 'form_6') {
-          i.inputValue = this.examineData.introduce
-          if (i.inputValue === '') {
-            Toast(`请输入${i.formTitle}`)
-            return true
-          }
-        }
+        // if (i.unique_name === 'form_6') {
+        //   i.inputValue = this.examineData.introduce
+        //   if (i.inputValue === '') {
+        //     Toast(`请输入${i.formTitle}`)
+        //     return true
+        //   }
+        // }
         // 标题
         if (i.unique_name === 'form_3') {
           if (i.inputValue === '') {

@@ -470,10 +470,14 @@ export default {
         query: { ...redirectParams }
       })
     },
-    submitExam () {
+    submitExam (res) {
       if (this.examInfo.mark !== 'examination@exercise') {
+        if (res && res.saveStatus === 'timeout') {
+          this.$refs.examHeader.confirmSubmitModel('noconfirm')
+        } else {
+          this.isShowSubmitModel = true
+        }
         // this.changeSubjectIndex(this.currentSubjectIndex)
-        this.isShowSubmitModel = true
       } else {
         this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
           // 练习题做错误处理
@@ -490,8 +494,8 @@ export default {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = !this.isShowSuspendModels
-      this.endExam()
+      Toast('本场作答已超时，系统已为您自动交卷')
+      this.saveCloud('timeout')
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
@@ -657,11 +661,15 @@ export default {
         Indicator.close()
         if (err.error_code === 'member_submit') {
           Toast('本场作答已超时，系统已经为您自动交卷')
-          this.showExamResult()
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.showExamResult()
+          }
         }
         if (err.error_code === 'question_time_out') {
           Toast('本题答题超时，系统已经为您自动交卷')
-          this.showExamResult()
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.showExamResult()
+          }
         }
       })
     },
@@ -689,8 +697,8 @@ export default {
             }
           }, 0)
           // 如果是最后一提，自动提交试卷
-          if (this.currentSubjectIndex === this.examList.length - 1) {
-            this.submitExam()
+          if (this.currentSubjectIndex === this.examList.length - 1 || res.saveStatus === 'timeout') {
+            this.submitExam(res)
           }
         })
       }

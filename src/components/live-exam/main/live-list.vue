@@ -395,16 +395,20 @@ export default {
         DEPENCE.dealErrorType({ examId, redirectParams }, err)
       }
     },
-    submitExam () {
-      // this.saveAnswerRecords(this.answerList)
-      this.isShowSubmitModel = true
+    submitExam (res) {
+      console.log(res, 'res.saveStatus === ')
+      if (res && res.saveStatus === 'timeout') {
+        this.$refs.examHeader.confirmSubmitModel('noconfirm')
+      } else {
+        this.isShowSubmitModel = true
+      }
     },
     noEndTime () {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = true
-      this.endExam()
+      Toast('本场作答已超时，系统已为您自动交卷')
+      this.saveCloud('timeout')
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
@@ -478,8 +482,8 @@ export default {
             }
           }, 0)
           // 如果是最后一提，自动提交试卷
-          if (this.currentSubjectIndex === this.examList.length - 1) {
-            this.submitExam()
+          if (this.currentSubjectIndex === this.examList.length - 1 || res.saveStatus === 'timeout') {
+            this.submitExam(res)
           }
         })
       }
