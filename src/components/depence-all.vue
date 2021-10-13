@@ -3,6 +3,7 @@
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
+      ref="examHeader"
       :list="examList"
       type="all"
       :showSubmitModel.sync="isShowSubmitModel"
@@ -73,6 +74,7 @@
 
 <script>
 import API from '@/api/module/examination'
+import { Toast } from 'mint-ui'
 import { mapActions, mapGetters } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
@@ -323,8 +325,10 @@ export default {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = !this.isShowSuspendModels
-      this.endExam()
+      Toast('本场作答已超时，系统已为您自动交卷')
+      this.$refs.examHeader.confirmSubmitModel('noconfirm')
+      // this.isShowSuspendModels = !this.isShowSuspendModels
+      // this.endExam()
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel

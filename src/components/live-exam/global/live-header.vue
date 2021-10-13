@@ -157,7 +157,7 @@ export default {
         if (this.duration === 2) {
           this.$emit('notimeup')
         }
-        if (this.duration < 0) {
+        if (this.duration < 1) {
           clearInterval(this.timer)
           this.$emit('timeup') // 发送考试时间到的事件
           return
