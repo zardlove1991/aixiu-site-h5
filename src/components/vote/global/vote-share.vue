@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     getDetailInfo (data) {
-      console.log('this.config.voting_id', data)
       API.getVodeDetail({
         query: { id: data }
       }).then((res) => {
@@ -179,6 +178,7 @@ export default {
         let { rule, id } = detailInfo
         let { collect_member_info: collectMemberInfo } = rule
         // 是否验证投票
+        console.log('collectMemberInfo', collectMemberInfo)
         if (collectMemberInfo && collectMemberInfo.length > 0) {
           let status = await this.getIsCollect(id)
           if (status) {
@@ -213,7 +213,9 @@ export default {
       })
     },
     isCanvassShare () {
+      console.log('9900667777')
       let shareData = this.shareData
+      debugger
       if (shareData && shareData.sign && shareData.invotekey) {
         // 通过二维码进入投票
         API.getSharer({
@@ -235,9 +237,12 @@ export default {
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
       try {
-        let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        // let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        let _detailInfo = STORAGE.get('detailInfo')
+        let _needCode = _detailInfo.rule.need_code // 0 => 未开始 1 => 开启
         console.log('_needCode', _needCode, this.curDetailInfo.rule)
         this.codeObj = {}
+        console.log('_needCode', typeof _needCode, _needCode)
         if (_needCode === 1) {
           Indicator.open({ spinnerType: 'fading-circle' })
           this.initTnObj()
@@ -261,7 +266,7 @@ export default {
       if (!config || !detailInfo) {
         return
       }
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+      let _needCode = detailInfo.rule.need_code // 0 => 未开始 1 => 开启
       if (_needCode === 0) {
         // 不需要滑动验证码
         this.codeObj = {}
