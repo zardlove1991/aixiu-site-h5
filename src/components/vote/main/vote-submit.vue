@@ -454,16 +454,18 @@ export default {
         // 视频
         if (this.material.video.length === 0) {
           Toast('请上传视频')
-          return false
+          return true
         }
       } else if (this.checkFullScene === '2') {
         // 图片
         if (this.material.image.length === 0) {
           Toast('请上传图片')
-          return false
+          return true
         }
       }
 
+      // console.log('888', this.enrollForm.formFixList)
+      // console.log('999', this.enrollForm.visibleFieldList)
       for (const i of this.enrollForm.formFixList) {
         // if (i.unique_name === 'form_6') {
         //   i.inputValue = this.examineData.introduce
@@ -481,9 +483,9 @@ export default {
           }
         }
 
-        // 先判断是是不是隐藏，再判断是否选中必填
+        // 显示且必填且不为空才可以弹窗
         if (i.unique_name === 'form_4' || i.unique_name === 'form_5') {
-          if (i.visibleAuthValue === 1 && i.inputValue === '') {
+          if (i.visibleAuthValue === 1 && i.nesWriteValue === 1 && i.inputValue === '') {
             Toast(`请输入${i.formTitle}`)
             return true
           }
@@ -496,7 +498,6 @@ export default {
           return true
         }
       }
-
       return false
     },
     commitVote () {
