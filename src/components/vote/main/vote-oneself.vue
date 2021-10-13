@@ -161,6 +161,7 @@ export default {
 
         const extraArr = Object.entries(res.extra)
         const extraTitlesArr = Object.entries(res.extraTitles)
+        this.columnList = []
         for (let i = 0; i < extraArr.length; i++) {
           let labellArr = extraTitlesArr.find(item => item[0] === extraArr[i][0])
           if (labellArr === undefined) {
@@ -172,8 +173,6 @@ export default {
             value: extraArr[i][1]
           })
         }
-
-        console.log('333', this.columnList)
 
         let fullSceneType = res.full_scene_type
         if (fullSceneType && fullSceneType !== '0') {
