@@ -30,13 +30,13 @@
                         </div>
                  </div>
                 <div class="avatar-box" v-if="cardViewData.is_merchants">
-                    <div class="avatar" v-if="cardViewData.is_merchants.logo_url">
+                    <div class="avatar" >
                         <van-image class="img" :src="cardViewData.is_merchants.logo_url" ></van-image>
                     </div>
                     <div class="avatar-name">{{cardViewData.is_merchants.merchant_info}}</div>
                 </div>
                 <div class="container-bottom">
-                    <div class="qr-code" v-if="cardViewData.qr_code">
+                    <div class="qr-code" >
                         <van-image class="code" :src="cardViewData.qr_code" ></van-image>
                     </div>
                     <div class="tips">
