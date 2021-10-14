@@ -11,7 +11,8 @@
                  <div class="container">
                     <div class="title">提货凭证</div>
                     <div class="qrCode-wrap" v-if="lotteryCodeData.cancel_code">
-                        <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image>
+                        <img class="code" :src="lotteryCodeData.cancel_code" alt="" />
+                        <!-- <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image> -->
                     </div>
                     <div class="info">
                         <p>兑奖码： {{lotteryCodeData && lotteryCodeData.code || '--'}} </p>

@@ -35,7 +35,8 @@
                     </div>
                     <div class="avatar-box">
                         <div class="avatar" v-if="couponData.is_merchants.logo_url">
-                            <van-image  class="img" :src="couponData.is_merchants.logo_url"></van-image>
+                            <!-- <van-image  class="img" :src="couponData.is_merchants.logo_url"></van-image> -->
+                            <img class="img" src="couponData.is_merchants.logo_url" alt="">
                         </div>
                         <div class="avatar-name" v-if="couponData.is_merchants.name">{{couponData.is_merchants.name}}</div>
                     </div>
