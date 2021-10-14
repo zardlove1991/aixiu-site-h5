@@ -8,7 +8,6 @@
       </div>
       <div slot="default" class="dial-header-right">
         <van-button plain class="btn-header" @click="isActivityShow=true">活动规则</van-button>
-        <!-- <van-button plain class="btn-header" @click="isPrizeRecord=true">中奖纪录</van-button> -->
         <van-button plain class="btn-header" @click="handleGo">中奖记录</van-button>
       </div>
     </van-cell>
@@ -40,7 +39,7 @@
               </li>
             </ul>
           </van-notice-bar>
-          <van-notice-bar :scrollable="true" class="wheel-notice-bar" :delay='2'>
+          <!-- <van-notice-bar :scrollable="true" class="wheel-notice-bar" :delay='2'>
             <ul class="wheel-tips-list">
               <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
                 <img
@@ -51,15 +50,13 @@
                 <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
               </li>
             </ul>
-          </van-notice-bar>
+          </van-notice-bar> -->
         </div>
-        <div v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
-            class="wheel-btn-on" @click="onDraw" >
-          <span>立即抽奖</span>
-        </div>
-        <div v-else class="wheel-btn-off" >
-          <span>立即抽奖</span>
-        </div>
+        <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
+          class="wheel-btn-on" type="primary" round @click="onDraw" :loading='loading'><span class="text">立即抽奖</span></van-button>
+        <van-button  v-else class="wheel-btn-off" round disabled>
+          <span class="text">立即抽奖</span>
+        </van-button>
         <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
@@ -88,21 +85,22 @@
 
     <RecordDraw :show.sync='isRecordDrawShow' @close ='isRecordDrawShow = false' v-if="isRecordDrawShow"
       :data.sync="detailInfo.limit.integral_limit"/>
-    <RecordLess :show='isRecordLessShow' @close ='isRecordLessShow = false'/>
-    <Shared :show='isSharedShow' @close ='isSharedShow = false'/>
-    <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/>
-    <UnPrizeChance :show='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
+    <RecordLess :show.sync='isRecordLessShow' v-if="isRecordLessShow" @close ='isRecordLessShow = false'/>
+    <Shared :show.sync='isSharedShow' v-if="isSharedShow" @close ='isSharedShow = false'/>
+    <UnDraw :show.sync='isUnDrawShow' v-if='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/>
+    <!-- <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/> -->
+    <UnPrizeChance :show.sync='isUnPrizeChanceShow' v-if='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
 
     <Prize :show='isPrizeShow' @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
     <PrizeAddress :show.sync='isPrizeAddressShow' v-if="isPrizeAddressShow" @close='isPrizeAddressShow = false' :prize.sync='prizeData' :id="id"/>
     <PrizeVerification :show.sync='isPrizeVerificationcShow' v-if="isPrizeVerificationcShow"
       @close='isPrizeVerificationcShow = false' :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
     <PrizeQrCode :show.sync='isPrizeQrCodeShow' v-if="isPrizeQrCodeShow"  @close='isPrizeQrCodeShow = false' :data.sync='tempPrize'/>
-    <Coupon :show='isCouponShow' @close='isCouponShow = false' :coupon='couponData'/>
+    <Coupon :show.sync='isCouponShow' v-if="isCouponShow"  @close='isCouponShow = false' :coupon='couponData'/>
     <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
-    <ActivityStart :show='isActivityStartShow' @close='isActivityStartShow = false' :date.sync='noStartDate'/>
+    <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
     <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
 
@@ -122,29 +120,31 @@
     <!-- <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/> -->
     <!-- <MoalImg :show="isWheelShow"/> -->
     <!-- <DialDialog :show="isWheelShow"/> -->
+    <!-- <DialDialogTitle :show="isWheelShow" /> -->
     <!-- <DialogPage :show="isWheelShow"/> -->
+    <!-- <ActivityRules :show.sync="tempShow" @close='tempShow = false'/> -->
+    <!-- <CollectInfos :show.sync="tempShow" @close='tempShow = false'/> -->
   </div>
 </template>
 
 <script>
 import prizeList from '@/components/lottery/global/dial-prize-list'
-import ActivityRule from '@/components/lottery/global/dial-activity-rule'
 import Address from '@/components/lottery/global/dial-address'
-import Command from '@/components/lottery/global/dial-command'
-
+// import Command from '@/components/lottery/global/dial-command'
+import DialDialogTitle from '@/components/lottery/global/dial-dialog-title'
 import DialDialog from '@/components/lottery/global/dial-dialog'
 import MoalImg from '@/components/lottery/global/dial-model-img'
 import RecordDraw from '@/components/lottery/global/dial-recordDraw'
 import RecordLess from '@/components/lottery/global/dial-recordLess'
-import Shared from '@/components/lottery/global/dial-shared'
-import UnDraw from '@/components/lottery/global/dial-unDraw'
-import UnPrizeChance from '@/components/lottery/global/dial-unPrizeChance'
+// import Shared from '@/components/lottery/global/dial-shared'
+// import UnDraw from '@/components/lottery/global/dial-unDraw'
+// import UnPrizeChance from '@/components/lottery/global/dial-unPrizeChance'
 import Prize from '@/components/lottery/global/dial-prize'
 import PrizeAddress from '@/components/lottery/global/dial-prize-address'
-import PrizeVerification from '@/components/lottery/global/dial-prize-verification'
-import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
-import Coupon from '@/components/lottery/global/dial-coupon'
-import CardView from '@/components/lottery/global/dial-cardView'
+// import PrizeVerification from '@/components/lottery/global/dial-prize-verification'
+// import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
+// import Coupon from '@/components/lottery/global/dial-coupon'
+// import CardView from '@/components/lottery/global/dial-cardView'
 import Integral from '@/components/lottery/global/dial-integral'
 import Packet from '@/components/lottery/global/dial-packet'
 import ActivityStart from '@/components/lottery/global/dial-activity-start'
@@ -162,20 +162,40 @@ import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull
 import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
-import CollectInfo from '@/components/lottery/global/dial-collect-info'
+// import CollectInfo from '@/components/lottery/global/dial-collect-info'
 import Wheel from '@/components/lottery/global/wheel'
+import ActivityRule from '@/components/lottery/global/activity-rule' // 活动规则弹框
+import UnDraw from '@/components/lottery/global/unDraw' // 没有中奖弹框
+import Command from '@/components/lottery/global/command' // 口令弹框
+import Coupon from '@/components/lottery/global/coupon' // 优惠劵弹框
+import UnPrizeChance from '@/components/lottery/global/unPrizeChance' // 无抽奖次数弹框
+import Shared from '@/components/lottery/global/shared' // 分享弹框
+import PrizeVerification from '@/components/lottery/global/prize-verification' // 线下实物弹框
+import PrizeQrCode from '@/components/lottery/global/prize-qrCode' // 兑换码弹框
+import CardView from '@/components/lottery/global/cardView' // 卡劵弹框
+import CollectInfo from '@/components/lottery/global/collect-info' // 用户信息弹框
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import { isIphoneX } from '@/utils/app'
-import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle, debounce } from '@/utils/utils'
 export default {
   components: {
     Wheel,
+    DialDialogTitle,
+    // UnDraws,
+    // Commands,
+    // Coupons,
+    // UnPrizeChances,
+    // Shareds,
+    // PrizeVerifications,
+    // PrizeQrCodes,
+    // CardViews,
+    // CollectInfos,
+    ActivityRule,
     MyModel,
     CollectInfo,
     prizeList,
-    ActivityRule,
     Address,
     Command,
 
@@ -242,6 +262,7 @@ export default {
   mixins: [mixins],
   data () {
     return {
+      tempShow: true,
       isInIphoneX: isIphoneX(),
       winner: null, // 指定获奖下标 specified为true时生效
       specified: false, // 是否指定获奖结果，false时为随机
@@ -626,9 +647,10 @@ export default {
       }
     },
     // 开始抽奖
-    async onDraw () {
+    onDraw: debounce(async function () {
       this.loading = false
-      let { limit } = this.detailInfo
+      let limit = this.detailInfo.limit
+      console.log(this.detailInfo.limit, 'this.detailInfo.limit')
       if (limit.collection_form.is_open_collect === 2 && !this.detailInfo.collection_status) {
         this.isShowCheckDraw()
         return false
@@ -667,14 +689,17 @@ export default {
             }, this.drawTime)
           } else if (res.error_code === 'no_prize_num') { // 库存不足
             // this.$toast.fail(res.error_message)
-            let uuid = res.error_message
+            // let uuid = res.error_message
             this.list.map((item, index) => {
-              if (item.uuid === uuid) {
+              if (item.type === 7) {
                 this.winner = index
                 // console.log(this.winner, '库存..............')
               }
             })
             this.winCallback()
+            setTimeout(() => {
+              this.isUnDrawShow = true
+            }, this.drawTime)
           } else if (res.type === 6) { // 再来一次
             this.list.map((item, index) => {
               if (item.type === res.type && item.uuid === res.uuid) {
@@ -807,7 +832,7 @@ export default {
         // }
         this.loading = true
       }
-    },
+    }, 1000),
     // 实物地址填写
     onAddress (value) {
       // console.log(value)
@@ -1143,8 +1168,9 @@ $time: 3s; //转动多少秒后停下的时间
       padding-left:px2rem(18px);
       padding-right:px2rem(18px);
       height: px2rem(54px);
-      opacity: 0.5;
-      background: #000000;
+      // opacity: 0.5;
+      // background: #000000;
+      background-color: rgba(0,0,0,.5);
       border-radius: 0px 0px px2rem(10px) px2rem(10px);
       text-align: center;
       border: none;
@@ -1231,6 +1257,7 @@ $time: 3s; //转动多少秒后停下的时间
     text-shadow: 0px px2rem(3px) px2rem(8px) 0px rgba(0,0,0,0.15);
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: px2rem(6px);
   }
   .container-title {
     // width: px2rem(696px);
@@ -1425,7 +1452,8 @@ $time: 3s; //转动多少秒后停下的时间
     // 中奖信息
     .wheel-tips {
       width: px2rem(400px);
-      height: px2rem(84px);
+      // height: px2rem(84px);
+      height: px2rem(60px);
       opacity: 1;
       background: #dc0e30;
       border-radius: px2rem(12px);
@@ -1477,38 +1505,53 @@ $time: 3s; //转动多少秒后停下的时间
     }
     // 抽奖按钮
     .wheel-btn-off {
-      width: px2rem(350px);
-      height: px2rem(145px);
+      width: px2rem(332px);
+      height: px2rem(102px);
       margin-left: auto;
       margin-right: auto;
-      margin-top: px2rem(-21px);
-      cursor: pointer;
       @include img-retina(
+       "~@/assets/lottery/wheel-btn-no_1.png",
         "~@/assets/lottery/wheel-btn-no_1.png",
-        "~@/assets/lottery/wheel-btn-no_1@2x.png",
         100%,
         100%
       );
-      background-position: bottom;
-      span {
-      // width: 168px;
-      // height: 40px;
-      font-size: px2rem(40px);
-      font-family: SourceHanSansCN, SourceHanSansCN-Bold;
-      font-weight: 700;
-      text-align: left;
-      color: #ffffff;
-      line-height: px2rem(166px);
-      letter-spacing: px2rem(2px);
-      text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
-        }
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      background-color: transparent;
+      border:none;
+      cursor: pointer;
+      margin-bottom: px2rem(9px);
+      margin-top: px2rem(16px);
+      position: relative;
+      .text {
+        position: absolute;
+        top: px2rem(20px); left: px2rem(84px);
+        font-size: px2rem(40px);
+        font-family: SourceHanSansCN, SourceHanSansCN-Bold;
+        font-weight: 700;
+        text-align: left;
+        color: #ffffff;
+        // line-height: px2rem(80px);
+        // line-height: px2rem(166px);
+        letter-spacing: px2rem(2px);
+        text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
+      }
     }
     .wheel-btn-on {
-      width: px2rem(350px);
-      height: px2rem(145px);
+      // width: px2rem(350px);
+      // height: px2rem(145px);
+      // margin-top: px2rem(-21px);
+      // @include img-retina(
+      //   "~@/assets/lottery/wheel-btn.png",
+      //   "~@/assets/lottery/wheel-btn@2x.png",
+      //   100%,
+      //   100%
+      // );
+      width: px2rem(332px);
+      height: px2rem(102px);
       margin-left: auto;
       margin-right: auto;
-      margin-top: px2rem(-21px);
       @include img-retina(
         "~@/assets/lottery/wheel-btn.png",
         "~@/assets/lottery/wheel-btn@2x.png",
@@ -1516,18 +1559,25 @@ $time: 3s; //转动多少秒后停下的时间
         100%
       );
       background-repeat: no-repeat;
-      // background: url('~@/assets/lottery/wheel-btn.png') no-repeat;
       background-size: contain;
-      background-position: bottom;
-      // background-position-y: 80%;
+      background-position: center;
+      background-color: transparent;
+      border:none;
       cursor: pointer;
-      span {
+      margin-bottom: px2rem(9px);
+      margin-top: px2rem(16px);
+      .van-button__text{
+        line-height: px2rem(102px);
+      }
+      .text {
         font-size: px2rem(40px);
         font-family: SourceHanSansCN, SourceHanSansCN-Bold;
         font-weight: 700;
         text-align: left;
         color: #d10000;
-        line-height: px2rem(166px);
+        // line-height: px2rem(60px);
+        // line-height: px2rem(102px);
+        // line-height: px2rem(166px);
         // line-height: px2rem(145px);
         letter-spacing: px2rem(2px);
         text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
