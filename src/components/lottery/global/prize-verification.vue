@@ -20,7 +20,8 @@
                         <div class="prize-header"></div>
                         <div class="prize-content">
                             <div class="circle">
-                                <van-image class="gift" :src="prizeData.images" />
+                                <!-- <van-image class="gift" :src="prizeData.images" /> -->
+                                <img class="gift" :src="prizeData.images" alt="">
                             </div>
                             <div class="prize-bg">
                                 <span>{{prizeData.award_name || '--'}}</span>
@@ -34,7 +35,8 @@
                 </div>
                 <div class="avatar-box">
                     <div class="avatar" v-if="prizeData.is_merchants.logo_url">
-                        <van-image class="img" :src="prizeData.is_merchants.logo_url" fit='cover'></van-image>
+                        <!-- <van-image class="img" :src="prizeData.is_merchants.logo_url" fit='cover'></van-image> -->
+                        <img  class="img"  :src="prizeData.is_merchants.logo_url" alt="">
                     </div>
                     <div class="avatar-name" v-if="prizeData.is_merchants.merchant_info">{{prizeData.is_merchants.merchant_info}}</div>
                 </div>
@@ -48,7 +50,8 @@
                 <van-button  block  class="btn" v-if="prizeData.cancel_code" @click="onCancelCode">中奖二维码</van-button>
                 <div class="container-bottom">
                     <div class="qr-code" v-if="prizeData.qr_code">
-                        <van-image class="code" :src="prizeData.qr_code"></van-image>
+                        <!-- <van-image class="code" :src="prizeData.qr_code"></van-image> -->
+                        <img  class="code" :src="prizeData.qr_code" alt="" />
                     </div>
                     <div class="tips">
                         <p>兑奖提示：请指定时间和门店地址 </p>
@@ -415,7 +418,7 @@ export default {
                 .code{
                     width: px2rem(110px);
                     height: px2rem(110px);
-                    background-color: cover;
+                    background-size: cover;
                     background-repeat: no-repeat;
                 }
             }

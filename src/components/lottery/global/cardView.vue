@@ -17,13 +17,11 @@
                             <div class="prize-title">
                                 <div class="line"></div>
                                 <p class="prize-name" >{{cardViewData.award_name}}·卡券</p>
-                                <!-- <p class="prize-name" >二等奖·卡券</p> -->
                                 <div class="line"></div>
                             </div>
                             <div class="prize-content">
                                 <div class="coupon-bg">
                                     <span>{{cardViewData.award_content}}元</span>
-                                    <!-- <span>120元</span> -->
                                 </div>
                             </div>
                             <div class="prize-footer"></div>
@@ -31,13 +29,15 @@
                  </div>
                 <div class="avatar-box" v-if="cardViewData.is_merchants">
                     <div class="avatar" v-if="cardViewData.is_merchants.logo_url">
-                        <van-image class="img" :src="cardViewData.is_merchants.logo_url" fit='contain'></van-image>
+                        <img :src="cardViewData.is_merchants.logo_url" alt="" class="img"/>
+                        <!-- <van-image class="img" :src="cardViewData.is_merchants.logo_url" fit='contain'></van-image> -->
                     </div>
                     <div class="avatar-name">{{cardViewData.is_merchants.merchant_info}}</div>
                 </div>
                 <div class="container-bottom">
                     <div class="qr-code" v-if="cardViewData.qr_code">
-                        <van-image class="code" :src="cardViewData.qr_code" fit='contain' ></van-image>
+                        <img :src="cardViewData.qr_code" alt="" class="code"/>
+                        <!-- <van-image class="code" :src="cardViewData.qr_code" fit='contain' ></van-image> -->
                     </div>
                     <div class="tips">
                         <p>长按识别二维码领取卡券，可在微 </p>
@@ -105,15 +105,6 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.cardView-model {
-    img {
-      width:auto;
-      height:auto;
-      object-fit: none;
-    }
-}
-</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .cardView-model {
@@ -304,7 +295,7 @@ export default {
                 .img{
                     width: px2rem(24px);
                     height: px2rem(30px);
-                    // background-size: cover;
+                    background-size: contain;
                     background-repeat: no-repeat;
                 }
             }
@@ -343,7 +334,7 @@ export default {
                 .code{
                     width: px2rem(110px);
                     height: px2rem(110px);
-                    // background-color: cover;
+                    background-size: contain;
                     background-repeat: no-repeat;
                 }
             }
