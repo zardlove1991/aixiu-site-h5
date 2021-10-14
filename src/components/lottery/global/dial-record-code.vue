@@ -49,7 +49,8 @@
 <script>
 import { mapMutations } from 'vuex'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
-import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
+import PrizeQrCode from '@/components/lottery/global/prize-qrCode' // 兑换码弹框
+// import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
 export default {
   name: '',
   components: { DialogPage, PrizeQrCode },

@@ -31,13 +31,13 @@
                  </div>
                 <div class="avatar-box" v-if="cardViewData.is_merchants">
                     <div class="avatar" v-if="cardViewData.is_merchants.logo_url">
-                        <van-image class="img" :src="cardViewData.is_merchants.logo_url"></van-image>
+                        <van-image class="img" :src="cardViewData.is_merchants.logo_url" fit='contain'></van-image>
                     </div>
                     <div class="avatar-name">{{cardViewData.is_merchants.merchant_info}}</div>
                 </div>
                 <div class="container-bottom">
                     <div class="qr-code" v-if="cardViewData.qr_code">
-                        <van-image class="code" :src="cardViewData.qr_code"></van-image>
+                        <van-image class="code" :src="cardViewData.qr_code" fit='contain' ></van-image>
                     </div>
                     <div class="tips">
                         <p>长按识别二维码领取卡券，可在微 </p>
@@ -105,7 +105,15 @@ export default {
   }
 }
 </script>
-
+<style lang="scss">
+.cardView-model {
+    img {
+      width:auto;
+      height:auto;
+      object-fit: none;
+    }
+}
+</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .cardView-model {
@@ -296,7 +304,7 @@ export default {
                 .img{
                     width: px2rem(24px);
                     height: px2rem(30px);
-                    background-size: cover;
+                    // background-size: cover;
                     background-repeat: no-repeat;
                 }
             }
@@ -335,7 +343,7 @@ export default {
                 .code{
                     width: px2rem(110px);
                     height: px2rem(110px);
-                    background-color: cover;
+                    // background-color: cover;
                     background-repeat: no-repeat;
                 }
             }
