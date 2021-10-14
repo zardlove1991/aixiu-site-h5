@@ -105,7 +105,15 @@ export default {
   }
 }
 </script>
-
+<style lang="scss">
+.cardView-model {
+    img {
+      width:auto;
+      height:auto;
+      object-fit: none;
+    }
+}
+</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .cardView-model {

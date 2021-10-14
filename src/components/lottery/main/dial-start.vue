@@ -91,7 +91,7 @@
     <!-- <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/> -->
     <UnPrizeChance :show.sync='isUnPrizeChanceShow' v-if='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
 
-    <Prize :show='isPrizeShow' @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
+    <Prize :show.sync='isPrizeShow' v-if="isPrizeShow" @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
     <PrizeAddress :show.sync='isPrizeAddressShow' v-if="isPrizeAddressShow" @close='isPrizeAddressShow = false' :prize.sync='prizeData' :id="id"/>
     <PrizeVerification :show.sync='isPrizeVerificationcShow' v-if="isPrizeVerificationcShow"
       @close='isPrizeVerificationcShow = false' :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
@@ -101,8 +101,8 @@
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
     <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/>
-    <ActivityPause :show='isActivityPauseShow' @close='isActivityPauseShow = false'/>
-    <ActivityEnd :show='isActivityEndShow' @close='isActivityEndShow = false'/>
+    <ActivityPause :show.sync='isActivityPauseShow' v-if="isActivityPauseShow"  @close='isActivityPauseShow = false'/>
+    <ActivityEnd :show.sync='isActivityEndShow' v-if="isActivityEndShow" @close='isActivityEndShow = false'/>
 
     <!-- <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
     :activityId='id' :collectInfo='collectInfo'/> -->
