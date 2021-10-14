@@ -236,6 +236,8 @@ export default {
           voteTip: voteTip
         }
 
+        let _avatar = this.worksDetailObj.params.avatar
+        this.userIcon = _avatar !== '' ? _avatar : ''
         // 设置分享海报背景图片
         this.worksBg = detailInfo.rule.limit.canvassing_poster.background_img
 
@@ -264,6 +266,9 @@ export default {
       })
     },
     resetPoster (data) {
+      console.log('this.indexType1', this.indexType1)
+      console.log('this.indexType3', this.indexType3)
+      console.log('this.indexType5', this.indexType5, this.worksDetailObj.params.avatar)
       // 判断用户头像是否存在
       if (this.worksDetailObj.params.avatar === '') {
         if (data === 1) {
@@ -296,7 +301,8 @@ export default {
       let _sponsorName = this.sponsorName
       if (this.sponsorUrl !== '') {
         console.log('this.curCtx', this.curCtx)
-        this.$nextTick(item => {
+        // this.$nextTick(item => {
+        try {
           let _textHalf = Math.ceil(this.curCtx.measureText(_sponsorName).width / 2)
           let imgObj1 = this.$refs['sponsorRef']
           let _indexWidth = Math.ceil(320 - _textHalf - 45)
@@ -304,7 +310,10 @@ export default {
           this.curCtx.clip()
           this.curCtx.drawImage(imgObj1, _indexWidth, 820, 40, 40)
           this.sharePoster = this.curCanvas.toDataURL('image/png', 0.8)
-        })
+        } catch (e) {
+          console.log('e', e)
+        }
+        // })
       }
     },
     async renderPlaybill (data) {
@@ -317,6 +326,8 @@ export default {
 
         this.curCtx = ctx
         this.curCanvas = canvas
+
+        console.log('888', this.curCtx)
 
         let bgImg = this.$refs['worksBgRef']
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height)

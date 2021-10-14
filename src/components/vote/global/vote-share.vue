@@ -213,9 +213,7 @@ export default {
       })
     },
     isCanvassShare () {
-      console.log('9900667777')
       let shareData = this.shareData
-      debugger
       if (shareData && shareData.sign && shareData.invotekey) {
         // 通过二维码进入投票
         API.getSharer({
