@@ -1,16 +1,17 @@
 <template>
   <div class="dialog" v-if="show">
-      <div class="dialog-header">
-            <div class="title">
-              <slot name='tille-name' class="tille-name"></slot>
-            </div>
-            <i class="left-point"></i>
-            <i class="right-point"></i>
-            <div slot="left" class="close" @click.stop="close"></div>
-        </div>
-        <slot class="container"  name='container'></slot>
-        <div class="dialog-footer">
+    <div class="dialog-header-bg"></div>
+    <div class="dialog-header">
+      <div class="title">
+        <slot name='tille-name' class="tille-name"></slot>
       </div>
+      <i class="left-point"></i>
+      <i class="right-point"></i>
+      <div slot="left" class="close" @click.stop="close"></div>
+    </div>
+    <slot class="container"  name='container'></slot>
+    <div class="dialog-footer">
+    </div>
   </div>
 </template>
 
@@ -62,7 +63,7 @@ export default {
   padding-left: px2rem(40px);
   padding-right: px2rem(40px);
   // overflow-y: auto;
-//   position: relative;
+  // position: relative;
   .dialog-header{
     width: px2rem(600px);
     height: px2rem(76px);
@@ -143,6 +144,17 @@ export default {
         top:px2rem(30px); right:px2rem(30px);
         cursor: pointer;
     }
+  }
+  .dialog-header-bg{
+    width: 100%;
+    height: px2rem(192px);
+    @include img-retina("~@/assets/wheel/dialog-header.png",
+    "~@/assets/wheel/dialog-header@2x.png", 100%, 100%);
+    background-repeat: no-repeat;
+    background-position: top;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   .container{
     padding-top: px2rem(50px);

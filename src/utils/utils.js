@@ -606,3 +606,46 @@ export const logger = (info) => {
   }
   document.body.appendChild(i)
 }
+// 函数节流
+export const throttle = function (func, delay) {
+  let timer = null
+  let startTime = Date.now()
+  return function () {
+    let curTime = Date.now()
+    let remaining = delay - (curTime - startTime)
+    let context = this
+    let args = arguments
+    clearTimeout(timer)
+    if (remaining <= 0) {
+      func.apply(context, args)
+      startTime = Date.now()
+    } else {
+      timer = setTimeout(func, remaining)
+    }
+  }
+}
+// 函数防抖
+export const debounce = function (func, wait, immediate = true) {
+  let timer, ctx, args
+  const later = () => setTimeout(() => {
+    timer = null
+    if (!immediate) {
+      func.call(ctx, ...args)
+      ctx = args = null
+    }
+  }, wait)
+  return function () {
+    if (!timer) {
+      timer = later()
+      if (immediate) {
+        func.call(this, ...arguments)
+      } else {
+        ctx = this
+        args = arguments
+      }
+    } else {
+      clearTimeout(timer)
+      timer = later()
+    }
+  }
+}
