@@ -452,6 +452,7 @@ export default {
       document.body.scrollTop = 0
     },
     checkValue (data) {
+      console.log('2-1')
       if (this.checkFullScene === '1') {
         // 视频
         if (this.material.video.length === 0) {
@@ -471,6 +472,7 @@ export default {
           return true
         }
       }
+      console.log('2-2')
 
       for (const i of this.enrollForm.formFixList) {
         // if (i.unique_name === 'form_6') {
@@ -497,6 +499,7 @@ export default {
           }
         }
       }
+      console.log('2-3')
 
       for (const j of this.enrollForm.visibleFieldList) {
         if (j.nesWriteValue === 1 && j.inputValue === '') {
@@ -504,6 +507,7 @@ export default {
           return true
         }
       }
+      console.log('2-4')
       // 不论手机号码是否是选填必填，都需要校验
       for (const j of this.enrollForm.visibleFieldList) {
         // 手机号码的校验
@@ -515,6 +519,7 @@ export default {
           return true
         }
       }
+      console.log('2-5')
 
       return false
     },
