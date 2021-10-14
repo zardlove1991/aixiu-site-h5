@@ -133,7 +133,7 @@
           </div>
         </div>
       </template>
-      <div class="submit-btn-wrap" @click="!disabled && commitVote()">
+      <div class="submit-btn-wrap" @click="commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
     </form>
@@ -522,6 +522,7 @@ export default {
       let id = this.id
       let examineData = this.examineData
       if (!id) {
+        console.log('这里？')
         return
       }
       if (this.loading) {
