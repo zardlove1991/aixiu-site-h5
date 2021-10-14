@@ -1,5 +1,5 @@
 <template>
-  <div class="dial-start-wrap">
+  <div class="dial-start-wrap" :style="{'backgroundImage': 'url(' + detailInfo.page_setup.background.indexpic + ')'}" :class="{'is-cover': detailInfo.page_setup.background.mode === 2}">
     <van-cell size="small" class="dial-header" :border="false">
       <div class="dial-header-icon" slot="title">
         <div class="circle" >
@@ -1115,7 +1115,12 @@ $time: 3s; //转动多少秒后停下的时间
     100%,
     100%
   );
+  background-repeat: no-repeat;
+  background-size: contain;
   overflow: hidden;
+  &.is-cover{
+    background-size: cover;
+  }
 }
 // 头部
 .dial-header {
