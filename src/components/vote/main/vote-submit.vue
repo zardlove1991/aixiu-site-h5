@@ -43,8 +43,8 @@
       </div>
       <div v-if="showModel === 'picture'" class="form-item">
         <div class="form-title">{{imgTitle}}</div>
-        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
-        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-if="imageRatio">建议比例：4:5.6（1寸照片的比例尺寸），小于5M；图片至少上传{{minUploadImgNum}}张,最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
+        <div class="form-tips-div" v-else>建议比例：1:1，小于5M；图片至少上传{{minUploadImgNum}}张, 最多上传{{maxUploadImgNum}}张；支持PNG、JPG、GIF格式</div>
         <div class="form-content">
           <file-upload
             ref="picture-file-upload"
@@ -178,6 +178,7 @@ export default {
       textTitle: '文字内容',
       curDetailInfo: {},
       maxUploadImgNum: 9,
+      minUploadImgNum: 1,
       enrollForm: {},
       ZCIdType: false,
       showModel: this.flag,
@@ -273,6 +274,7 @@ export default {
         _isExistImg = choicedWorksType.some(item => item === '2')
         if (_isExistImg) {
           this.maxUploadImgNum = worksTypeSet.max_img_num
+          this.minUploadImgNum = worksTypeSet.min_img_num
         }
       } catch (e) {
         console.log(e)
@@ -505,7 +507,7 @@ export default {
       // 不论手机号码是否是选填必填，都需要校验
       for (const j of this.enrollForm.visibleFieldList) {
         // 手机号码的校验
-        if (j.value === 'phone') {
+        if (j.inputValue !== '' && j.value === 'phone') {
           let regex = /^(13[0-9]|14[5-9]|15[012356789]|166|17[0-8]|18[0-9]|19[8-9])[0-9]{8}$/ // 手机号码校验规则
           if (!regex.test(j.inputValue)) {
             Toast('手机格式有误，请输入正确的手机号')
