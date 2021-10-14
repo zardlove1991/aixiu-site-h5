@@ -133,7 +133,7 @@
           </div>
         </div>
       </template>
-      <div class="submit-btn-wrap" @click="commitVote()">
+      <div class="submit-btn-wrap" @click="!disabled && commitVote()">
         <span class="menu-text color-button_text">提交</span>
       </div>
     </form>
@@ -521,19 +521,24 @@ export default {
     commitVote () {
       let id = this.id
       let examineData = this.examineData
+      console.log('clik me!!')
       if (!id) {
-        console.log('这里？')
+        console.log('进入这里')
         return
       }
+      console.log('1-1')
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
 
+      console.log('1-2')
+
       // 校验值
       if (this.checkValue()) {
         return false
       }
+      console.log('1-3')
 
       let _extra = {}
       for (let i of this.enrollForm.formFixList) {
@@ -564,6 +569,7 @@ export default {
           this.examineData.contact_phone = i.inputValue
         }
       }
+      console.log('1-4')
 
       let data = {
         voting_id: id,
@@ -593,7 +599,7 @@ export default {
       } else {
         STORAGE.set('isFirstUpload', false)
       }
-
+      console.log('1-5')
       this.disabled = true
       API.workReport({
         data
