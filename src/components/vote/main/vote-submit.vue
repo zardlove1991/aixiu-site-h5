@@ -511,8 +511,8 @@ export default {
           let regex = /^(13[0-9]|14[5-9]|15[012356789]|166|17[0-8]|18[0-9]|19[8-9])[0-9]{8}$/ // 手机号码校验规则
           if (!regex.test(j.inputValue)) {
             Toast('手机格式有误，请输入正确的手机号')
+            return true
           }
-          return true
         }
       }
 
