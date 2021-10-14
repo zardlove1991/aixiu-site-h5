@@ -452,7 +452,6 @@ export default {
       document.body.scrollTop = 0
     },
     checkValue (data) {
-      console.log('2-1')
       if (this.checkFullScene === '1') {
         // 视频
         if (this.material.video.length === 0) {
@@ -472,7 +471,6 @@ export default {
           return true
         }
       }
-      console.log('2-2')
 
       for (const i of this.enrollForm.formFixList) {
         // if (i.unique_name === 'form_6') {
@@ -499,7 +497,6 @@ export default {
           }
         }
       }
-      console.log('2-3')
 
       for (const j of this.enrollForm.visibleFieldList) {
         if (j.nesWriteValue === 1 && j.inputValue === '') {
@@ -507,7 +504,6 @@ export default {
           return true
         }
       }
-      console.log('2-4')
       // 不论手机号码是否是选填必填，都需要校验
       for (const j of this.enrollForm.visibleFieldList) {
         // 手机号码的校验
@@ -519,31 +515,26 @@ export default {
           }
         }
       }
-      console.log('2-5')
 
       return false
     },
     commitVote () {
       let id = this.id
       let examineData = this.examineData
-      console.log('clik me!!')
       if (!id) {
         console.log('进入这里')
         return
       }
-      console.log('1-1')
+
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
       }
 
-      console.log('1-2')
-
       // 校验值
       if (this.checkValue()) {
         return false
       }
-      console.log('1-3')
 
       let _extra = {}
       for (let i of this.enrollForm.formFixList) {
