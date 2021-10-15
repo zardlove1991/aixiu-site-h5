@@ -7,7 +7,9 @@
     <template v-if='columnChangeStatus === 1'>
       <div v-for='(item, index) in columnList' :key='index'
         @click='choiceColumnList(item)'
-        :class='{"choiced-btn" : item.isChecked}'
+        :class='{
+          "choiced-btn" : item.isChecked,
+          "circle-box": columnStyleValue == 1}'
         class='single-btn-wrap'>{{item.title}}</div>
     </template>
 
@@ -56,8 +58,9 @@ export default {
     },
     infoDetail: {
       handler (newData, oldData) {
-        this.topicDisplayValue = newData.limit.topic_display.topic_display_value
-        this.columnStyleValue = newData.limit.topic_display.column_style_value
+        let _topicDisplay = newData.limit.topic_display
+        this.topicDisplayValue = _topicDisplay.topic_display_value
+        this.columnStyleValue = _topicDisplay.column_style_value
         console.log('newData----', newData.limit.topic_display.column_style_value)
       },
       deep: true
@@ -105,7 +108,6 @@ export default {
     .circle-box {
       border-radius: px2rem(32px);
     }
-
     .square-box {
       border-radius: px2rem(8px);
     }
