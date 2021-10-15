@@ -9,7 +9,7 @@ var config = {
 
 if (window.location.hostname === 'localhost') {
   config = {
-    CUSTOM_HOST: '-ax.aihoge.com',
+    CUSTOM_HOST: 'axh5.aihoge.com',
     CUSTOM_APPID: 'wx2e98fb1d45a98f73',
     CUSTOM_COMP_APPID: 'wx566758628b7a3fa2',
     CUSTOM_REDIRECT_URI: '//axh5.aihoge.com/bridge.html',
