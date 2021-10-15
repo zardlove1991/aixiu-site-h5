@@ -151,17 +151,17 @@ export default {
         }
         .content-wrap {
           position: relative;
-          width: px2rem(520px);
-          height: px2rem(520px);
+          width: px2rem(620px);
+          height: px2rem(620px);
           @include img-retina('~@/assets/common/other-content-bg.png', '~@/assets/common/other-content-bg@2x.png', 100%, 100%);
           .my-qrcode {
             position: absolute;
             left: 50.5%;
-            top: px2rem(165px);
+            top: px2rem(180px);
             transform: translateX(-50%);
             img {
-              width: px2rem(150px);
-              height: px2rem(150px);
+              width: px2rem(200px);
+              height: px2rem(200px);
             }
           }
         }
