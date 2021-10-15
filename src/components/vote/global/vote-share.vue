@@ -96,7 +96,6 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
-          console.log('111', newData, newData.isStopSlideType, newData._mark_offset)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
@@ -107,8 +106,7 @@ export default {
     },
     id: {
       handler (newData, oldData) {
-        this.getDetailInfo(newData)
-        console.log('----newData999', newData)
+        // this.getDetailInfo(newData)
       },
       deep: true,
       immediate: true
@@ -169,7 +167,6 @@ export default {
       this.$emit('close')
     },
     async sureWorkVote () {
-      console.log('确定')
       try {
         let detailInfo = STORAGE.get('detailInfo')
         if (!detailInfo) {
@@ -238,9 +235,7 @@ export default {
         // let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
         let _detailInfo = STORAGE.get('detailInfo')
         let _needCode = _detailInfo.rule.need_code // 0 => 未开始 1 => 开启
-        console.log('_needCode', _needCode, this.curDetailInfo.rule)
         this.codeObj = {}
-        console.log('_needCode', typeof _needCode, _needCode)
         if (_needCode === 1) {
           Indicator.open({ spinnerType: 'fading-circle' })
           this.initTnObj()
