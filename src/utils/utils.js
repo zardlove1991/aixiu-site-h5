@@ -400,7 +400,7 @@ export const windowTitle = (title) => {
   if (mobileDevice() === 'iOS') {
     const hackIframe = document.createElement('iframe')
     hackIframe.style.display = 'none'
-    hackIframe.src = '//xzh5.hoge.cn/p/Tplglobal/images/favicon.ico?random=' + Math.random()
+    hackIframe.src = window.$axGlobalConfig.CUSTOM_HOST + '/static/favicon.ico?random=' + Math.random()
     document.body.appendChild(hackIframe)
     setTimeout(function () {
       document.body.removeChild(hackIframe)

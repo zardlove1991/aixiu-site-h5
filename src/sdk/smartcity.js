@@ -76,6 +76,7 @@ let smartcity = {
       if (+res.status === 2) {
         console.log('程序退出')
       }
+      this.applicationState()
     })
   }
 }

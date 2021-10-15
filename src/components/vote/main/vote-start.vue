@@ -360,6 +360,7 @@ export default {
   },
   data () {
     return {
+      isShowCanvass: false,
       isForbidClick: false,
       lotteryTipsType: false,
       voteRewardType: false,
