@@ -1,4 +1,4 @@
-import { createAPI, creataUser, createSumbit, createExam, createVote, createBase, createC4, createLottery, createEnroll } from '@/api'
+import { createAPI, creataUser, createSumbit, createVote, createBase, createI, createLottery, createEnroll } from '@/api'
 import { getApiFlag } from '@/utils/app'
 
 const API_FLAG = getApiFlag()
@@ -22,40 +22,40 @@ let baseUrl = {
   getMobileSend: '/mobile/verify/send', // 获取手机code
   setClick: 'setClick', // click
   setShare: 'setShare', // 分享活动时请求分享接口
-  getCollection: 'collection/form/record/cj/{id}' // 分享
+  getCollection: 'collection/form/record/cj/{id}', // 分享
+  getQrcode: 'qrcode/create' // 生成二维码图片
 }
 
 let examUrl = {
-  getExamlist: 'client/examination', // 考试列表
-  getRecord: 'client/examination/{id}/card', // 考试列表
-  getExamDetailsList: 'client/examination/{id}/question',
-  getExamDetailsStatistics: 'client/examination/statistics/{id}',
-  getErrorList: 'client/examination/mistakes', // 获得错题列表
-  getLatestErrorList: 'client/examination/questions/error', // 获得最近一次的答题的错误列表
-  getErrorCollection: 'client/examination/mistakes/examination', // 获得错题列表集合
-  submitExam: 'client/examination/end/submit/{id}',
-  startExam: 'client/examination/{id}/start',
-  saveSubjectRecord: 'client/examination/{id}/record', // 保存答题记录
-  saveSubjectRecords: 'client/examination/{id}/record/batch', // 批量保存答题记录
-  getExamDetail: 'client/examination/{id}',
-  shareExamination: 'client/share/image/make/examination', // 分享测评结果海报
-  saveDrawRecord: 'collection/form/record/{id}', // 投票信息采集
-  getSubjectFavorInfo: 'client/examination/collection/is', // 获得题目的收藏信息
-  setSubjectFavorInfo: 'client/examination/collection', // 设置题目的收藏
-  unlockCourse: 'client/examination/submitted', // 解锁课程
-  checkPassword: 'client/examination/{id}/check', // 检验密码是否正确
-  getExamAuthScope: 'open/examination/detail', // 测评授权接口
-  getInfoDept: 'client/examination/import/verify', // 获取信息收集用户的部门
-  setLiveVideoTime: 'client/examination/live/time', // 直播答题观看时间
-  shareAddTimes: 'client/examination/live/share/{id}', // 分享增加答题次数
-  getExamRankList: 'client/examination/{id}/source', // 考试排行列表(废弃)
-  saveIntoCloud: 'client/examination/submit/{id}',
-  saveToQuestionTime: 'client/examination/{id}/question/time', // 保存进入题目的时间
-  getPosterInfo: 'client/examination/{id}/poster', // 前端生成海报所需数据
-  getPartyInfo: 'client/examination/{id}/Party/info', // 获取党员信息
-  getExerciseRankList: 'client/examination/{id}/exercise',
-  getAnswerList: 'client/examination/{id}/grade', // 获取我的答题列表
-  getGameArea: 'client/examination/{id}/party/address' // 获取党支部赛区
+  getExamlist: 'api/client/examination', // 考试列表
+  getRecord: 'api/client/examination/{id}/card', // 考试列表
+  getExamDetailsList: 'api/client/examination/{id}/question',
+  getExamDetailsStatistics: 'api/client/examination/statistics/{id}',
+  getErrorList: 'api/client/examination/mistakes', // 获得错题列表
+  getLatestErrorList: 'api/client/examination/questions/error', // 获得最近一次的答题的错误列表
+  getErrorCollection: 'api/client/examination/mistakes/examination', // 获得错题列表集合
+  submitExam: 'api/client/examination/end/submit/{id}',
+  startExam: 'api/client/examination/{id}/start',
+  saveSubjectRecord: 'api/client/examination/{id}/record', // 保存答题记录
+  saveSubjectRecords: 'api/client/examination/{id}/record/batch', // 批量保存答题记录
+  getExamDetail: 'api/client/examination/{id}',
+  shareExamination: 'api/client/share/image/make/examination', // 分享测评结果海报
+  saveDrawRecord: 'api/collection/form/record/{id}', // 投票信息采集
+  getSubjectFavorInfo: 'api/client/examination/collection/is', // 获得题目的收藏信息
+  setSubjectFavorInfo: 'api/client/examination/collection', // 设置题目的收藏
+  unlockCourse: 'api/client/examination/submitted', // 解锁课程
+  checkPassword: 'api/client/examination/{id}/check', // 检验密码是否正确
+  getInfoDept: 'api/client/examination/import/verify', // 获取信息收集用户的部门
+  setLiveVideoTime: 'api/client/examination/live/time', // 直播答题观看时间
+  shareAddTimes: 'api/client/examination/live/share/{id}', // 分享增加答题次数
+  getExamRankList: 'api/client/examination/{id}/source', // 考试排行列表(废弃)
+  saveIntoCloud: 'api/client/examination/submit/{id}',
+  saveToQuestionTime: 'api/client/examination/{id}/question/time', // 保存进入题目的时间
+  getPosterInfo: 'api/client/examination/{id}/poster', // 前端生成海报所需数据
+  getPartyInfo: 'api/client/examination/{id}/Party/info', // 获取党员信息
+  getExerciseRankList: 'api/client/examination/{id}/exercise',
+  getAnswerList: 'api/client/examination/{id}/grade', // 获取我的答题列表
+  getGameArea: 'api/client/examination/{id}/party/address' // 获取党支部赛区
 }
 
 // 投票相关接口
@@ -167,7 +167,6 @@ export default {
   startExam: config => createAPI(configUrl.startExam, 'get', config, API_FLAG),
   unlockCourse: config => createAPI(configUrl.unlockCourse, 'get', config, API_FLAG),
   checkPassword: config => createAPI(configUrl.checkPassword, 'post', config, API_FLAG),
-  getExamAuthScope: config => createExam(configUrl.getExamAuthScope, 'get', config, API_FLAG),
   setShare: config => createSumbit(configUrl.setShare, 'POST', config, API_FLAG),
   getInfoDept: config => createAPI(configUrl.getInfoDept, 'GET', config, API_FLAG),
   setLiveVideoTime: config => createAPI(configUrl.setLiveVideoTime, 'POST', config, API_FLAG),
@@ -197,8 +196,6 @@ export default {
   getMobileSend: config => createBase(configUrl.getMobileSend, 'GET', config, 'reserve'),
   getVoteType: config => createVote(configUrl.getVoteType, 'GET', config, API_FLAG),
   getVoteTypeFid: config => createVote(configUrl.getVoteTypeFid, 'GET', config, API_FLAG),
-  shareLottery: config => createC4(configUrl.shareLottery, 'POST', config, API_FLAG),
-  getUserLotteryList: config => createC4(configUrl.getUserLotteryList, 'GET', config, API_FLAG),
   // 预约报名
   getEnrollDetail: config => createEnroll(configUrl.getEnrollDetail, 'GET', config, API_FLAG),
   getMineEnrollList: config => createEnroll(configUrl.getMineEnrollList, 'GET', config, API_FLAG),
@@ -208,9 +205,6 @@ export default {
   // 新闻
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
-  // 抽奖
-  getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
-
   // 大转盘、九宫格、盲盒
   getLotteryDetail: config => createLottery(configUrl.getLotteryDetail, 'GET', config, 'lottery'),
   getDraw: config => createLottery(configUrl.getDraw, 'POST', config, 'lottery'),
@@ -234,5 +228,7 @@ export default {
   getVoteList: config => createVote(configUrl.voteUrl, 'GET', config, API_FLAG),
   // 获取报名数据
   getEnrollList: config => createVote(configUrl.enrollUrl, 'GET', config, API_FLAG),
-  shareOk: config => createVote(configUrl.shareOk, 'POST', config, API_FLAG)
+  shareOk: config => createVote(configUrl.shareOk, 'POST', config, API_FLAG),
+  // 生成二维码图片
+  getQrcode: config => createI(configUrl.getQrcode, 'GET', config, API_FLAG)
 }
