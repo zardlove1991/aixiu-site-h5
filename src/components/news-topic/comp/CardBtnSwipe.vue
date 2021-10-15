@@ -1,5 +1,8 @@
 <template>
-  <div class='card-btn-swipe' :ckass='{"display-value-2": topicDisplayValue == 2}'>
+  <div class='card-btn-swipe' :class='{
+    "display-value-1": topicDisplayValue == 1,
+    "display-value-2": topicDisplayValue == 2
+    }'>
     <!-- 单行 -->
     <template v-if='columnChangeStatus === 1'>
       <div v-for='(item, index) in columnList' :key='index'
@@ -53,8 +56,9 @@ export default {
     },
     infoDetail: {
       handler (newData, oldData) {
-        console.log('8', newData.limit.topic_display)
         this.topicDisplayValue = newData.limit.topic_display.topic_display_value
+        this.columnStyleValue = newData.limit.topic_display.column_style_value
+        console.log('newData----', newData.limit.topic_display.column_style_value)
       },
       deep: true
     }
@@ -64,7 +68,8 @@ export default {
       columnList: [],
       columnChangeStatus: 1, // 1单行 2多行
       topicDisplay: {},
-      topicDisplayValue: 1
+      topicDisplayValue: 1,
+      columnStyleValue: 1 // 1 => 方形  2 => 圆
     }
   },
   mounted () {
@@ -83,16 +88,27 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .display-value-1{
+    margin-top: px2rem(120px) !important;
+  }
   .display-value-2{
     margin-top: px2rem(230px) !important;
   }
+
   .card-btn-swipe {
-    margin-top: px2rem(20px);
+    margin-top: px2rem(120px);
     padding: 0 px2rem(30px);
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     display:-webkit-box;
+    .circle-box {
+      border-radius: px2rem(32px);
+    }
+
+    .square-box {
+      border-radius: px2rem(8px);
+    }
     .single-btn-wrap{
       float: none;
       width: px2rem(172px);

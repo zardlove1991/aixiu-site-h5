@@ -378,7 +378,7 @@ export default {
 
 .info-card-list{
   margin-bottom: px2rem(30px);
-  margin-top: px2rem(20px);
+  margin-top: px2rem(30px);
   padding: 0 px2rem(20px);
   background: #fbfbfb;
   .img-font-wrap{
