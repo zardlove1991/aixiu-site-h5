@@ -44,8 +44,8 @@ export const getAPIfix = (api) => {
       host = globalConfig['public']
       break
     }
-    case 'c4': {
-      host = globalConfig['c4']
+    case 'i': {
+      host = globalConfig['i']
       break
     }
     case 'news': {

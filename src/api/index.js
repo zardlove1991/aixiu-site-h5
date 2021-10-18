@@ -202,7 +202,6 @@ const getUrl = (url, config = {}, api = 'exam') => {
     return false
   }
   config.query = config.query || {}
-
   let guid = getAppInfo().guid
   url = url
     .replace('{guid}', guid)
@@ -211,100 +210,63 @@ const getUrl = (url, config = {}, api = 'exam') => {
   return getAPIfix(api) + url
 }
 
-export const createAPI = (url, method, config = {}, api) => {
-  api = 'exam'
+const getAPIInstance = (url, method, config = {}, api) => {
   return instance(
     {
-      url: getUrl('api/' + url, config, api),
+      url: getUrl(url, config, api),
       method,
       withCredentials: true,
+      headers: {
+        'member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
+      },
       ...config
     }
   )
 }
 
+export const createAPI = (url, method, config = {}, api) => {
+  api = api || 'exam'
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
+}
+
 export const createSumbit = (url, method, config = {}, api) => {
   api = 'submit'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }
 
 export const creataUser = (url, method, config = {}, api) => {
   api = 'user'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
-}
-
-export const createExam = (url, method, config = {}, api) => {
-  api = 'exam'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }
 
 export const createVote = (url, method, config = {}, api) => {
   api = 'vote'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }
 
 export const createEnroll = (url, method, config = {}, api) => {
   api = 'enroll'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }
 
 export const createBase = (url, method, config = {}, api) => {
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    ...config
-  })
-}
-
-export const createC4 = (url, method, config = {}, api) => {
-  api = 'c4'
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    headers: {
-      'x-member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
-    },
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }
 
 export const createLottery = (url, method, config = {}, api) => {
   api = 'lottery'
-  console.log(getUrl(url, config, api), 'getUrl(url, config, api)')
-  return instance({
-    url: getUrl(url, config, api),
-    method,
-    withCredentials: true,
-    headers: {
-      'member': encodeURIComponent(JSON.stringify(STORAGE.get('userinfo')))
-    },
-    ...config
-  })
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
+}
+
+export const createI = (url, method, config = {}, api) => {
+  api = 'i'
+  let instance = getAPIInstance(url, method, config, api)
+  return instance
 }

@@ -7,7 +7,9 @@
       <!-- 移动端 -->
       <div class="browser-main mobile" v-if="isMobile">
         <div class="content-wrap">
-          <div id="qrcode" class="my-qrcode" ref="qrcode"></div>
+          <div id="qrcode" class="my-qrcode">
+            <img :src="qrcodeUrl"  v-if="qrcodeUrl"/>
+          </div>
         </div>
         <div class="search-btn" @click="copyLink()">复制链接</div>
         <div class="tips1">请用 微信 扫码打开</div>
@@ -20,7 +22,9 @@
           <!-- <div class="tips2">该活动仅支持在微信/厚建App内参与</div> -->
         </div>
         <div class="content-wrap">
-          <div id="qrcode" class="my-qrcode" ref="qrcode"></div>
+          <div id="qrcode" class="my-qrcode">
+            <img :src="qrcodeUrl" v-if="qrcodeUrl" />
+          </div>
         </div>
       </div>
     </div>
@@ -29,7 +33,7 @@
 
 <script>
 import { Toast } from 'mint-ui'
-import QRCode from 'qrcodejs2'
+import API from '@/api/module/examination'
 import { isPC } from '@/utils/utils'
 
 export default {
@@ -37,7 +41,9 @@ export default {
     return {
       isMobile: true,
       activeUrl: '',
-      curProjectPlatform: ''
+      curProjectPlatform: '',
+      qrcodeUrl: '',
+      isLoading: true
     }
   },
   created () {
@@ -59,6 +65,13 @@ export default {
         this.activeUrl = decodeURIComponent(activeUrl)
       }
     },
+    getQrcodeByUrl (url) {
+      return API.getQrcode({
+        params: {
+          text: url
+        }
+      })
+    },
     hiddenDom () {
       const dom = document.getElementById('watting-wrap')
       if (dom) {
@@ -66,13 +79,9 @@ export default {
       }
     },
     crateQrcode () {
-      this.$nextTick(() => {
-        let obj = new QRCode('qrcode', {
-          width: 100,
-          height: 100, // 高度
-          text: this.activeUrl // 二维码内容
-        })
-        console.log(obj)
+      this.getQrcodeByUrl(this.activeUrl).then(res => {
+        let { qrcode_url: qrcodeUrl } = res
+        this.qrcodeUrl = qrcodeUrl
       })
     },
     copyLink () {
@@ -142,17 +151,17 @@ export default {
         }
         .content-wrap {
           position: relative;
-          width: px2rem(520px);
-          height: px2rem(520px);
+          width: px2rem(620px);
+          height: px2rem(620px);
           @include img-retina('~@/assets/common/other-content-bg.png', '~@/assets/common/other-content-bg@2x.png', 100%, 100%);
           .my-qrcode {
             position: absolute;
             left: 50.5%;
-            top: px2rem(165px);
+            top: px2rem(180px);
             transform: translateX(-50%);
             img {
-              width: px2rem(150px);
-              height: px2rem(150px);
+              width: px2rem(200px);
+              height: px2rem(200px);
             }
           }
         }

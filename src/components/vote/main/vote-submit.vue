@@ -64,7 +64,7 @@
         </div>
       </div>
       <div v-if="showModel === 'text'" class="form-item">
-        <div class="form-title">{{textTitle}}</div>
+        <div class="form-title">文字内容</div>
         <div class="form-content">
           <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input>
         </div>
@@ -84,8 +84,9 @@
       </div>
       <!-- 字段列表 -->
       <template v-for='item in enrollForm.formFixList'>
+        <!-- && item.unique_name !== "form_6" -->
         <div :key='item.unique_name'
-          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1 && item.unique_name !== "form_6"'
+          v-if='!["video", "image"].some(type => type == item.type) && item.visibleAuthValue == 1'
           class="form-item">
           <div class="form-title">
             {{item.formTitle}}
