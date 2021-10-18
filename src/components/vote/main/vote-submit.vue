@@ -63,12 +63,12 @@
           <file-upload :loading.sync="loading" :flag="showModel" :fileList="fileList" @changeFile="changeFile"></file-upload>
         </div>
       </div>
-      <div v-if="showModel === 'text'" class="form-item">
+      <!-- <div v-if="showModel === 'text'" class="form-item">
         <div class="form-title">文字内容</div>
         <div class="form-content">
           <el-input type='textarea' v-model="examineData.introduce" @blur="blurAction()"></el-input>
         </div>
-      </div>
+      </div> -->
       <div class="form-item" v-if="isOpenClassify">
         <div class="form-title" v-if="id === '0e6e35cd3c234e02bb1137d56b6d94f8'">选择市及县区</div>
         <div class="form-title" v-else>分类</div>
