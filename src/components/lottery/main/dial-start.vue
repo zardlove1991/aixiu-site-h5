@@ -19,12 +19,12 @@
             <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
           </van-notice-bar>
       </div>
-      <div class="dial-container-wrap">
+      <div class="dial-container-wrap" >
         <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
         <!-- <div class="wheel-box"> -->
           <p class="wheel-p"></p>
           <!-- <prize-list :list="list" :specified="specified" :winner='winner'/> -->
-          <Wheel :winner='winner' :list="list"/>
+          <Wheel :list="list"/>
         <div class="empty-box"></div>
         <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
           <van-notice-bar :scrollable="true" class="wheel-notice-bar">
@@ -39,24 +39,12 @@
               </li>
             </ul>
           </van-notice-bar>
-          <!-- <van-notice-bar :scrollable="true" class="wheel-notice-bar" :delay='2'>
-            <ul class="wheel-tips-list">
-              <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
-                <img
-                  :src='itme.app_images'
-                  alt=""
-                  class="wheel-item-avatar"
-                />
-                <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
-              </li>
-            </ul>
-          </van-notice-bar> -->
         </div>
         <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
           class="wheel-btn-on" type="primary" round @click="onDraw" :loading='loading'><span class="text">立即抽奖</span></van-button>
-        <van-button  v-else class="wheel-btn-off" round disabled>
+        <div v-else class="wheel-btn-off" >
           <span class="text">立即抽奖</span>
-        </van-button>
+        </div>
         <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
@@ -94,13 +82,13 @@
     <Prize :show.sync='isPrizeShow' v-if="isPrizeShow" @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
     <PrizeAddress :show.sync='isPrizeAddressShow' v-if="isPrizeAddressShow" @close='isPrizeAddressShow = false' :prize.sync='prizeData' :id="id"/>
     <PrizeVerification :show.sync='isPrizeVerificationcShow' v-if="isPrizeVerificationcShow"
-      @close='isPrizeVerificationcShow = false' :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
+       :prize.sync='prizeData' @onLotteryCode='onLotteryCode'/>
     <PrizeQrCode :show.sync='isPrizeQrCodeShow' v-if="isPrizeQrCodeShow"  @close='isPrizeQrCodeShow = false' :data.sync='tempPrize'/>
     <Coupon :show.sync='isCouponShow' v-if="isCouponShow"  @close='isCouponShow = false' :coupon='couponData'/>
     <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
-    <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/>
+    <!-- <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/> -->
     <ActivityPause :show.sync='isActivityPauseShow' v-if="isActivityPauseShow"  @close='isActivityPauseShow = false'/>
     <ActivityEnd :show.sync='isActivityEndShow' v-if="isActivityEndShow" @close='isActivityEndShow = false'/>
 
@@ -108,6 +96,7 @@
     :activityId='id' :collectInfo='collectInfo'/> -->
     <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
     :activityId='id' :collectInfo.sync='checkDraw' />
+    <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
     <!-- <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/> -->
     <!-- <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/> -->
     <!-- <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/> -->
@@ -123,7 +112,7 @@
     <!-- <DialDialogTitle :show="isWheelShow" /> -->
     <!-- <DialogPage :show="isWheelShow"/> -->
     <!-- <ActivityRules :show.sync="tempShow" @close='tempShow = false'/> -->
-    <!-- <CollectInfos :show.sync="tempShow" @close='tempShow = false'/> -->
+    <!-- <Again :show.sync="tempShow" @close='tempShow = false'/> -->
   </div>
 </template>
 
@@ -147,9 +136,9 @@ import PrizeAddress from '@/components/lottery/global/dial-prize-address'
 // import CardView from '@/components/lottery/global/dial-cardView'
 import Integral from '@/components/lottery/global/dial-integral'
 import Packet from '@/components/lottery/global/dial-packet'
-import ActivityStart from '@/components/lottery/global/dial-activity-start'
+// import ActivityStart from '@/components/lottery/global/dial-activity-start'
 import ActivityPause from '@/components/lottery/global/dial-activity-pause'
-import ActivityEnd from '@/components/lottery/global/dial-activity-end'
+// import ActivityEnd from '@/components/lottery/global/dial-activity-end'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
 import RecordInfo from '@/components/lottery/global/dial-record-info'
 import RecordUncode from '@/components/lottery/global/dial-record-uncode'
@@ -174,6 +163,9 @@ import PrizeVerification from '@/components/lottery/global/prize-verification' /
 import PrizeQrCode from '@/components/lottery/global/prize-qrCode' // 兑换码弹框
 import CardView from '@/components/lottery/global/cardView' // 卡劵弹框
 import CollectInfo from '@/components/lottery/global/collect-info' // 用户信息弹框
+import ActivityStart from '@/components/lottery/global/activity-start' // 活动未开始
+import ActivityEnd from '@/components/lottery/global/activity-end' // 活动结束
+import Again from '@/components/lottery/global/again' // 活动结束
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -192,6 +184,10 @@ export default {
     // PrizeQrCodes,
     // CardViews,
     // CollectInfos,
+    // ActivityStarts,
+    // ActivityEnds,
+    Again,
+
     ActivityRule,
     MyModel,
     CollectInfo,
@@ -324,6 +320,7 @@ export default {
       isActivityStartShow: false, // 控制活动开始状态
       isActivityPauseShow: false, // 控制活动暂停状态
       isActivityEndShow: false, // 控制活动结束状态
+      isAgainShow: false, // 控制再来一次状态
       // isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
       // isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
       // isRecordCodeShow: false, // 控制实物核销-有码纪录状态
@@ -522,7 +519,6 @@ export default {
     // var(--nums) 实现css动画根据奖品个数，动态改变
     let root = document.querySelector(':root')
     root.style.setProperty('--nums', this.list.length)
-    console.log(root.style.setProperty('--nums', this.list.length), "root.style.setProperty('--nums', this.list.length)")
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
@@ -535,6 +531,15 @@ export default {
     if (this.noticeData.length > 0) {
       this.isNoticeDataShow = false
     }
+    this.list.map((item, index) => {
+      if (item.type === 1) {
+        if (item.images instanceof Array) {
+          item.images = item.images ? this.getImage(item.images[0]) : item.images
+        }
+        item.images = item.images || ''
+        STORAGE.set('physical', item.images)
+      }
+    })
   },
   beforeDestroy () {
     // 清除定时器
@@ -573,18 +578,18 @@ export default {
             }
             item.images = item.images || ''
           } else if (item.type === 2) {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/tocket.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/tocket.png')
           } else if (item.type === 3) {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wx-packet.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wx-packet.png')
           } else if (item.type === 4) {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wechat.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wechat.png')
           } else if (item.type === 5) {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/integral/integral.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/integral/integral.png')
           } else if (item.type === 6) {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/face.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/face.png')
             item.choose_award.is_prize_name = '再来一次'
           } else {
-            item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/thanking.png')
+            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/thanking.png')
             item.type = 7
             // item.type = undefined
             item.choose_award.is_prize_name = '谢谢参与'
@@ -659,6 +664,8 @@ export default {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.style.transform = 'none'
         this.panziElement.style.transition = 'none'
+        this.panziElement.style.WebkitTransform = 'none'
+        this.panziElement.style.WebkitTransition = 'none'
         // this.panziElement.classList.remove(this.animationClass)
         // console.log(this.detailInfo.is_word, 'this.detailInfo.is_word')
         if (this.detailInfo.limit.pwd_lottery_limit.is_pwd_lottery && this.detailInfo.is_word === 0) { // 口令抽奖
@@ -670,7 +677,9 @@ export default {
           this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
-          this.ininData()
+          setTimeout(() => {
+            this.ininData()
+          }, 500)
           this.specified = true // 指定获奖下标
           // if (this.specified) {
           //   this.winner = this.winner
@@ -708,6 +717,9 @@ export default {
               }
             })
             this.winCallback()
+            setTimeout(() => {
+              this.isAgainShow = true
+            }, this.drawTime)
           } else if (res.type === 5) { // 积分
             this.integralData = res
             this.list.map((item, index) => {
@@ -869,7 +881,9 @@ export default {
         // this.panziElement.classList.add(this.animationClass)
         // this.panziElement.style.transform = `rotate(calc(5 * 360deg + 360deg / ${this.list.length - 1} * ${this.winner + 1} - 360deg / ${this.list.length} / 2))`
         this.panziElement.style.transform = `rotate(calc(-5 * 360deg + -360deg / ${this.list.length} * ${this.winner} + -360deg / ${this.list.length} / 2))`
+        this.panziElement.style.WebkitTransform = `rotate(calc(-5 * 360deg + -360deg / ${this.list.length} * ${this.winner} + -360deg / ${this.list.length} / 2))`
         this.panziElement.style.transition = `transform 5s ease`
+        this.panziElement.style.WebkitTransition = `transform 5s ease`
         console.log(this.list.length, 'this.list.length')
       }, 0)
       // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
@@ -1101,7 +1115,11 @@ export default {
 </script>
 <style scoped lang='scss'>
 @import '@/styles/index.scss';
-$time: 3s; //转动多少秒后停下的时间
+// $time: 3s; //转动多少秒后停下的时间
+$zp_size: px2rem(600px); //转盘尺寸
+$btn_sizeW: px2rem(189px); //抽奖按钮尺寸
+$btn_sizeH: px2rem(203px); //抽奖按钮尺寸
+$time: 5s; //转动多少秒后停下的时间
 .tips-dialog-content{
   width: px2rem(600px);
 }
@@ -1116,7 +1134,7 @@ $time: 3s; //转动多少秒后停下的时间
     100%
   );
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: fill;
   overflow: hidden;
   &.is-cover{
     background-size: cover;
@@ -1214,7 +1232,7 @@ $time: 3s; //转动多少秒后停下的时间
     background: rgba(0, 0, 0, 0.2);
     border-radius: px2rem(24px);
     margin: 0 auto px2rem(6px) auto;
-    padding: (9px) auto;
+    // padding: px2rem(9px) auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1310,6 +1328,7 @@ $time: 3s; //转动多少秒后停下的时间
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
+    overflow-x: hidden;
     // margin-top: px2rem(169px);
     // 转盘标题
     .wheel-title {
@@ -1330,6 +1349,308 @@ $time: 3s; //转动多少秒后停下的时间
     .wheel-p {
       max-height: px2rem(32px);
       min-height: px2rem(24px);
+    }
+
+    .zp-box {
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: $zp_size;
+      height: $zp_size;
+      margin-left: auto;
+      margin-right: auto;
+      /* 抽奖按钮 */
+      .start-btn {
+        display: inline-block;
+        // background: #f53737;
+        position: relative;
+        z-index: 2;
+        cursor: pointer;
+        width: $btn_sizeW;
+        height: $btn_sizeH;
+        @include img-retina(
+          "~@/assets/lottery/wheel-pointer.png",
+          "~@/assets/lottery/wheel-pointer@2x.png",
+          100%,
+          100%
+        );
+        background-size: cover;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 2;
+        // &::before {
+        //   content: '';
+        //   width: 0;
+        //   height: 0;
+        //   border: 2rem solid transparent;
+        //   border-top: 3rem solid transparent;
+        //   border-bottom: 3rem solid #f53737;
+        //   position: absolute;
+        //   top: -5rem;
+        //   z-index: -1;
+        // }
+      }
+      /* 盘子样式 */
+      .prize {
+        overflow: hidden;
+        border-radius: 50%;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 10px solid #f74e4e;
+        box-sizing: border-box;
+        -webkit-transform: translate3d(0,0,0); /*开启硬件加速*/
+        -webkit-backface-visibility: hidden; /*元素旋转时隐藏背面*/
+        -webkit-transform-style: preserve-3d; /*保留3D空间*/
+        /* 每个奖项的样式 */
+        .jiang {
+          position: absolute;
+          .title {
+            // font-weight: bold;
+            // font-size: 18px;
+            // color: #3b3b3b;
+            font-size: px2rem(28px);
+            font-family: PingFangSC, PingFangSC-Medium;
+            font-weight: 500;
+            text-align: center;
+            color: #d10000;
+            line-height: px2rem(40px);
+          }
+          .img {
+            // margin: 0.5rem auto;
+            // width: 2.5rem;
+            // height: 2.5rem;
+            // line-height: 2.5rem;
+            // border: 2px dashed #f87373;
+            overflow: hidden;
+            color: white;
+            position: relative;
+            &.thanking{
+              width: px2rem(105px);
+              height: px2rem(105px);
+            }
+            &.again{
+              width: px2rem(94px);
+              height: px2rem(108px);
+            }
+            &.integral{
+              width: px2rem(72px);
+              height: px2rem(80px);
+            }
+            &.wechat{
+              width: px2rem(110px);
+              height: px2rem(88px);
+            }
+            &.wx-packet{
+              width: px2rem(92px);
+              height: px2rem(108px);
+            }
+            &.tocket{
+              width: px2rem(110px);
+              height: px2rem(88px);
+            }
+            &.physical{
+              width: px2rem(103px);
+              height: px2rem(103px);
+              padding: px2rem(12px);
+              border-radius: px2rem(8px);
+            }
+            img {
+              height: 100%;
+            }
+            .integral-count{
+              font-size: px2rem(22px);
+              font-family: PingFangSC, PingFangSC-Medium;
+              font-weight: 500;
+              text-align: center;
+              color: #d10000;
+              // transform: scale(.7);
+              position: absolute;
+              top:px2rem(20px);
+              left:px2rem(24px);
+              margin: auto;
+              &.integral-count-1{
+                left:px2rem(28px);
+              }
+              &.integral-count-2{
+                left:px2rem(26px);
+              }
+              // position: absolute;
+            }
+            .integral-name {
+              opacity: 0.8;
+              font-size: px2rem(10px);
+              font-family: PingFangSC, PingFangSC-Regular;
+              font-weight: 400;
+              text-align: left;
+              color: #d10000;
+              position: absolute;
+              bottom:px2rem(18px);
+              left:px2rem(27px);
+            }
+            .wechat-name{
+              width: px2rem(61px);
+              height: px2rem(34px);
+              opacity: 1;
+              font-size: px2rem(16px);
+              font-family: PingFangSC, PingFangSC-Medium;
+              font-weight: 500;
+              text-align: center;
+              color: #ffeccf;
+              position: absolute;
+              top:px2rem(25px);
+              left:px2rem(24px);
+              line-height: px2rem(16px);
+              &.center{
+                line-height: px2rem(34px);
+              }
+            }
+            .tocket-name{
+              position: absolute;
+              top:px2rem(25px);
+              left:px2rem(24px);
+              width: px2rem(64px);
+              height: px2rem(42px);
+              opacity: 1;
+              font-size: px2rem(16px);
+              font-family: PingFangSC, PingFangSC-Medium;
+              font-weight: 500;
+              text-align: center;
+              color: #ffeccf;
+              line-height: px2rem(21px);
+              &.center{
+                line-height: px2rem(42px);
+              }
+            }
+          }
+        }
+      }
+      .bck-box {
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        // background: blue;
+        border-radius: 50%;
+
+        /* 转盘扇形背景 */
+        .bck {
+          box-sizing: border-box;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          opacity: 1;
+          top: -50%;
+          left: 50%;
+          transform-origin: 0% 100%;
+          // transform:skew(30deg);
+        }
+        /* 转盘背景色 */
+        .bck:nth-child(2n) {
+          // background: #fffcb9;
+          background: linear-gradient(243deg,#ffe2b7, #fff5e2 81%);
+        }
+        .bck:nth-child(2n + 1) {
+          background: linear-gradient(297deg,#ffe2b7 18%, #fff5e2);
+          // background: linear-gradient(243deg,#ff0045, #ff4e2b 81%);
+        }
+      }
+
+      /* 下面的css样式为每个奖品的旋转动画，这里写了对应8个奖品的动画，如果想要更多的话，可以添加 */
+      /* 例如： .wr8  @keyframes play8 */
+      .wr0,
+      .wr1,
+      .wr2,
+      .wr3,
+      .wr4,
+      .wr5,
+      .wr6,
+      .wr7 {
+        animation-duration: $time;
+        animation-timing-function: ease;
+        animation-fill-mode: both;
+        animation-iteration-count: 1;
+      }
+      .wr0 {
+        animation-name: play0;
+      }
+      .wr1 {
+        animation-name: play1;
+      }
+      .wr2 {
+        animation-name: play2;
+      }
+      .wr3 {
+        animation-name: play3;
+      }
+      .wr4 {
+        animation-name: play4;
+      }
+      .wr5 {
+        animation-name: play5;
+      }
+      .wr6 {
+        animation-name: play6;
+      }
+      .wr7 {
+        animation-name: play7;
+      }
+      @keyframes play0 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 0));
+        }
+      }
+      @keyframes play1 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 2 - 360deg / var(--nums) / 2));
+        }
+      }
+      @keyframes play2 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 2));
+        }
+      }
+      @keyframes play3 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 3));
+        }
+      }
+      @keyframes play4 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 4));
+        }
+      }
+      @keyframes play5 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 5));
+        }
+      }
+      @keyframes play6 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 6));
+        }
+      }
+      @keyframes play7 {
+        to {
+          transform: rotate(calc(5 * 360deg + 360deg / var(--nums) * 7));
+        }
+      }
     }
     // .box {
     //   position: relative;
@@ -1571,16 +1892,20 @@ $time: 3s; //转动多少秒后停下的时间
       cursor: pointer;
       margin-bottom: px2rem(9px);
       margin-top: px2rem(16px);
+      line-height: px2rem(142px);
       .van-button__text{
-        line-height: px2rem(102px);
+        // line-height: px2rem(102px);
+        line-height: px2rem(40px);
       }
       .text {
+        display: inline-block;
+        height: px2rem(40px);
         font-size: px2rem(40px);
         font-family: SourceHanSansCN, SourceHanSansCN-Bold;
         font-weight: 700;
         text-align: left;
         color: #d10000;
-        // line-height: px2rem(60px);
+        line-height: px2rem(10px);
         // line-height: px2rem(102px);
         // line-height: px2rem(166px);
         // line-height: px2rem(145px);
@@ -1763,5 +2088,8 @@ $time: 3s; //转动多少秒后停下的时间
       background-repeat: no-repeat;
       background-position: center;
     }
+}
+[v-cloak]{
+  display:none;
 }
 </style>

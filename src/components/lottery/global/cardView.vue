@@ -252,7 +252,8 @@ export default {
                         margin-left: auto;
                         margin-right: auto;
                         span {
-                            font-size: px2rem(44px);
+                            width: px2rem(300px);
+                            font-size: px2rem(36px);
                             font-family: PingFangSC, PingFangSC-Medium;
                             font-weight: 500;
                             text-align: left;

@@ -148,10 +148,12 @@ export default {
   .dialog-header-bg{
     width: 100%;
     height: px2rem(192px);
-    @include img-retina("~@/assets/wheel/dialog-header.png",
-    "~@/assets/wheel/dialog-header@2x.png", 100%, 100%);
+    @include img-retina("~@/assets/lottery/activityRule/propup3.png",
+      "~@/assets/lottery/activityRule/propup3@2x.png", 100%, 100%);
+    // @include img-retina("~@/assets/wheel/dialog-header.png",
+    // "~@/assets/wheel/dialog-header@2x.png", 100%, 100%);
     background-repeat: no-repeat;
-    background-position: top;
+    // background-position: top;
     position: absolute;
     top: 0;
     left: 0;
