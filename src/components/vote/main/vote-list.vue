@@ -99,9 +99,7 @@ export default {
           this.videoMode = limit.show_mode
         }
         // 控制用户是否可以多次报名
-        if (limit.is_open_enroll_limit) {
-          this.is_open_enroll_limit = limit.is_open_enroll_limit
-        }
+        this.is_open_enroll_limit = limit.is_open_enroll_limit
         // 判断图片模式
         let pageSetup = detailInfo.rule.page_setup
         if (pageSetup.image_ratio) {
@@ -142,8 +140,8 @@ export default {
           this.showModel = this.fullSceneMap[fullSceneType][1]
         }
         // 控制用户多次报名的次数
-        if (this.is_open_enroll_limit) {
-          this.enroll_limit_MaxNum = detailInfo.rule.limit.enroll_limit_MaxNum
+        this.enroll_limit_MaxNum = detailInfo.rule.limit.enroll_limit_MaxNum
+        if (this.is_open_enroll_limit && this.enroll_limit_MaxNum) {
           this.is_open_enroll_limit = res.data.length < this.enroll_limit_MaxNum
         }
         res.data.forEach(item => (item.format_time = item.create_time.split(' ')[0]))
