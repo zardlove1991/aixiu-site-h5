@@ -191,11 +191,11 @@ export default {
         margin-left: px2rem(40px);
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-between;
       }
       .line{
         width: px2rem(520px);
-        opacity: 0.4;
+        opacity: 0.6;
         border-bottom: px2rem(1px) dashed #ffeccf;
         margin: px2rem(40px) auto;
       }

@@ -110,7 +110,8 @@ export default {
   },
   methods: {
     onClose () {
-      this.$emit('close')
+    //   this.$emit('close')
+      this.$emit('update:show', false)
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
@@ -384,7 +385,7 @@ export default {
             margin-left: px2rem(40px);
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: space-between;
             margin-bottom: px2rem(40px);
         }
         .btn{

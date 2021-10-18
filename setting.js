@@ -7,7 +7,7 @@ var config = {
   PROJECT_PlATFORM: '{{PROJECT_PlATFORM}}'
 }
 
-if (window.location.hostname === 'localhost') {
+if (window.location.hostname === 'localhost' || window.location.hostname === '10.0.0.17' || window.location.hostname === '10.0.29.207') {
   config = {
     CUSTOM_HOST: 'axh5.aihoge.com',
     CUSTOM_APPID: 'wx2e98fb1d45a98f73',
