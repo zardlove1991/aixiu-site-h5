@@ -40,7 +40,7 @@ let examUrl = {
   saveSubjectRecords: 'api/client/examination/{id}/record/batch', // 批量保存答题记录
   getExamDetail: 'api/client/examination/{id}',
   shareExamination: 'api/client/share/image/make/examination', // 分享测评结果海报
-  saveDrawRecord: 'api/collection/form/record/{id}', // 投票信息采集
+  saveDrawRecord: 'collection/form/record/{id}', // 投票信息采集
   getSubjectFavorInfo: 'api/client/examination/collection/is', // 获得题目的收藏信息
   setSubjectFavorInfo: 'api/client/examination/collection', // 设置题目的收藏
   unlockCourse: 'api/client/examination/submitted', // 解锁课程
