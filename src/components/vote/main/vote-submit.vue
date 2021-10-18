@@ -525,7 +525,6 @@ export default {
         console.log('进入这里')
         return
       }
-
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
@@ -565,7 +564,6 @@ export default {
           this.examineData.contact_phone = i.inputValue
         }
       }
-      console.log('1-4')
 
       let data = {
         voting_id: id,
@@ -595,7 +593,7 @@ export default {
       } else {
         STORAGE.set('isFirstUpload', false)
       }
-      console.log('1-5')
+
       this.disabled = true
       API.workReport({
         data

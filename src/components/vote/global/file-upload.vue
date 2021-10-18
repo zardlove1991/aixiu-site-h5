@@ -164,7 +164,6 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
-      // console.log('onSuccess', response)
       let { obj, duration, width, height } = response
       if (!obj) {
         return

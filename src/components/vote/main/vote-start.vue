@@ -437,10 +437,12 @@ export default {
       scrollTop: 0, // 滚动条距离顶部距离
       downloadLink: '',
       isLotteryTips: false,
-      lotteryObj: {}
+      lotteryObj: {},
+      curVoteDatailObj: {}
     }
   },
-  created () {
+  async created () {
+    this.curVoteDatailObj = await this.syncGetVodeDetail()
     this.initData()
     let plat = getPlat()
     if (plat === 'smartcity') {
@@ -448,8 +450,6 @@ export default {
         this.appShareCallBack()
       })
     }
-  },
-  mounted () {
     this.worksStatus()
   },
   beforeDestroy () {
@@ -493,42 +493,44 @@ export default {
   },
   methods: {
     worksStatus () {
-      API.getVodeDetail({
-        query: { id: this.id }
-      }).then((res) => {
-        // 初次加载的弹窗
-        try {
-          let isFirstUploadType = STORAGE.get('isFirstUpload')
-          const detailInfo = res
-          let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
-          if (isFirstUploadType) {
-            if (isLotteryType === 1) {
-              this.voteRewardType = false
-              this.lotteryObj = res.lottery
-              this.$nextTick(item => {
-                this.voteRewardType = true
-                this.isShowVoteReward = true
-              })
-            }
-            STORAGE.remove('isFirstUpload')
+      let res = this.curVoteDatailObj
+      // 初次加载的弹窗
+      try {
+        let isFirstUploadType = STORAGE.get('isFirstUpload')
+        const detailInfo = res
+        let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
+        if (isFirstUploadType) {
+          if (isLotteryType === 1) {
+            this.voteRewardType = false
+            this.lotteryObj = res.lottery
+            this.$nextTick(item => {
+              this.voteRewardType = true
+              this.isShowVoteReward = true
+            })
           }
-        } catch (e) {
-          console.log(e)
+          STORAGE.remove('isFirstUpload')
         }
+      } catch (e) {
+        console.log(e)
+      }
 
-        // 显示礼盒
-        // 判断显示gift box
-        let _lottery = res.lottery
-        let lotteryArr = []
-        this.lotteryObj = _lottery
-        lotteryArr.push(_lottery.enroll.is_win)
-        lotteryArr.push(_lottery.enroll.raffle_num)
-        lotteryArr.push(_lottery.vote_relation.is_win)
-        lotteryArr.push(_lottery.vote_relation.raffle_num)
-        let isExistLottery = false
-        isExistLottery = lotteryArr.some(item => item > 0)
-        this.giftBoxType = isExistLottery
-      })
+      // 显示礼盒
+      // 判断显示gift box
+      let _lottery = res.lottery
+      let lotteryArr = []
+      this.lotteryObj = _lottery
+      lotteryArr.push(_lottery.enroll.is_win)
+      lotteryArr.push(_lottery.enroll.raffle_num)
+      lotteryArr.push(_lottery.vote_relation.is_win)
+      lotteryArr.push(_lottery.vote_relation.raffle_num)
+      let isExistLottery = false
+      isExistLottery = lotteryArr.some(item => item > 0)
+      this.giftBoxType = isExistLottery
+
+      // API.getVodeDetail({
+      //   query: { id: this.id }
+      // }).then((res) => {
+      // })
     },
     showLotteryTips () {
       this.lotteryTipsType = false
@@ -571,7 +573,7 @@ export default {
       if (sign && invotekey) {
         this.setShareData({ sign, invotekey })
       }
-      let res = await this.syncGetVodeDetail()
+      let res = this.curVoteDatailObj
       // let res = STORAGE.get('detailInfo')
       if (!res || res.id !== voteId) {
         res = await API.getVodeDetail({
@@ -1210,7 +1212,7 @@ export default {
         console.log(err)
       })
     },
-    syncGetVodeDetail (id) {
+    syncGetVodeDetail () {
       return API.getVodeDetail({
         query: { id: this.id }
       })
