@@ -1,6 +1,6 @@
 <template>
-    <div class='collect-info-dialog' v-if="show">
-         <div class="collect-info">
+    <div class='collect-info-dialog' v-if="show"  v-fixed>
+         <div class="collect-info" :class="{ 'collect-info-max':collectInfoData.length > 3 }">
             <div class="collect-info-header-bg"></div>
             <div class="collect-info-header">
                 <div class="title">
@@ -10,7 +10,7 @@
                   <i class="i-close"></i>
                 </div>
             </div>
-            <div class="container">
+            <div class="container" :class="{ 'container-max':collectInfoData.length > 3 }" >
                 <p class="tips">请务必填写以下信息，奖品才能送到您手中</p>
                 <van-form
                     @submit="onSubmit"
@@ -18,8 +18,8 @@
                     :show-error="false"
                     :show-error-message="false"
                     :validate-first="true"
-                    class="form">
-                    <div v-for="(item, index) in collectInfoData" :key="index" class="form-item">
+                    class="form" :class="{ 'form-max':collectInfoData.length > 3 }">
+                    <div v-for="(item, index) in collectInfoData" :key="index" class="form-item" >
                         <div v-if="item.unique_name === 'gender'">
                             <van-field
                                 v-model="item.value"
@@ -30,7 +30,7 @@
                                 is-link
                                 @focus="isGenderShow = true">
                             </van-field>
-                            <van-action-sheet v-model="isGenderShow"  class="action" :actions="gender" @select="onGenderSelect" />
+                            <van-action-sheet v-model="isGenderShow" style="height:auto" :get-container="getContainer"   :actions="gender" @select="onGenderSelect" />
                         </div>
                         <div v-else-if="item.name === '下拉选择器'">
                             <van-field
@@ -42,7 +42,7 @@
                                 @focus="isSelectShow = true"
                                 readonly>
                             </van-field>
-                            <van-action-sheet v-model="isSelectShow"  class="action" :actions="select" @select="onSelect" />
+                            <van-action-sheet v-model="isSelectShow" style="height:auto" :get-container="getContainer"  :actions="select" @select="onSelect" />
                         </div>
                         <div v-else-if="item.unique_name === 'department'">
                             <van-field
@@ -55,7 +55,7 @@
                                 readonly
                             >
                             </van-field>
-                            <van-action-sheet v-model="isDepartmentShow"  class="action" :actions="department" @select="onDepartmentSelect" />
+                            <van-action-sheet v-model="isDepartmentShow" style="height:auto" :get-container="getContainer"   :actions="department" @select="onDepartmentSelect" />
                         </div>
                         <div v-else-if="item.unique_name === 'birthday'">
                             <van-field
@@ -68,17 +68,17 @@
                                 @focus="isBirthdayShow = true"
                             >
                             </van-field>
-                            <van-popup v-model="isBirthdayShow"  position="bottom" :style="{ height: '40%' }">
+                            <van-popup v-model="isBirthdayShow" style="background:#fff" :get-container="getContainer"  position="bottom" :style="{ height: '40%' }">
                                 <van-datetime-picker
-                                class="picker-date"
-                                v-model="currentDate"
-                                type="date"
-                                title='选择生日'
-                                :min-date='minDate'
-                                @change='onBirthChange'
-                                :formatter="formatter"
-                                @confirm="onConfirm"
-                                @cancel='isBirthdayShow=false'
+                                  class="picker-date"
+                                  v-model="currentDate"
+                                  type="date"
+                                  title='选择生日'
+                                  :min-date='minDate'
+                                  @change='onBirthChange'
+                                  :formatter="formatter"
+                                  @confirm="onConfirm"
+                                  @cancel='isBirthdayShow=false'
                                 />
                             </van-popup>
                             <!-- <van-calendar v-model="isBirthdayShow" @confirm="onConfirm" :min-date='minDate'/> -->
@@ -339,8 +339,8 @@ export default {
     return {
       isGenderShow: false, // 控制性别弹框
       gender: [ // 性别类别数组
-        { name: '男' },
-        { name: '女' }
+        { name: '男', className: 'action' },
+        { name: '女', className: 'action' }
       ],
       isSelectShow: false, // 控制下拉选择器弹框
       select: [], // 下拉选择器类型数据
@@ -349,6 +349,7 @@ export default {
       isBirthdayShow: false, // 控制生日弹框
       minDate: new Date(1900, 0, 1), // 最小时间
       currentDate: new Date(), // 当前时间
+      action: 'action',
       loading: false // 提交按钮loading
     }
   },
@@ -375,28 +376,49 @@ export default {
   mounted () {
     this.collectInfoData.map(item => {
       if (item.name === '下拉选择器') {
+        item.value[0] = ''
         let arr = item.value.slice(1, item.value.length)
         arr.map(scope => {
           scope.name = scope.values
+          scope.className = this.action
         })
         this.select = arr
       }
       if (item.unique_name === 'department') {
+        item.value[0] = ''
         let arr = item.value.slice(1, item.value.length)
         arr.map(scope => {
           scope.name = scope.values
+          scope.className = this.action
         })
         this.department = arr
         console.log(this.department, 'this.department')
       }
       if (item.unique_name === 'birthday') {
         if (item.value) {
-          let date = formatDate(item.value, 'YYYY-MM-DD')
-          date = date.split('-')
+          let date = formatDate(item.value, 'YYYY/MM/DD')
+          date = date.split('/')
           this.currentDate = new Date(parseInt(date[0]), parseInt(date[1]), parseInt(date[2]))
         }
       }
     })
+  },
+  directives: {
+    fixed: {
+      // inserted 被绑定元素插入父节点时调用
+      inserted () {
+        let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+        document.body.style.cssText += 'position:fixed;width:100%;top:-' + scrollTop + 'px;'
+      },
+      // unbind 指令与元素解绑时调用
+      unbind () {
+        let body = document.body
+        body.style.position = ''
+        let top = body.style.top
+        document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top)
+        body.style.top = ''
+      }
+    }
   },
   methods: {
     onClose () {
@@ -588,11 +610,13 @@ export default {
       } else {
         return true
       }
+    },
+    getContainer () {
+      return document.querySelector('.collect-info-dialog')
     }
   }
 }
 </script>
-
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .collect-info-dialog{
@@ -607,6 +631,10 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  // pointer-events: auto;
+  // &.lock{
+  //   pointer-events: none;
+  // }
   .collect-info{
     width: px2rem(600px);
     height: px2rem(580px);
@@ -614,6 +642,10 @@ export default {
     border-radius: px2rem(16px);
     position: relative;
     box-sizing: border-box;
+    // pointer-events: auto;
+    &.collect-info-max {
+      height: px2rem(880px);
+    }
     .collect-info-header-bg{
       width:100%;
       height: px2rem(192px);
@@ -633,44 +665,44 @@ export default {
       left: 0;
       z-index: 10;
       .title{
-          width: px2rem(360px);
-          height:px2rem(68px);
-          margin-left: px2rem(120px);
-          margin-top: px2rem(-8px);
-          // margin-right: auto;
-          @include img-retina("~@/assets/lottery/activityRule/title.png",
-          "~@/assets/lottery/activityRule/title@2x.png", 100%, 100%);
-          background-repeat: no-repeat;
-          display: flex;
-          justify-content: center;
-          z-index: 10px;
-          float: left;
-      .tille-name{
-          height: px2rem(36px);
-          opacity: 1;
-          font-size: px2rem(36px);
-          font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-          font-weight: 500;
-          text-align: center;
-          color: #fff4e3 !important;
-          line-height: px2rem(68px);
-      }
+        width: px2rem(297px);
+        height:px2rem(68px);
+        margin-left: px2rem(152px);
+        margin-top: px2rem(-8px);
+        // margin-right: auto;
+        @include img-retina("~@/assets/lottery/activityRule/title.png",
+        "~@/assets/lottery/activityRule/title@2x.png", 100%, 100%);
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        z-index: 10px;
+        float: left;
+        .tille-name{
+            height: px2rem(36px);
+            opacity: 1;
+            font-size: px2rem(36px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+            font-weight: 500;
+            text-align: center;
+            color: #fff4e3 !important;
+            line-height: px2rem(68px);
+        }
       }
       .collect-info-header-right{
-          width: px2rem(50px);
-          height: px2rem(50px);
-          padding-right: px2rem(30px);
-          padding-top: px2rem(30px);
-          float: right;
-          cursor: pointer;
-          .i-close{
-              display: inline-block;
-              width: px2rem(20px);
-              height: px2rem(20px);
-                  @include img-retina("~@/assets/lottery/icon-close.png",
-              "~@/assets/lottery/icon-close@2x.png", 100%, 100%);
-              background-repeat: no-repeat;
-          }
+        width: px2rem(50px);
+        height: px2rem(50px);
+        padding-right: px2rem(30px);
+        padding-top: px2rem(30px);
+        float: right;
+        cursor: pointer;
+        .i-close{
+          display: inline-block;
+          width: px2rem(20px);
+          height: px2rem(20px);
+              @include img-retina("~@/assets/lottery/icon-close.png",
+          "~@/assets/lottery/icon-close@2x.png", 100%, 100%);
+          background-repeat: no-repeat;
+        }
       }
     }
     .container{
@@ -683,6 +715,9 @@ export default {
       padding-top: px2rem(50px);
       padding-left: px2rem(40px);
       padding-right: px2rem(40px);
+      &.container-max{
+        height: px2rem(812px);
+      }
       .tips{
         height: px2rem(24px);
         opacity: 0.8;
@@ -697,6 +732,9 @@ export default {
         margin-top:px2rem(30px);
         height: px2rem(366px);
         overflow-y: scroll;
+        &.form-max{
+          height: px2rem(666px);
+        }
         .form-input{
           width: px2rem(520px);
           height: px2rem(90px);
@@ -747,11 +785,6 @@ export default {
           color: #4f0f0f;
           margin-bottom: px2rem(8px);
         }
-        .action {
-            .van-action-sheet__item{
-                height: px2rem(100px);
-            }
-        }
         /deep/ .address {
             padding:  0 px2rem(30px);
             background: #f8efdc;
@@ -760,9 +793,6 @@ export default {
             /deep/ .van-field__word-limit {
                 margin-bottom: px2rem(8px);
             }
-        }
-        .picker-date{
-            background-color: #fff;
         }
       }
     }
@@ -782,4 +812,8 @@ export default {
     }
   }
 }
+ .action {
+  height: px2rem(100px);
+  line-height: px2rem(100px);
+ }
 </style>

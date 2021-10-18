@@ -95,8 +95,8 @@ export default {
     .unDraw-header-bg{
       width: px2rem(600px);
       height: px2rem(202px);
-      @include img-retina("~@/assets/lottery/dial-header.png",
-      "~@/assets/lottery/dial-header.png", 100%,100%);
+      @include img-retina("~@/assets/lottery/dial-header@3x.png",
+      "~@/assets/lottery/dial-header@3x.png", 100%,100%);
       background-repeat: no-repeat;
       border-top-right-radius: px2rem(16px);
       border-top-left-radius: px2rem(16px);
@@ -143,7 +143,8 @@ export default {
       height: px2rem(36px);
       font-size: px2rem(36px);
       font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-      font-weight: 500;
+      // font-weight: 500;
+      font-weight: bolder;
       text-align: left;
       color: #fff4e3;
       line-height: px2rem(54px);
@@ -176,6 +177,11 @@ export default {
       position: absolute;
       bottom: px2rem(69px); left: px2rem(150px);
       z-index: 10;
+      font-size: px2rem(28px);
+      font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+      font-weight: 500;
+      text-align: left;
+      color: #4f0f0f;
       &.btn-notAllow {
         background: linear-gradient(0deg,#fff 1%, #b7b09b);
         box-shadow: 0 px2rem(8px) 0px 0px #b7b09b;

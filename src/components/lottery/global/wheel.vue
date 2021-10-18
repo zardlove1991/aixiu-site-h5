@@ -1,8 +1,8 @@
 <template>
   <div class="overall">
     <div class="zp-box">
-      <div class="prize">
-        <div class="bck-box" :style="`transform: rotate(${-90 + 360/list.length}deg)`">
+      <div class="prize ">
+        <div class="bck-box" :style="`transform: rotate(${-90 + 360/list.length}deg)`" v-cloak>
           <div
             class="bck"
             v-for="(i,index) in list"
@@ -17,42 +17,45 @@
           :key="index"
         >
           <span class="title">{{i.is_award_name}}</span>
-          <div class="img thanking" v-if="i.type ===7">
-            <img :src="i.images" alt />
+          <div class="img thanking"  v-show="i.type ===7">
+            <img src="@/assets/lottery/thanking.png" alt />
           </div>
-          <div class="img again" v-else-if="i.type ===6">
-            <img :src="i.images" alt />
+          <div class="img again"  v-show="i.type ===6">
+            <img src="@/assets/lottery/face.png" alt />
           </div>
-          <div class="img integral" v-else-if="i.type ===5">
-            <img :src="i.images" alt />
+          <div class="img integral"  v-show="i.type ===5">
+           <img src="@/assets/lottery/integral/integral.png" alt />
             <!-- <div class="integral-count integral-count-1" >{{i.choose_award.is_prize_integral}}</div> -->
             <div class="integral-count">{{i.choose_award.is_prize_integral}}</div>
             <div class="integral-name">积分</div>
           </div>
-           <div class="img wechat" v-else-if="i.type ===4">
-            <img :src="i.images" alt />
+           <div class="img wechat"  v-show="i.type ===4">
+            <img src="@/assets/lottery/wechat.png" alt />
             <div class="wechat-name center"  v-if="i.choose_award.is_prize_name.length > 4">{{i.choose_award.is_prize_name}}</div>
             <div class="wechat-name" v-else >{{i.choose_award.is_prize_name}}</div>
           </div>
-           <div class="img wx-packet" v-else-if="i.type ===3">
-            <img :src="i.images" alt />
+           <div class="img wx-packet"  v-show="i.type ===3">
+            <img src="@/assets/lottery/wx-packet.png" alt />
           </div>
-          <div class="img tocket" v-else-if="i.type ===2">
-            <img :src="i.images" alt />
-             <div class="tocket-name center" v-if="i.choose_award.is_prize_name.length > 4" >{{i.choose_award.is_prize_name}}</div>
+          <div class="img tocket"  v-show="i.type ===2">
+            <img src="@/assets/lottery/tocket.png" alt />
+            <div class="tocket-name center" v-if="i.choose_award.is_prize_name.length > 4" >{{i.choose_award.is_prize_name}}</div>
             <div class="tocket-name" v-else >{{i.choose_award.is_prize_name}}</div>
           </div>
-          <div class="img physical" v-else-if="i.type ===1">
-            <img :src="i.images" alt />
+          <div class="img physical"  v-show="i.type ===1">
+            <img :src="physical" alt  v-if="physical"/>
+            <img :src="i.images" alt  v-else/>
+            <!-- <img src="http://xzimg.hoge.cn/xiuzan/1632796564173/icon1.png" alt /> -->
           </div>
         </div>
       </div>
-      <div class="start-btn" @click="start()"></div>
+      <div class="start-btn" ></div>
     </div>
   </div>
 </template>
 
 <script>
+import STORAGE from '@/utils/storage'
 export default {
   computed: {
     animationClass () {
@@ -79,6 +82,7 @@ export default {
   },
   data () {
     return {
+      physical: STORAGE.get('physical')
     //   winner: 2, // 指定获奖下标 specified为true时生效
     //   specified: false, // 是否指定获奖结果，false时为随机
     //   loading: false, // 抽奖执行状态，防止用户多次点击
@@ -123,6 +127,28 @@ export default {
     // let root = document.querySelector(':root')
     // root.style.setProperty('--nums', this.list.length)
   },
+  watch: {
+    // list: {
+    //   handler: function (newValue, oldValue) {
+    //     this.detailInfo = newValue
+    //     // console.log('%cdetailInfo：', 'color: red;font-size:14px;', newValue.remain_counts)
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
+    // list (value) {
+    //   this.list.forEach((item, index) => {
+    //     switch (item.type) {
+    //       case 1:
+    //         this.$set(item, 'is_award_name', value[index].is_award_name)
+    //         break
+    //       case 6:
+    //         this.$set(item, 'is_award_name', value[index].is_award_name)
+    //         break
+    //     }
+    //   })
+    // }
+  },
   methods: {
     // // 开始抽奖
     // start () {
@@ -162,6 +188,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/styles/index.scss";
+[v-cloak] {
+  display: none;
+}
 // $zp_size: 23rem; //转盘尺寸
 // $btn_size: 7rem; //抽奖按钮尺寸
 $zp_size: px2rem(600px); //转盘尺寸
@@ -178,6 +207,10 @@ $time: 5s; //转动多少秒后停下的时间
   height: $zp_size;
   margin-left: auto;
   margin-right: auto;
+  overflow: hidden;
+  -webkit-transform: translate3d(0,0,0); /*开启硬件加速*/
+  -webkit-backface-visibility: hidden; /*元素旋转时隐藏背面*/
+  -webkit-transform-style: preserve-3d; /*保留3D空间*/
   /* 抽奖按钮 */
   .start-btn {
     display: inline-block;
@@ -230,6 +263,12 @@ $time: 5s; //转动多少秒后停下的时间
     align-items: center;
     border: 10px solid #f74e4e;
     box-sizing: border-box;
+    // -webkit-transform-style: preserve-3d;
+    // -webkit-backface-visibility: hidden;
+    // -webkit-perspective: 1000;
+    -webkit-transform: translate3d(0,0,0); /*开启硬件加速*/
+    -webkit-backface-visibility: hidden; /*元素旋转时隐藏背面*/
+    -webkit-transform-style: preserve-3d; /*保留3D空间*/
     /* 每个奖项的样式 */
     .jiang {
       position: absolute;

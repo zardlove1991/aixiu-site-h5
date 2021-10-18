@@ -1,34 +1,34 @@
 <template>
-  <div class="record-prize">
-    <div class="record-prize-header-bg"></div>
-    <div class="back" @click="$router.back()">
-      <div class="arrow-left"></div>
-    </div>
-
-    <div class="record-prize-content">
-      <div class="logo"></div>
-      <h3>中奖记录</h3>
-      <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
-        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-          <van-list v-model="loading" :finished="finished" @load="onLoad"  :error.sync="error" >
-            <van-cell
-              v-for="item in list"
-              :key="item.id"
-              value="查看"
-              class="list-wrap"
-            >
-              <div slot="title" class="title">{{ item.prize_content }}</div>
-              <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
-              <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 6}" >查看</div>
-            </van-cell>
-          </van-list>
-        </van-pull-refresh>
-        <div class="bg" :class="{ isShow:list.length===0}"></div>
-        <div class="tip" :class="{ isShow:list.length===0}">您还未中奖哦~</div>
-      </div>
-      <!-- <div class="container center" v-else>
-      </div> -->
-    </div>
+    <div class="record-prize">
+        <div class="record-prize-header-bg"></div>
+        <div class="back" @click="$router.back()">
+            <div class="arrow-left"></div>
+        </div>
+        <div class="record-prize-content-bg"></div>
+        <div class="logo"></div>
+        <div class="record-prize-container">
+            <div class="record-prize-content">
+                <h3>中奖记录</h3>
+                <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
+                <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+                    <van-list v-model="loading" :finished="finished" @load="onLoad"  :error.sync="error" >
+                        <van-cell
+                        v-for="item in list"
+                        :key="item.id"
+                        value="查看"
+                        class="list-wrap"
+                        >
+                        <div slot="title" class="title">{{ item.prize_content }}</div>
+                        <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
+                        <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 6}" >查看</div>
+                        </van-cell>
+                    </van-list>
+                </van-pull-refresh>
+                <div class="bg" :class="{ isShow:list.length===0}"></div>
+                <div class="tip" :class="{ isShow:list.length===0}">您还未中奖哦~</div>
+            </div>
+            </div>
+        </div>
     <CardIntegral :show.sync='isCardIntegralShow' v-if="isCardIntegralShow" @close='isCardIntegralShow = false' :data.sync="tempItem"/>
     <CardIntegralPull :show.sync='isCardIintegralPullShow' v-if="isCardIintegralPullShow" @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
     <CardStock :show.sync='isCardStockShow' v-if="isCardStockShow" @close='isCardStockShow=false' :data.sync="tempItem"/>
@@ -39,7 +39,9 @@
     <RecordInfo :show.sync='isRecordInfoShow' v-if="isRecordInfoShow"  @close='isRecordInfoShow = false' :data.sync="tempItem" :activityId="id"/>
     <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
     <CardPacketPull :show.sync='isCardPacketPullShow' v-if="isCardPacketPullShow" @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
-  </div>
+
+    <!-- <CardOverduess :show.sync="tempShow" @close='tempShow = false'/> -->
+    </div>
 </template>
 
 <script>
@@ -47,16 +49,23 @@ import API from '@/api/module/examination'
 import CardIntegral from '@/components/lottery/global/dial-card-integral'
 import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
 import CardStock from '@/components/lottery/global/dial-card-stock'
-import CardOverdues from '@/components/lottery/global/dial-card-overdues'
-import RecordUncode from '@/components/lottery/global/dial-record-uncode'
-import RecordCode from '@/components/lottery/global/dial-record-code'
+// import CardOverdues from '@/components/lottery/global/dial-card-overdues'
+// import RecordUncode from '@/components/lottery/global/dial-record-uncode'
+// import RecordCode from '@/components/lottery/global/dial-record-code'
 import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
 import RecordInfo from '@/components/lottery/global/dial-record-info'
 // import CardPacket from '@/components/lottery/global/dial-card-packet'
 import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
+import RecordUncode from '@/components/lottery/global/record-uncode'
+import RecordCode from '@/components/lottery/global/record-code'
+import CardOverdues from '@/components/lottery/global/card-overdues'
 export default {
-  name: 'RecordPrize',
+  name: '',
   components: {
+    // RecordUncodes,
+    // RecordCodes,
+    // CardOverduess,
+
     CardIntegral,
     CardIntegralPull,
     CardOverdues,
@@ -68,37 +77,12 @@ export default {
     CardPacketPull,
     CardStock
   },
-  props: {},
+  props: {
+  },
   data () {
     return {
-      list: [
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: 'AB面乳胶独立弹簧床垫升级款', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得女士温暖绒毛家居拖鞋', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' },
-        // { name: '获得手摇式音乐盒', tip: '查看' }
-      ],
+      tempShow: true,
+      list: [],
       loading: false,
       finished: false,
       error: false,
@@ -121,11 +105,15 @@ export default {
 
     }
   },
-  computed: {},
+  computed: {
+
+  },
   watch: {
   },
-  created () {},
+  created () {
+  },
   mounted () {
+
   },
   methods: {
     async onLoad () {
@@ -280,9 +268,8 @@ export default {
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .record-prize {
-  // width: 750px;
-  height: px2rem(1448px);
   width: 100%;
+  height: px2rem(1448px);
   // height: 100vh;
   opacity: 1;
   background: linear-gradient(181deg, #ff8f68 0%, #ff093f 100%);
@@ -296,29 +283,31 @@ export default {
     opacity: 1;
     @include img-retina(
       "~@/assets/lottery/diallist/header-bg.png",
-      "~@/assets/lottery/diallist/header-bg@2x.png",
+      "~@/assets/lottery/diallist/header-bg.png",
       100%,
       100%
     );
     background-repeat: no-repeat;
-    background-position-y: top;
     position: absolute;
-    top: -9%;
+    // top: -9%;
+    top: 0; left: 0;
   }
   .back {
     width: px2rem(64px);
     height: px2rem(60px);
-    opacity: 0.5;
-    background: #000000;
+    background-color: rgba(0, 0, 0, .2);
     border-radius: 0px 0px px2rem(100px) px2rem(100px);
     position: absolute;
-    left: -1%;
+    // left: -1%;
+    left: 0;
     top: px2rem(30px);
     transform: rotate(-90deg);
+    box-sizing: border-box;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    // padding: px2rem(14px) px2rem(29px) px2rem(14px) px2rem(18px);
     .arrow-left {
       width: px2rem(17px);
       height: px2rem(32px);
@@ -329,155 +318,157 @@ export default {
         100%,
         100%
       );
+      background-position-x: left;
       color: #fff;
       opacity: 1;
     }
   }
-  .record-prize-content {
-    width: px2rem(690px);
-    height: px2rem(1270px);
-    opacity: 1;
-    background: #ffffff;
-    border-radius: px2rem(16px);
-    box-shadow: 0px px2rem(6px) px2rem(14px) px2rem(2px) rgba(0, 0, 0, 0.12);
-    // position: absolute;
-    // top: px2rem(127px);
-    // left: px2rem(30px);
-    margin: auto;
-    padding-top: px2rem(66px);
-    h3 {
-      width: px2rem(160px);
-      height: px2rem(40px);
-      opacity: 1;
-      font-size: px2rem(40px);
-      font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-      font-weight: 500;
-      text-align: left;
-      color: #333333;
-      line-height: px2rem(60px);
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-      margin-bottom: px2rem(40px);
+  .record-prize-container{
+    width: 100%;
+    height: px2rem(1321px);
+    position: absolute;
+    top: px2rem(127px); left: 0;
+    .record-prize-content{
+        width: px2rem(690px);
+        // height: px2rem(1270px);
+        height: px2rem(1281px);
+        background: #ffffff;
+        border-radius: px2rem(16px);
+        box-shadow: 0px px2rem(6px) px2rem(14px) px2rem(2px) rgba(0,0,0,0.12);
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: px2rem(66px);
+        // padding-top: px2rem(77px);
+        h3 {
+            width: px2rem(160px);
+            height: px2rem(40px);
+            opacity: 1;
+            font-size: px2rem(40px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+            // font-weight: 500;
+            font-weight: bolder;
+            text-align: left;
+            color: #333333;
+            line-height: px2rem(60px);
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            margin-bottom: px2rem(40px);
+        }
+        .container {
+            width: 100%;
+            // height: 80%;
+            // height: px2rem(1124px);
+            height: px2rem(1135px);
+            // height: 100%;
+            border-radius: px2rem(16px);
+            background-color: #ffffff;
+            box-shadow: 0px px2rem(6px) 0px px2rem(2px) rgba(0,0,0,0.12);
+            position: relative;
+            overflow-y: auto;
+            &.center {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            &.pl40 {
+                padding-left: px2rem(40px);
+            }
+            &.pr40 {
+                padding-right: px2rem(40px);
+            }
+            .list-wrap {
+                height: px2rem(100px);
+                line-height: px2rem(100px);
+                .title {
+                    font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+                    font-weight: 400;
+                    text-align: left;
+                    color: #333333;
+                    opacity: 1;
+                    font-size: px2rem(28px);
+                    line-height: px2rem(100px);
+                }
+                .labelClass {
+                    width: px2rem(60px);
+                }
+                .jump {
+                    opacity: 0.6;
+                    font-size: px2rem(28px);
+                    font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+                    font-weight: 400;
+                    text-align: right;
+                    color: #333333;
+                    line-height: px2rem(100px);
+                    &.is-hide{
+                        display: none;
+                    }
+                }
+                &::after {
+                width: 100%;
+                opacity: 0.2;
+                border-bottom-style: dashed;
+                border-bottom-color: #4f0f0f;
+                }
+            }
+            .bg {
+                width: px2rem(299px);
+                height: px2rem(228px);
+                margin-left: px2rem(99px);
+                @include img-retina(
+                "~@/assets/lottery/unRecord/bg_2.png",
+                "~@/assets/lottery/unRecord/bg_2@2x.png",
+                100%,
+                100%
+                );
+                background-position-x: right;
+                background-repeat: no-repeat;
+                display: none;
+            }
+            .tip {
+                width: px2rem(208px);
+                height: px2rem(32px);
+                opacity: 1;
+                font-size: px2rem(32px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: center;
+                color: #999999;
+                line-height: px2rem(32px);
+                z-index: 10;
+                display: none;
+            }
+        }
     }
-    .container {
-      width: 100%;
-      height: 80%;
-      background-color: #ffffff;
-      position: relative;
-      overflow-y: auto;
-      &.center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      &.pl40 {
-        padding-left: px2rem(40px);
-      }
-      &.pr40 {
-        padding-right: px2rem(40px);
-      }
-      .list-wrap {
-        height: px2rem(100px);
-        line-height: px2rem(100px);
-        .title {
-          font-family: SourceHanSansCN, SourceHanSansCN-Regular;
-          font-weight: 400;
-          text-align: left;
-          color: #333333;
-          opacity: 1;
-          font-size: px2rem(24px);
-          line-height: px2rem(100px);
-        }
-        .labelClass {
-          width: px2rem(60px);
-        }
-        .jump {
-          opacity: 0.6;
-          font-size: px2rem(24px);
-          font-family: SourceHanSansCN, SourceHanSansCN-Regular;
-          font-weight: 400;
-          text-align: right;
-          color: #333333;
-          line-height: px2rem(100px);
-          &.is-hide{
-            display: none;
-          }
-        }
-        &::after {
-          width: 100%;
-          opacity: 0.2;
-          border-bottom-style: dashed;
-          border-bottom-color: #4f0f0f;
-        }
-      }
-      .bg {
-        width: px2rem(299px);
-        height: px2rem(228px);
-        margin-left: px2rem(99px);
-        @include img-retina(
-          "~@/assets/lottery/unRecord/bg_2.png",
-          "~@/assets/lottery/unRecord/bg_2@2x.png",
-          100%,
-          100%
-        );
-        background-position-x: right;
-        background-repeat: no-repeat;
-        display: none;
-      }
-      .tip {
-        width: px2rem(208px);
-        height: px2rem(32px);
-        opacity: 1;
-        font-size: px2rem(32px);
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: center;
-        color: #999999;
-        line-height: px2rem(32px);
-        z-index: 10;
-        display: none;
-      }
-    }
-    .logo {
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: px2rem(-154px);
-      // position: absolute;
-      // top: px2rem(40px);
-      // left: px2rem(205px);
-      // margin: auto;
-      @include img-retina(
+  }
+  .logo{
+    position: absolute;
+    top: px2rem(40px); left: px2rem(205px);
+    width: px2rem(339px);
+    height: px2rem(157px);
+    @include img-retina(
         "~@/assets/lottery/diallist/bg.png",
         "~@/assets/lottery/diallist/bg@2x.png",
         100%,
         100%
-      );
-      background-position-x: right;
-      background-repeat: no-repeat;
-      width: px2rem(339px);
-      height: px2rem(157px);
-    }
+    );
+    z-index: 2;
+    // @include img-retina("~@/assets/lottery/modelImg/model-bg.png",
+    // "~@/assets/lottery/modelImg/model-bg.png", 100%, 100%);
   }
-  // .logo {
-  //   position: absolute;
-  //   // top: px2rem(40px);
-  //   // left: px2rem(205px);
-  //   margin: auto;
-  //   @include img-retina(
-  //     "~@/assets/lottery/diallist/bg.png",
-  //     "~@/assets/lottery/diallist/bg@2x.png",
-  //     100%,
-  //     100%
-  //   );
-  //   background-position-x: right;
-  //   background-repeat: no-repeat;
-  //   width: px2rem(339px);
-  //   height: px2rem(157px);
-  // }
-}
-.isShow {
-  display: block !important;
+  .record-prize-content-bg{
+    width: px2rem(750px);
+    height: px2rem(520px);
+    @include img-retina(
+      "~@/assets/lottery/diallist/bg1.png",
+      "~@/assets/lottery/diallist/bg1.png",
+      100%,
+      100%
+    );
+    background-repeat: no-repeat;
+    position: absolute;
+    top: px2rem(488px);
+  }
 }
 </style>

@@ -21,9 +21,9 @@ import 'swiper/swiper-bundle.css'
 import Vant from 'vant'
 import 'vant/lib/index.css'
 import 'vant/lib/icon/local.css'// 本地
-import LuckDraw from 'vue-luck-draw'
+// import LuckDraw from 'vue-luck-draw'
 
-Vue.use(LuckDraw)
+// Vue.use(LuckDraw)
 Vue.use(Vant)
 Vue.use(VideoPlayer)
 Vue.use(VueAwesomeSwiper)

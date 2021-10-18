@@ -124,16 +124,19 @@ export default {
             margin-top: px2rem(71px);
         }
         .tips{
-            width: px2rem(416px);
-            height: px2rem(86px);
-            opacity: 1;
-            font-size: px2rem(32px);
-            font-family: SourceHanSansCN, SourceHanSansCN-Regular;
-            font-weight: 400;
-            text-align: center;
-            color: #fff4e3;
-            line-height: px2rem(48px);
-            margin: auto auto px2rem(61px) auto;
+          width: px2rem(416px);
+          height: px2rem(86px);
+          opacity: 1;
+          font-size: px2rem(32px);
+          font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+          font-weight: 400;
+          text-align: center;
+          color: #fff4e3;
+          line-height: px2rem(48px);
+          margin: auto auto px2rem(61px) auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
         .points{
             position: absolute;

@@ -13,9 +13,9 @@
                   <div class="overdues" v-if="itemData.status === '已过期'"></div>
               </div>
               <div class="content-pre-info">
-                    <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
-                    <p>{{itemData.prize_info.prize_date[1]}}</p>
-                    <p>优惠券仅支持在本店铺使用，全场商品通用</p>
+                <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
+                <p>{{itemData.prize_info.prize_date[1]}}</p>
+                <p>优惠券仅支持在本店铺使用，全场商品通用</p>
               </div>
           </div>
           <div slot="content-next" class="record-info-next">

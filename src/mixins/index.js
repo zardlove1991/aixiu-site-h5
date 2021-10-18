@@ -40,7 +40,7 @@ export default {
   },
   created () {
     // this.$wx = wx// 初始化通用weixin变量
-    this.initWeixinInfo() // 初始化微信配置信息
+    // this.initWeixinInfo() // 初始化微信配置信息
     // this.initReirectParams() // 判断是否有全局参数
   },
   computed: {

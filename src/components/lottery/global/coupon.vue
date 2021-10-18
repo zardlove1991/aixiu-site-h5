@@ -35,8 +35,8 @@
                     </div>
                     <div class="avatar-box">
                         <div class="avatar" v-if="couponData.is_merchants.logo_url">
-                            <!-- <van-image  class="img" :src="couponData.is_merchants.logo_url"></van-image> -->
-                            <img class="img" src="couponData.is_merchants.logo_url" alt="">
+                            <img class="img" :src="couponData.is_merchants.logo_url" />
+                            <!-- <img class="img" src="couponData.is_merchants.logo_url" alt=""> -->
                         </div>
                         <div class="avatar-name" v-if="couponData.is_merchants.name">{{couponData.is_merchants.name}}</div>
                     </div>
@@ -255,7 +255,9 @@ export default {
                         padding: auto px2rem(64px);
                         margin-bottom: px2rem(30px);
                         span {
-                            font-size: px2rem(44px);
+                            width: px2rem(300px);
+                            // padding: auto px2rem(20px);
+                            font-size: px2rem(36px);
                             font-family: PingFangSC, PingFangSC-Medium;
                             font-weight: 500;
                             text-align: left;
@@ -346,6 +348,9 @@ export default {
             color: rgba(255, 244, 227, .8);
             line-height: px2rem(24px);
             margin-left: px2rem(40px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             p{
                 margin-bottom: px2rem(20px);
             }
