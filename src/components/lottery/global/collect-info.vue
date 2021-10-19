@@ -766,6 +766,10 @@ export default {
             overflow-y: auto;
             margin-bottom:px2rem(60px);
         }
+        .form-sub {
+          overflow: hidden;
+          margin-top: px2rem(60px);
+        }
         .form-btn{
           width: px2rem(300px);
           height: px2rem(80px);
@@ -774,7 +778,6 @@ export default {
           background: linear-gradient(0deg,#ffdaa3 1%, #ffebc5);
           border-radius: px2rem(16px);
         //   margin: px2rem(60px) auto;
-          margin-top: px2rem(30px);
           margin-left: auto;
           margin-right: auto;
           box-shadow: 0 px2rem(8px) 0px 0px #e5b56b;

@@ -61,8 +61,8 @@ export default {
 <style lang='scss'>
 .container {
     img {
-      // max-width: 100% !important;
-      width:auto;
+      max-width: 100% !important;
+      width: auto;
       height:auto;
       object-fit: none;
     }
@@ -109,7 +109,7 @@ export default {
       z-index: 10;
         // margin-bottom: px2rem(50px);
       .title{
-        margin-top: px2rem(-8px);
+        margin-top: px2rem(-7px);
         min-width: px2rem(297px);
         max-width: px2rem(360px);
         height:px2rem(68px);

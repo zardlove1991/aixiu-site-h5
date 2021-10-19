@@ -1,5 +1,5 @@
 <template>
-  <div class='record-code-dialog' v-if="show">
+  <div class='record-code-dialog' v-if="show" v-fixed>
     <div class="record-code">
         <div class="record-code-header-bg"></div>
         <div class="record-code-header">
@@ -107,6 +107,23 @@ export default {
   mounted () {
 
   },
+  directives: {
+    fixed: {
+      // inserted 被绑定元素插入父节点时调用
+      inserted () {
+        let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+        document.body.style.cssText += 'position:fixed;width:100%;top:-' + scrollTop + 'px;'
+      },
+      // unbind 指令与元素解绑时调用
+      unbind () {
+        let body = document.body
+        body.style.position = ''
+        let top = body.style.top
+        document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top)
+        body.style.top = ''
+      }
+    }
+  },
   methods: {
     onClose () {
       this.$emit('close', false)
@@ -125,7 +142,7 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 99;
   display: flex;
@@ -161,7 +178,7 @@ export default {
         width: px2rem(280px);
         height:px2rem(68px);
         margin-left: px2rem(160px);
-        margin-top: px2rem(-8px);
+        margin-top: px2rem(-7px);
         // margin-right: auto;
         @include img-retina("~@/assets/lottery/activityRule/title.png",
         "~@/assets/lottery/activityRule/title@2x.png", 100%, 100%);

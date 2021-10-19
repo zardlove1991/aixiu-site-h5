@@ -1,37 +1,36 @@
 <template>
-    <div class='prize-qrCode-model'  v-if="show">
-        <div class="prize-qrCode-model-wrap">
-                <div class="model-bg"></div>
-                <div class="prize-qrCode-model-wrap-bg"></div>
-                <div class="prize-qrCode-header">
-                    <div class="prize-qrCode-header-right" @click.stop="onClose">
-                    <i class="i-close"></i>
-                    </div>
-                </div>
-                 <div class="container">
-                    <div class="title">提货凭证</div>
-                    <div class="qrCode-wrap" v-if="lotteryCodeData.cancel_code">
-                        <img class="code" :src="lotteryCodeData.cancel_code" alt="" />
-                        <!-- <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image> -->
-                    </div>
-                    <div class="info">
-                        <p>兑奖码： {{lotteryCodeData && lotteryCodeData.code || '--'}} </p>
-                        <p>门店地址：{{lotteryCodeData && lotteryCodeData.select_merchant.address || '--'}}</p>
-                        <p v-if="lotteryCodeData.select_merchant.start_time && lotteryCodeData.select_merchant.end_time">营业时间：{{lotteryCodeData.select_merchant.start_time}} - {{lotteryCodeData.select_merchant.end_time}}</p>
-                        <p v-else>营业时间：--</p>
-                        <p>兑奖时间：{{lotteryCodeData && lotteryCodeData.award_time || '--'}}</p>
-                    </div>
-                    <div class="line"></div>
-                    <div class="tips">
-                        <p>请展示二维码图片给店员进行使用，长按图片可</p>
-                        <p>保存到相册</p>
-                    </div>
-                 </div>
-                <div class="points"></div>
-                <div class="prize-qrCode-footer"></div>
+  <div class='prize-qrCode-model'  v-if="show" v-fixed>
+    <div class="prize-qrCode-model-wrap">
+      <div class="model-bg"></div>
+      <div class="prize-qrCode-model-wrap-bg"></div>
+      <div class="prize-qrCode-header">
+        <div class="prize-qrCode-header-right" @click.stop="onClose">
+        <i class="i-close"></i>
         </div>
-
+      </div>
+      <div class="container">
+        <div class="title">提货凭证</div>
+        <div class="qrCode-wrap" v-if="lotteryCodeData.cancel_code">
+            <img class="code" :src="lotteryCodeData.cancel_code" alt="" />
+            <!-- <van-image class="code" :src="lotteryCodeData.cancel_code"></van-image> -->
+        </div>
+        <div class="info">
+          <p>兑奖码： {{lotteryCodeData && lotteryCodeData.code || '--'}} </p>
+          <p>门店地址：{{lotteryCodeData && lotteryCodeData.select_merchant.address || '--'}}</p>
+          <p v-if="lotteryCodeData.select_merchant.start_time && lotteryCodeData.select_merchant.end_time">营业时间：{{lotteryCodeData.select_merchant.start_time}} - {{lotteryCodeData.select_merchant.end_time}}</p>
+          <p v-else>营业时间：--</p>
+          <p>兑奖时间：{{lotteryCodeData && lotteryCodeData.award_time || '--'}}</p>
+        </div>
+        <div class="line"></div>
+        <div class="tips">
+          <p>请展示二维码图片给店员进行使用，长按图片可</p>
+          <p>保存到相册</p>
+        </div>
+      </div>
+      <div class="points"></div>
+      <div class="prize-qrCode-footer"></div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -77,6 +76,23 @@ export default {
   mounted () {
 
   },
+  directives: {
+    fixed: {
+      // inserted 被绑定元素插入父节点时调用
+      inserted () {
+        let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+        document.body.style.cssText += 'position:fixed;width:100%;top:-' + scrollTop + 'px;'
+      },
+      // unbind 指令与元素解绑时调用
+      unbind () {
+        let body = document.body
+        body.style.position = ''
+        let top = body.style.top
+        document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top)
+        body.style.top = ''
+      }
+    }
+  },
   methods: {
     onClose () {
       this.$emit('close')
@@ -95,7 +111,7 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 99;
   display: flex;
