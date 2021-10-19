@@ -60,7 +60,8 @@ export default {
       let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
       this.$router.push({
         name: 'lottery' + flag,
-        params: {id: id}
+        params: {id: id},
+        query: {from: window.location.pathname}
       })
       this.$emit('closeReward')
     }
