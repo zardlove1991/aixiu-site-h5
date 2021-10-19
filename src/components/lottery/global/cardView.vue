@@ -256,7 +256,7 @@ export default {
                             font-size: px2rem(36px);
                             font-family: PingFangSC, PingFangSC-Medium;
                             font-weight: 500;
-                            text-align: left;
+                            text-align: center;
                             color: #fff4e3;
                             overflow: hidden;
                             text-overflow:ellipsis;

@@ -30,7 +30,7 @@
             </div>
         </div>
     <CardIntegral :show.sync='isCardIntegralShow' v-if="isCardIntegralShow" @close='isCardIntegralShow = false' :data.sync="tempItem"/>
-    <CardIntegralPull :show.sync='isCardIintegralPullShow' v-if="isCardIintegralPullShow" @close='isCardIintegralPullShow = false' :data.sync="tempItem"/>
+    <!-- <CardIntegralPull :show.sync='isCardIintegralPullShow' v-if="isCardIintegralPullShow" @close='isCardIintegralPullShow = false' :data.sync="tempItem"/> -->
     <CardStock :show.sync='isCardStockShow' v-if="isCardStockShow" @close='isCardStockShow=false' :data.sync="tempItem"/>
     <CardOverdues :show.sync='isCardOverduesShow' v-if='isCardOverduesShow' @close='isCardOverduesShow = false' :data.sync="tempItem"/>
     <RecordUncode :show.sync='isRecordUncodeShow' v-if="isRecordUncodeShow" @close='isRecordUncodeShow = false' :data.sync="tempItem"/>
@@ -40,31 +40,39 @@
     <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
     <CardPacketPull :show.sync='isCardPacketPullShow' v-if="isCardPacketPullShow" @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
 
-    <!-- <CardOverduess :show.sync="tempShow" @close='tempShow = false'/> -->
+    <!-- <CardPacketPulls :show.sync="tempShow" @close='tempShow = false'/> -->
     </div>
 </template>
 
 <script>
 import API from '@/api/module/examination'
-import CardIntegral from '@/components/lottery/global/dial-card-integral'
-import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
-import CardStock from '@/components/lottery/global/dial-card-stock'
+// import CardIntegral from '@/components/lottery/global/dial-card-integral'
+// import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
+// import CardStock from '@/components/lottery/global/dial-card-stock'
 // import CardOverdues from '@/components/lottery/global/dial-card-overdues'
 // import RecordUncode from '@/components/lottery/global/dial-record-uncode'
 // import RecordCode from '@/components/lottery/global/dial-record-code'
 import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
 import RecordInfo from '@/components/lottery/global/dial-record-info'
 // import CardPacket from '@/components/lottery/global/dial-card-packet'
-import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
+// import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import RecordUncode from '@/components/lottery/global/record-uncode'
 import RecordCode from '@/components/lottery/global/record-code'
 import CardOverdues from '@/components/lottery/global/card-overdues'
+import CardIntegralPull from '@/components/lottery/global/card-integralPull'
+import CardIntegral from '@/components/lottery/global/card-integral'
+import CardStock from '@/components/lottery/global/card-stock'
+import CardPacketPull from '@/components/lottery/global/card-packetPull'
 export default {
   name: '',
   components: {
     // RecordUncodes,
     // RecordCodes,
     // CardOverduess,
+    // CardIntegralPulls,
+    // CardIntegrals,
+    // CardStocks,
+    // CardPacketPulls,
 
     CardIntegral,
     CardIntegralPull,
