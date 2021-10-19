@@ -296,11 +296,11 @@ export default {
         width: px2rem(600px);
         height: px2rem(40px);
         background-repeat: no-repeat;
-        background-clip: text;
+        // background-clip: text;
         color: transparent;
         background-color: rgba(0, 0, 0, 0.5);
-        filter:alpha(opacity=50);
-        -webkit-filter: alpha(opacity=50);
+        // filter:alpha(opacity=50);
+        // -webkit-filter: alpha(opacity=50);
         position: relative;
         margin: px2rem(20px) auto;
         .line {

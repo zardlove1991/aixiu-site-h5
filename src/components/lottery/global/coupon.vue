@@ -125,7 +125,8 @@ export default {
   justify-content: center;
   .coupon-model-wrap{
     width: px2rem(600px);
-    height: px2rem(802px);
+    // height: px2rem(802px);
+    height: px2rem(682px);
     opacity: 1;
     background: linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
     border-radius: px2rem(16px);
@@ -169,7 +170,8 @@ export default {
     }
     .container{
         width: 100%;
-        height: px2rem(750px);
+        // height: px2rem(750px);
+        height: px2rem(630px);
         position: absolute;
         top: px2rem(52px);
         z-index: 10;
@@ -260,7 +262,7 @@ export default {
                             font-size: px2rem(36px);
                             font-family: PingFangSC, PingFangSC-Medium;
                             font-weight: 500;
-                            text-align: left;
+                            text-align: center;
                             color: #fff4e3;
                             overflow: hidden;
                             text-overflow:ellipsis;
@@ -352,7 +354,7 @@ export default {
             flex-direction: column;
             justify-content: space-between;
             p{
-                margin-bottom: px2rem(20px);
+                // margin-bottom: px2rem(20px);
             }
             & p:nth-child(2){
                 text-indent:3.5em;

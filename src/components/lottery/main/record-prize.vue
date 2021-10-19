@@ -337,12 +337,12 @@ export default {
     position: absolute;
     top: px2rem(127px); left: 0;
     .record-prize-content{
-        width: px2rem(690px);
+        width: calc(100% - (30px));
+        // width: px2rem(690px);
         // height: px2rem(1270px);
         height: px2rem(1281px);
         background: #ffffff;
         border-radius: px2rem(16px);
-        box-shadow: 0px px2rem(6px) px2rem(14px) px2rem(2px) rgba(0,0,0,0.12);
         margin-left: auto;
         margin-right: auto;
         padding-top: px2rem(66px);
@@ -451,8 +451,11 @@ export default {
     }
   }
   .logo{
-    position: absolute;
-    top: px2rem(40px); left: px2rem(205px);
+    // position: absolute;
+    // top: px2rem(40px); left: px2rem(205px);
+    margin-top: px2rem(-87px);
+    margin-left: auto;
+    margin-right: auto;
     width: px2rem(339px);
     height: px2rem(157px);
     @include img-retina(
@@ -466,7 +469,8 @@ export default {
     // "~@/assets/lottery/modelImg/model-bg.png", 100%, 100%);
   }
   .record-prize-content-bg{
-    width: px2rem(750px);
+    // width: px2rem(750px);
+    width: 100%;
     height: px2rem(520px);
     @include img-retina(
       "~@/assets/lottery/diallist/bg1.png",
