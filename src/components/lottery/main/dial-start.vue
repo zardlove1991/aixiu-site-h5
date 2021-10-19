@@ -49,7 +49,7 @@
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
         </div>
-        <div class="activity-btn-wrap" @click="$router.back()">
+        <div class="activity-btn-wrap" @click="handleBack" v-if="$router.params.from">
           <i class='back-btn-arrow' />
           <span class="activity-btn">返回活动主页</span>
         </div>
@@ -262,7 +262,8 @@ export default {
     }
   },
   props: {
-    id: String
+    id: String,
+    form: String
   },
   mixins: [mixins],
   data () {
@@ -918,6 +919,14 @@ export default {
         name: 'lotteryrotorRecord',
         params: { id: this.id }
       })
+    },
+    handleBack () {
+      if (this.$router.params.form) {
+        console.log(this.$router.params.form, 'this.$router.params.form')
+        this.$router.push({
+          path: this.$router.params.form
+        })
+      }
     },
     sharePage (detailInfo) {
       if (!detailInfo) {
