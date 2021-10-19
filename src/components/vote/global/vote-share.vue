@@ -60,11 +60,15 @@ import AreaVote from '@/components/vote/global/vote-area'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import { mapGetters } from 'vuex'
-import { Toast } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 // import { formatTimeBySec } from '@/utils/utils'
 
 export default {
   props: {
+    id: {
+      type: String,
+      default: ''
+    },
     show: {
       type: Boolean,
       default: false
@@ -92,7 +96,6 @@ export default {
     slideCode: {
       handler (newData, oldData) {
         if (newData.isStopSlideType && newData._mark_offset !== 0) {
-          console.log('111', newData, newData.isStopSlideType, newData._mark_offset)
           // 滑动校验成功
           this.codeObj.tn_x = newData._mark_offset // 滑动的偏移量
           this.saveShare(this.curMemberId)
@@ -100,6 +103,13 @@ export default {
         }
       },
       deep: true
+    },
+    id: {
+      handler (newData, oldData) {
+        // this.getDetailInfo(newData)
+      },
+      deep: true,
+      immediate: true
     }
   },
   data () {
@@ -122,7 +132,8 @@ export default {
     }
   },
   mounted () {
-    this.curDetailInfo = STORAGE.get('detailInfo')
+    // this.curDetailInfo = STORAGE.get('detailInfo')
+
     // eslint-disable-next-line no-undef
     this.slideCode = $TN
     // 对象的清空
@@ -139,6 +150,13 @@ export default {
     this.slideCode.member = userStr
   },
   methods: {
+    getDetailInfo (data) {
+      API.getVodeDetail({
+        query: { id: data }
+      }).then((res) => {
+        this.curDetailInfo = res
+      })
+    },
     initTnObj () {
       // 滑块信息的清空
       this.slideCode.requestUrl = ''
@@ -149,28 +167,33 @@ export default {
       this.$emit('close')
     },
     async sureWorkVote () {
-      let detailInfo = STORAGE.get('detailInfo')
-      if (!detailInfo) {
-        return
-      }
-      let { rule, id } = detailInfo
-      let { collect_member_info: collectMemberInfo } = rule
-      // 是否验证投票
-      if (collectMemberInfo && collectMemberInfo.length > 0) {
-        let status = await this.getIsCollect(id)
-        if (status) {
-          let newCheckVote = {}
-          for (let coll of collectMemberInfo) {
-            newCheckVote[coll] = true
+      try {
+        let detailInfo = STORAGE.get('detailInfo')
+        if (!detailInfo) {
+          return
+        }
+        let { rule, id } = detailInfo
+        let { collect_member_info: collectMemberInfo } = rule
+        // 是否验证投票
+        console.log('collectMemberInfo', collectMemberInfo)
+        if (collectMemberInfo && collectMemberInfo.length > 0) {
+          let status = await this.getIsCollect(id)
+          if (status) {
+            let newCheckVote = {}
+            for (let coll of collectMemberInfo) {
+              newCheckVote[coll] = true
+            }
+            this.checkVote = newCheckVote
+            this.$emit('close')
+            this.isCheckVote = true
+          } else {
+            this.isCanvassShare()
           }
-          this.checkVote = newCheckVote
-          this.$emit('close')
-          this.isCheckVote = true
         } else {
           this.isCanvassShare()
         }
-      } else {
-        this.isCanvassShare()
+      } catch (e) {
+        console.log(e)
       }
     },
     getIsCollect (id) {
@@ -208,17 +231,26 @@ export default {
     },
     checkedCodeFun (memberId = '') {
       // 判断是否开启滑动验证码
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
-      console.log('_needCode', _needCode, this.curDetailInfo.rule)
-      this.codeObj = {}
-      if (_needCode === 1) {
-        this.initTnObj()
-        this.slideCode.show() // 显示二维码
-        this.codeObj.tn_x = 0
-        // eslint-disable-next-line no-undef
-        this.codeObj.request_id = $TN._request_id // 获取请求的id
-      } else {
-        this.saveShare(memberId)
+      try {
+        // let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        let _detailInfo = STORAGE.get('detailInfo')
+        let _needCode = _detailInfo.rule.need_code // 0 => 未开始 1 => 开启
+        this.codeObj = {}
+        if (_needCode === 1) {
+          Indicator.open({ spinnerType: 'fading-circle' })
+          this.initTnObj()
+          this.slideCode.show() // 显示二维码
+          this.codeObj.tn_x = 0
+          // eslint-disable-next-line no-undef
+          this.codeObj.request_id = $TN._request_id // 获取请求的id
+          setTimeout(() => {
+            Indicator.close()
+          }, 800)
+        } else {
+          this.saveShare(memberId)
+        }
+      } catch (e) {
+        console.error(e)
       }
     },
     saveShare (memberId = '') {
@@ -227,14 +259,15 @@ export default {
       if (!config || !detailInfo) {
         return
       }
-      let _needCode = this.curDetailInfo.rule.need_code // 0 => 未开始 1 => 开启
-      console.log('1', _needCode, this.curDetailInfo)
+      let _needCode = detailInfo.rule.need_code // 0 => 未开始 1 => 开启
       if (_needCode === 0) {
         // 不需要滑动验证码
         this.codeObj = {}
       }
 
       this.voteDisable = true
+      // eslint-disable-next-line no-undef
+      this.codeObj.request_id = $TN._request_id // 刷新时重新赋值
       let obj = {
         ...this.codeObj,
         ...config,
@@ -258,6 +291,7 @@ export default {
         data: obj
       }).then(res => {
         let errCode = res.error_code
+        console.log('errCode', errCode)
         if (errCode) {
           if (errCode === 'INVALID_CODE') {
             // 滑动验证码失败
@@ -265,6 +299,8 @@ export default {
               this.slideCode.checkSuccessType({type: 'fail'})
             }
             this.voteDisable = false
+            // 允许滑动
+            this.slideCode._reset()
             return false
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
@@ -274,20 +310,36 @@ export default {
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {
             // 区域限制
             this.isShowArea = true
             this.$emit('close')
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           } else if (errCode === 'NO_REMAIN_VOTES') {
             Toast('对当前作品的投票次数已用完')
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             this.voteDisable = false
             return
           } else {
             Toast(res.error_message)
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
             return
           }
         }
@@ -303,7 +355,6 @@ export default {
         // 抽奖
         let lottery = res.lottery
         if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
-          console.log('抽奖！！')
           this.isShowLottery = true
           this.lottery = lottery
           this.$emit('close')
@@ -384,5 +435,8 @@ export default {
         color: #F36E4E;
       }
     }
+  }
+  .mint-indicator-wrapper{
+    z-index: 9999 !important;
   }
 </style>

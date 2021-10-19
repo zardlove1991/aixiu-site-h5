@@ -34,8 +34,12 @@
         </div>
         <vote-audio
           v-if="showModel === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
-        <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
-        <div class="header first-header">
+        <!-- <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div> -->
+        <div v-for='(item, index) in columnList' :key='index' class="header first-header">
+          <span>{{item.label}}：</span>
+          <span class="header-txt">{{item.value}}</span>
+        </div>
+        <!-- <div class="header first-header">
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
         </div>
@@ -60,7 +64,7 @@
         <div class="header">
           <span>联系人电话：</span>
           <span class="header-txt">{{selfData.contact_phone}}</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- <div class="submit-btn-wrap color-button_color"
@@ -106,6 +110,7 @@ export default {
       imageRatio: 0, // 图片模式
       videoMode: '1', // 视频展示模式 1: 横屏1行1个 2: 横屏1行2个 3: 竖屏1行2个
       darkMark: '1', // 1: 深色系 2: 浅色系
+      columnList: [],
       fullSceneMap
     }
   },
@@ -129,7 +134,6 @@ export default {
           }
           // 判断图片模式
           let pageSetup = detailInfo.rule.page_setup
-          console.log('let pageSetup', pageSetup.font_color)
           if (pageSetup.image_ratio) {
             this.imageRatio = 1
           } else {
@@ -154,6 +158,24 @@ export default {
         if (!res) {
           return
         }
+
+        const extraArr = Object.entries(res.extra)
+        const extraTitlesArr = Object.entries(res.extraTitles)
+        this.columnList = []
+        for (let i = 0; i < extraArr.length; i++) {
+          let labellArr = extraTitlesArr.find(item => item[0] === extraArr[i][0])
+          if (labellArr === undefined) {
+            continue
+          }
+
+          if (extraArr[i][1] !== '') {
+            this.columnList.push({
+              label: labellArr[1],
+              value: extraArr[i][1]
+            })
+          }
+        }
+
         let fullSceneType = res.full_scene_type
         if (fullSceneType && fullSceneType !== '0') {
           this.showModel = this.fullSceneMap[fullSceneType][1]

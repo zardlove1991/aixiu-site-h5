@@ -1,5 +1,5 @@
 <template>
-  <div class="depence-page-backbtn">
+  <div class="depence-page-backbtn" :style="{'background':themeColor}">
     <i class="back-btn-arrow"></i>
     <span class="back-btn-text" @click="jumpPage()">{{title}}</span>
   </div>
@@ -12,6 +12,10 @@ export default {
     title: {
       type: String,
       default: '返回活动主页'
+    },
+    themeColor: {
+      type: String,
+      default: ''
     }
   },
   methods: {

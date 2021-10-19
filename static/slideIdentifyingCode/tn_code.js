@@ -2,6 +2,8 @@
 // let requestUrl = 'http://xzh5-dev.aihoge.com/api/votinghy'
 // let requestUrl = 'http://localhost:8080/api/votinghy'
 
+// import { Indicator } from 'mint-ui'
+
 let requestUrl = `${window.location.protocol}//${window.location.host}/api/votinghy`
 
 if (!document.getElementByClassName) {
@@ -121,10 +123,10 @@ var tncode = {
     }
   },
   _block_start_move: function (e) {
-    // console.log('stare-move', tncode._doing)
     if (tncode._doing || !tncode._img_loaded ) {
       return
     }
+    console.log('start-move')
     e.preventDefault()
     tncode.isLoadType = false
     var theEvent = window.event || e
@@ -141,10 +143,10 @@ var tncode = {
     tncode._is_moving = true
   },
   _block_on_move: function (e) {
-    // console.log('move-1', tncode._doing, tncode._is_moving)
+    console.log('move-1', tncode._doing, tncode._is_moving)
     if (!tncode._doing) return true
     if (!tncode._is_moving) return true
-    // console.log('move-2', e)
+    console.log('block-on-move')
     e.preventDefault()
     tncode.isStopSlideType = false
     var theEvent = window.event || e
@@ -169,11 +171,9 @@ var tncode = {
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
-   // console.log('我_block_on_end被谁调用了：', tncode._block_on_end.caller)
+    console.log('_doing', tncode._doing)
     if (!tncode._doing) return true
-    // if (tncode.isInitType) {
-    //   return false
-    // }
+    console.log('block-on-end')
     e.preventDefault()
     var theEvent = window.event || e
     if (theEvent.touches) {
@@ -181,10 +181,11 @@ var tncode = {
     }
 
     tncode.isStopSlideType = true
-    tncode._is_moving = false
+    // tncode._is_moving = false
+    console.log('isStopSlideType', tncode.isStopSlideType, tncode._is_moving)
   },
   checkSuccessType: function (data) {
-    // console.log('tncode.isLoadType', tncode.isLoadType)
+    console.log('checkSuccessType')
     if (tncode.isLoadType) {
       // 加载过不再加载
       return false
@@ -217,151 +218,168 @@ var tncode = {
     }
   },
   _draw_fullbg: function () {
+    console.log('draw-fullbg')
+    // 绘画底部的背景图
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
+    // console.log('tncode._img', tncode._img)
     ctx_bg.drawImage(tncode._img, 0, tncode._img_h * 2, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_bg: function () {
     if (tncode._is_draw_bg) {
       return
     }
+    console.log('drae-bg')
     tncode._is_draw_bg = true
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
     ctx_bg.drawImage(tncode._img, 0, 0, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_mark: function() {
+    console.log('draw-mark')
+    // 绘画移动的图片的移动坐标
     var canvas_mark = document.getElementByClassName('tncode_canvas_mark')
     var ctx_mark = canvas_mark.getContext('2d')
-      //清理画布
-      ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
-      ctx_mark.drawImage(tncode._img, 0, tncode._img_h, tncode._mark_w,tncode._img_h,tncode._mark_offset,0,tncode._mark_w, tncode._img_h);
-      var imageData = ctx_mark.getImageData(0, 0, tncode._img_w, tncode._img_h);
-      // 获取画布的像素信息
-      // 是一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示
-      // 如：图片由两个像素构成，一个像素是白色，一个像素是黑色，那么 data 为
-      // [255,255,255,255,0,0,0,255]
-      // 这个一维数组可以看成是两个像素中RBGA通道的数组的集合即:
-      // [R,G,B,A].concat([R,G,B,A])
-      var data = imageData.data;
-      //alert(data.length/4);
-      var x = tncode._img_h,y=tncode._img_w;
-      for(var j = 0; j < x; j++) {
-          var ii = 1,k1=-1;
-          for(var k=0;k<y&&k>=0&&k>k1;){
-            // 得到 RGBA 通道的值
-              var i = (j*y+k)*4;
-              k+=ii;
-              var r = data[i]
-                , g = data[i+1]
-                , b = data[i+2];
-              // 我们从最下面那张颜色生成器中可以看到在图片的右上角区域，有一小块在
-              // 肉眼的观察下基本都是白色的，所以我在这里把 RGB 值都在 245 以上的
-              // 的定义为白色
-              // 大家也可以自己定义的更精确，或者更宽泛一些
-              if(r+g+b<200) data[i+3] = 0;
-              else{
-                  var arr_pix = [1,-5];
-                  var arr_op = [250,0];
-                  for (var i =1; i<arr_pix[0]-arr_pix[1]; i++) {
-                      var iiii = arr_pix[0]-1*i;
-                      var op = parseInt(arr_op[0]-(arr_op[0]-arr_op[1])/(arr_pix[0]-arr_pix[1])*i);
-                      var iii = (j*y+k+iiii*ii)*4;
-                      data[iii+3] = op;
-                  }
-                  if(ii==-1){
-                      break;
-                  }
-                  k1 = k;
-                  k = y-1;
-                  ii = -1;
-              };
+    //清理画布
+    ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
+    ctx_mark.drawImage(tncode._img, 0, tncode._img_h, tncode._mark_w,tncode._img_h,tncode._mark_offset,0,tncode._mark_w, tncode._img_h);
+    var imageData = ctx_mark.getImageData(0, 0, tncode._img_w, tncode._img_h);
+    // 获取画布的像素信息
+    // 是一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示
+    // 如：图片由两个像素构成，一个像素是白色，一个像素是黑色，那么 data 为
+    // [255,255,255,255,0,0,0,255]
+    // 这个一维数组可以看成是两个像素中RBGA通道的数组的集合即:
+    // [R,G,B,A].concat([R,G,B,A])
+    var data = imageData.data;
+    var x = tncode._img_h,y=tncode._img_w;
+    for(var j = 0; j < x; j++) {
+      var ii = 1,k1=-1;
+      for(var k=0;k<y&&k>=0&&k>k1;){
+        // 得到 RGBA 通道的值
+        var i = (j*y+k)*4;
+        k+=ii;
+        var r = data[i]
+          , g = data[i+1]
+          , b = data[i+2];
+        // 我们从最下面那张颜色生成器中可以看到在图片的右上角区域，有一小块在
+        // 肉眼的观察下基本都是白色的，所以我在这里把 RGB 值都在 245 以上的
+        // 的定义为白色
+        // 大家也可以自己定义的更精确，或者更宽泛一些
+        if(r+g+b<200){
+          data[i+3] = 0;
+        } else {
+          var arr_pix = [1,-5];
+          var arr_op = [250,0];
+          for (var i =1; i<arr_pix[0]-arr_pix[1]; i++) {
+            var iiii = arr_pix[0]-1*i;
+            var op = parseInt(arr_op[0]-(arr_op[0]-arr_op[1])/(arr_pix[0]-arr_pix[1])*i);
+            var iii = (j*y+k+iiii*ii)*4;
+            data[iii+3] = op;
           }
+          if(ii==-1){
+            break;
+          }
+          k1 = k;
+          k = y-1;
+          ii = -1;
+        };
       }
-      ctx_mark.putImageData(imageData, 0, 0);
+    }
+    ctx_mark.putImageData(imageData, 0, 0);
   },
   _reset:function(){
-      tncode._mark_offset = 0;
-      tncode._draw_bg();
-      tncode._draw_mark();
-      var obj = document.getElementByClassName('slide_block');
-      obj.style.cssText = "transform: translate(0px, 0px)";
+    console.log('reset')
+    tncode._mark_offset = 0;
+    tncode._draw_bg();
+    tncode._draw_mark();
+    var obj = document.getElementByClassName('slide_block');
+    obj.style.cssText = "transform: translate(0px, 0px)";
   },
   show:function(){
-      tncode.isLoadType = false
-      var obj = document.getElementByClassName('hgroup');
-      if(obj){
-          obj.style.display="none";
-      }
-      // 初始化数据
-      tncode._request_id = ''
-      tncode.refresh(); // 初次默认调取
-      tncode._tncode = this;
-      document.getElementById('tncode_div_bg').style.display="block";
-      document.getElementById('tncode_div').style.display="block";
+    // console.log('vv', Indicator)
+    console.log('---show---')
+    tncode.isLoadType = false
+    var obj = document.getElementByClassName('hgroup');
+    if(obj){
+      obj.style.display="none";
+    }
+    // 初始化数据
+    tncode._request_id = ''
+    tncode.refresh(); // 初次默认调取
+    tncode._tncode = this;
+    document.getElementById('tncode_div_bg').style.display="block";
+    document.getElementById('tncode_div').style.display="block";
   },
-  hide:function(){
-      document.getElementById('tncode_div_bg').style.display="none";
-      document.getElementById('tncode_div').style.display="none";
+  hide:function(e){
+    console.log('hide', e)
+    // e.stopPropagation()
+
+    document.getElementById('tncode_div_bg').style.display="none";
+    document.getElementById('tncode_div').style.display="none";
+
+    tncode._doing = false
+    tncode.removeBindEvent()
+    // return false
   },
   _showmsg:function(msg,status){
-      if(!status){
-          status = 0;
-          var obj = document.getElementByClassName('tncode_msg_error');
-      }else{
-          var obj = document.getElementByClassName('tncode_msg_ok');
+    console.log('_showmsg')
+    if(!status){
+      status = 0;
+      var obj = document.getElementByClassName('tncode_msg_error');
+    }else{
+      var obj = document.getElementByClassName('tncode_msg_ok');
+    }
+    obj.innerHTML = msg;
+    var setOpacity = function (ele, opacity) {
+      if (ele.style.opacity != undefined) {
+        // 兼容FF和GG和新版本IE
+        ele.style.opacity = opacity / 100;
+      } else {
+        // 兼容老版本ie
+        ele.style.filter = "alpha(opacity=" + opacity + ")";
       }
-      obj.innerHTML = msg;
-      var setOpacity = function (ele, opacity) {
-          if (ele.style.opacity != undefined) {
-              // 兼容FF和GG和新版本IE
-              ele.style.opacity = opacity / 100;
+    };
+    function fadeout(ele, opacity, speed) {
+      if (ele) {
+        var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity || 100;
+        v < 1 && (v = v * 100);
+        var count = speed / 1000;
+        var avg = (100 - opacity) / count;
+        var timer = null;
+        timer = setInterval(function() {
+            if (v - avg > opacity) {
+                v -= avg;
+                setOpacity(ele, v);
+            } else {
+                setOpacity(ele, 0);
+                if(status==0){
+                    tncode._reset();
+                }
+                clearInterval(timer);
+            }
+        }, 100);
+      }
+    }
+    function fadein(ele, opacity, speed) {
+      if (ele) {
+        var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity;
+        v < 1 && (v = v * 100);
+        var count = speed / 1000;
+        var avg = count < 2 ? (opacity / count) : (opacity / count - 1);
+        var timer = null;
+        timer = setInterval(function() {
+          if (v < opacity) {
+            v += avg;
+            setOpacity(ele, v);
           } else {
-              // 兼容老版本ie
-              ele.style.filter = "alpha(opacity=" + opacity + ")";
+            clearInterval(timer);
+            setTimeout(function() {fadeout(obj, 0, 6000);},1000);
           }
-      };
-      function fadeout(ele, opacity, speed) {
-          if (ele) {
-              var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity || 100;
-              v < 1 && (v = v * 100);
-              var count = speed / 1000;
-              var avg = (100 - opacity) / count;
-              var timer = null;
-              timer = setInterval(function() {
-                  if (v - avg > opacity) {
-                      v -= avg;
-                      setOpacity(ele, v);
-                  } else {
-                      setOpacity(ele, 0);
-                      if(status==0){
-                          tncode._reset();
-                      }
-                      clearInterval(timer);
-                  }
-              }, 100);
-          }
+        }, 100);
       }
-      function fadein(ele, opacity, speed) {
-          if (ele) {
-              var v = ele.style.filter.replace("alpha(opacity=", "").replace(")", "") || ele.style.opacity;
-              v < 1 && (v = v * 100);
-              var count = speed / 1000;
-              var avg = count < 2 ? (opacity / count) : (opacity / count - 1);
-              var timer = null;
-              timer = setInterval(function() {
-                  if (v < opacity) {
-                      v += avg;
-                      setOpacity(ele, v);
-                  } else {
-                      clearInterval(timer);
-                      setTimeout(function() {fadeout(obj, 0, 6000);},1000);
-                  }
-              }, 100);
-          }
-      }
+    }
 
-      fadein(obj, 80, 4000);
+    fadein(obj, 80, 4000);
   },
   _html: function () {
     var d = document.getElementById('tncode_div_bg')
@@ -388,28 +406,30 @@ var tncode = {
     appendHTML(bo[0], html)
   },
   _currentUrl:function(){
-      var list = document.getElementsByTagName('script');
-      for (var i in list) {
-          var  d=list[i];
-          if(d.src.indexOf('tn_code')!==-1){//js文件名一定要带这个字符
-              var arr = d.src.split('tn_code');
-              return arr[0];
-          }
+    var list = document.getElementsByTagName('script');
+    for (var i in list) {
+      var  d=list[i];
+      if(d.src.indexOf('tn_code')!==-1){//js文件名一定要带这个字符
+        var arr = d.src.split('tn_code');
+        return arr[0];
       }
+    }
   },
   refresh: function () {
+    console.log('---refresh---')
     tncode._doing = false
-    console.log('我被谁调用了：', tncode.refresh.caller)
     // var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
     // var _this = this
     tncode._err_c = 0
     tncode._is_draw_bg = false
     tncode._result = false
     tncode._img_loaded = false
+    // 将canvas元素隐藏
     var obj = document.getElementByClassName('tncode_canvas_bg')
     obj.style.display = 'none'
     obj = document.getElementByClassName('tncode_canvas_mark')
     obj.style.display = 'none'
+
     tncode._img = new Image()
     var img_url = ''
     $.ajax({
@@ -419,6 +439,7 @@ var tncode = {
       url: requestUrl + '/client/voting/code?t=' + Math.random(),
       async: false,
       success: function (res) {
+        // 加载图片与偏移量
         img_url = res.response.img
         tncode._request_id = res.response.request_id
       }
@@ -442,51 +463,61 @@ var tncode = {
     obj = document.getElementByClassName('slide_block_text');
     obj.style.display="block";
   },
+  removeBindEvent: function () {
+    let _this = this;
+    // 移除事件
+    window.document.addEventListener('touchstart', _this._block_on_move, false)
+  },
   init:function(){
+    console.log('init-code')
+    try {
       let _this = this;
       if(!tncode._img){
-          tncode._html();
-          var obj = document.getElementByClassName('slide_block');
+        tncode._html();
+        var obj = document.getElementByClassName('slide_block');
 
-          tncode._bind(obj,'mousedown',_this._block_start_move);
-          tncode._bind(document,'mousemove',_this._block_on_move);
-          // tncode._bind(document,'mouseup',_this._block_on_end);
+        tncode._bind(obj,'mousedown',_this._block_start_move);
+        tncode._bind(document,'mousemove',_this._block_on_move);
+        // tncode._bind(document,'mouseup',_this._block_on_end);
 
-          tncode._bind(obj,'touchstart',_this._block_start_move);
-          tncode._bind(document,'touchmove',_this._block_on_move);
-          tncode._bind(document,'touchend',_this._block_on_end);
+        tncode._bind(obj,'touchstart',_this._block_start_move);
+        tncode._bind(document,'touchmove',_this._block_on_move);
+        tncode._bind(document,'touchend',_this._block_on_end);
 
-          var obj = document.getElementByClassName('tncode_close');
-          tncode._bind(obj,'touchstart',_this.hide);
-          // tncode._bind(obj,'click',_this.hide);
-          var obj = document.getElementByClassName('tncode_refresh');
+        var obj = document.getElementByClassName('tncode_close');
+        // tncode._bind(obj,'touchstart',_this.hide);
+        tncode._bind(obj,'click',_this.hide);
+        var obj = document.getElementByClassName('tncode_refresh');
 
-          tncode._bind(obj,'touchstart',_this.refresh);
-          // tncode._bind(obj,'click',_this.refresh);
+        tncode._bind(obj,'touchstart',_this.refresh);
+        // tncode._bind(obj,'click',_this.refresh);
 
-          // 点击按钮事件
-          var objs = document.getElementByClassName('tncode',-1);
-          for (var i in objs) {
-              var o = objs[i];
-              o.innerHTML = '点击按钮进行验证';
-              tncode._bind(o,'touchstart',_this.show);
-              tncode._bind(o,'click',_this.show);
-          }
+        // 点击按钮事件
+        var objs = document.getElementByClassName('tncode',-1);
+        for (var i in objs) {
+          var o = objs[i];
+          o.innerHTML = '点击按钮进行验证';
+          tncode._bind(o,'touchstart',_this.show);
+          tncode._bind(o,'click',_this.show);
+        }
       }
+    } catch (e) {
+      console.log(e)
+    }
   },
   result:function(){
-      return tncode._result;
+    return tncode._result;
   },
   onsuccess:function(fn){
-      tncode._onsuccess = fn;
+    tncode._onsuccess = fn;
   }
 };
 
 var $TN = tncode;
 var _old_onload = window.onload;
 window.onload = function(){
-    if(typeof _old_onload == 'function'){
-        _old_onload();
-    }
-    tncode.init();
+  if(typeof _old_onload == 'function'){
+    _old_onload();
+  }
+  tncode.init();
 }

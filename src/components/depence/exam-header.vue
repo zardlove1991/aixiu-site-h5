@@ -64,7 +64,7 @@ import MyModel from './model'
 import LinkDialog from '../dialog/link-dialog'
 import PopDialog from '../dialog/pop-dialog'
 // import { DEPENCE } from '@/common/currency'
-import { formatTimeBySec } from '@/utils/utils'
+import { formatTimeBySec, getPlat } from '@/utils/utils'
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import SubjectMixin from '@/mixins/subject'
@@ -161,6 +161,9 @@ export default {
         }
         this.timeTip = formatTimeBySec(this.duration, true)
         this.duration--
+        if (this.duration <= 10) {
+          this.vibrateFeedback()
+        }
       }
       // 执行倒计时 首先判断是否有考试时间
       if (limitTime > 0) {
@@ -170,6 +173,14 @@ export default {
         timeFun()
       } else {
         this.timeTip = '不限时间'
+      }
+    },
+    vibrateFeedback () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.vibrateFeedback('error', function () {
+          console.log('error')
+        })
       }
     },
     async confirmSubmitModel (command) {
@@ -251,7 +262,7 @@ export default {
         let examId = this.examId
         this.$router.replace({
           path: `/exam/statistic/${examId}`,
-          query: {api_person_id: res ? res.api_person_id : ''}
+          query: {api_person_id: res ? res.api_person_id : '', from: 'submitexam'}
         })
       }
     },

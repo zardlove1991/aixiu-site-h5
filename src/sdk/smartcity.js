@@ -54,6 +54,29 @@ let smartcity = {
       id = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.length)
     }
     return id
+  },
+  applicationState () {
+    window.SmartCity.applicationState((res) => {
+      console.log(res.status)
+      let currentRoute = window.$vue.$router.currentRoute
+      let map = {
+        'depencelist': 'depencestart',
+        'livelist': 'livestart'
+      }
+      if (+res.status === 0 || +res.status === 1) {
+        // 页面激活
+        console.log('页面隐藏/激活')
+        if (map[currentRoute.name]) {
+          let id = currentRoute.params.id
+          console.log(map[currentRoute.name])
+          window.$vue.$router.replace({name: map[currentRoute.name], params: {id: id}})
+        }
+      }
+      if (+res.status === 2) {
+        console.log('程序退出')
+      }
+      this.applicationState()
+    })
   }
 }
 
@@ -64,6 +87,7 @@ export const oauth = (cbk) => {
   }
   let pathname = window.location.pathname
   let id = smartcity.getActiveId(pathname)
+  smartcity.applicationState()
   if (id) {
     // STORAGE.clear()
     STORAGE.remove('scope_limit')

@@ -34,13 +34,13 @@
         </div>
       </div>
     </div>
-    <page-back :path="'/depencestart/' + id" title='返回上一页'/>
+    <page-back :path="lastpagePath" title='返回上一页' :themeColor="themeColor" />
   </div>
 </template>
 
 <script>
 import { DropdownMenu, DropdownItem } from 'vant'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import PageBack from '@/components/depence/page-back'
 import API from '@/api/module/examination'
 export default {
@@ -65,7 +65,9 @@ export default {
       score_num: 0, // 答题总分数
       points_num: 0, // 答题总积分
       curTimeType: 1,
-      isIntegralType: false
+      isIntegralType: false,
+      themeColor: '',
+      lastpagePath: ''
     }
   },
   components: {
@@ -85,21 +87,28 @@ export default {
     } else {
       this.isIntegralType = false
     }
+    if (this.examInfo.mark === 'examination@live') {
+      this.themeColor = this.examInfo.limit.color_scheme.content.theme_color
+    }
   },
   methods: {
-    initData () {
-      let voteId = this.id
+    async initData () {
+      let id = this.id
+      if (!this.examInfo) {
+        // 获取试卷详情
+        await this.getExamDetail({ id })
+      }
+      this.lastpagePath = this.examInfo.mark === 'examination@live' ? `/livestart/${id}` : `/depencestart/${id}`
       API.getMyAnswerList({
         params: {
           type: this.curTimeType,
           page: 1,
           count: 1000
         },
-        query: { id: voteId }
+        query: { id }
       }).then(res => {
         this.answerInfoList = []
         this.answerInfoList = res.data
-
         this.number = res.number
         this.score_num = res.score_num
         this.points_num = res.points_num
@@ -116,7 +125,10 @@ export default {
       // 接口传输值不正确
       this.curTimeType = data
       this.initData()
-    }
+    },
+    ...mapActions('depence', {
+      getExamDetail: 'GET_EXAM_DETAIL'
+    })
   }
 }
 </script>

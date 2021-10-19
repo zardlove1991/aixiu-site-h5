@@ -56,13 +56,18 @@
             <my-record ref="voiceRecord" record-type="touch" @start="_resetCurPageRecord" @finish="_dealRoalAudio"></my-record>
           </div>
         </div>
-        <div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
+        <!--<div class="prev-wrap" v-show="currentSubjectIndex !== 0 && currentSubjectIndex !== examList.length-1 && examInfo.mark !== 'examination@exercise'" @click.stop="toNextQuestion">
           跳过本题
-        </div>
+        </div>-->
         <div class="next-wrap"
-          v-show="examInfo.mark !== 'examination@exercise'"
+          v-show="examInfo.mark !== 'examination@exercise' && currentSubjectIndex !== examList.length-1"
           @click.stop="saveCloud('add')">
            确认
+        </div>
+        <div class="next-wrap"
+          v-show="examInfo.mark !== 'examination@exercise' && currentSubjectIndex === examList.length-1"
+          @click.stop="saveCloud('add')">
+           {{examInfo.limit.submit_text || '立即交卷'}}
         </div>
         <div class="next-wrap"
           v-show="!nextExerciseBtn && successStatus === 0 && examInfo.mark === 'examination@exercise'"
@@ -74,7 +79,7 @@
         </div>
       </div>
     </div>
-    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise'" @click.stop="submitExam">
+    <div class="sumbit-btn" v-if="examInfo.mark !== 'examination@exercise' && currentSubjectIndex !== examList.length-1" @click.stop="submitExam">
       {{examInfo.limit.submit_text || '立即交卷'}}
     </div>
     <!--题号情况展示-->
@@ -396,19 +401,19 @@ export default {
     },
     shareAddTimes () { // 分享成功回调
       const examId = this.examInfo.id
-      if (this.examInfo.limit.is_open_share) {
-        API.shareAddTimes({
-          query: {
-            id: examId
-          }
-        }).then(res => {
-          if (res.code === 1) {
-            this.showOperateDialog = true
-          } else {
-            // 已经分享过
-          }
-        })
-      }
+      API.shareAddTimes({
+        query: {
+          id: examId
+        }
+      }).then(res => {
+        if (res.code === 1) {
+          this.showOperateDialog = true
+          this.dialogConfig.examNumber = res.is_share
+          this.dialogConfig.lotteryNumber = res.is_raffle_share
+        } else {
+          // 已经分享过
+        }
+      })
     },
     initAppShare () {
       let plat = getPlat()
@@ -465,10 +470,14 @@ export default {
         query: { ...redirectParams }
       })
     },
-    submitExam () {
+    submitExam (res) {
       if (this.examInfo.mark !== 'examination@exercise') {
+        if (res && res.saveStatus === 'timeout') {
+          this.$refs.examHeader.confirmSubmitModel('noconfirm')
+        } else {
+          this.isShowSubmitModel = true
+        }
         // this.changeSubjectIndex(this.currentSubjectIndex)
-        this.isShowSubmitModel = true
       } else {
         this.changeSubjectIndex(this.currentSubjectIndex).then(res => {
           // 练习题做错误处理
@@ -485,8 +494,8 @@ export default {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = !this.isShowSuspendModels
-      this.endExam()
+      Toast('本场作答已超时，系统已为您自动交卷')
+      this.saveCloud('timeout')
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel
@@ -652,11 +661,15 @@ export default {
         Indicator.close()
         if (err.error_code === 'member_submit') {
           Toast('本场作答已超时，系统已经为您自动交卷')
-          this.showExamResult()
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.showExamResult()
+          }
         }
         if (err.error_code === 'question_time_out') {
           Toast('本题答题超时，系统已经为您自动交卷')
-          this.showExamResult()
+          if (this.examInfo.mark === 'examination@exercise') {
+            this.showExamResult()
+          }
         }
       })
     },
@@ -667,8 +680,9 @@ export default {
         return false
       }
       if (success) {
+        console.log(this.currentSubjectIndex, 'this.currentSubjectIndex')
         this.$nextTick(() => {
-          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex > this.examList.length - 1) {
+          if (this.currentSubjectIndex < 0 || this.currentSubjectIndex >= this.examList.length - 1) {
             // Toast('已经没有题目了~')
             console.log('nextExerciseBtn', '已经没有题目了')
             this.nextExerciseBtn = false
@@ -682,6 +696,10 @@ export default {
               this.exerciseNext()
             }
           }, 0)
+          // 如果是最后一提，自动提交试卷
+          if (this.currentSubjectIndex === this.examList.length - 1 || res.saveStatus === 'timeout') {
+            this.submitExam(res)
+          }
         })
       }
     },
@@ -850,8 +868,8 @@ export default {
     vibrateFeedback () {
       let plat = getPlat()
       if (plat === 'smartcity') {
-        window.SmartCity.vibrateFeedback('warning', function () {
-          console.log('warning')
+        window.SmartCity.vibrateFeedback('error', function () {
+          console.log('error')
         })
       }
     },

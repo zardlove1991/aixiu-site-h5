@@ -3,6 +3,7 @@
     :class="(examInfo.limit && examInfo.limit.background && examInfo.limit.background.indexpic) ? '': 'no-bg-img'">
     <!--头部组件-->
     <exam-header v-if="renderType === 'exam'"
+      ref="examHeader"
       :list="examList"
       type="all"
       :showSubmitModel.sync="isShowSubmitModel"
@@ -73,6 +74,7 @@
 
 <script>
 import API from '@/api/module/examination'
+import { Toast } from 'mint-ui'
 import { mapActions, mapGetters } from 'vuex'
 import { setBrowserTitle, getPlat } from '@/utils/utils'
 import { isIphoneX } from '@/utils/app'
@@ -241,19 +243,19 @@ export default {
     },
     shareAddTimes () { // 分享成功回调
       const examId = this.examInfo.id
-      if (this.examInfo.limit.is_open_share) {
-        API.shareAddTimes({
-          query: {
-            id: examId
-          }
-        }).then(res => {
-          if (res.code === 1) {
-            this.showOperateDialog = true
-          } else {
-            // 已经分享过
-          }
-        })
-      }
+      API.shareAddTimes({
+        query: {
+          id: examId
+        }
+      }).then(res => {
+        if (res.code === 1) {
+          this.showOperateDialog = true
+          this.dialogConfig.examNumber = res.is_share
+          this.dialogConfig.lotteryNumber = res.is_raffle_share
+        } else {
+          // 已经分享过
+        }
+      })
     },
     initAppShare () {
       let plat = getPlat()
@@ -323,8 +325,10 @@ export default {
       // this.saveAnswerRecords(this.answerList)
     },
     endTime () {
-      this.isShowSuspendModels = !this.isShowSuspendModels
-      this.endExam()
+      Toast('本场作答已超时，系统已为您自动交卷')
+      this.$refs.examHeader.confirmSubmitModel('noconfirm')
+      // this.isShowSuspendModels = !this.isShowSuspendModels
+      // this.endExam()
     },
     toggleSuspendModel () {
       this.isShowSuspendModel = !this.isShowSuspendModel

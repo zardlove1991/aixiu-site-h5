@@ -86,8 +86,25 @@
     <script src="<%=htmlWebpackPlugin.options.projectPath%>/static/js/aliyun/aliyun-upload-sdk-1.5.0.min.js"></script>
 
     <script>
-      // 微信开发工具
-      let vConsole = new VConsole()
+      $(function () {
+        // 微信开发工具 dev环境或者url上带上debug=1参数 开启调试工具
+        var hostname = window.location.hostname
+        var query = window.location.search
+        if (hostname.indexOf('localhost') !== -1 || hostname.indexOf('dev') !== -1 || query.indexOf('debug=1') !== -1) {
+          var vConsole = new VConsole()
+        }
+        // ios 回退强制刷新
+        var isPageHide = false;
+        window.addEventListener('pageshow', function () {
+          if (isPageHide) {
+            window.location.reload();
+          }
+        });
+        window.addEventListener('pagehide', function () {
+          console.log('2222', isPageHide)
+          isPageHide = true;
+        });
+      })
     </script>
   </body>
 </html>

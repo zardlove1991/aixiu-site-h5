@@ -64,6 +64,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    maxUploadImgNum: {
+      type: Number,
+      default: 9
     }
   },
   components: {
@@ -77,7 +81,7 @@ export default {
           accept: 'image/*'
         },
         picture: {
-          limit: 9,
+          limit: this.maxUploadImgNum,
           // accept: '.jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF'
           accept: 'image/*'
         },
@@ -86,7 +90,7 @@ export default {
           accept: '.mp3,.MP3'
         }
       },
-      currentLimit: 9,
+      currentLimit: this.maxUploadImgNum,
       uploadUrl: '', // 上传地址
       file: {},
       signature: {} // 签名
@@ -160,7 +164,6 @@ export default {
     },
     // 上传成功
     onSuccess (response, files, fileList2) {
-      // console.log('onSuccess', response)
       let { obj, duration, width, height } = response
       if (!obj) {
         return
