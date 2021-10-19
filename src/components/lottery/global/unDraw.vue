@@ -95,8 +95,8 @@ export default {
     .unDraw-header-bg{
       width: px2rem(600px);
       height: px2rem(202px);
-      @include img-retina("~@/assets/lottery/dial-header@3x.png",
-      "~@/assets/lottery/dial-header@3x.png", 100%,100%);
+      @include img-retina("~@/assets/lottery/dial-header.png",
+      "~@/assets/lottery/dial-header.png", 100%,100%);
       background-repeat: no-repeat;
       border-top-right-radius: px2rem(16px);
       border-top-left-radius: px2rem(16px);

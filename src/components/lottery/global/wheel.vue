@@ -43,9 +43,7 @@
             <div class="tocket-name" v-else >{{i.choose_award.is_prize_name}}</div>
           </div>
           <div class="img physical"  v-show="i.type ===1">
-            <img :src="physical" alt  v-if="physical"/>
-            <img :src="i.images" alt  v-else/>
-            <!-- <img src="http://xzimg.hoge.cn/xiuzan/1632796564173/icon1.png" alt /> -->
+            <img :src="i.images" alt/>
           </div>
         </div>
       </div>
@@ -55,7 +53,6 @@
 </template>
 
 <script>
-import STORAGE from '@/utils/storage'
 export default {
   computed: {
     animationClass () {
@@ -82,7 +79,6 @@ export default {
   },
   data () {
     return {
-      physical: STORAGE.get('physical')
     //   winner: 2, // 指定获奖下标 specified为true时生效
     //   specified: false, // 是否指定获奖结果，false时为随机
     //   loading: false, // 抽奖执行状态，防止用户多次点击

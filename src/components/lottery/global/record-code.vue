@@ -346,11 +346,10 @@ export default {
         // @include img-retina("~@/assets/wheel/split.png",
         // "~@/assets/wheel/split.png", 100%, 100%);
         background-repeat: no-repeat;
-        background-clip: text;
         color: transparent;
         background-color: rgba(0, 0, 0, 0.5);
-        filter:alpha(opacity=50);
-        -webkit-filter: alpha(opacity=50);
+        // filter:alpha(opacity=50);
+        // -webkit-filter: alpha(opacity=50) !important;
         position: relative;
         margin: px2rem(20px) auto;
         .line {
