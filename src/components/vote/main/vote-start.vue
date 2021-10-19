@@ -277,6 +277,12 @@
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- 分享抽奖之后的弹窗提示 -->
+    <lottery-share-reward
+      v-if='lotteryShareRewardType'
+      :lotteryObj='lotteryObj'
+      :show="isLotteryShareReward"
+      @closeReward="isLotteryShareReward = false"></lottery-share-reward>
     <!-- 投票关联抽奖 -->
     <vote-reward
       v-if='voteRewardType'
@@ -328,6 +334,7 @@ import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
 import LotteryTips from '@/components/vote/global/lottery-tips'
+import LotteryShareReward from '@/components/vote/global/lottery-share-reward.vue'
 
 export default {
   mixins: [mixins],
@@ -356,10 +363,13 @@ export default {
     VoteReward,
     AreaVote,
     ReportNumLimit,
-    LotteryTips
+    LotteryTips,
+    LotteryShareReward
   },
   data () {
     return {
+      lotteryShareRewardType: false,
+      isLotteryShareReward: false,
       isShowCanvass: false,
       isForbidClick: false,
       lotteryTipsType: false,
@@ -526,11 +536,6 @@ export default {
       let isExistLottery = false
       isExistLottery = lotteryArr.some(item => item > 0)
       this.giftBoxType = isExistLottery
-
-      // API.getVodeDetail({
-      //   query: { id: this.id }
-      // }).then((res) => {
-      // })
     },
     showLotteryTips () {
       this.lotteryTipsType = false
@@ -542,8 +547,13 @@ export default {
     shareSuccess () {
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
-        if (res.success === 1) {
-          Toast('分享成功')
+        // eslint-disable-next-line eqeqeq
+        if (res.success == 1) {
+          this.lotteryShareRewardType = false
+          this.$nextTick(() => {
+            this.isLotteryShareReward = true
+            this.lotteryShareRewardType = true
+          })
         }
       })
     },

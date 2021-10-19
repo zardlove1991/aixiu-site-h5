@@ -77,7 +77,7 @@
             :readonly="true"
             placeholder="请选择"
             @focus="showClassifyAction()"
-            @blur="blurAction()">
+            @blur="areaBlurAction()">
           </el-input>
           <div class="drop-icon"></div>
         </div>
@@ -132,6 +132,17 @@
               </el-option>
             </el-select>
           </div>
+          <!-- area -->
+          <div  class="check-item form-content" v-if='item.type === "area"'>
+            <el-input v-model.trim="item.inputValue"
+              placeholder="地址"
+              readonly
+              @focus="focusAction('address')"
+              @blur="blurAction()"
+              maxlength="200"
+              type="text">
+            </el-input>
+          </div>
         </div>
       </template>
       <div class="submit-btn-wrap" @click="!disabled && commitVote()">
@@ -144,6 +155,13 @@
       :defaultSelect="defaultSelect"
       @success="getTypeSuccess">
     </classify-dialog>
+
+    <city-select-dialog
+      style='width: 100vw;'
+      :show="isShowCitySelect"
+      @close="isShowCitySelect = false"
+      @success="selectSuccessAction">
+    </city-select-dialog>
   </div>
 </template>
 
@@ -157,6 +175,7 @@ import STORAGE from '@/utils/storage'
 import { fullSceneMap } from '@/utils/config'
 import { Toast } from 'mint-ui'
 import { Select, Option } from 'element-ui'
+import CitySelectDialog from '@/components/dialog/city-select-dialog'
 
 export default {
   components: {
@@ -165,7 +184,8 @@ export default {
     ClassifyDialog,
     VoteFullsceneList,
     ElSelect: Select,
-    ElOption: Option
+    ElOption: Option,
+    CitySelectDialog
   },
   props: {
     id: String,
@@ -173,6 +193,7 @@ export default {
   },
   data () {
     return {
+      isShowCitySelect: false,
       imgTitle: '上传图片',
       videoTitle: '上传视频',
       audioTitle: '上传音频',
@@ -233,6 +254,17 @@ export default {
     this.choiced_works_type = STORAGE.get('detailInfo').rule.works_type_set.choiced_works_type
   },
   methods: {
+    focusAction (type) {
+      if (type === 'address') {
+        this.isShowCitySelect = true
+      }
+    },
+    selectSuccessAction (data) {
+      this.isShowCitySelect = false
+    },
+    areaBlurAction () {
+      document.body.scrollTop = 0
+    },
     mixinList () {
       this.enrollForm = {}
       try {
@@ -785,6 +817,58 @@ export default {
       .el-upload {
         background-color: #fff;
       }
+    }
+  }
+
+  .check-item {
+    width: 100%;
+    margin-bottom: px2rem(30px);
+    position: relative;
+    .el-input__inner, .el-textarea__inner {
+      -webkit-appearance: none;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: px2rem(4px);
+      padding: px2rem(20px);
+      @include font-dpr(14px);
+      color: #333;
+      border: 1px solid #dadada;
+      &::placeholder {
+        @include font-dpr(14px);
+        color: #999;
+      }
+    }
+    .el-input .el-input__inner {
+      height: px2rem(90px);
+      line-height: normal;
+    }
+    .el-textarea {
+      .el-textarea__inner {
+        resize: none;
+        height: px2rem(140px);
+      }
+    }
+    .get-img-code {
+      position: absolute;
+      right: px2rem(28px);
+      top: px2rem(15px);
+      width: px2rem(180px);
+      height: px2rem(60px);
+      background-size: px2rem(180px) px2rem(60px);
+    }
+    .get-code {
+      position: absolute;
+      right: px2rem(28px);
+      top: px2rem(25px);
+      @include font-dpr(14px);
+      // color: #FF6A45;
+      @include font-color('btnColor');
+    }
+    .get-code-time {
+      position: absolute;
+      right: px2rem(28px);
+      top: px2rem(25px);
+      @include font-dpr(14px);
+      color: #666;
     }
   }
 </style>
