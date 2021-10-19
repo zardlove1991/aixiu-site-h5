@@ -39,9 +39,9 @@ export default {
     }
   },
   created () {
-    // this.$wx = wx// 初始化通用weixin变量
-    // this.initWeixinInfo() // 初始化微信配置信息
-    // this.initReirectParams() // 判断是否有全局参数
+    this.$wx = wx// 初始化通用weixin变量
+    this.initWeixinInfo() // 初始化微信配置信息
+    this.initReirectParams() // 判断是否有全局参数
   },
   computed: {
     ...mapGetters('depence', ['redirectParams'])
@@ -139,7 +139,7 @@ export default {
             // 用户取消分享后执行的回调函数
           }
         }
-        // console.log('执行了分享参数调用', params)
+        console.log('执行了分享参数调用', params)
         // 执行调用
         wx.execute('shareQQZone', params)
         wx.execute('shareQQFriends', params)

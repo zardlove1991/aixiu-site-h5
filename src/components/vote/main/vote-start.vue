@@ -7,7 +7,7 @@
           isReportAuth === 1">
         <div class="report-top-wrap" v-if="isExamine === 0 && status !== statusCode.voteStatus">
           <div class="report-msg"><span class="tips">我也要参加</span></div>
-          <div class="report-btn" :class='{"is-forbid-click": isForbidClick}' @click="jumpPage('votesubmit')">立即报名</div>
+          <div class="report-btn" :class='{"is-forbid-click": isForbidClick}' @click="jumpPage('votesubmit', 'enroll')">立即报名</div>
         </div>
         <div class="report-top-wrap" v-if="isExamine === 1">
           <div class="report-msg" v-if="myWorkStatus === 3">
@@ -1361,9 +1361,11 @@ export default {
 
       // 是否提示活动报名数
       // 开启了限制且数量为0
-      if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
-        this.isReportNumLimit = true
-        return false
+      if (data === 'enroll') {
+        if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
+          this.isReportNumLimit = true
+          return false
+        }
       }
 
       let params = {

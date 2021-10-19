@@ -34,7 +34,7 @@
         </div>
         <vote-audio
           v-if="showModel === 'audio' && selfData.material && selfData.material.audio && selfData.material.audio.length" :data="selfData.material.audio[0]" :darkMark="darkMark"></vote-audio>
-        <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div>
+        <!-- <div v-show="showModel === 'text'" class="onself-text-wrap">{{selfData.introduce}}</div> -->
         <div v-for='(item, index) in columnList' :key='index' class="header first-header">
           <span>{{item.label}}：</span>
           <span class="header-txt">{{item.value}}</span>
@@ -168,10 +168,12 @@ export default {
             continue
           }
 
-          this.columnList.push({
-            label: labellArr[1],
-            value: extraArr[i][1]
-          })
+          if (extraArr[i][1] !== '') {
+            this.columnList.push({
+              label: labellArr[1],
+              value: extraArr[i][1]
+            })
+          }
         }
 
         let fullSceneType = res.full_scene_type
