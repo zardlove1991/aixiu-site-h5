@@ -660,13 +660,14 @@ export default {
     // 开始抽奖
     onDraw: debounce(async function () {
       this.loading = false
+      this.disableBtn = false
       let limit = this.detailInfo.limit
       console.log(this.detailInfo.limit, 'this.detailInfo.limit')
       if (limit.collection_form.is_open_collect === 2 && !this.detailInfo.collection_status) {
         this.isShowCheckDraw()
         return false
       }
-      if (!this.loading) {
+      if (!this.loading && !this.disableBtn) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.style.transform = 'none'
         this.panziElement.style.transition = 'none'
@@ -848,6 +849,7 @@ export default {
         //   this.winner = this.random(0, this.list.length - 1)
         //   this.winCallback()
         // }
+        this.disableBtn = true
         this.loading = true
       }
     }, 1000),
@@ -895,6 +897,7 @@ export default {
       // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
       setTimeout(() => {
         this.loading = false
+        this.disableBtn = false
         console.log(`恭喜你获得了${this.winner}`)
       }, this.drawTime)
     },
@@ -1564,7 +1567,7 @@ $time: 5s; //转动多少秒后停下的时间
       position: relative;
       .text {
         position: absolute;
-        top: px2rem(20px); left: px2rem(84px);
+        top: px2rem(16px); left: px2rem(84px);
         font-size: px2rem(40px);
         font-family: SourceHanSansCN, SourceHanSansCN-Bold;
         font-weight: 700;
