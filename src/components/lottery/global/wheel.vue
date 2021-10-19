@@ -24,7 +24,7 @@
             <img src="@/assets/lottery/face.png" alt />
           </div>
           <div class="img integral"  v-show="i.type ===5">
-           <img src="@/assets/lottery/integral/integral.png" alt />
+           <!-- <img src="@/assets/lottery/integral/integral.png" alt /> -->
             <!-- <div class="integral-count integral-count-1" >{{i.choose_award.is_prize_integral}}</div> -->
             <div class="integral-count">{{i.choose_award.is_prize_integral}}</div>
             <div class="integral-name">积分</div>
@@ -303,6 +303,11 @@ $time: 5s; //转动多少秒后停下的时间
         &.integral{
           width: px2rem(72px);
           height: px2rem(80px);
+          display: flex;
+          flex-direction: column;
+          padding-top: px2rem(20px);
+          background-repeat: no-repeat;
+          @include img-retina("~@/assets/lottery/integral/integral.png","~@/assets/lottery/integral/integral.png",100%,100%);
         }
         &.wechat{
           width: px2rem(110px);
@@ -332,16 +337,16 @@ $time: 5s; //转动多少秒后停下的时间
           text-align: center;
           color: #d10000;
           // transform: scale(.7);
-          position: absolute;
-          top:px2rem(20px);
-          left:px2rem(24px);
-          margin: auto;
-          &.integral-count-1{
-            left:px2rem(28px);
-          }
-          &.integral-count-2{
-            left:px2rem(26px);
-          }
+          // position: absolute;
+          // top:px2rem(20px);
+          // left:px2rem(24px);
+          // margin: auto;
+          // &.integral-count-1{
+          //   left:px2rem(28px);
+          // }
+          // &.integral-count-2{
+          //   left:px2rem(26px);
+          // }
           // position: absolute;
         }
         .integral-name {
@@ -349,11 +354,11 @@ $time: 5s; //转动多少秒后停下的时间
           font-size: px2rem(10px);
           font-family: PingFangSC, PingFangSC-Regular;
           font-weight: 400;
-          text-align: left;
+          text-align: center;
           color: #d10000;
-          position: absolute;
-          bottom:px2rem(18px);
-          left:px2rem(27px);
+          // position: absolute;
+          // bottom:px2rem(18px);
+          // left:px2rem(27px);
         }
         .wechat-name{
           width: px2rem(61px);

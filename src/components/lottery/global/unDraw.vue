@@ -182,6 +182,7 @@ export default {
       font-weight: 500;
       text-align: left;
       color: #4f0f0f;
+      border: none;
       &.btn-notAllow {
         background: linear-gradient(0deg,#fff 1%, #b7b09b);
         box-shadow: 0 px2rem(8px) 0px 0px #b7b09b;
