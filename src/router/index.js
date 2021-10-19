@@ -336,7 +336,9 @@ const routes = [{
   name: 'lotteryrotor',
   component: getOtherComponent('dial-start', 'lottery'),
   props: (route) => ({
-    id: route.params.id
+    id: route.params.id,
+    from: route.params.from
+
   }),
   meta: {
     title: ''

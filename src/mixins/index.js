@@ -154,8 +154,10 @@ export default {
     },
     examGoLotteryPage (info) {
       let { limit: { submit_rules: { lottery_config: lotteryConfig } } } = info
-      let raffleNum = info.raffle_num
-      let prizeNum = info.prize_num
+      let raffleNum = this.examInfo.raffle_num
+      let prizeNum = this.examInfo.prize_num
+      let examId = this.examInfo.id
+      let from = this.examInfo.mark === 'examination' ? `/depencestart/${examId}` : `/livestart/${examId}`
       if (lotteryConfig && lotteryConfig.related_lottery && lotteryConfig.related_lottery.isOpen) {
         let mark = lotteryConfig.related_lottery.mark
         let id = lotteryConfig.related_lottery.id
@@ -164,7 +166,8 @@ export default {
         if (raffleNum) {
           this.$router.push({
             name: 'lottery' + flag,
-            params: {id: id}
+            params: {id: id},
+            query: {from: from}
           })
         } else if (prizeNum) {
           this.$router.push({
