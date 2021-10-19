@@ -41,7 +41,7 @@
           </van-notice-bar>
         </div>
         <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
-          class="wheel-btn-on" type="primary" round @click="onDraw" :loading='loading'><span class="text">立即抽奖</span></van-button>
+          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button>
         <div v-else class="wheel-btn-off" >
           <span class="text">立即抽奖</span>
         </div>
@@ -49,7 +49,7 @@
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
         </div>
-        <div class="activity-btn-wrap" @click="$router.back()">
+        <div class="activity-btn-wrap" @click="handleBack" v-if="$route.query.from">
           <i class='back-btn-arrow' />
           <span class="activity-btn">返回活动主页</span>
         </div>
@@ -262,7 +262,8 @@ export default {
     }
   },
   props: {
-    id: String
+    id: String,
+    from: String
   },
   mixins: [mixins],
   data () {
@@ -540,15 +541,6 @@ export default {
     if (this.noticeData.length > 0) {
       this.isNoticeDataShow = false
     }
-    this.list.map((item, index) => {
-      if (item.type === 1) {
-        if (item.images instanceof Array) {
-          item.images = item.images ? this.getImage(item.images[0]) : item.images
-        }
-        item.images = item.images || ''
-        STORAGE.set('physical', item.images)
-      }
-    })
   },
   beforeDestroy () {
     // 清除定时器
@@ -691,9 +683,7 @@ export default {
           this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
-          setTimeout(() => {
-            this.ininData()
-          }, 500)
+          this.ininData()
           this.specified = true // 指定获奖下标
           // if (this.specified) {
           //   this.winner = this.winner
@@ -918,6 +908,14 @@ export default {
         name: 'lotteryrotorRecord',
         params: { id: this.id }
       })
+    },
+    handleBack () {
+      if (this.$route.query.from) {
+        // console.log(this.$route.query.from, 'this.$router.query.from')
+        this.$router.push({
+          path: this.$route.query.from
+        })
+      }
     },
     sharePage (detailInfo) {
       if (!detailInfo) {
