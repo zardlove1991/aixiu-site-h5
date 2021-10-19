@@ -166,7 +166,8 @@ export default {
         if (raffleNum) {
           this.$router.push({
             name: 'lottery' + flag,
-            params: {id: id, from: from}
+            params: {id: id},
+            query: {from: from}
           })
         } else if (prizeNum) {
           this.$router.push({
