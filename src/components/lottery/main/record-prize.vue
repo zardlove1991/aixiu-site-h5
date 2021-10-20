@@ -215,7 +215,7 @@ export default {
             this.tempItem.prize_info.award_time = this.tempItem.prize_info.award_time[0] + ' 至 ' + this.tempItem.prize_info.award_time[1]
           }
           this.isRecordCodeShow = true
-        } else if (item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中') {
+        } else if ((item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已抽中') || (item.prize_info.give_aways === 1 && !item.prize_info.qr_code && item.status_name === '已过期')) {
           if (this.tempItem.prize_info.award_time instanceof Array) {
             this.tempItem.prize_info.award_time = this.tempItem.prize_info.award_time[0] + ' 至 ' + this.tempItem.prize_info.award_time[1]
           }

@@ -70,7 +70,7 @@ export default {
   created () {
   },
   mounted () {
-
+    console.log(this.data, 'datadatadata')
   },
   directives: {
     fixed: {

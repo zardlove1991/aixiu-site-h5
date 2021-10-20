@@ -26,6 +26,7 @@
                 <div class="right-icon"></div>
             </div>
             <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
+            <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div>
             <div class="content-pre-userInfo">
               <!-- <p>兑奖码： &nbsp;&nbsp;&nbsp;KM13NJDJNCKK </p>
               <p>门店地址：楚翘城3号商务楼</p>
@@ -319,6 +320,10 @@ export default {
         background-repeat: no-repeat;
         position: absolute;
         top:px2rem(92px);right: px2rem(30px);
+        &.ticked-wrap-overdue {
+          @include img-retina("~@/assets/lottery/overdues/overdues.png",
+          "~@/assets/lottery/overdues/overdues@2x.png", 100%, 100%);
+        }
       }
       .content-pre-userInfo{
         height: px2rem(164px);

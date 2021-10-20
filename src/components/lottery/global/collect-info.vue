@@ -1,6 +1,6 @@
 <template>
     <div class='collect-info-dialog' v-if="show"  v-fixed>
-         <div class="collect-info" :class="{ 'collect-info-max':collectInfoData.length > 3 }">
+         <div class="collect-info" :class="{ 'collect-info-max':collectInfoData.length > 3, 'collect-info-min':collectInfoData.length < 3 }">
             <div class="collect-info-header-bg"></div>
             <div class="collect-info-header">
                 <div class="title">
@@ -10,7 +10,7 @@
                   <i class="i-close"></i>
                 </div>
             </div>
-            <div class="container" :class="{ 'container-max':collectInfoData.length > 3 }" >
+            <div class="container" :class="{ 'container-max':collectInfoData.length > 3, 'container-min':collectInfoData.length < 3  }" >
                 <p class="tips">请务必填写以下信息，奖品才能送到您手中</p>
                 <van-form
                     @submit="onSubmit"
@@ -18,7 +18,7 @@
                     :show-error="false"
                     :show-error-message="false"
                     :validate-first="true"
-                    class="form" :class="{ 'form-max':collectInfoData.length > 3 }">
+                    class="form" :class="{ 'form-max':collectInfoData.length > 3,'form-min':collectInfoData.length < 3  }">
                     <div v-for="(item, index) in collectInfoData" :key="index" class="form-item" >
                         <div v-if="item.unique_name === 'gender'">
                             <van-field
@@ -637,7 +637,8 @@ export default {
   // }
   .collect-info{
     width: px2rem(600px);
-    height: px2rem(580px);
+    // height: px2rem(580px);
+    height: px2rem(780px);
     background: #fff9ec;
     border-radius: px2rem(16px);
     position: relative;
@@ -645,6 +646,9 @@ export default {
     // pointer-events: auto;
     &.collect-info-max {
       height: px2rem(880px);
+    }
+    &.collect-info-min {
+      height: px2rem(580px);
     }
     .collect-info-header-bg{
       width:100%;
@@ -708,7 +712,8 @@ export default {
     .container{
       width: 100%;
     //   height: px2rem(482px);
-      height: px2rem(512px);
+      // height: px2rem(512px);
+      height: px2rem(712px);
       position: absolute;
       top: px2rem(68px);
       z-index: 10;
@@ -717,6 +722,9 @@ export default {
       padding-right: px2rem(40px);
       &.container-max{
         height: px2rem(812px);
+      }
+      &.container-min{
+        height: px2rem(512px);
       }
       .tips{
         height: px2rem(24px);
@@ -730,10 +738,13 @@ export default {
       }
       .form{
         margin-top:px2rem(30px);
-        height: px2rem(366px);
+        height: px2rem(566px);
         overflow-y: scroll;
         &.form-max{
           height: px2rem(666px);
+        }
+        &.form-min{
+          height: px2rem(366px);
         }
         .form-input{
           width: px2rem(520px);
