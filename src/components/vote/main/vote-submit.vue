@@ -134,7 +134,7 @@
           </div>
           <!-- area -->
           <div  class="check-item form-content" v-if='item.type === "area"'>
-            <el-input v-model.trim="item.inputValue"
+            <el-input v-model.trim="areaValue"
               placeholder="地址"
               readonly
               @focus="focusAction('address')"
@@ -193,6 +193,7 @@ export default {
   },
   data () {
     return {
+      areaValue: '',
       isShowCitySelect: false,
       imgTitle: '上传图片',
       videoTitle: '上传视频',
@@ -260,6 +261,7 @@ export default {
       }
     },
     selectSuccessAction (data) {
+      this.areaValue = data
       this.isShowCitySelect = false
     },
     areaBlurAction () {
@@ -555,12 +557,20 @@ export default {
       let id = this.id
       let examineData = this.examineData
       if (!id) {
-        console.log('进入这里')
+        console.log('id值不存在')
         return
       }
       if (this.loading) {
         Toast('文件正在上传中，请稍后再提交')
         return
+      }
+
+      // 判断是否存在地区
+      let _visibleFieldList = this.enrollForm.visibleFieldList
+      let isExistAreaIndex = -1
+      isExistAreaIndex = _visibleFieldList.findIndex(item => item.value === 'area')
+      if (isExistAreaIndex !== -1) {
+        _visibleFieldList[isExistAreaIndex].inputValue = this.areaValue
       }
 
       // 校验值
