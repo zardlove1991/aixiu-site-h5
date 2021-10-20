@@ -14,7 +14,7 @@
     <div class="dial-container">
       <div class="container-title-on" :class="{ 'container-title':detailInfo.title.length > 5}" v-if="detailInfo.is_display_title">{{detailInfo.title}}</div>
       <!-- <div class="container-title" v-else-if='(detailInfo.remain_counts > 0 || detailInfo.user_integral_counts > 0)'>{{detailInfo.title}}</div> -->
-      <div class="container-title-notice" :class="{'container-title-notice-off':disableBtn}">
+      <div class="container-title-notice" :class="{'container-title-notice-off': detailInfo.remain_counts === 0}">
           <van-notice-bar class="notice" :scrollable="true" >
             <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
           </van-notice-bar>
@@ -40,11 +40,17 @@
             </ul>
           </van-notice-bar>
         </div>
-        <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
-          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button>
-        <div v-else class="wheel-btn-off" >
+        <!-- <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
+          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button> -->
+        <!-- <div v-else class="wheel-btn-off" >
           <span class="text">立即抽奖</span>
-        </div>
+        </div> -->
+        <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn && !detailInfo.user_integral_counts"
+          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button>
+        <van-button v-else-if="detailInfo.user_integral_counts > 0 && !disableBtn && !detailInfo.remain_counts "
+          class="wheel-btn-on" type="primary" round @click="isRecordDrawShow = true" ><span class="text">立即抽奖</span></van-button>
+        <van-button  v-else
+          class="wheel-btn-off" type="primary" round  ><span class="text">立即抽奖</span></van-button>
         <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0">
           <div class="my">我的积分</div>
           <div class="point">{{detailInfo.all_credits}}</div>
@@ -81,7 +87,6 @@
     <RecordLess :show.sync='isRecordLessShow' v-if="isRecordLessShow" @close ='isRecordLessShow = false'/>
     <Shared :show.sync='isSharedShow' v-if="isSharedShow" @close ='isSharedShow = false'/>
     <UnDraw :show.sync='isUnDrawShow' v-if='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/>
-    <!-- <UnDraw :show='isUnDrawShow' @close ='isUnDrawShow = false' :data.sync="detailInfo.remain_counts"/> -->
     <UnPrizeChance :show.sync='isUnPrizeChanceShow' v-if='isUnPrizeChanceShow' @close ='isUnPrizeChanceShow = false'/>
 
     <Prize :show.sync='isPrizeShow' v-if="isPrizeShow" @close='isPrizeShow = false' :prize.sync='prizeData' @onAddress='onAddress'/>
@@ -93,70 +98,34 @@
     <CardView :show.sync='isCardViewShow' v-if="isCardViewShow" @close='isCardViewShow = false' :cardView.sync="cardViewData"/>
     <Integral :show.sync='isIntegralShow'  v-if="isIntegralShow"  @close='isIntegralShow = false' :integral.sync='integralData'/>
     <Packet :show.sync='isPacketShow'  v-if="isPacketShow" @close='isPacketShow = false' :packet.sync='packetData'/>
-    <!-- <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/> -->
+    <ActivityStart :show.sync='isActivityStartShow' v-if="isActivityStartShow" @close='isActivityStartShow = false' :date.sync='noStartDate'/>
     <ActivityPause :show.sync='isActivityPauseShow' v-if="isActivityPauseShow"  @close='isActivityPauseShow = false'/>
     <ActivityEnd :show.sync='isActivityEndShow' v-if="isActivityEndShow" @close='isActivityEndShow = false'/>
 
-    <!-- <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
-    :activityId='id' :collectInfo='collectInfo'/> -->
     <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
     :activityId='id' :collectInfo.sync='checkDraw' />
     <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
-    <!-- <RecordInfo :show='isRecordInfoShow' @close='isRecordInfoShow = false'/> -->
-    <!-- <RecordUncode :show='isRecordUncodeShow' @close='isRecordUncodeShow = false'/> -->
-    <!-- <RecordCode :show='isRecordCodeShow' @close='isRecordCodeShow = false'/> -->
-    <!-- <RecordTicketed :show='isRecordTicketedShow' @close='isRecordTicketedShow = false'/> -->
-    <!-- <CardOverdues :show.sync='isCardOverduesShow' v-if="isCardOverduesShow" @close='isCardOverduesShow = false'/> -->
-    <!-- <CardStock :show='isCardStockShow' @close='isCardStockShow = false'/> -->
-    <!-- <CardIntegral :show='isCardIntegralShow' @close='isCardIntegralShow = false'/> -->
-    <!-- <CardIntegralPull :show='isCardIintegralPullShow' @close='isCardIintegralPullShow = false'/> -->
-    <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
-    <!-- <CardPacketPull :show='isCardPacketPullShow' @close='isCardPacketPullShow = false'/> -->
-    <!-- <MoalImg :show="isWheelShow"/> -->
-    <!-- <DialDialog :show="isWheelShow"/> -->
-    <!-- <DialDialogTitle :show="isWheelShow" /> -->
-    <!-- <DialogPage :show="isWheelShow"/> -->
-    <!-- <ActivityRules :show.sync="tempShow" @close='tempShow = false'/> -->
-    <!-- <Packets :show.sync="tempShow" @close='tempShow = false'/> -->
+    <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
+    <!-- <UndrawQualification :show.sync="tempShow" @close='tempShow = false'/> -->
   </div>
 </template>
 
 <script>
 import prizeList from '@/components/lottery/global/dial-prize-list'
 import Address from '@/components/lottery/global/dial-address'
-// import Command from '@/components/lottery/global/dial-command'
 import DialDialogTitle from '@/components/lottery/global/dial-dialog-title'
 import DialDialog from '@/components/lottery/global/dial-dialog'
 import MoalImg from '@/components/lottery/global/dial-model-img'
 import RecordDraw from '@/components/lottery/global/dial-recordDraw'
 import RecordLess from '@/components/lottery/global/dial-recordLess'
-// import Shared from '@/components/lottery/global/dial-shared'
-// import UnDraw from '@/components/lottery/global/dial-unDraw'
-// import UnPrizeChance from '@/components/lottery/global/dial-unPrizeChance'
 import Prize from '@/components/lottery/global/dial-prize'
 import PrizeAddress from '@/components/lottery/global/dial-prize-address'
-// import PrizeVerification from '@/components/lottery/global/dial-prize-verification'
-// import PrizeQrCode from '@/components/lottery/global/dial-prize-qrCode'
-// import Coupon from '@/components/lottery/global/dial-coupon'
-// import CardView from '@/components/lottery/global/dial-cardView'
-// import Integral from '@/components/lottery/global/dial-integral'
-// import Packet from '@/components/lottery/global/dial-packet'
-// import ActivityStart from '@/components/lottery/global/dial-activity-start'
 import ActivityPause from '@/components/lottery/global/dial-activity-pause'
-// import ActivityEnd from '@/components/lottery/global/dial-activity-end'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
 import RecordInfo from '@/components/lottery/global/dial-record-info'
-// import RecordUncode from '@/components/lottery/global/dial-record-uncode'
-// import RecordCode from '@/components/lottery/global/dial-record-code'
 import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
-// import CardOverdues from '@/components/lottery/global/dial-card-overdues'
 import CardStock from '@/components/lottery/global/dial-card-stock'
-// import CardIntegral from '@/components/lottery/global/dial-card-integral'
-// import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
-// import CardPacket from '@/components/lottery/global/dial-card-packet'
-// import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import MyModel from '@/components/lottery/global/live-model'
-// import CollectInfo from '@/components/lottery/global/dial-collect-info'
 import Wheel from '@/components/lottery/global/wheel'
 import ActivityRule from '@/components/lottery/global/activity-rule' // 活动规则弹框
 import UnDraw from '@/components/lottery/global/unDraw' // 没有中奖弹框
@@ -173,11 +142,13 @@ import ActivityEnd from '@/components/lottery/global/activity-end' // 活动结�
 import Again from '@/components/lottery/global/again' // 再来一次弹框
 import Integral from '@/components/lottery/global/integral' // 积分弹框
 import Packet from '@/components/lottery/global/packet' // 红包弹框
+import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格
 import API from '@/api/module/examination'
 import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
+import SubjectMixin from '@/mixins/subject'
 import { isIphoneX } from '@/utils/app'
-import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle, debounce } from '@/utils/utils'
+import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle, debounce, getPlat } from '@/utils/utils'
 export default {
   components: {
     Wheel,
@@ -196,6 +167,7 @@ export default {
     // Integrals,
     // Packets,
 
+    UndrawQualification,
     Again,
     ActivityRule,
     MyModel,
@@ -265,7 +237,7 @@ export default {
     id: String,
     from: String
   },
-  mixins: [mixins],
+  mixins: [mixins, SubjectMixin],
   data () {
     return {
       tempShow: true,
@@ -331,6 +303,7 @@ export default {
       isActivityPauseShow: false, // 控制活动暂停状态
       isActivityEndShow: false, // 控制活动结束状态
       isAgainShow: false, // 控制再来一次状态
+      isUndrawQualificationShow: false, // 控制无抽奖资格状态
       // isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
       // isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
       // isRecordCodeShow: false, // 控制实物核销-有码纪录状态
@@ -393,17 +366,6 @@ export default {
       deep: true,
       immediate: true
     },
-    // 抽奖次数
-    // remainCounts (val) {
-    //   if (!val) {
-    //     let integralLimit = this.detailInfo.limit.integral_limit
-    //     if (integralLimit.is_integral_row && this.detailInfo.user_integral_counts) {
-    //       this.isRecordDrawShow = true
-    //     } else {
-    //       this.isUnPrizeChanceShow = true
-    //     }
-    //   }
-    // },
     // 显隐中奖名单
     isNoticeDataShow (newValue, oldValue) {
       // this.isNoticeDataShow = newValue
@@ -598,8 +560,13 @@ export default {
         })
         console.log(this.list)
         // 开启分享才会送抽奖次数
-        if (this.detailInfo.limit.share_lottery_limit) {
-          this.sharePage(res)
+        console.log(this.detailInfo.limit.share_lottery_limit.is_share_lottery === true, 'this.detailInfo.limit.share_lottery_limit.is_share_lottery')
+        if (this.detailInfo.limit.share_lottery_limit.is_share_lottery) {
+          if (getPlat() === 'smartcity') {
+            this.initAppShare()
+          } else {
+            this.sharePage(res)
+          }
         }
         //  来源限制
         if (res.app_source) {
@@ -610,8 +577,10 @@ export default {
         }
         // 设置标题
         setBrowserTitle(this.detailInfo.title)
+        // 提示无抽奖资格
         if (this.detailInfo.no_draw_senior) {
           this.disableBtn = true
+          this.isUndrawQualificationShow = true
         }
       } catch (error) {
         console.log(error)
@@ -662,11 +631,17 @@ export default {
       this.loading = false
       this.disableBtn = false
       let limit = this.detailInfo.limit
+      // let plat = getPlat()
       console.log(this.detailInfo.limit, 'this.detailInfo.limit')
       if (limit.collection_form.is_open_collect === 2 && !this.detailInfo.collection_status) {
         this.isShowCheckDraw()
         return false
       }
+      // if (plat === 'smartcity' && !this.integralDrawStatus && !this.isRecordDrawShow && this.detailInfo.limit.integral_limit.is_integral_row === 1 && !this.detailInfo.remain_counts) {
+      //   this.isRecordDrawShow = true
+      //   this.integralDrawStatus = true
+      //   return false
+      // }
       if (!this.loading && !this.disableBtn) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.style.transform = 'none'
@@ -684,7 +659,6 @@ export default {
           this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
           console.log(res)
-          this.ininData()
           this.specified = true // 指定获奖下标
           // if (this.specified) {
           //   this.winner = this.winner
@@ -715,6 +689,7 @@ export default {
               this.isUnDrawShow = true
             }, this.drawTime)
           } else if (res.type === 6) { // 再来一次
+            this.detailInfo.remain_counts--
             this.list.map((item, index) => {
               if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
@@ -840,6 +815,9 @@ export default {
           } else if (res.error_code === 'no_draw_senior') {
             this.$toast('暂无抽奖资格')
           }
+          setTimeout(() => {
+            this.ininData()
+          }, this.drawTime)
         }
         // if (this.specified) {
         //   // 此处可指定后端返回的指定奖品
@@ -920,6 +898,7 @@ export default {
         })
       }
     },
+    // 微信分享配置
     sharePage (detailInfo) {
       if (!detailInfo) {
         return false
@@ -1016,6 +995,16 @@ export default {
         mark: detailInfo.mark
       }, this.onShare)
     },
+    // app分享
+    initAppShare () {
+      let plat = getPlat()
+      if (plat === 'smartcity') {
+        window.SmartCity.onShareSuccess((res) => {
+          this.onShare()
+        })
+      }
+    },
+    // 分享接口
     async onShare () {
       const res = await API.getShare({ query: { id: this.id } })
       console.log(res)
@@ -1326,7 +1315,8 @@ $time: 5s; //转动多少秒后停下的时间
   }
   .dial-container-wrap {
     display: block;
-    // width: px2rem(750px);
+    width: px2rem(750px);
+    // width: px2rem(640px);
     height: px2rem(1115px);
     // position: absolute;
     // top: px2rem(21px);
@@ -1334,8 +1324,8 @@ $time: 5s; //转动多少秒后停下的时间
     // right: 0;
     // bottom: 0;
     // margin: auto;
-    @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
-    // background: url("../../../assets/lottery/dial.png");
+    // @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
+    @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial@3x.png",100%,100%);
     background-size: contain;
     background-repeat: no-repeat;
     background-position-x: center;
@@ -1533,7 +1523,7 @@ $time: 5s; //转动多少秒后停下的时间
           margin-right: px2rem(6px);
         }
         .wheel-item-text {
-          width: px2rem(294px);
+          // width: px2rem(294px);
           height: px2rem(22px);
           font-size: px2rem(22px);
           font-family: PingFangSC, PingFangSC-Regular;

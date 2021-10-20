@@ -11,8 +11,10 @@
             <div class="img"></div>
             <div class="tip-success">分享成功</div>
             <div class="tips">获得一次抽奖机会</div>
-            <van-button  block  native-type="submit" class="btn" @click="onDrawChance">去抽奖</van-button>
-            <div class="tip">赠送的抽奖机会需在当日使用，超时失效</div>
+            <div class="btn-wrap">
+              <van-button  block  native-type="submit" class="btn" @click="onDrawChance">去抽奖</van-button>
+              <div class="tip">赠送的抽奖机会需在当日使用，超时失效</div>
+            </div>
              <div class="shared-footer"></div>
         </div>
 
@@ -45,7 +47,7 @@ export default {
   created () {
   },
   mounted () {
-
+    this.$parent.ininData()
   },
   methods: {
     onClose () {
@@ -55,7 +57,7 @@ export default {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     }),
     onDrawChance () {
-      this.$parent.ininData()
+      // this.$parent.ininData()
       this.$parent.onDraw()
       this.onClose()
     }
@@ -157,34 +159,42 @@ export default {
         line-height: px2rem(32px);
         margin: auto auto px2rem(40px) auto;
       }
-      .btn{
-        width: px2rem(300px);
-        height: px2rem(80px);
-        opacity: 1;
-        border-radius: px2rem(16px);
-        background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
-        box-shadow: 0 px2rem(8px) 0px 0px #e5b56b;
-        margin: auto;
-        font-size: px2rem(28px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-        font-weight: 500;
-        text-align: left;
-        color: #4f0f0f;
-        line-height: px2rem(80px);
-      }
-      .tip{
-        // width: px2rem(432px);
-        height: px2rem(24px);
-        opacity: 0.8;
-        font-size: px2rem(24px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Regular;
-        font-weight: 400;
-        text-align: center;
-        color: #fff4e3;
-        line-height: px2rem(24px);
-        margin-top: px2rem(40px);
-        margin-left: auto;
-        margin-right: auto;
+      .btn-wrap{
+        width: 100%;
+        height: px2rem(184px);
+        position: absolute;
+        bottom: px2rem(40px);
+        bottom: (0px);
+        z-index: 10;
+        .btn{
+          width: px2rem(300px);
+          height: px2rem(80px);
+          opacity: 1;
+          border-radius: px2rem(16px);
+          background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
+          box-shadow: 0 px2rem(8px) 0px 0px #e5b56b;
+          margin: auto;
+          font-size: px2rem(28px);
+          font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+          font-weight: 500;
+          text-align: left;
+          color: #4f0f0f;
+          line-height: px2rem(80px);
+        }
+        .tip{
+          // width: px2rem(432px);
+          height: px2rem(24px);
+          opacity: 0.8;
+          font-size: px2rem(24px);
+          font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+          font-weight: 400;
+          text-align: center;
+          color: #fff4e3;
+          line-height: px2rem(24px);
+          margin-top: px2rem(40px);
+          margin-left: auto;
+          margin-right: auto;
+        }
       }
       .points{
         position: absolute;
