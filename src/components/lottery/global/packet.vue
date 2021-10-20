@@ -221,20 +221,24 @@ export default {
                     height: px2rem(186px);
                     background: #fff9ec;
                     padding-top: px2rem(40px);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
                     .coupon-bg{
                         display: flex;
                         margin-bottom: px2rem(42px);
                         .money{
-                            max-width: px2rem(154px);
-                            width: auto;
+                            // max-width: px2rem(154px);
+                            // width: auto;
                             height: px2rem(50px);
                             font-size: px2rem(50px);
                             font-family: PingFangSC, PingFangSC-Medium;
                             font-weight: 500;
-                            text-align: left;
+                            text-align: center;
                             color: #d10000;
                             line-height: px2rem(50px);
-                            margin-left: px2rem(168px);
+                            // margin-left: px2rem(168px);
+                            // margin-left: auto;
                             margin-right: px2rem(6px);
                         }
                         span {
