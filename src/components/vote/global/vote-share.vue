@@ -151,6 +151,12 @@ export default {
     }
     this.slideCode.member = userStr
   },
+  beforeDestroy () {
+    // 隐藏滑动验证码
+    if (this.slideCode !== undefined) {
+      this.slideCode.hide()
+    }
+  },
   methods: {
     getDetailInfo (data) {
       API.getVodeDetail({
@@ -177,7 +183,7 @@ export default {
         let { rule, id } = detailInfo
         let { collect_member_info: collectMemberInfo } = rule
         // 是否验证投票
-        console.log('collectMemberInfo', collectMemberInfo)
+        // console.log('collectMemberInfo', collectMemberInfo)
         if (collectMemberInfo && collectMemberInfo.length > 0) {
           let status = await this.getIsCollect(id)
           if (status) {
@@ -293,7 +299,7 @@ export default {
         data: obj
       }).then(res => {
         let errCode = res.error_code
-        console.log('errCode', errCode)
+        // console.log('errCode', errCode)
         if (errCode) {
           if (errCode === 'INVALID_CODE') {
             // 滑动验证码失败
