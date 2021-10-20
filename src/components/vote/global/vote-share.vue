@@ -42,7 +42,8 @@
       @close="isShowMax = false">
       <div class="workvote-dialog-wrap" slot="tips-content">
         <div class="workvote-header">该作品{{textSetting.sign}}存在异常</div>
-        <div class="workvote-header">已被锁定{{voteTime}}分钟</div>
+        <div class="workvote-header" v-if='isBlockType'>已被锁定{{voteTime}}分钟</div>
+        <div class="workvote-header" v-if='!isBlockType'>已锁定</div>
         <div class="workvote-all-btn">
           <button class="dialog-ok-btn" @click.stop="isShowMax = false">好的</button>
         </div>
@@ -128,7 +129,8 @@ export default {
       checkVote: {},
       qrcodeUrl: '',
       voteDisable: false,
-      curDetailInfo: {}
+      curDetailInfo: {},
+      isBlockType: true
     }
   },
   mounted () {
@@ -305,11 +307,20 @@ export default {
           } else if (errCode === 'WORKS_LOCKED' && limitTime) {
             // let msg = res.error_message
             // this.voteTime = msg
+            this.isBlockType = true
             this.isShowMax = true
             this.voteTime = parseInt(limitTime / 60)
             // this.voteTime = formatTimeBySec(num)
             this.$emit('close')
             this.voteDisable = false
+            // 关闭滑动验证码弹窗
+            if (_needCode === 1) {
+              this.slideCode.hide()
+            }
+            return
+          } else if (errCode === 'WORKS_LOCKED_FOREVER') {
+            this.isShowMax = true
+            this.isBlockType = false
             // 关闭滑动验证码弹窗
             if (_needCode === 1) {
               this.slideCode.hide()
