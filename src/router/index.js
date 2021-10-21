@@ -334,7 +334,8 @@ const routes = [{
 {
   path: '/lottery/rotor/index/:id',
   name: 'lotteryrotor',
-  component: getOtherComponent('dial-start', 'lottery'),
+  // component: getOtherComponent('dial-start', 'lottery'),
+  component: getOtherComponent('dial-starts', 'lottery'),
   props: (route) => ({
     id: route.params.id,
     from: route.query.from

@@ -1,67 +1,54 @@
 <template>
-  <div class="dial-start-wrap" :style="{'backgroundImage': 'url(' + detailInfo.page_setup.background.indexpic + ')'}" :class="{'is-cover': detailInfo.page_setup.background.mode === 2}">
-    <van-cell size="small" class="dial-header" :border="false">
-      <div class="dial-header-icon" slot="title">
-        <div class="circle" >
-          <img :src="detailInfo.page_setup.rankpic" alt="" />
+    <div class='dial-start' :style="{'backgroundImage': 'url(' + detailInfo.page_setup.background.indexpic + ')'}" :class="{'is-cover': detailInfo.page_setup.background.mode === 2}">
+        <div class="dial-start-header">
+            <div class="dial-start-header-left">
+                <div class="logo-wrap">
+                    <!-- <img src="http://xiuzan-h5.oss-cn-beijing.aliyuncs.com/media/6ihn4tb04f1490604551000" alt=""> -->
+                     <img :src="detailInfo.page_setup.rankpic" alt="" />
+                </div>
+            </div>
+            <div class="dial-start-header-right">
+                <van-button plain class="btn-header" @click="isActivityShow=true">活动规则</van-button>
+                <van-button plain class="btn-header" @click="handleGo">中奖记录</van-button>
+            </div>
         </div>
-      </div>
-      <div slot="default" class="dial-header-right">
-        <van-button plain class="btn-header" @click="isActivityShow=true">活动规则</van-button>
-        <van-button plain class="btn-header" @click="handleGo">中奖记录</van-button>
-      </div>
-    </van-cell>
-    <div class="dial-container">
-      <div class="container-title-on" :class="{ 'container-title':detailInfo.title.length > 5}" v-if="detailInfo.is_display_title">{{detailInfo.title}}</div>
-      <!-- <div class="container-title" v-else-if='(detailInfo.remain_counts > 0 || detailInfo.user_integral_counts > 0)'>{{detailInfo.title}}</div> -->
-      <div class="container-title-notice" :class="{'container-title-notice-off': detailInfo.remain_counts === 0}">
-          <van-notice-bar class="notice" :scrollable="true" >
-            <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
-          </van-notice-bar>
-      </div>
-      <div class="dial-container-wrap" >
-        <span class="wheel-title">你有{{detailInfo.remain_counts}}次抽奖机会</span>
-        <!-- <div class="wheel-box"> -->
-          <p class="wheel-p"></p>
-          <!-- <prize-list :list="list" :specified="specified" :winner='winner'/> -->
-          <Wheel :list="list"/>
-        <div class="empty-box"></div>
-        <div class="wheel-tips" ref="notices" v-if="detailInfo.is_open_list " :class="{'is-hide':isNoticeDataShow}">
-          <van-notice-bar :scrollable="true" class="wheel-notice-bar">
-            <!-- <ul class="wheel-tips-list"> -->
-              <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
-                <img
-                  :src='itme.app_images'
-                  alt=""
-                  class="wheel-item-avatar"
-                />
-                <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
-              </li>
-            <!-- </ul> -->
-          </van-notice-bar>
+        <div class="dial-start-container">
+            <div class="dial-start-title"  v-if="detailInfo.is_display_title"
+             :class="{'dial-start-title-small':detailInfo.title.length > 5}">{{detailInfo.title}}</div>
+             <div class="notice-wrap" :class="{'notice-wrap-none': detailInfo.remain_counts === 0}">
+                <van-notice-bar class="notice" :scrollable="true" >
+                    <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
+                </van-notice-bar>
+             </div>
+             <div class="wheel-content">
+                <div class="wheel-chance">你有<span>{{detailInfo.remain_counts}}</span>次抽奖机会</div>
+                <Wheel :list="list" class="wheel"/>
+                <van-notice-bar :scrollable="true" class="wheel-notice-bar wheel-tips">
+                    <ul class="wheel-tips-list">
+                        <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
+                            <img :src='itme.app_images' alt="" class="wheel-item-avatar"/>
+                            <div class="wheel-item-text">{{itme.app_name}} 获得{{itme.prize_content}}</div>
+                        </li>
+                    </ul>
+                </van-notice-bar>
+                <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn"
+                    class="wheel-btn-on" type="primary" round @click="onDraw" >
+                    <span class="text">立即抽奖</span>
+                </van-button>
+                <van-button v-else-if="detailInfo.user_integral_counts > 0 && !disableBtn && !detailInfo.remain_counts "
+                    class="wheel-btn-on" type="primary" round @click="isRecordDrawShow = true" >
+                    <span class="text">立即抽奖</span>
+                </van-button>
+                <van-button  v-else class="wheel-btn-off" type="primary" round  ><span class="text">立即抽奖</span></van-button>
+                <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0" >
+                    我的积分 <span>{{detailInfo.all_credits}}</span>
+                </div>
+                <div class="activity-btn-wrap" @click="handleBack" v-if="$route.query.from">
+                    <i class='back-btn-arrow' />
+                    <span class="activity-btn">返回活动主页</span>
+                </div>
+             </div>
         </div>
-        <!-- <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn || detailInfo.user_integral_counts > 0 && !disableBtn"
-          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button> -->
-        <!-- <div v-else class="wheel-btn-off" >
-          <span class="text">立即抽奖</span>
-        </div> -->
-        <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn && !detailInfo.user_integral_counts"
-          class="wheel-btn-on" type="primary" round @click="onDraw" ><span class="text">立即抽奖</span></van-button>
-        <van-button v-else-if="detailInfo.user_integral_counts > 0 && !disableBtn && !detailInfo.remain_counts "
-          class="wheel-btn-on" type="primary" round @click="isRecordDrawShow = true" ><span class="text">立即抽奖</span></van-button>
-        <van-button  v-else
-          class="wheel-btn-off" type="primary" round  ><span class="text">立即抽奖</span></van-button>
-        <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0">
-          <div class="my">我的积分</div>
-          <div class="point">{{detailInfo.all_credits}}</div>
-        </div>
-        <div class="activity-btn-wrap" @click="handleBack" v-if="$route.query.from">
-          <i class='back-btn-arrow' />
-          <span class="activity-btn">返回活动主页</span>
-        </div>
-        <!-- <van-button round icon="../../../assets/lottery/diallist/arrow-left@2x.png"  type="primary" class="activity-btn" >返回活动主页</van-button> -->
-      </div>
-    </div>
     <my-model
       :show="App"
       :isLock="true"
@@ -103,11 +90,10 @@
     <ActivityEnd :show.sync='isActivityEndShow' v-if="isActivityEndShow" @close='isActivityEndShow = false'/>
 
     <CollectInfo :show.sync='isShowDrawCheck' v-if="isShowDrawCheck" @close='isShowDrawCheck = false'
-    :activityId='id' :collectInfo.sync='checkDraw' />
+      :activityId='id' :collectInfo.sync='checkDraw' />
     <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
     <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
-    <!-- <UndrawQualification :show.sync="tempShow" @close='tempShow = false'/> -->
-  </div>
+    </div>
 </template>
 
 <script>
@@ -126,7 +112,8 @@ import RecordInfo from '@/components/lottery/global/dial-record-info'
 import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
 import CardStock from '@/components/lottery/global/dial-card-stock'
 import MyModel from '@/components/lottery/global/live-model'
-import Wheel from '@/components/lottery/global/wheel'
+
+import Wheel from '@/components/lottery/global/wheel' // 大转盘
 import ActivityRule from '@/components/lottery/global/activity-rule' // 活动规则弹框
 import UnDraw from '@/components/lottery/global/unDraw' // 没有中奖弹框
 import Command from '@/components/lottery/global/command' // 口令弹框
@@ -144,94 +131,47 @@ import Integral from '@/components/lottery/global/integral' // 积分弹框
 import Packet from '@/components/lottery/global/packet' // 红包弹框
 import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格
 import API from '@/api/module/examination'
-import STORAGE from '@/utils/storage'
+// import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
 import SubjectMixin from '@/mixins/subject'
-import { isIphoneX } from '@/utils/app'
-import { getDaysBetween, delUrlParams, getAppSign, setBrowserTitle, debounce, getPlat } from '@/utils/utils'
+// import { isIphoneX } from '@/utils/app'
+import { getDaysBetween, delUrlParams, setBrowserTitle, debounce, getPlat } from '@/utils/utils'
 export default {
+  name: '',
   components: {
     Wheel,
-    DialDialogTitle,
-    // UnDraws,
-    // Commands,
-    // Coupons,
-    // UnPrizeChances,
-    // Shareds,
-    // PrizeVerifications,
-    // PrizeQrCodes,
-    // CardViews,
-    // CollectInfos,
-    // ActivityStarts,
-    // ActivityEnds,
-    // Integrals,
-    // Packets,
-
-    UndrawQualification,
-    Again,
     ActivityRule,
-    MyModel,
-    CollectInfo,
-    prizeList,
-    Address,
-    Command,
-
-    RecordDraw,
-    RecordLess,
-    Shared,
     UnDraw,
+    Command,
+    Coupon,
     UnPrizeChance,
-    MoalImg,
-    Prize,
-    PrizeAddress,
+    Shared,
     PrizeVerification,
     PrizeQrCode,
-    Coupon,
     CardView,
+    CollectInfo,
+    ActivityStart,
+    ActivityEnd,
+    Again,
     Integral,
     Packet,
-    ActivityStart,
+    UndrawQualification,
+
+    prizeList,
+    Address,
+    DialDialogTitle,
+    DialDialog,
+    MoalImg,
+    RecordDraw,
+    RecordLess,
+    Prize,
+    PrizeAddress,
     ActivityPause,
-    ActivityEnd,
     DialogPage,
     RecordInfo,
-    // RecordUncode,
-    // RecordCode,
     RecordTicketed,
-    // CardOverdues,
     CardStock,
-    // CardIntegral,
-    // CardIntegralPull,
-    // CardPacket,
-    // CardPacketPull,
-    DialDialog
-  },
-  computed: {
-    // 大转盘动画
-    animationClass () {
-      // 对应css样式中定义的class属性值,如果有更多的话可以继续添加  case 8:   return 'wr8'
-      switch (this.winner) {
-        case 0:
-          return 'wr0'
-        case 1:
-          return 'wr1'
-        case 2:
-          return 'wr2'
-        case 3:
-          return 'wr3'
-        case 4:
-          return 'wr4'
-        case 5:
-          return 'wr5'
-        case 6:
-          return 'wr6'
-        case 7:
-          return 'wr7'
-      }
-    },
-    remainCounts () {
-      return this.detailInfo.remain_counts
-    }
+    MyModel
   },
   props: {
     id: String,
@@ -240,12 +180,6 @@ export default {
   mixins: [mixins, SubjectMixin],
   data () {
     return {
-      tempShow: true,
-      isInIphoneX: isIphoneX(),
-      winner: null, // 指定获奖下标 specified为true时生效
-      specified: false, // 是否指定获奖结果，false时为随机
-      loading: false, // 抽奖执行状态，防止用户多次点击
-      panziElement: null,
       list: [
         {
           title: '微信红包',
@@ -282,6 +216,13 @@ export default {
         }
       ],
       detailInfo: {}, // 大转盘详细信息
+      noticeData: [], // 我的中奖通知
+      winner: null, // 指定获奖下标 specified为true时生效
+      specified: false, // 是否指定获奖结果，false时为随机
+      loading: false, // 抽奖执行状态，防止用户多次点击
+      interval: null, // 定时器
+      drawTime: 5000, // 中奖弹框时间
+      panziElement: null, // 转盘类名
       isWheelShow: true, // 控制开始抽奖状态
       isActivityShow: false, // 控制活动规则状态
       isAddressShow: false, // 控制收获地址状态
@@ -304,57 +245,28 @@ export default {
       isActivityEndShow: false, // 控制活动结束状态
       isAgainShow: false, // 控制再来一次状态
       isUndrawQualificationShow: false, // 控制无抽奖资格状态
-      // isRecordInfoShow: false, // 控制中奖纪录-个人信息状态
-      // isRecordUncodeShow: false, // 控制实物核销-无码纪录状态
-      // isRecordCodeShow: false, // 控制实物核销-有码纪录状态
-      // isRecordTicketedShow: false, // 控制实物核销-已兑奖状态
-      // isCardOverduesShow: false, // 控制优惠券-已过期状态
-      // isCardStockShow: false, // 控制卡劵纪录状态
-      // isCardIntegralShow: false, // 控制积分纪录状态
-      // isCardIintegralPullShow: false, // 控制积分已领取纪录状态
-      // isCardPacketShow: false, // 控制红包纪录状态
-      // isCardPacketPullShow: false, // 控制红包已领取纪录状态
-      command: '', // 口令抽奖返回结果 1为成功
+      isShowDrawCheck: false, // 控制用户信息状态
+      checkDraw: [], // 用户信息数据
+      isGetDept: false, // 是否动态获取部门
       integralData: {}, // 积分中奖对象
       cardViewData: {}, // 微信卡劵中奖对象
       packetData: {}, // 微信红包中奖对象
       couponData: {}, // 优惠劵中奖对象
       prizeData: {}, // 实物中奖对象
-      noticeData: [], // 我的中奖通知
-      isNoticeDataShow: true,
       tempPrize: {}, // 临时提货凭证对象
-      interval: null, // 定时器
       noStartDate: null, // 活动未开始时间
-      disableBtn: false,
-      shareConfigData: {},
-      drawTime: 5000,
-      sign: getAppSign(),
-      isSourceshow: true,
+      isNoticeDataShow: true, // 显隐中奖名单
+      shareConfigData: {}, // 微信分享配置
+      isSourceshow: true, // 控制我的积分显隐状态
       limitSource: '', // app来源名称
       App: false, // 控制app来源模态框
       errTips: '', // 无下载地址时提示框
       appDownloadUrl: '', // app下载地址
-      isShowDrawCheck: false,
-      checkDraw: [],
-      collectInfo: {},
-      config: {},
-      isGetDept: false, // 是否动态获取部门
-      lotteryFirst: STORAGE.get('lotteryFirst') || null,
-      prizes: [],
-      buttons: [{
-        radius: '45px',
-        imgs: [{ src: require('@/assets/lottery/wheel-pointer.png'), width: '102%', top: '-127%' }]
-      }],
-      blocks: [
-        { padding: '3px', background: '#a70c1b' },
-        { padding: '6px', background: '#ffb633' }
-      ],
-      defaultStyle: {
-        fontColor: '#a70c1b',
-        fontSize: '10px'
-      }
-
+      disableBtn: false
     }
+  },
+  computed: {
+
   },
   watch: {
     // 详细信息
@@ -487,14 +399,9 @@ export default {
   },
   async mounted () {
     this.ininData()
-    // 通过获取奖品个数，来改变css样式中每个奖品动画的旋转角度
-    // var(--nums) 实现css动画根据奖品个数，动态改变
-    let root = document.querySelector(':root')
-    root.style.setProperty('--nums', this.list.length)
     this.onNotice()
     const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
     this.noticeData = res.data
-    // console.log(this.sign === 'wechat', 'signsignsignsignsignsignsignsignsign')
     if (this.detailInfo.app_source) {
       this.isSourceshow = false
     } else {
@@ -521,18 +428,15 @@ export default {
           this.isActivityPauseShow = true
           this.disableBtn = true
         } else if (res.activity_vp_status === 'activity_no_start') {
-          // let nowDate = parseInt(new Date().getTime() / 1000)
           let nowDate = parseInt(new Date().getTime())
           let activityStart = (res.start_time * 1000)
           this.noStartDate = (activityStart - nowDate)
           this.isActivityStartShow = true
-          // console.log(this.noStartDate, ' this.noStartDate')
           this.disableBtn = true
         } else if (res.activity_vp_status === 'activity_end') {
           this.isActivityEndShow = true
           this.disableBtn = true
         }
-        // STORAGE.set('detailInfo', res)
         this.list = JSON.parse(JSON.stringify(this.detailInfo.limit.awardTabel))
         this.list.map((item, index) => {
           if (item.type === 1) {
@@ -541,20 +445,13 @@ export default {
             }
             item.images = item.images || ''
           } else if (item.type === 2) {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/tocket.png')
           } else if (item.type === 3) {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wx-packet.png')
           } else if (item.type === 4) {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/wechat.png')
           } else if (item.type === 5) {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/integral/integral.png')
           } else if (item.type === 6) {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/face.png')
             item.choose_award.is_prize_name = '再来一次'
           } else {
-            // item.images = (item.images && this.getImage(item.images[0])) || require('@/assets/lottery/thanking.png')
             item.type = 7
-            // item.type = undefined
             item.choose_award.is_prize_name = '谢谢参与'
           }
         })
@@ -586,62 +483,27 @@ export default {
         console.log(error)
       }
     },
-    getImage (image = {}, width, height) {
-      if (image instanceof Array && image.length === 0) {
-        return ''
-      } else if (typeof image === 'string' || image instanceof Object) {
-        let src = (typeof image === 'string') ? image : image.host + image.filename
-        src = src || ''
-        if (src) { // 替换域名
-          src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
-          src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
-          src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
-          src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
+    // 中奖通知
+    onNotice () {
+      this.interval = setInterval(async () => {
+        const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
+        // console.log(res)
+        this.noticeData = res.data
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
         }
-        width = isNaN(width) ? 0 : width
-        height = isNaN(height) ? 0 : height
-        if (image.process || width || height) {
-          src += '?x-oss-process=image'
-        }
-        if (image.process && image.process.crop) { // 先裁切，再缩放
-          src += '/crop,' + image.process.crop
-        }
-        if (width > 0 && !height) { // 宽度优先，高度等比缩放
-          src += `/resize,w_${width}`
-        } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
-          src += `/resize,h_${height}`
-        } else if (width && height) { // 指定宽高
-          src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
-        } else if (image.process && image.process.resize) {
-          src += `/resize,${image.process.resize}`
-        }
-        const protocol = window.location.protocol
-        if (src) {
-          src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
-        }
-        // const protocol = window.location.protocol
-        // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
-        return src
-      } else {
-        return ''
-      }
+      }, 300000)
     },
     // 开始抽奖
     onDraw: debounce(async function () {
       this.loading = false
       this.disableBtn = false
       let limit = this.detailInfo.limit
-      // let plat = getPlat()
       console.log(this.detailInfo.limit, 'this.detailInfo.limit')
       if (limit.collection_form.is_open_collect === 2 && !this.detailInfo.collection_status) {
         this.isShowCheckDraw()
         return false
       }
-      // if (plat === 'smartcity' && !this.integralDrawStatus && !this.isRecordDrawShow && this.detailInfo.limit.integral_limit.is_integral_row === 1 && !this.detailInfo.remain_counts) {
-      //   this.isRecordDrawShow = true
-      //   this.integralDrawStatus = true
-      //   return false
-      // }
       if (!this.loading && !this.disableBtn) {
         this.panziElement = document.querySelector('.prize')
         this.panziElement.style.transform = 'none'
@@ -834,6 +696,26 @@ export default {
         this.loading = true
       }
     }, 1000),
+    // 中奖返回方法
+    winCallback () {
+      setTimeout(() => {
+        /* 此处是为了解决当下次抽中的奖励与这次相同，动画不重新执行的 */
+        /* 添加一个定时器，是为了解决动画属性的替换效果，实现动画的重新执行 */
+        // this.panziElement.classList.add(this.animationClass)
+        // this.panziElement.style.transform = `rotate(calc(5 * 360deg + 360deg / ${this.list.length - 1} * ${this.winner + 1} - 360deg / ${this.list.length} / 2))`
+        this.panziElement.style.transform = `rotate(calc(-5 * 360deg + -360deg / ${this.list.length} * ${this.winner} + -360deg / ${this.list.length} / 2))`
+        this.panziElement.style.WebkitTransform = `rotate(calc(-5 * 360deg + -360deg / ${this.list.length} * ${this.winner} + -360deg / ${this.list.length} / 2))`
+        this.panziElement.style.transition = `transform 5s ease`
+        this.panziElement.style.WebkitTransition = `transform 5s ease`
+        console.log(this.list.length, 'this.list.length')
+      }, 0)
+      // 因为动画时间为 3s ，所以这里3s后获取结果，其实结果早就定下了，只是何时显示，告诉用户
+      setTimeout(() => {
+        this.loading = false
+        this.disableBtn = false
+        console.log(`恭喜你获得了${this.winner}`)
+      }, this.drawTime)
+    },
     // 实物地址填写
     onAddress (value) {
       // console.log(value)
@@ -851,28 +733,14 @@ export default {
         this.isPrizeQrCodeShow = true
       }
     },
-    // 中奖通知
-    onNotice () {
-      this.interval = setInterval(async () => {
-        const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 50 } })
-        // console.log(res)
-        this.noticeData = res.data
-        if (this.noticeData.length > 0) {
-          this.isNoticeDataShow = false
-        }
-      }, 300000)
-    },
-    // 随机一个整数的方法
-    random (min, max) {
-      return parseInt(Math.random() * (max - min + 1) + min)
-    },
-    // 中奖纪录
+    // 中奖记录
     handleGo () {
       this.$router.push({
         name: 'lotteryrotorRecord',
         params: { id: this.id }
       })
     },
+    // 活动返回首页
     handleBack () {
       if (this.$route.query.from) {
         // console.log(this.$route.query.from, 'this.$router.query.from')
@@ -996,6 +864,7 @@ export default {
         this.$toast.success(res.msg)
       }
     },
+    // 下载路径
     goDownload () {
       if (this.appDownloadUrl) {
         this.errTips = ''
@@ -1102,628 +971,337 @@ export default {
   }
 }
 </script>
-<style scoped lang='scss'>
+
+<style scoped lang="scss">
 @import '@/styles/index.scss';
-// $time: 3s; //转动多少秒后停下的时间
-$zp_size: px2rem(600px); //转盘尺寸
-$btn_sizeW: px2rem(189px); //抽奖按钮尺寸
-$btn_sizeH: px2rem(203px); //抽奖按钮尺寸
-$time: 5s; //转动多少秒后停下的时间
-.tips-dialog-content{
-  width: px2rem(600px);
-}
-.dial-start-wrap {
+.dial-start{
   width: 100%;
   height: 100vh;
-  // height: px2rem(1448px);
-  @include img-retina(
-    "~@/assets/lottery/bg.png",
-    "~@/assets/lottery/bg@2x.png",
-    100%,
-    100%
-  );
+//   height: px2rem(1448px);
+//   @include img-retina(
+//     "~@/assets/lottery/bg.png",
+//     "~@/assets/lottery/bg@2x.png",
+//     100%,
+//     100%
+//   );
   background-repeat: no-repeat;
   background-size: fill;
-  overflow: hidden;
+//   overflow: hidden;
+  overflow-y: scroll;
+  overflow-x: hidden;
   &.is-cover{
     background-size: cover;
   }
-}
-// 头部
-.dial-header {
-  width: 100%;
-  height: px2rem(54px);
-  padding-left: px2rem(30px);
-  padding-right: px2rem(30px);
-  margin-bottom: px2rem(24px);
-  display: flex;
-  align-items: center;
-  .dial-header-icon {
-    width: px2rem(54px);
+  .dial-start-header{
+    width: 100%;
     height: px2rem(54px);
-    background-color: #fff;
-    border-radius: 0px 0px px2rem(100px) px2rem(100px);
+    padding-left: px2rem(30px);
+    padding-right: px2rem(30px);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    .circle {
-      width: px2rem(50px);
-      height: px2rem(50px);
-      opacity: 1;
-      background: #ffffff;
-      border: px2rem(1px) solid #ebebeb;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: px2rem(8px);
-      &img {
-        display: block;
-        border-radius: 50%;
-        width: px2rem(26px);
-        height: px2rem(26px);
-        background-size: cover;
-        color: #000;
-      }
+    justify-content: space-between;
+    margin-bottom: px2rem(4px);
+    .dial-start-header-left{
+        width: px2rem(54px);
+        height: px2rem(54px);
+        background: #ffffff;
+        border-radius: 0px 0px px2rem(100px) px2rem(100px);
+        padding: px2rem(2px);
+        .logo-wrap{
+            width: px2rem(50px);
+            height: px2rem(50px);
+            background: #ffffff;
+            border: px2rem(1px) solid #ebebeb;
+            box-sizing: border-box;
+            padding: px2rem(12px);
+            border-radius: 50%;
+            img{
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        }
+    }
+    .dial-start-header-right{
+        display: flex;
+        .btn-header{
+            width: px2rem(140px);
+            height: px2rem(54px);
+            background-color: rgba(0,0,0,.5);
+            border-radius: 0px 0px px2rem(10px) px2rem(10px);
+            padding: px2rem(14px) px2rem(18px);
+            font-size: px2rem(26px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+            font-weight: 400;
+            text-align: left;
+            color: #ffffff;
+            // line-height: px2rem(39px);
+            line-height: px2rem(54px);
+            border: none;
+           &:first-child{
+               margin-right: px2rem(30px);
+           }
+        }
     }
   }
-  /deep/.van-cell__value {
-    display: flex;
-    align-items: center;
-  }
-  .dial-header-right {
-    display: flex;
-    float: right;
-    .btn-header {
-      margin-right: px2rem(30px);
-      // width: px2rem(140px);
-      padding-left:px2rem(18px);
-      padding-right:px2rem(18px);
-      height: px2rem(54px);
-      // opacity: 0.5;
-      // background: #000000;
-      background-color: rgba(0,0,0,.5);
-      border-radius: 0px 0px px2rem(10px) px2rem(10px);
-      text-align: center;
-      border: none;
-      .van-button__text {
-        opacity: 1;
-        // @include font-dpr(26px);
-        font-size: px2rem(26px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Regular;
-        font-weight: 400;
-        text-align: left;
-        color: #ffffff;
-        line-height: px2rem(39px);
-      }
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-}
-// 内容
-.dial-container {
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  // overflow-y: auto;
-  // position: absolute;
-  // top: px2rem(78px);
-  // left: 0;
-  // right: 0;
-  // display: flex;
-  // align-items: center;
-  .container-title-notice{
-    width: px2rem(525px);
-    height: px2rem(44px);
-    // opacity: 0.2;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: px2rem(24px);
-    margin: 0 auto px2rem(6px) auto;
-    // padding: px2rem(9px) auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .notice{
-      width: px2rem(496px);
-      height: px2rem(26px);
-      opacity: 1;
-      font-size: px2rem(26px);
-      font-family: PingFangSC, PingFangSC-Regular;
-      font-weight: 400;
-      text-align: left;
-      color: #ffffff;
-      line-height: px2rem(26px);
-      .notice-bar {
-        // width: 496px;
-        height: px2rem(26px);
-        opacity: 1 !important;
-        font-size: px2rem(26px);
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: left;
-        color: #ffffff !important;
-        line-height: px2rem(26px);
-      }
-    }
-  }
-  .container-title-notice-off {
-    display: none !important;
-  }
-  .container-title-on{
-    // width: px2rem(628px);
-    // height: px2rem(130px);
-    opacity: 1;
-    background: linear-gradient(180deg,#fffdfc, #ffeccf);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: px2rem(130px);
-    font-family: YouSheBiaoTiHei;
-    font-style: oblique;
-    font-weight: 900;
-    text-align: center;
-    color: #999999;
-    line-height: px2rem(130px);
-    letter-spacing: px2rem(6px);
-    text-shadow: 0px px2rem(3px) px2rem(8px) 0px rgba(0,0,0,0.15);
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: px2rem(6px);
-  }
-  .container-title {
-    // width: px2rem(696px);
-    height: px2rem(148px);
-    opacity: 1;
-    background: linear-gradient(180deg, #fffdfc, #ffeccf);
-    /*必需加前缀 -webkit- 才支持这个text值 */
-    -webkit-background-clip: text;
-    /*text-fill-color会覆盖color所定义的字体颜色： */
-    -webkit-text-fill-color: transparent;
-
-    font-size: px2rem(74px);
-    font-family: YouSheBiaoTiHei;
-    font-style: oblique;
-    font-weight: bold;
-    text-align: center;
-    color: #999999;
-    line-height: px2rem(74px);
-    letter-spacing: px2rem(1px);
-    text-shadow: 0px px2rem(3px) px2rem(8px) 0px rgba(0, 0, 0, 0.15);
-    // margin-left: auto;
-    // margin-right: auto;
-    margin-left: px2rem(29px);
-    margin-right: px2rem(25px);
-    // margin-bottom: px2rem(21px);
-  }
-  .dial-container-wrap {
-    display: block;
-    width: px2rem(750px);
-    // width: px2rem(640px);
-    height: px2rem(1115px);
-    // position: absolute;
-    // top: px2rem(21px);
-    // left: 0;
-    // right: 0;
-    // bottom: 0;
-    // margin: auto;
-    // @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial.png",100%,100%);
-    @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial@3x.png",100%,100%);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position-x: center;
-    // padding-top: px2rem(23px);
-    padding-top: px2rem(19px);
-    text-align: center;
-    box-sizing: border-box;
-    margin-left: auto;
-    margin-right: auto;
+  .dial-start-container{
+    width: 100%;
+    // height: auto;
+    height: px2rem(1390px);
+    overflow-y: scroll;
     overflow-x: hidden;
-    // margin-top: px2rem(169px);
-    // 转盘标题
-    .wheel-title {
-      // display: inline-block;
-      // width: px2rem(212px);
-      // height: px2rem(24px);
-      opacity: 1;
-      font-size: px2rem(28px);
-      font-family: PingFangSC, PingFangSC-Medium;
-      font-weight: 500;
-      text-align: left;
-      color: #fff4e3;
-      // line-height: px2rem(24px);
-      letter-spacing: px2rem(2px);
-      // margin-bottom: px2rem(59px);
-      // margin-bottom: px2rem(22px);
-    }
-    .wheel-p {
-      max-height: px2rem(32px);
-      min-height: px2rem(24px);
-    }
-    // .box {
-    //   position: relative;
-    //   width: 310px;
-    //   height: 310px;
-    // }
-    // .luck-draw {
-    //   width: 300px;
-    //   height: 300px;
-    //   margin-left: auto;
-    //   margin-right: auto;
-    //   // position: absolute;
-    //   // left: 49%;
-    //   // top: 48%;
-    //   // left: 50%;
-    //   // top: 50%;
-    //   // transform: translate(-50%, -50%)
-    // }
-    // 转盘盒子
-    .wheel-box {
-      width: px2rem(660px);
-      height: px2rem(660px);
-      opacity: 0.8;
-      // border: px2rem(8px) solid;
-      // border-image: linear-gradient(
-      //     180deg,
-      //     #fff4ec,
-      //     #fff58b 41%,
-      //     #ffd85c 61%,
-      //     rgba(255, 4, 45, 0.7)
-      //   )
-      //   8.22429906542056 8.22429906542056;
-      border-radius: 50%;
-      margin-left: auto;
-      margin-right: auto;
-      // margin-top: px2rem(11px);
-      padding-top: px2rem(34px);
-      position: relative;
-      // filter: blur(5px);
-      // 转盘指针
-      .wheel-pointer {
-        @include img-retina(
-          "~@/assets/lottery/wheel-pointer.png",
-          "~@/assets/lottery/wheel-pointer@2x.png",
-          100%,
-          100%
-        );
-        width: px2rem(189px);
-        height: px2rem(203px);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-size: cover;
-        transform: translate3d(-50%, -50%, 0);
-      }
-      .wheel-context {
-        width: px2rem(600px);
-        height: px2rem(600px);
+    .dial-start-title{
         opacity: 1;
-        // border: px2rem(8px) solid;
-        // border-image: linear-gradient(180deg, #ffc267, #c76d27)
-        //   8.22429906542056 8.22429906542056;
-        border-radius: 50%;
-        margin-top: px2rem(30px);
+        background: linear-gradient(180deg,#fffdfc, #ffeccf);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: px2rem(130px);
+        font-family: YouSheBiaoTiHei;
+        font-style: oblique;
+        font-weight: 900;
+        text-align: center;
+        color: #999999;
+        // line-height: px2rem(130px);
+        letter-spacing: px2rem(6px);
+        text-shadow: 0px px2rem(3px) px2rem(8px) 0px rgba(0,0,0,0.15);
         margin-left: auto;
         margin-right: auto;
-        box-sizing: border-box;
-        padding: 0 px2rem(30px);
-        // margin-left: px2rem(65px);
-        // margin-right: px2rem(65px);
-        .prize-list {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          .prize-item {
-            width: px2rem(246px);
-            height: px2rem(284px);
-            margin-top: px2rem(39px);
-            &:nth-child(odd) {
-              @include img-retina(
-                "~@/assets/lottery/yellow-box.png",
-                "~@/assets/lottery/yellow-box@2x.png",
-                100%,
-                100%
-              );
-            }
-            &:nth-child(even) {
-              @include img-retina(
-                "~@/assets/lottery/red-box.png",
-                "~@/assets/lottery/red-box@2x.png",
-                100%,
-                100%
-              );
-            }
-            .prize-type {
-              width: px2rem(117px);
-              height: px2rem(91px);
-              font-size: px2rem(28px);
-              font-family: PingFangSC, PingFangSC-Medium;
-              font-weight: 500;
-              text-align: center;
-              color: #d10000;
-              line-height: px2rem(91px);
-              // transform: rotate(30deg);
-              margin-left: auto;
-              margin-right: auto;
-              margin-bottom: auto;
-            }
-            .prize-img {
-              width: px2rem(97px);
-              height: px2rem(102px);
-              margin-top: px2rem(39px);
-              // border: 3px solid;
-              // border-image: linear-gradient(180deg, #ff354d, #ffffff) 2.819759679572763 2.819759679572763;
-              // border-radius: 7px 7px 8px 8px;
-              // filter: blur(4px);
-            }
-          }
-        }
-      }
     }
-    .empty-box {
-      height: px2rem(32px);
-    }
-    // 中奖信息
-    .wheel-tips {
-      width: px2rem(400px);
-      // height: px2rem(84px);
-      height: px2rem(60px);
-      opacity: 1;
-      background: #dc0e30;
-      border-radius: px2rem(12px);
-      margin-left: auto;
-      margin-right: auto;
-      // margin-top: px2rem(16px);
-      // margin-top: px2rem(24px);
-      padding-top: px2rem(10px);
-      padding-bottom: px2rem(10px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      &.is-hide{
-        display: none;
-      }
-      .notice-swipe,
-      .wheel-tips-item {
-        height: px2rem(22px);
-        // line-height: px2rem(22px);
-      }
-      .wheel-notice-bar {
-        height: px2rem(22px);
-        // line-height: (22px);
-      }
-      .wheel-tips-list {
-        display: flex;
-        // margin-bottom: px2rem(12px);
-      }
-      .wheel-tips-item {
-        display: flex;
-        margin-right: px2rem(24px);
-        .wheel-item-avatar {
-          width: px2rem(22px);
-          height: px2rem(22px);
-          border-radius: 100%;
-          margin-right: px2rem(6px);
-        }
-        .wheel-item-text {
-          // width: px2rem(294px);
-          height: px2rem(22px);
-          font-size: px2rem(22px);
-          font-family: PingFangSC, PingFangSC-Regular;
-          font-weight: 400;
-          text-align: left;
-          color: #fff4e3;
-          line-height: px2rem(22px);
-        }
-      }
-    }
-    // 抽奖按钮
-    .wheel-btn-off {
-      width: px2rem(332px);
-      height: px2rem(102px);
-      margin-left: auto;
-      margin-right: auto;
-      @include img-retina(
-       "~@/assets/lottery/wheel-btn-no_1.png",
-        "~@/assets/lottery/wheel-btn-no_1.png",
-        100%,
-        100%
-      );
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center;
-      background-color: transparent;
-      border:none;
-      cursor: pointer;
-      margin-bottom: px2rem(9px);
-      margin-top: px2rem(16px);
-      position: relative;
-      .text {
-        position: absolute;
-        top: px2rem(16px); left: px2rem(84px);
-        font-size: px2rem(40px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Bold;
-        font-weight: 700;
-        text-align: left;
-        color: #ffffff;
-        // line-height: px2rem(80px);
-        // line-height: px2rem(166px);
-        letter-spacing: px2rem(2px);
-        text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
-      }
-    }
-    .wheel-btn-on {
-      // width: px2rem(350px);
-      // height: px2rem(145px);
-      // margin-top: px2rem(-21px);
-      // @include img-retina(
-      //   "~@/assets/lottery/wheel-btn.png",
-      //   "~@/assets/lottery/wheel-btn@2x.png",
-      //   100%,
-      //   100%
-      // );
-      width: px2rem(332px);
-      height: px2rem(102px);
-      margin-left: auto;
-      margin-right: auto;
-      @include img-retina(
-        "~@/assets/lottery/wheel-btn.png",
-        "~@/assets/lottery/wheel-btn@2x.png",
-        100%,
-        100%
-      );
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center;
-      background-color: transparent;
-      border:none;
-      cursor: pointer;
-      margin-bottom: px2rem(9px);
-      margin-top: px2rem(16px);
-      line-height: px2rem(142px);
-      .van-button__text{
-        // line-height: px2rem(102px);
-        line-height: px2rem(40px);
-      }
-      .text {
-        display: inline-block;
-        height: px2rem(40px);
-        font-size: px2rem(40px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Bold;
-        font-weight: 700;
-        text-align: left;
-        color: #d10000;
-        line-height: px2rem(10px);
-        // line-height: px2rem(102px);
-        // line-height: px2rem(166px);
-        // line-height: px2rem(145px);
-        letter-spacing: px2rem(2px);
-        text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
-      }
-    }
-    // 我的积分
-    .wheel-point {
-      display: flex;
-      height: px2rem(26px);
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      .my {
-        width: px2rem(96px);
-        height: px2rem(24px);
+    .dial-start-title-small {
         opacity: 1;
+        background: linear-gradient(180deg, #fffdfc, #ffeccf);
+        /*必需加前缀 -webkit- 才支持这个text值 */
+        -webkit-background-clip: text;
+        /*text-fill-color会覆盖color所定义的字体颜色： */
+        -webkit-text-fill-color: transparent;
+        font-size: px2rem(74px);
+        font-family: YouSheBiaoTiHei;
+        font-style: oblique;
+        font-weight: bold;
+        text-align: center;
+        color: #999999;
+        letter-spacing: px2rem(1px);
+        text-shadow: 0px px2rem(3px) px2rem(8px) 0px rgba(0, 0, 0, 0.15);
+        margin-left: px2rem(29px);
+        margin-right: px2rem(25px);
+        // margin-bottom: px2rem(21px);
+    }
+    .notice-wrap{
+        width: px2rem(525px);
+        height: px2rem(44px);
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: px2rem(24px);
+        margin: 0 auto px2rem(7px) auto;
+        padding: px2rem(9px) px2rem(5px) px2rem(9px) px2rem(24px);
+        .notice{
+            // width: px2rem(496px);
+            height: px2rem(26px);
+            opacity: 1;
+            font-size: px2rem(26px);
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            text-align: left;
+            color: #ffffff;
+            line-height: px2rem(26px);
+        }
+    }
+    .notice-wrap-none{
+        display: none;
+    }
+    .wheel-content{
+    //   width: 100%;
+      width: px2rem(750px);
+      height: px2rem(1111px);
+      overflow-y: scroll;
+      @include img-retina("~@/assets/lottery/dial.png","~@/assets/lottery/dial@3x.png",100%,100%);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-y: px2rem(12px);
+      background-position-x: center;
+    //   background-position: center;
+      margin-left: auto;
+      margin-right: auto;
+      overflow-x: hidden;
+      .wheel-chance{
+        // height: px2rem(24px);
         font-size: px2rem(24px);
+        font-family: PingFangSC, PingFangSC-Medium;
+        font-weight: 500;
+        text-align: left;
+        color: #fff4e3;
+        // line-height: px2rem(24px);
+        letter-spacing: px2rem(2px);
+        margin-top: px2rem(27px);
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: px2rem(42px);
+        text-align: center;
+        span {
+            height: px2rem(32px);
+            font-size: px2rem(32px);
+            font-family: PingFangSC, PingFangSC-Medium;
+            font-weight: 500;
+            text-align: left;
+            color: #fff4e3;
+            line-height: px2rem(32px);
+        }
+      }
+      .wheel{
+          margin-bottom: px2rem(64px);
+      }
+      .wheel-tips{
+        width: px2rem(440px);
+        height: px2rem(60px);
+        background: #dc0e30;
+        border-radius: px2rem(12px);
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: px2rem(16px);
+        padding: px2rem(19px) px2rem(10px) px2rem(19px) px2rem(16px);
+        .wheel-tips-list {
+            display: flex;
+            .wheel-tips-item {
+                display: flex;
+                margin-right: px2rem(24px);
+                .wheel-item-avatar {
+                    width: px2rem(22px);
+                    height: px2rem(22px);
+                    border-radius: 100%;
+                    margin-right: px2rem(6px);
+                }
+                .wheel-item-text {
+                    // width: px2rem(294px);
+                    height: px2rem(22px);
+                    font-size: px2rem(22px);
+                    font-family: PingFangSC, PingFangSC-Regular;
+                    font-weight: 400;
+                    text-align: left;
+                    color: #fff4e3;
+                    line-height: px2rem(22px);
+                }
+            }
+        }
+      }
+      .wheel-btn-on{
+        display: block;
+        width: px2rem(332px);
+        height: px2rem(102px);
+        @include img-retina("~@/assets/lottery/wheel-btn.png","~@/assets/lottery/wheel-btn@2x.png",100%,100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        background-color: transparent;
+        border:none;
+        margin-left: auto;
+        margin-right: auto;
+        // margin-bottom: px2rem(9px);
+        // margin-left: px2rem(209px);
+        margin-left: auto;
+        margin-right: auto;
+        line-height: px2rem(142px);
+        .van-button__text{
+            // line-height: px2rem(102px);
+            line-height: px2rem(40px);
+        }
+        .text {
+            display: inline-block;
+            height: px2rem(40px);
+            font-size: px2rem(40px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Bold;
+            font-weight: 700;
+            text-align: left;
+            color: #d10000;
+            line-height: px2rem(10px);
+            // line-height: px2rem(102px);
+            // line-height: px2rem(166px);
+            // line-height: px2rem(145px);
+            letter-spacing: px2rem(2px);
+            text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
+        }
+      }
+      .wheel-btn-off {
+        display: block;
+        width: px2rem(332px);
+        height: px2rem(102px);
+        margin-left: auto;
+        margin-right: auto;
+        @include img-retina("~@/assets/lottery/wheel-btn-no_1.png","~@/assets/lottery/wheel-btn-no_1.png",100%,100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        background-color: transparent;
+        border:none;
+        // margin-bottom: px2rem(9px);
+        position: relative;
+        .text {
+            position: absolute;
+            top: px2rem(16px); left: px2rem(84px);
+            font-size: px2rem(40px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Bold;
+            font-weight: 700;
+            text-align: left;
+            color: #ffffff;
+            // line-height: px2rem(80px);
+            // line-height: px2rem(166px);
+            letter-spacing: px2rem(2px);
+            text-shadow: 0px px2rem(2px) px2rem(1px) 0px rgba(0, 0, 0, 0.15) inset;
+        }
+      }
+      .wheel-point{
+        height: px2rem(24px);
+        font-size:  px2rem(24px);
         font-family: SourceHanSansCN, SourceHanSansCN-Regular;
         font-weight: 400;
         text-align: left;
         color: #fff4e3;
         line-height: px2rem(36px);
-        margin-right: px2rem(6px);
-      }
-      .point {
-        width: px2rem(30px);
-        height: px2rem(26px);
-        opacity: 1;
-        font-size: px2rem(26px);
-        font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-        font-weight: 500;
-        text-align: left;
-        color: #fff4e3;
-        line-height: px2rem(39px);
-      }
-    }
-  }
-  .activity-btn-wrap {
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    position: fixed;
-    z-index: 100;
-    left: px2rem(30px);
-    bottom: px2rem(60px);
-    height: px2rem(68px);
-    padding: 0 px2rem(10px);
-    border-radius:px2rem(34px);
-    font-size: 0;
-    background-color:rgba(0,0,0,0.5);
-    .back-btn-arrow {
-      width: px2rem(10px);
-      height: px2rem(28px);
-      margin-right:px2rem(10px);
-      border-right: none;
-      border-bottom: none;
-      @include img-retina("~@/assets/lottery/diallist/arrow-left@2x.png","~@/assets/lottery/diallist/arrow-left@2x.png", 100%, 100%);
-    }
-  }
-  .activity-btn{
-    // width: px2rem(154px);
-    // height: px2rem(68px);
-    font-size: px2rem(22px);
-    color: #fff;
-    line-height: px2rem(68px);
-  }
-}
-// 测评模块弹框样式
-.live-model-wrap {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: auto;
-  z-index: 99;
-  &.lock{
-    pointer-events: none;
-  }
-  .model-content {
-    // margin-top: px2rem(414px);
-    min-width: px2rem(560px);
-    border-radius: px2rem(8px);
-    pointer-events: auto;
-    background-color:#fff;
-    .btn-wrap{
-      display: flex;
-      width: 100%;
-      padding: px2rem(30px);
-      // height: px2rem(90px);
-      // @include border('top',1px,solid,'lineColor');
-      .confirm,.cancel{
-        // flex:1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width:px2rem(275px);
-        height:px2rem(90px);
-        line-height: px2rem(90px);
+        margin-left: auto;
+        margin-right: auto;
         text-align: center;
-        color:#fff;
-        border-radius: px2rem(12px);
-        // @include font-dpr(15px);
-        font-size:px2rem(32px);
+        span{
+            font-size: px2rem(26px);
+            font-family: SourceHanSansCN, SourceHanSansCN-Medium;
+            font-weight: 500;
+            text-align: left;
+            color: #fff4e3;
+            line-height: px2rem(39px);
+            margin-left: px2rem(6px);
+        }
       }
-      .confirm {
-        // border: 1px solid #FFA46A;
-        // color: #FFA46A;
-        @include border('all', px2rem(1px), solid, 'highColor');
-        @include font-color('highColor');
-        margin-right: px2rem(21px);
-        // @include font-color('titleColor');
-        // @include border('right',1px,solid,'lineColor');
+      .activity-btn-wrap {
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        position: fixed;
+        z-index: 100;
+        left: px2rem(30px);
+        bottom: px2rem(60px);
+        height: px2rem(68px);
+        padding: 0 px2rem(10px);
+        border-radius:px2rem(34px);
+        font-size: 0;
+        background-color:rgba(0,0,0,0.5);
+        .back-btn-arrow {
+            width: px2rem(10px);
+            height: px2rem(28px);
+            margin-right:px2rem(10px);
+            border-right: none;
+            border-bottom: none;
+            @include img-retina("~@/assets/lottery/diallist/arrow-left@2x.png","~@/assets/lottery/diallist/arrow-left@2x.png", 100%, 100%);
+        }
       }
-      .cancel {
+      .activity-btn{
+        // width: px2rem(154px);
+        // height: px2rem(68px);
+        font-size: px2rem(22px);
         color: #fff;
-        @include bg-color('themeColor');
-        // @include font-color('themeColor');
+        line-height: px2rem(68px);
       }
     }
   }
-}
-.suspend-model {
+  .suspend-model {
     position: relative;
     padding:px2rem(49px) px2rem(51px) px2rem(41px);
     box-sizing: border-box;
@@ -1806,8 +1384,6 @@ $time: 5s; //转动多少秒后停下的时间
       background-repeat: no-repeat;
       background-position: center;
     }
-}
-[v-cloak]{
-  display:none;
+  }
 }
 </style>
