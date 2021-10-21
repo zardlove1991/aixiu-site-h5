@@ -9,13 +9,13 @@
     <div class='reward-btn-wrap'>
       <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
-    <!-- <div class='dialog-title-3'>有{{enroll.raffle_num}}次抽奖机会</div> -->
   </div>
 </div>
 </template>
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
+import { Toast } from 'mint-ui'
 export default {
   props: {
     show: {
@@ -30,15 +30,15 @@ export default {
   watch: {
     lotteryObj: {
       handler (newData, oldData) {
-        console.log('---000---', newData.enroll)
-        this.enroll = newData.enroll
+        this.voteRelation = newData.vote_relation
+        console.log('666', this.voteRelation)
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
   },
   data () {
     return {
+      voteRelation: {},
       enroll: {},
       rewardIcon: require('@/assets/vote/reward-bg.png'),
       closeIcon: require('@/assets/vote/close-icon.png')
@@ -55,15 +55,25 @@ export default {
       this.$emit('closeReward')
     },
     goRaffle () {
-      let id = this.enroll.id
-      let mark = this.enroll.mark
-      let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
-      this.$router.push({
-        name: 'lottery' + flag,
-        params: {id: id},
-        query: {from: window.location.pathname}
-      })
-      this.$emit('closeReward')
+      console.log('voteRelation', this.voteRelation)
+      try {
+        let id = this.voteRelation.id
+        if (id === undefined) {
+          Toast('没有绑定抽奖')
+          return false
+        }
+        let mark = this.voteRelation.mark
+        console.log('id', id, 'mark', mark)
+        let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+        this.$router.push({
+          name: 'lottery' + flag,
+          params: {id: id},
+          query: {from: window.location.pathname}
+        })
+        this.$emit('closeReward')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
