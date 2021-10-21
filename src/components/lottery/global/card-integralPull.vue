@@ -302,6 +302,7 @@ export default {
         height: px2rem(72px);
         opacity: 1;
         border-radius: px2rem(16px);
+        // background: linear-gradient(0deg,#ffdaa3 1%, #ffebc5);
         background: linear-gradient(0deg,#ffdaa3 1%, #ffebc5);
         box-shadow: 0 px2rem(8px) 0px 0px #e5b56b;
         margin-left: px2rem(135px);

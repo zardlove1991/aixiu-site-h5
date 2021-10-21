@@ -347,7 +347,8 @@ $time: 5s; //转动多少秒后停下的时间
         }
         .integral-name {
           opacity: 0.8;
-          font-size: px2rem(10px);
+          // font-size: px2rem(10px);
+          font-size: px2rem(14px);
           font-family: PingFangSC, PingFangSC-Regular;
           font-weight: 400;
           text-align: center;
