@@ -47,12 +47,32 @@ export default {
   watch: {
     activeObj: {
       handler (newData, oldData) {
-        this.columnList = JSON.parse(JSON.stringify(newData.column_set.column_list))
-        for (let i of this.columnList) {
-          this.$set(i, 'isChecked', false)
-        }
-        this.columnList[0].isChecked = true
         this.columnChangeStatus = newData.topic_display.column_change_status
+        this.columnList = []
+        this.columnList = JSON.parse(JSON.stringify(newData.column_set.column_list))
+        if (this.columnChangeStatus === 1) {
+          // 单行
+          for (let i of this.columnList) {
+            this.$set(i, 'isChecked', false)
+          }
+        } else if (this.columnChangeStatus === 2) {
+          // 多行
+          // 每6个位一组
+          // let _middleArr = []
+          // for (let i of this.columnList) {
+          //   this.$set(i, 'isChecked', false)
+          //   _middleArr.push(i)
+          //   if ((i + 1) % 6 === 0) {
+          //     this.columnList.push(_middleArr)
+          //     _middleArr = []
+          //   }
+          // }
+          // console.log('777', this.columnList)
+        }
+
+        this.columnList[0].isChecked = true
+
+        console.log('999', this.columnList)
       },
       deep: true
     },
@@ -76,6 +96,7 @@ export default {
     }
   },
   mounted () {
+    console.log('columnList', this.columnList)
     this.topicDisplayValue = ''
   },
   methods: {
