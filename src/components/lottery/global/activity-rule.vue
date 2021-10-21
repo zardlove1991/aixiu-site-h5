@@ -64,7 +64,7 @@ export default {
       max-width: 100% !important;
       width: auto;
       height:auto;
-      object-fit: none;
+      object-fit: fill;
     }
 }
 </style>
