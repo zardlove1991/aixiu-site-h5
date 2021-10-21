@@ -40,7 +40,7 @@
     <!-- <CardPacket :show='isCardPacketShow' @close='isCardPacketShow = false'/> -->
     <CardPacketPull :show.sync='isCardPacketPullShow' v-if="isCardPacketPullShow" @close='isCardPacketPullShow = false' :data.sync="tempItem"/>
 
-    <!-- <CardPacketPulls :show.sync="tempShow" @close='tempShow = false'/> -->
+    <!-- <RecordInfos :show.sync="tempShow" @close='tempShow = false'/> -->
     </div>
 </template>
 
@@ -53,7 +53,7 @@ import API from '@/api/module/examination'
 // import RecordUncode from '@/components/lottery/global/dial-record-uncode'
 // import RecordCode from '@/components/lottery/global/dial-record-code'
 // import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
-import RecordInfo from '@/components/lottery/global/dial-record-info'
+// import RecordInfo from '@/components/lottery/global/dial-record-info'
 // import CardPacket from '@/components/lottery/global/dial-card-packet'
 // import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import RecordUncode from '@/components/lottery/global/record-uncode'
@@ -64,9 +64,11 @@ import CardIntegral from '@/components/lottery/global/card-integral'
 import CardStock from '@/components/lottery/global/card-stock'
 import CardPacketPull from '@/components/lottery/global/card-packetPull'
 import RecordTicketed from '@/components/lottery/global/record-ticketed'
+import RecordInfo from '@/components/lottery/global/record-info'
 export default {
   name: '',
   components: {
+    // RecordInfos,
     // RecordUncodes,
     // RecordCodes,
     // CardOverduess,
