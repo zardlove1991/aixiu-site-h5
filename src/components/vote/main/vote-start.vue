@@ -1466,19 +1466,19 @@ export default {
     },
     appShareCallBack () {
       console.log(1)
-      if (this.shareConfigData.id && this.isOpenShare) {
-        console.log(2)
-        this.shareSuccess()
-        // this.setShare({
-        //   id: this.shareConfigData.id,
-        //   title: this.shareConfigData.title,
-        //   from: this.shareConfigData.from,
-        //   mark: this.shareConfigData.mark
-        // }).then(() => {
-        //   console.log(3)
-        //   this.shareSuccess()
-        // })
-      }
+      this.shareSuccess()
+      // if (this.shareConfigData.id && this.isOpenShare) {
+      //   console.log(2)
+      //   this.setShare({
+      //     id: this.shareConfigData.id,
+      //     title: this.shareConfigData.title,
+      //     from: this.shareConfigData.from,
+      //     mark: this.shareConfigData.mark
+      //   }).then(() => {
+      //     console.log(3)
+      //     this.shareSuccess()
+      //   })
+      // }
     },
     toggleFullSceneType (key) {
       console.log(key, 'keykey')
