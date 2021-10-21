@@ -690,6 +690,9 @@ export default {
             }, this.drawTime)
           } else if (res.type === 6) { // 再来一次
             this.detailInfo.remain_counts--
+            if (this.detailInfo.remain_counts === 0) {
+              this.detailInfo.remain_counts = 0
+            }
             this.list.map((item, index) => {
               if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
