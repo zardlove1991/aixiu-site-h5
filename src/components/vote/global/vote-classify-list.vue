@@ -146,10 +146,9 @@ export default {
       left: 0;
       right: 0;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       border-radius: px2rem(8px);
       .dropdown-item {
-        flex: 1;
         @include font-dpr(14px);
         &.item0 {
           @include bg-color('descColor');
