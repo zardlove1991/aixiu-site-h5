@@ -279,7 +279,6 @@
     </report-num-limit>
     <!-- 分享抽奖之后的弹窗提示 -->
     <lottery-share-reward
-      v-if='lotteryShareRewardType'
       :lotteryObj='lotteryObj'
       :show="isLotteryShareReward"
       @closeReward="isLotteryShareReward = false"></lottery-share-reward>
@@ -549,12 +548,13 @@ export default {
       API.shareOk({ query: {id: this.id} }).then(res => {
         // eslint-disable-next-line eqeqeq
         if (res.success == 1) {
-          this.lotteryShareRewardType = false
-          this.$nextTick(() => {
-            this.lotteryObj = this.curVoteDatailObj.lottery
-            this.isLotteryShareReward = true
-            this.lotteryShareRewardType = true
-          })
+          // this.lotteryShareRewardType = false
+          this.lotteryObj = this.curVoteDatailObj.lottery
+          console.log('123', this.lotteryObj, this.curVoteDatailObj.lottery)
+          this.isLotteryShareReward = true
+          // this.$nextTick(() => {
+          //   this.lotteryShareRewardType = true
+          // })
         }
       })
     },
