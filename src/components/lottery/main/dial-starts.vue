@@ -985,7 +985,7 @@ export default {
 //     100%
 //   );
   background-repeat: no-repeat;
-  background-size: fill;
+  background-size: 100% 100%;
 //   overflow: hidden;
   overflow-y: scroll;
   overflow-x: hidden;
