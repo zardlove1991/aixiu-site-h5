@@ -38,7 +38,6 @@
       <div :class="['overview-organizers', darkMark === '2' ? 'light-org' : ''] " v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
-      <!-- <button @click='clickMeFun'>click me</button> -->
       <!--主要内容包裹-->
       <div class="overview-content-wrap">
         <!--信息展示-->
