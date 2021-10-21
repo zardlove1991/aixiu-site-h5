@@ -38,7 +38,7 @@
                         <!-- <van-image class="img" :src="prizeData.is_merchants.logo_url" fit='cover'></van-image> -->
                         <img  class="img"  :src="prizeData.is_merchants.logo_url" alt="">
                     </div>
-                    <div class="avatar-name" v-if="prizeData.is_merchants.merchant_info">{{prizeData.is_merchants.merchant_info}}</div>
+                    <div class="avatar-name" v-if="prizeData.is_merchants.name">{{prizeData.is_merchants.name}}</div>
                 </div>
                 <div class="info">
                     <p>兑奖码： {{prizeData && prizeData.code || '--'}}</p>
