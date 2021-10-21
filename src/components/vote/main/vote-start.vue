@@ -285,7 +285,6 @@
       @closeReward="isLotteryShareReward = false"></lottery-share-reward>
     <!-- 投票关联抽奖 -->
     <vote-reward
-      v-if='voteRewardType'
       :lotteryObj='lotteryObj'
       :show="isShowVoteReward"
       @closeReward="isShowVoteReward = false">
@@ -511,12 +510,13 @@ export default {
         let isLotteryType = detailInfo.rule.lottery_config.enroll.is_report_limit
         if (isFirstUploadType) {
           if (isLotteryType === 1) {
-            this.voteRewardType = false
+            // this.voteRewardType = false
             this.lotteryObj = res.lottery
-            this.$nextTick(item => {
-              this.voteRewardType = true
-              this.isShowVoteReward = true
-            })
+            this.isShowVoteReward = true
+            // this.$nextTick(item => {
+            //   this.voteRewardType = true
+            //   this.isShowVoteReward = true
+            // })
           }
           STORAGE.remove('isFirstUpload')
         }
