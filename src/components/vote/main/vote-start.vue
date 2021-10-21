@@ -38,7 +38,7 @@
       <div :class="['overview-organizers', darkMark === '2' ? 'light-org' : ''] " v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
-      <button @click='clickMeFun'>click me</button>
+      <!-- <button @click='clickMeFun'>click me</button> -->
       <!--主要内容包裹-->
       <div class="overview-content-wrap">
         <!--信息展示-->
@@ -545,11 +545,11 @@ export default {
         this.isLotteryTips = true
       })
     },
-    clickMeFun () {
-      this.isLotteryShareReward = true
-      this.lotteryObj2 = this.curVoteDatailObj.lottery
-      console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
-    },
+    // clickMeFun () {
+    //   this.isLotteryShareReward = true
+    //   this.lotteryObj2 = this.curVoteDatailObj.lottery
+    //   console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
+    // },
     shareSuccess () {
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
@@ -557,7 +557,6 @@ export default {
         if (res.success == 1) {
           this.isLotteryShareReward = true
           this.lotteryObj2 = this.curVoteDatailObj.lottery
-          console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
         }
       })
     },

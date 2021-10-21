@@ -31,7 +31,6 @@ export default {
     lotteryObj: {
       handler (newData, oldData) {
         this.voteRelation = newData.vote_relation
-        console.log('---000', newData.vote_relation)
         console.log('666', this.voteRelation)
       },
       deep: true
@@ -56,7 +55,6 @@ export default {
       this.$emit('closeReward')
     },
     goRaffle () {
-      console.log('click')
       console.log('voteRelation', this.voteRelation)
       try {
         let id = this.voteRelation.id
