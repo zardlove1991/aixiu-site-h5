@@ -15,6 +15,7 @@
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
+import { Toast } from 'mint-ui'
 export default {
   props: {
     show: {
@@ -29,15 +30,15 @@ export default {
   watch: {
     lotteryObj: {
       handler (newData, oldData) {
-        console.log('---000---', newData.enroll)
-        this.enroll = newData.enroll
+        console.log('---000', newData.vote_relation)
+        this.voteRelation = newData.vote_relation
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
   },
   data () {
     return {
+      voteRelation: {},
       enroll: {},
       rewardIcon: require('@/assets/vote/reward-bg.png'),
       closeIcon: require('@/assets/vote/close-icon.png')
@@ -55,9 +56,14 @@ export default {
     },
     goRaffle () {
       console.log('click')
+      console.log(' this.enroll', this.voteRelation)
       try {
-        let id = this.enroll.id
-        let mark = this.enroll.mark
+        let id = this.voteRelation.id
+        if (id === undefined) {
+          Toast('没有绑定抽奖')
+          return false
+        }
+        let mark = this.voteRelation.mark
         console.log('id', id, 'mark', mark)
         let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
         console.log('flag', flag, 'window.location.pathname', window.location.pathname)

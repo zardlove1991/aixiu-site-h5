@@ -279,7 +279,7 @@
     </report-num-limit>
     <!-- 分享抽奖之后的弹窗提示 -->
     <lottery-share-reward
-      :lotteryObj='lotteryObj'
+      :lotteryObj='lotteryObj2'
       :show="isLotteryShareReward"
       @closeReward="isLotteryShareReward = false"></lottery-share-reward>
     <!-- 投票关联抽奖 -->
@@ -367,6 +367,7 @@ export default {
   },
   data () {
     return {
+      lotteryObj2: {},
       lotteryShareRewardType: false,
       isLotteryShareReward: false,
       isShowCanvass: false,
@@ -543,15 +544,20 @@ export default {
         this.isLotteryTips = true
       })
     },
+    // clickMeFun () {
+    //   this.isLotteryShareReward = true
+    //   this.lotteryObj2 = this.curVoteDatailObj.lottery
+    //   console.log('123', this.lotteryObj, this.curVoteDatailObj.lottery)
+    // },
     shareSuccess () {
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
         // eslint-disable-next-line eqeqeq
         if (res.success == 1) {
           // this.lotteryShareRewardType = false
-          this.lotteryObj = this.curVoteDatailObj.lottery
-          console.log('123', this.lotteryObj, this.curVoteDatailObj.lottery)
           this.isLotteryShareReward = true
+          this.lotteryObj2 = this.curVoteDatailObj.lottery
+          console.log('123', this.lotteryObj, this.curVoteDatailObj.lottery)
           // this.$nextTick(() => {
           //   this.lotteryShareRewardType = true
           // })
