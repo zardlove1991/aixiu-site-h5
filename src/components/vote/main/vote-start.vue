@@ -455,6 +455,7 @@ export default {
     this.curVoteDatailObj = await this.syncGetVodeDetail()
     this.initData()
     let plat = getPlat()
+    console.log('plat', plat)
     if (plat === 'smartcity') {
       console.log('99999')
       window.SmartCity.onShareSuccess((res) => {
