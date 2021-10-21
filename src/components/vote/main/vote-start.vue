@@ -38,6 +38,7 @@
       <div :class="['overview-organizers', darkMark === '2' ? 'light-org' : ''] " v-if="detailInfo.organizers && detailInfo.organizers.length">
         <span class="name" v-for="(item, index) in detailInfo.organizers" :key="index">{{item.name}}</span>
       </div>
+      <!-- <button @click='clickMeFun'>click me</button> -->
       <!--主要内容包裹-->
       <div class="overview-content-wrap">
         <!--信息展示-->
@@ -279,13 +280,12 @@
     </report-num-limit>
     <!-- 分享抽奖之后的弹窗提示 -->
     <lottery-share-reward
-      v-if='lotteryShareRewardType'
-      :lotteryObj='lotteryObj'
+      :lotteryObj='lotteryObj2'
       :show="isLotteryShareReward"
       @closeReward="isLotteryShareReward = false"></lottery-share-reward>
     <!-- 投票关联抽奖 -->
     <vote-reward
-      v-if='voteRewardType'
+      v-show='voteRewardType'
       :lotteryObj='lotteryObj'
       :show="isShowVoteReward"
       @closeReward="isShowVoteReward = false">
@@ -368,6 +368,7 @@ export default {
   },
   data () {
     return {
+      lotteryObj2: {},
       lotteryShareRewardType: false,
       isLotteryShareReward: false,
       isShowCanvass: false,
@@ -544,16 +545,18 @@ export default {
         this.isLotteryTips = true
       })
     },
+    // clickMeFun () {
+    //   this.isLotteryShareReward = true
+    //   this.lotteryObj2 = this.curVoteDatailObj.lottery
+    //   console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
+    // },
     shareSuccess () {
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
         // eslint-disable-next-line eqeqeq
         if (res.success == 1) {
-          this.lotteryShareRewardType = false
-          this.$nextTick(() => {
-            this.isLotteryShareReward = true
-            this.lotteryShareRewardType = true
-          })
+          this.isLotteryShareReward = true
+          this.lotteryObj2 = this.curVoteDatailObj.lottery
         }
       })
     },
