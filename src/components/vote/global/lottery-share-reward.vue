@@ -9,7 +9,6 @@
     <div class='reward-btn-wrap'>
       <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
-    <!-- <div class='dialog-title-3'>有{{enroll.raffle_num}}次抽奖机会</div> -->
   </div>
 </div>
 </template>
@@ -57,7 +56,9 @@ export default {
     goRaffle () {
       let id = this.enroll.id
       let mark = this.enroll.mark
+      console.log('id', id, 'mark', mark)
       let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+      console.log('flag', flag, 'window.location.pathname', window.location.pathname)
       this.$router.push({
         name: 'lottery' + flag,
         params: {id: id},
