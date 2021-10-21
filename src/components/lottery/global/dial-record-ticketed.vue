@@ -27,7 +27,7 @@
            </div>
           <div slot="content-next" class="record-info-next">
               <div class="grounp-btns-wrap">
-                  <van-button  block  class="btn"><span>返回</span></van-button>
+                  <van-button  block  class="btn" @click="onClose"><span>返回</span></van-button>
                   <!-- <van-button  block  class="btn"><span>中奖二维码</span></van-button> -->
               </div>
               <div class="tips-wrap">
@@ -55,12 +55,7 @@ export default {
   data () {
     return {}
   },
-  computed: {},
-  watch: {
-    show (newState) {
-      // 更改当前是否显示遮罩的状态
-      this.setIsModelShow(newState)
-    },
+  computed: {
     itemData: {
       get () {
         return this.data
@@ -69,6 +64,12 @@ export default {
         console.log('rule page数据改变')
         this.$emit('update:data', val)
       }
+    }
+  },
+  watch: {
+    show (newState) {
+      // 更改当前是否显示遮罩的状态
+      this.setIsModelShow(newState)
     }
   },
   created () {},
@@ -119,7 +120,7 @@ export default {
             font-size: px2rem(32px);
             font-family: PingFangSC, PingFangSC-Medium;
             font-weight: 500;
-            text-align: left;
+            text-align: center;
             color: #4f0f0f;
             line-height: px2rem(36px);
             margin-left: auto;

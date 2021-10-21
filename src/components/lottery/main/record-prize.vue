@@ -277,8 +277,8 @@ export default {
 @import "@/styles/index.scss";
 .record-prize {
   width: 100%;
-  height: px2rem(1448px);
-  // height: 100vh;
+  // height: px2rem(1448px);
+  height: 100vh;
   opacity: 1;
   background: linear-gradient(181deg, #ff8f68 0%, #ff093f 100%);
   position: relative;
@@ -336,6 +336,7 @@ export default {
     height: px2rem(1321px);
     position: absolute;
     top: px2rem(127px); left: 0;
+    background: linear-gradient(181deg, #ff8f68 10%, #ff093f 100%);
     .record-prize-content{
         width: calc(100% - (30px));
         // width: px2rem(690px);
