@@ -48,6 +48,7 @@
                   <p>时即失效</p>
                 </div>
             </div>
+            <div class="record-ticketed-footer"></div>
         </div>
     </div>
 </template>
@@ -392,6 +393,17 @@ export default {
         justify-content: space-between;
         // line-height: 24px;
       }
+    }
+    .record-ticketed-footer{
+      width: px2rem(600px);
+      height: px2rem(140px);
+      border-bottom-left-radius: px2rem(16px);
+      border-bottom-right-radius: px2rem(16px);
+      @include img-retina("~@/assets/lottery/activityRule/propup4.png","~@/assets/lottery/activityRule/propup4.png", 100%, 100%);
+      background-repeat: no-repeat;
+      position: absolute;
+      bottom: 0;
+      left: 0;
     }
   }
 }

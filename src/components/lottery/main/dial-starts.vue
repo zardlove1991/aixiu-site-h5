@@ -94,6 +94,7 @@
       :activityId='id' :collectInfo.sync='checkDraw' />
     <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
     <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
+    <!-- <Prizes :show.sync="tempShow" @close='tempShow = false'/> -->
     </div>
 </template>
 
@@ -105,7 +106,7 @@ import DialDialog from '@/components/lottery/global/dial-dialog'
 import MoalImg from '@/components/lottery/global/dial-model-img'
 import RecordDraw from '@/components/lottery/global/dial-recordDraw'
 import RecordLess from '@/components/lottery/global/dial-recordLess'
-import Prize from '@/components/lottery/global/dial-prize'
+// import Prize from '@/components/lottery/global/dial-prize'
 import PrizeAddress from '@/components/lottery/global/dial-prize-address'
 import ActivityPause from '@/components/lottery/global/dial-activity-pause'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
@@ -131,6 +132,7 @@ import Again from '@/components/lottery/global/again' // 再来一次弹框
 import Integral from '@/components/lottery/global/integral' // 积分弹框
 import Packet from '@/components/lottery/global/packet' // 红包弹框
 import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格
+import Prize from '@/components/lottery/global/prize'
 import API from '@/api/module/examination'
 // import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -140,6 +142,8 @@ import { getDaysBetween, delUrlParams, setBrowserTitle, debounce, getPlat } from
 export default {
   name: '',
   components: {
+    // Prizes,
+
     Wheel,
     ActivityRule,
     UnDraw,
@@ -181,6 +185,7 @@ export default {
   mixins: [mixins, SubjectMixin],
   data () {
     return {
+      tempShow: true,
       list: [
         {
           title: '微信红包',
