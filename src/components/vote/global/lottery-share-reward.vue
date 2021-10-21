@@ -30,8 +30,9 @@ export default {
   watch: {
     lotteryObj: {
       handler (newData, oldData) {
-        console.log('---000', newData.vote_relation)
         this.voteRelation = newData.vote_relation
+        console.log('---000', newData.vote_relation)
+        console.log('666', this.voteRelation)
       },
       deep: true
     }
@@ -56,7 +57,7 @@ export default {
     },
     goRaffle () {
       console.log('click')
-      console.log(' this.enroll', this.voteRelation)
+      console.log('voteRelation', this.voteRelation)
       try {
         let id = this.voteRelation.id
         if (id === undefined) {
@@ -66,7 +67,6 @@ export default {
         let mark = this.voteRelation.mark
         console.log('id', id, 'mark', mark)
         let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
-        console.log('flag', flag, 'window.location.pathname', window.location.pathname)
         this.$router.push({
           name: 'lottery' + flag,
           params: {id: id},
