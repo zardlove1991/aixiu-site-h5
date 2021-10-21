@@ -15,9 +15,10 @@
         <div class="dial-start-container">
             <div class="dial-start-title"  v-if="detailInfo.is_display_title"
              :class="{'dial-start-title-small':detailInfo.title.length > 5}">{{detailInfo.title}}</div>
-             <div class="notice-wrap" :class="{'notice-wrap-none': detailInfo.remain_counts === 0}">
+             <!-- :class="{'notice-wrap-none': detailInfo.remain_counts === 0}"  -->
+             <div class="notice-wrap" v-if="detailInfo.limit.share_lottery_limit.is_share_lottery">
                 <van-notice-bar class="notice" :scrollable="true" >
-                    <p class="notice-bar">疯狂派“兑”，快来邀请好友一起来参与吧！</p>
+                    <p class="notice-bar">{{detailInfo.limit.is_share_before}}</p>
                 </van-notice-bar>
              </div>
              <div class="wheel-content">
@@ -40,7 +41,7 @@
                     <span class="text">立即抽奖</span>
                 </van-button>
                 <van-button  v-else class="wheel-btn-off" type="primary" round  ><span class="text">立即抽奖</span></van-button>
-                <div class="wheel-point" v-if=" isSourceshow && detailInfo.user_integral_counts >= 0" >
+                <div class="wheel-point" v-if="isSourceshow && detailInfo.user_integral_counts >= 0" >
                     我的积分 <span>{{detailInfo.all_credits}}</span>
                 </div>
                 <div class="activity-btn-wrap" @click="handleBack" v-if="$route.query.from">
@@ -1148,7 +1149,8 @@ export default {
         }
       }
       .wheel{
-          margin-bottom: px2rem(64px);
+          // margin-bottom: px2rem(64px);
+          margin-bottom: px2rem(44px);
       }
       .wheel-tips{
         width: px2rem(440px);
@@ -1255,7 +1257,8 @@ export default {
         font-weight: 400;
         text-align: left;
         color: #fff4e3;
-        line-height: px2rem(36px);
+        // line-height: px2rem(36px);
+        line-height: px2rem(24px);
         margin-left: auto;
         margin-right: auto;
         text-align: center;
