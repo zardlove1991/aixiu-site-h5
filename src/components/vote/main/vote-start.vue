@@ -456,9 +456,7 @@ export default {
     this.initData()
     let plat = getPlat()
     if (plat === 'smartcity') {
-      console.log('99999')
       window.SmartCity.onShareSuccess((res) => {
-        console.log('9000')
         this.appShareCallBack()
       })
     }
@@ -552,7 +550,6 @@ export default {
     //   console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
     // },
     shareSuccess () {
-      console.log(777)
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
         // eslint-disable-next-line eqeqeq
@@ -1464,19 +1461,19 @@ export default {
       this.isShowWorkVote = false
     },
     appShareCallBack () {
-      console.log(1)
-      if (this.shareConfigData.id && this.isOpenShare) {
-        console.log(2)
-        this.setShare({
-          id: this.shareConfigData.id,
-          title: this.shareConfigData.title,
-          from: this.shareConfigData.from,
-          mark: this.shareConfigData.mark
-        }).then(() => {
-          console.log(3)
-          this.shareSuccess()
-        })
-      }
+      this.shareSuccess()
+      // if (this.shareConfigData.id && this.isOpenShare) {
+      //   console.log(2)
+      //   this.setShare({
+      //     id: this.shareConfigData.id,
+      //     title: this.shareConfigData.title,
+      //     from: this.shareConfigData.from,
+      //     mark: this.shareConfigData.mark
+      //   }).then(() => {
+      //     console.log(3)
+      //     this.shareSuccess()
+      //   })
+      // }
     },
     toggleFullSceneType (key) {
       console.log(key, 'keykey')
