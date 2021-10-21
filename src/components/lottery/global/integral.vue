@@ -229,7 +229,8 @@ export default {
                         // align-items: center;
                         // justify-content: center;
                         // padding: auto px2rem(64px);
-                        padding-top: px2rem(42px);
+                        // padding-top: px2rem(42px);
+                        padding-top: px2rem(52px);
                         margin-bottom: px2rem(30px);
                         .score {
                             font-size: px2rem(46px);
