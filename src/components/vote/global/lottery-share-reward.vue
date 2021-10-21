@@ -54,17 +54,22 @@ export default {
       this.$emit('closeReward')
     },
     goRaffle () {
-      let id = this.enroll.id
-      let mark = this.enroll.mark
-      console.log('id', id, 'mark', mark)
-      let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
-      console.log('flag', flag, 'window.location.pathname', window.location.pathname)
-      this.$router.push({
-        name: 'lottery' + flag,
-        params: {id: id},
-        query: {from: window.location.pathname}
-      })
-      this.$emit('closeReward')
+      console.log('click')
+      try {
+        let id = this.enroll.id
+        let mark = this.enroll.mark
+        console.log('id', id, 'mark', mark)
+        let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+        console.log('flag', flag, 'window.location.pathname', window.location.pathname)
+        this.$router.push({
+          name: 'lottery' + flag,
+          params: {id: id},
+          query: {from: window.location.pathname}
+        })
+        this.$emit('closeReward')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
