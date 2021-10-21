@@ -52,7 +52,7 @@ import API from '@/api/module/examination'
 // import CardOverdues from '@/components/lottery/global/dial-card-overdues'
 // import RecordUncode from '@/components/lottery/global/dial-record-uncode'
 // import RecordCode from '@/components/lottery/global/dial-record-code'
-import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
+// import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
 import RecordInfo from '@/components/lottery/global/dial-record-info'
 // import CardPacket from '@/components/lottery/global/dial-card-packet'
 // import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
@@ -63,6 +63,7 @@ import CardIntegralPull from '@/components/lottery/global/card-integralPull'
 import CardIntegral from '@/components/lottery/global/card-integral'
 import CardStock from '@/components/lottery/global/card-stock'
 import CardPacketPull from '@/components/lottery/global/card-packetPull'
+import RecordTicketed from '@/components/lottery/global/record-ticketed'
 export default {
   name: '',
   components: {
