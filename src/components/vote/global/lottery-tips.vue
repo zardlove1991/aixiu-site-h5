@@ -134,7 +134,8 @@ export default {
       let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
       this.$router.push({
         name: 'lottery' + flag,
-        params: {id: data.data.id}
+        params: {id: data.data.id},
+        query: {from: window.location.pathname}
       })
     },
     goRecoredList (data) {

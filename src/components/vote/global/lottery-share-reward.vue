@@ -4,12 +4,12 @@
     <div class='close-icon-box' @click='closeDialog'>
       <img :src="closeIcon" alt=""  @click='closeDialog' class='close-icon-wrap'>
     </div>
-    <div class='dialog-title-1'>恭喜您，报名成功</div>
-    <div class='dialog-title-2'>作品正在审核中...</div>
+    <div class='dialog-title-1'>分享成功</div>
+    <div class='dialog-title-2'>获得1次抽奖机会</div>
     <div class='reward-btn-wrap'>
       <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
-    <div class='dialog-title-3'>有{{enroll.raffle_num}}次抽奖机会</div>
+    <!-- <div class='dialog-title-3'>有{{enroll.raffle_num}}次抽奖机会</div> -->
   </div>
 </div>
 </template>

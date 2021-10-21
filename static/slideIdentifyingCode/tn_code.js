@@ -126,7 +126,7 @@ var tncode = {
     if (tncode._doing || !tncode._img_loaded ) {
       return
     }
-    console.log('start-move')
+    // console.log('start-move')
     e.preventDefault()
     tncode.isLoadType = false
     var theEvent = window.event || e
@@ -143,10 +143,10 @@ var tncode = {
     tncode._is_moving = true
   },
   _block_on_move: function (e) {
-    console.log('move-1', tncode._doing, tncode._is_moving)
+    // console.log('move-1', tncode._doing, tncode._is_moving)
     if (!tncode._doing) return true
     if (!tncode._is_moving) return true
-    console.log('block-on-move')
+    // console.log('block-on-move')
     e.preventDefault()
     tncode.isStopSlideType = false
     var theEvent = window.event || e
@@ -171,9 +171,9 @@ var tncode = {
     tncode._draw_mark()
   },
   _block_on_end: function (e) {
-    console.log('_doing', tncode._doing)
+    // console.log('_doing', tncode._doing)
     if (!tncode._doing) return true
-    console.log('block-on-end')
+    // console.log('block-on-end')
     e.preventDefault()
     var theEvent = window.event || e
     if (theEvent.touches) {
@@ -182,10 +182,10 @@ var tncode = {
 
     tncode.isStopSlideType = true
     // tncode._is_moving = false
-    console.log('isStopSlideType', tncode.isStopSlideType, tncode._is_moving)
+    // console.log('isStopSlideType', tncode.isStopSlideType, tncode._is_moving)
   },
   checkSuccessType: function (data) {
-    console.log('checkSuccessType')
+    // console.log('checkSuccessType')
     if (tncode.isLoadType) {
       // 加载过不再加载
       return false
@@ -197,7 +197,7 @@ var tncode = {
       tncode._tncode.innerHTML = '验证成功'
       tncode._showmsg('验证成功', 1)
       tncode._result = true
-      console.log(' tncode._result', tncode._result)
+      // console.log(' tncode._result', tncode._result)
       document.getElementByClassName('hgroup').style.display = 'block'
       setTimeout(tncode.hide, 3000)
       // if (tncode._onsuccess) {
@@ -218,7 +218,7 @@ var tncode = {
     }
   },
   _draw_fullbg: function () {
-    console.log('draw-fullbg')
+    // console.log('draw-fullbg')
     // 绘画底部的背景图
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
@@ -229,14 +229,14 @@ var tncode = {
     if (tncode._is_draw_bg) {
       return
     }
-    console.log('drae-bg')
+    // console.log('drae-bg')
     tncode._is_draw_bg = true
     var canvas_bg = document.getElementByClassName('tncode_canvas_bg')
     var ctx_bg = canvas_bg.getContext('2d')
     ctx_bg.drawImage(tncode._img, 0, 0, tncode._img_w, tncode._img_h, 0, 0, tncode._img_w, tncode._img_h)
   },
   _draw_mark: function() {
-    console.log('draw-mark')
+    // console.log('draw-mark')
     // 绘画移动的图片的移动坐标
     var canvas_mark = document.getElementByClassName('tncode_canvas_mark')
     var ctx_mark = canvas_mark.getContext('2d')
@@ -288,7 +288,7 @@ var tncode = {
     ctx_mark.putImageData(imageData, 0, 0);
   },
   _reset:function(){
-    console.log('reset')
+    // console.log('reset')
     tncode._mark_offset = 0;
     tncode._draw_bg();
     tncode._draw_mark();
@@ -297,7 +297,7 @@ var tncode = {
   },
   show:function(){
     // console.log('vv', Indicator)
-    console.log('---show---')
+    // console.log('---show---')
     tncode.isLoadType = false
     var obj = document.getElementByClassName('hgroup');
     if(obj){
@@ -311,7 +311,7 @@ var tncode = {
     document.getElementById('tncode_div').style.display="block";
   },
   hide:function(e){
-    console.log('hide', e)
+    // console.log('hide', e)
     // e.stopPropagation()
 
     document.getElementById('tncode_div_bg').style.display="none";
@@ -322,7 +322,7 @@ var tncode = {
     // return false
   },
   _showmsg:function(msg,status){
-    console.log('_showmsg')
+    // console.log('_showmsg')
     if(!status){
       status = 0;
       var obj = document.getElementByClassName('tncode_msg_error');
@@ -416,7 +416,7 @@ var tncode = {
     }
   },
   refresh: function () {
-    console.log('---refresh---')
+    // console.log('---refresh---')
     tncode._doing = false
     // var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0
     // var _this = this
@@ -469,7 +469,7 @@ var tncode = {
     window.document.addEventListener('touchstart', _this._block_on_move, false)
   },
   init:function(){
-    console.log('init-code')
+    // console.log('init-code')
     try {
       let _this = this;
       if(!tncode._img){
