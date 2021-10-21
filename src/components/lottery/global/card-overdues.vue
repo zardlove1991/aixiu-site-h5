@@ -21,7 +21,15 @@
           <div class="overdues" v-if="itemData.status === '已过期'"></div>
           <div class="overdues convert" v-else-if="itemData.status === '已兑奖'"></div>
       </div>
+      <div class="avatar-box">
+          <div class="avatar" v-if="itemData.prize_info.is_merchants.logo_url">
+              <!-- <van-image class="img" :src="itemData.prize_info.is_merchants.logo_url" fit='cover'></van-image> -->
+              <img  class="img"  :src="itemData.prize_info.is_merchants.logo_url" alt="">
+          </div>
+          <div class="avatar-name" v-if="itemData.prize_info.is_merchants.name">{{itemData.prize_info.is_merchants.name}}</div>
+      </div>
       <div class="content-pre-info">
+        <p>兑奖码: {{itemData.prize_info.code}}</p>
         <p>有效期: {{itemData.prize_info.prize_date[0]}} - </p>
         <p>{{itemData.prize_info.prize_date[1]}}</p>
         <p>优惠券仅支持在本店铺使用，全场商品通用</p>
@@ -116,7 +124,8 @@ export default {
   justify-content: center;
   .CardOverduess{
     width: px2rem(600px);
-    height: px2rem(664px);
+    // height: px2rem(664px);
+    height: px2rem(761px);
     background-color: #fff9ec;
     border-radius: px2rem(16px);
     position: relative;
@@ -182,7 +191,8 @@ export default {
     }
     .container{
       width: 100%;
-      height: px2rem(532px);
+      // height: px2rem(532px);
+      height: px2rem(693px);
       position: absolute;
       top: px2rem(68px);
       z-index: 10;
@@ -255,9 +265,55 @@ export default {
           }
         }
       }
+      .avatar-box{
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            width: 100%;
+            height: px2rem(40px);
+            // margin-top: px2rem(40px);
+            margin-bottom: px2rem(40px);
+            .avatar{
+                width: px2rem(40px);
+                height: px2rem(40px);
+                opacity: 1;
+                // background: #ffffff;
+                background: transparent;
+                border: px2rem(1px) solid rgba(255,255,255,0.40);
+                margin-right: px2rem(16px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                padding: px2rem(5px) px2rem(8px);
+                box-sizing: border-box;
+                .img{
+                    width: px2rem(24px);
+                    height: px2rem(30px);
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                }
+            }
+            .avatar-name{
+                // width: px2rem(144px);
+                // height: px2rem(24px);
+                opacity: 1;
+                font-size: px2rem(24px);
+                font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+                font-weight: 400;
+                text-align: left;
+                // color: #fff4e3;
+                color: #4f0f0f;
+                line-height: px2rem(40px);
+                overflow: hidden;
+                text-overflow:ellipsis;
+                white-space: nowrap;
+            }
+      }
       .content-pre-info{
         width: px2rem(494px);
-        height: px2rem(118px);
+        // height: px2rem(118px);
+        height: px2rem(144px);
         opacity: 1;
         font-size: px2rem(26px);
         font-family: PingFangSC, PingFangSC-Regular;
@@ -271,8 +327,11 @@ export default {
         p{
           height: px2rem(26px);
           line-height: px2rem(26px);
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
         }
-        & p:nth-child(2){
+        & p:nth-child(3){
           text-indent:3.5em;
         }
       }
