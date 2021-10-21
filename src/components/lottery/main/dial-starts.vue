@@ -520,6 +520,10 @@ export default {
           // this.winner = this.random(0, this.list.length - 1)
           this.winCallback()
           const res = await API.getDraw({ query: { id: this.id } })
+          this.detailInfo.remain_counts--
+          if (this.detailInfo.remain_counts <= 0) {
+            this.detailInfo.remain_counts = 0
+          }
           console.log(res)
           this.specified = true // 指定获奖下标
           // if (this.specified) {
@@ -551,10 +555,6 @@ export default {
               this.isUnDrawShow = true
             }, this.drawTime)
           } else if (res.type === 6) { // 再来一次
-            this.detailInfo.remain_counts--
-            if (this.detailInfo.remain_counts === 0) {
-              this.detailInfo.remain_counts = 0
-            }
             this.list.map((item, index) => {
               if (item.type === res.type && item.uuid === res.uuid) {
                 this.winner = index
