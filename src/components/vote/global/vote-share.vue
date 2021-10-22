@@ -183,7 +183,6 @@ export default {
         let { rule, id } = detailInfo
         let { collect_member_info: collectMemberInfo } = rule
         // 是否验证投票
-        // console.log('collectMemberInfo', collectMemberInfo)
         if (collectMemberInfo && collectMemberInfo.length > 0) {
           let status = await this.getIsCollect(id)
           if (status) {
@@ -300,96 +299,107 @@ export default {
       }).then(res => {
         let errCode = res.error_code
         // console.log('errCode', errCode)
-        if (errCode) {
-          if (errCode === 'INVALID_CODE') {
-            // 滑动验证码失败
-            if (_needCode === 1) {
-              this.slideCode.checkSuccessType({type: 'fail'})
+        try {
+          if (errCode) {
+            if (errCode === 'INVALID_CODE') {
+              // 滑动验证码失败
+              if (_needCode === 1) {
+                this.slideCode.checkSuccessType({type: 'fail'})
+              }
+              this.voteDisable = false
+              // 允许滑动
+              this.slideCode._reset()
+              return false
+            } else if (errCode === 'WORKS_LOCKED' && limitTime) {
+              // let msg = res.error_message
+              // this.voteTime = msg
+              this.isBlockType = true
+              this.isShowMax = true
+              this.voteTime = parseInt(limitTime / 60)
+              // this.voteTime = formatTimeBySec(num)
+              this.$emit('close')
+              this.voteDisable = false
+              // 关闭滑动验证码弹窗
+              if (_needCode === 1) {
+                this.slideCode.hide()
+              }
+              return
+            } else if (errCode === 'WORKS_LOCKED_FOREVER') {
+              this.isShowMax = true
+              this.isBlockType = false
+              // 关闭滑动验证码弹窗
+              if (_needCode === 1) {
+                this.slideCode.hide()
+              }
+              return
+            } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {
+              // 区域限制
+              this.isShowArea = true
+              this.$emit('close')
+              this.voteDisable = false
+              // 关闭滑动验证码弹窗
+              if (_needCode === 1) {
+                this.slideCode.hide()
+              }
+              return
+            } else if (errCode === 'NO_REMAIN_VOTES') {
+              Toast('对当前作品的投票次数已用完')
+              // 关闭滑动验证码弹窗
+              if (_needCode === 1) {
+                this.slideCode.hide()
+              }
+              this.voteDisable = false
+              return
+            } else {
+              Toast(res.error_message)
+              this.voteDisable = false
+              // 关闭滑动验证码弹窗
+              if (_needCode === 1) {
+                this.slideCode.hide()
+              }
+              return
             }
-            this.voteDisable = false
-            // 允许滑动
-            this.slideCode._reset()
-            return false
-          } else if (errCode === 'WORKS_LOCKED' && limitTime) {
-            // let msg = res.error_message
-            // this.voteTime = msg
-            this.isBlockType = true
-            this.isShowMax = true
-            this.voteTime = parseInt(limitTime / 60)
-            // this.voteTime = formatTimeBySec(num)
+          }
+          // 关注公众号
+          let qrcodeUrl = res.url
+          if (qrcodeUrl) {
+            this.qrcodeUrl = qrcodeUrl
             this.$emit('close')
+            this.isShowQrcode = true
             this.voteDisable = false
-            // 关闭滑动验证码弹窗
-            if (_needCode === 1) {
-              this.slideCode.hide()
-            }
-            return
-          } else if (errCode === 'WORKS_LOCKED_FOREVER') {
-            this.isShowMax = true
-            this.isBlockType = false
-            // 关闭滑动验证码弹窗
-            if (_needCode === 1) {
-              this.slideCode.hide()
-            }
-            return
-          } else if (errCode === 'AREA_CAN_NOT_VOTE' || errCode === 'NOT_IN_LIMIT_AREA') {
-            // 区域限制
-            this.isShowArea = true
-            this.$emit('close')
-            this.voteDisable = false
-            // 关闭滑动验证码弹窗
-            if (_needCode === 1) {
-              this.slideCode.hide()
-            }
-            return
-          } else if (errCode === 'NO_REMAIN_VOTES') {
-            Toast('对当前作品的投票次数已用完')
-            // 关闭滑动验证码弹窗
-            if (_needCode === 1) {
-              this.slideCode.hide()
-            }
-            this.voteDisable = false
-            return
-          } else {
-            Toast(res.error_message)
-            this.voteDisable = false
-            // 关闭滑动验证码弹窗
-            if (_needCode === 1) {
-              this.slideCode.hide()
-            }
             return
           }
-        }
-        // 关注公众号
-        let qrcodeUrl = res.url
-        if (qrcodeUrl) {
-          this.qrcodeUrl = qrcodeUrl
-          this.$emit('close')
-          this.isShowQrcode = true
-          this.voteDisable = false
-          return
-        }
-        // 抽奖
-        let lottery = res.lottery
-        if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
-          this.isShowLottery = true
-          this.lottery = lottery
-          this.$emit('close')
-          this.voteDisable = false
-          // this.$emit('success')
+          // 关联抽奖
+          let lottery = res.lottery
+          let alertLottery = res.alert_lottery
+          if (alertLottery > 0) {
+            this.$emit('showRewardDialog', lottery, alertLottery)
+          }
           this.$emit('updateCard')
-          return
+
+          // 抽奖
+          // if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
+          //   console.log('1-2', lottery)
+          //   this.isShowLottery = true
+          //   this.lottery = lottery
+          //   this.$emit('close')
+          //   this.voteDisable = false
+          //   // this.$emit('success')
+          //   this.$emit('updateCard')
+          //   return
+          // }
+          this.$emit('close')
+          this.voteDisable = false
+          let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
+          Toast('成功' + sign)
+          // this.$emit('success')
+          // 验证码成功的回调
+          if (_needCode === 1) {
+            this.slideCode.checkSuccessType({type: 'ok'})
+          }
+        } catch (e) {
+          console.log(e)
         }
-        this.$emit('close')
-        this.voteDisable = false
-        let sign = this.textSetting.sign ? this.textSetting.sign : '投票'
-        Toast('成功' + sign)
-        // this.$emit('success')
-        // 验证码成功的回调
-        if (_needCode === 1) {
-          this.slideCode.checkSuccessType({type: 'ok'})
-        }
-        this.$emit('updateCard')
       })
     }
   }
