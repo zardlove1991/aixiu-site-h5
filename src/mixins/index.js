@@ -157,7 +157,7 @@ export default {
       let raffleNum = this.examInfo.raffle_num
       let prizeNum = this.examInfo.prize_num
       let examId = this.examInfo.id
-      let from = this.examInfo.mark === 'examination' ? `/depencestart/${examId}` : `/livestart/${examId}`
+      let from = this.examInfo.mark === 'examination@live' ? `/livestart/${examId}` : `/depencestart/${examId}`
       if (lotteryConfig && lotteryConfig.related_lottery && lotteryConfig.related_lottery.isOpen) {
         let mark = lotteryConfig.related_lottery.mark
         let id = lotteryConfig.related_lottery.id
