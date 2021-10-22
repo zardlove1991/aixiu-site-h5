@@ -15,6 +15,7 @@
 
 <script>
 import TipsDialog from '@/components/vote/global/tips-dialog'
+import STORAGE from '@/utils/storage'
 import { Toast } from 'mint-ui'
 export default {
   props: {
@@ -49,7 +50,7 @@ export default {
     }
   },
   mounted () {
-    console.log(1114441, this.lotteryObj)
+    // console.log(1114441, this.lotteryObj)
   },
   components: {
     TipsDialog
@@ -67,10 +68,13 @@ export default {
         }
         let mark = this.voteRelation.mark
         let flag = mark.indexOf('@') !== -1 ? mark.split('@')[1] : mark
+        let _from = STORAGE.get('pathName')
+        console.log('_from', _from)
+        // window.location.pathname
         this.$router.push({
           name: 'lottery' + flag,
           params: {id: id},
-          query: {from: window.location.pathname}
+          query: {from: _from}
         })
         this.$emit('closeReward')
       } catch (e) {
