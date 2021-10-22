@@ -525,6 +525,7 @@ export default {
         if (isFirstUploadType) {
           if (isLotteryType === 1) {
             this.voteRewardType = false
+            this.lotteryObj = {}
             this.lotteryObj = res.lottery
             this.$nextTick(item => {
               this.voteRewardType = true
@@ -544,6 +545,7 @@ export default {
       // 判断显示gift box
       let _lottery = data
       let lotteryArr = []
+      this.lotteryObj = {}
       this.lotteryObj = _lottery
       console.log('this.lotteryObj', this.lotteryObj)
       lotteryArr.push(_lottery.enroll.is_win)
@@ -553,6 +555,7 @@ export default {
       let isExistLottery = false
       isExistLottery = lotteryArr.some(item => item > 0)
       this.giftBoxType = isExistLottery
+      console.log('888888---------', this.giftBoxType, lotteryArr)
     },
     showLotteryTips () {
       this.lotteryTipsType = false
@@ -1336,6 +1339,7 @@ export default {
       this.shareLotteryObj = data
       this.alertLottery = num
       // 显示出礼盒
+      this.lotteryObj = {}
       this.lotteryObj = data
       this.giftBoxType = true
       console.log(1, this.lotteryObj)
