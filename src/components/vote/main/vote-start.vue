@@ -1338,6 +1338,8 @@ export default {
       // 显示出礼盒
       this.lotteryObj = data
       this.giftBoxType = true
+      console.log(1, this.lotteryObj)
+      console.log(2, this.giftBoxType)
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
