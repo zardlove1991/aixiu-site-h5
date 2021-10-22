@@ -163,8 +163,8 @@ export default {
       if (this.columnTypeValue !== 1) {
         this.columnTypeValue = data.limit.column_set.column_list[0].columnDisplay
       }
-      // console.log('this.columnTypeValue', data.limit.column_set.column_list[0].columnDisplay)
 
+      console.log('this.columnTypeValue', this.columnTypeValue)
       // 默认获取第一个
       this.informationContentData = data.information_content_data
       this.worksList = []
@@ -352,7 +352,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fbfbfb;
+    // background: #fbfbfb;
     width: px2rem(710px);
     margin: px2rem(20px) 0;
     &>div:nth-child(1){
@@ -380,7 +380,7 @@ export default {
   margin-bottom: px2rem(30px);
   margin-top: px2rem(30px);
   padding: 0 px2rem(20px);
-  background: #fbfbfb;
+  // background: #fbfbfb;
   .img-font-wrap{
     background: #fbfbfb;
     .imgfont-list-wrap{
