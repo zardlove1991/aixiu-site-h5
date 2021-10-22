@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class="container">
-                <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}卡券</div>
+                <div class="content-pre-title">获得 {{itemData.prize_info.award_name}}</div>
                 <!-- <div class="content-pre-title">获得 三等奖卡券</div> -->
                 <div class="content-pre-wrap">
                   <div class="packetPull">

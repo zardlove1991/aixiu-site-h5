@@ -617,6 +617,22 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.collect-info-dialog{
+  input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: rgba(79, 15, 15, .3);
+  }
+  input:-moz-placeholder, textarea:-moz-placeholder {
+    color: rgba(79, 15, 15, .3);
+  }
+  input::-moz-placeholder, textarea::-moz-placeholder {
+    color: rgba(79, 15, 15, .3);
+  }
+  input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    color: rgba(79, 15, 15, .3);
+  }
+}
+</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
 .collect-info-dialog{
