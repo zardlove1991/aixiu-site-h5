@@ -25,8 +25,8 @@
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
-                <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
-                <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div>
+                <!-- <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
+                <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div> -->
                 <div class="content-pre-userInfo">
                     <p>兑奖码：{{itemData.prize_info.code}} </p>
                     <!-- <p>兑奖码：KM13NJDJNCKK  </p> -->
@@ -351,157 +351,157 @@ export default {
                 }
             }
             .left-icon{
-                width: px2rem(26px);
-                height: px2rem(24px);
-                @include img-retina("~@/assets/lottery/prizeRecord/left-icon 18.png",
-                "~@/assets/lottery/prizeRecord/left-icon 18@2x.png", 100%, 100%);
-                background-repeat: no-repeat;
-                position: absolute;
-                bottom: px2rem(30px);left: px2rem(210px);
-                z-index: 2;
+              width: px2rem(26px);
+              height: px2rem(24px);
+              @include img-retina("~@/assets/lottery/prizeRecord/left-icon 18.png",
+              "~@/assets/lottery/prizeRecord/left-icon 18@2x.png", 100%, 100%);
+              background-repeat: no-repeat;
+              position: absolute;
+              bottom: px2rem(30px);left: px2rem(210px);
+              z-index: 2;
             }
             .right-icon{
-            width: px2rem(26px);
-            height: px2rem(24px);
-            @include img-retina("~@/assets/lottery/prizeRecord/right-icon 18_1.png",
-            "~@/assets/lottery/prizeRecord/right-icon 18_1@2x.png", 100%, 100%);
-            background-repeat: no-repeat;
-            position: absolute;
-            bottom: px2rem(30px);right: px2rem(210px);
-            z-index: 2;
+              width: px2rem(26px);
+              height: px2rem(24px);
+              @include img-retina("~@/assets/lottery/prizeRecord/right-icon 18_1.png",
+              "~@/assets/lottery/prizeRecord/right-icon 18_1@2x.png", 100%, 100%);
+              background-repeat: no-repeat;
+              position: absolute;
+              bottom: px2rem(30px);right: px2rem(210px);
+              z-index: 2;
         }
         }
         .ticked-wrap{
-            width: px2rem(122px);
-            height: px2rem(102px);
-            opacity: 1;
-            @include img-retina("~@/assets/lottery/ticketed.png",
-            "~@/assets/lottery/ticketed@2x.png", 100%, 100%);
-            background-repeat: no-repeat;
-            position: absolute;
-            top:px2rem(92px);right: px2rem(30px);
-            &.ticked-wrap-overdue {
-            @include img-retina("~@/assets/lottery/overdues/overdues.png",
-            "~@/assets/lottery/overdues/overdues@2x.png", 100%, 100%);
-            }
+          width: px2rem(122px);
+          height: px2rem(102px);
+          opacity: 1;
+          @include img-retina("~@/assets/lottery/ticketed.png",
+          "~@/assets/lottery/ticketed@2x.png", 100%, 100%);
+          background-repeat: no-repeat;
+          position: absolute;
+          top:px2rem(92px);right: px2rem(30px);
+          &.ticked-wrap-overdue {
+          @include img-retina("~@/assets/lottery/overdues/overdues.png",
+          "~@/assets/lottery/overdues/overdues@2x.png", 100%, 100%);
+          }
         }
         .content-pre-userInfo{
-            width: px2rem(431px);
-            height: px2rem(72px);
-            opacity: 1;
-            font-size: px2rem(26px);
-            font-family: PingFangSC, PingFangSC-Regular;
-            font-weight: 400;
-            text-align: left;
-            color: #4f0f0f;
-            // position: absolute;
-            // left:px2rem(50px);
-            margin-left: px2rem(50px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+          width: px2rem(431px);
+          height: px2rem(72px);
+          opacity: 1;
+          font-size: px2rem(26px);
+          font-family: PingFangSC, PingFangSC-Regular;
+          font-weight: 400;
+          text-align: left;
+          color: #4f0f0f;
+          // position: absolute;
+          // left:px2rem(50px);
+          margin-left: px2rem(50px);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
             p{
-                font-size: px2rem(26px);
-                font-family: PingFangSC, PingFangSC-Regular;
-                font-weight: 400;
-                text-align: left;
-                color: #4f0f0f;
-                line-height: px2rem(26px);
-                overflow: hidden;
-                text-overflow:ellipsis;
-                white-space: nowrap;
+              font-size: px2rem(26px);
+              font-family: PingFangSC, PingFangSC-Regular;
+              font-weight: 400;
+              text-align: left;
+              color: #4f0f0f;
+              line-height: px2rem(26px);
+              overflow: hidden;
+              text-overflow:ellipsis;
+              white-space: nowrap;
             }
         }
         .content-split{
-            width: px2rem(600px);
-            height: px2rem(40px);
-            // @include img-retina("~@/assets/wheel/split.png",
-            // "~@/assets/wheel/split.png", 100%, 100%);
-            background-repeat: no-repeat;
-            color: transparent;
-            background-color: rgba(0, 0, 0, 0.5);
-            // filter:alpha(opacity=50);
-            // -webkit-filter: alpha(opacity=50) !important;
-            position: relative;
-            margin: px2rem(20px) auto;
-            .line {
-                position: absolute;
-                top: px2rem(20px);
-                left: px2rem(50px);
-                width: px2rem(500px);
-                // height: 1px;
-                opacity: 0.2;
-                border-bottom: px2rem(1px) dashed #4f0f0f;
-            }
+          width: px2rem(600px);
+          height: px2rem(40px);
+          // @include img-retina("~@/assets/wheel/split.png",
+          // "~@/assets/wheel/split.png", 100%, 100%);
+          background-repeat: no-repeat;
+          color: transparent;
+          background-color: rgba(0, 0, 0, 0.5);
+          // filter:alpha(opacity=50);
+          // -webkit-filter: alpha(opacity=50) !important;
+          position: relative;
+          margin: px2rem(20px) auto;
+          .line {
+              position: absolute;
+              top: px2rem(20px);
+              left: px2rem(50px);
+              width: px2rem(500px);
+              // height: 1px;
+              opacity: 0.2;
+              border-bottom: px2rem(1px) dashed #4f0f0f;
+          }
         }
         .content-next-wrap{
-            display: flex;
-            // align-items: center;
-            margin-left: px2rem(50px);
-            .label{
-                width: px2rem(140px);
-                // height: px2rem(24px);
-                opacity: 0.8;
-                font-size: px2rem(24px);
-                font-family: PingFangSC, PingFangSC-Regular;
-                font-weight: 400;
-                text-align: left;
-                color: #4f0f0f;
-                //  line-height: px2rem(24px);
-                margin-right: px2rem(16px);
-            }
-            .value{
-                // height: px2rem(24px);
-                opacity: 0.8;
-                font-size: px2rem(24px);
-                font-family: PingFangSC, PingFangSC-Regular;
-                font-weight: 400;
-                text-align: left;
-                color: #4f0f0f;
-                // line-height: px2rem(24px);
-            }
-            .address{
-                width: px2rem(426px);
-                // height: px2rem(62px);
-                height: auto;
-                max-height: px2rem(96px);
-                overflow-y: scroll;
-                // line-height: px2rem(62px);
-                opacity: 0.8;
-                font-size: px2rem(24px);
-                font-family: PingFangSC, PingFangSC-Regular;
-                font-weight: 400;
-                text-align: left;
-                color: #4f0f0f;
-                margin-right: px2rem(52px);
-                padding-top: px2rem(20px);
-                .van-hairline--bottom:after{border-bottom-width:0px;}
-                // white-space:normal;
-                // word-wrap:break-word;
-                // word-break:break-all;
-                // .el-textarea__inner{
-                //     border: none;
-                //     background-color: transparent;
+          display: flex;
+          // align-items: center;
+          margin-left: px2rem(50px);
+          .label{
+              width: px2rem(140px);
+              // height: px2rem(24px);
+              opacity: 0.8;
+              font-size: px2rem(24px);
+              font-family: PingFangSC, PingFangSC-Regular;
+              font-weight: 400;
+              text-align: left;
+              color: #4f0f0f;
+              //  line-height: px2rem(24px);
+              margin-right: px2rem(16px);
+          }
+          .value{
+              // height: px2rem(24px);
+              opacity: 0.8;
+              font-size: px2rem(24px);
+              font-family: PingFangSC, PingFangSC-Regular;
+              font-weight: 400;
+              text-align: left;
+              color: #4f0f0f;
+              // line-height: px2rem(24px);
+          }
+          .address{
+              width: px2rem(426px);
+              // height: px2rem(62px);
+              height: auto;
+              max-height: px2rem(96px);
+              overflow-y: scroll;
+              // line-height: px2rem(62px);
+              opacity: 0.8;
+              font-size: px2rem(24px);
+              font-family: PingFangSC, PingFangSC-Regular;
+              font-weight: 400;
+              text-align: left;
+              color: #4f0f0f;
+              margin-right: px2rem(52px);
+              padding-top: px2rem(20px);
+              .van-hairline--bottom:after{border-bottom-width:0px;}
+              // white-space:normal;
+              // word-wrap:break-word;
+              // word-break:break-all;
+              // .el-textarea__inner{
+              //     border: none;
+              //     background-color: transparent;
 
-                // }
-                // line-height: 24px;
-            }
-            &:first-child{
-                // margin-top: px2rem(21px);
-                padding-top: px2rem(21px);
-                margin-bottom: px2rem(20px);
-            }
-            .edit {
-              width: px2rem(72px);
-            }
-            .righit-icon{
-                width: px2rem(22px);
-                height: px2rem(22px);
-                @include img-retina("~@/assets/lottery/prizeRecord/icon-edit_1.png",
-                "~@/assets/lottery/prizeRecord/icon-edit_1@2x.png", 100%, 100%);
-                background-repeat: no-repeat;
-                cursor: pointer;
-            }
+              // }
+              // line-height: 24px;
+          }
+          &:first-child{
+              // margin-top: px2rem(21px);
+              padding-top: px2rem(21px);
+              margin-bottom: px2rem(20px);
+          }
+          .edit {
+            width: px2rem(72px);
+          }
+          .righit-icon{
+              width: px2rem(22px);
+              height: px2rem(22px);
+              @include img-retina("~@/assets/lottery/prizeRecord/icon-edit_1.png",
+              "~@/assets/lottery/prizeRecord/icon-edit_1@2x.png", 100%, 100%);
+              background-repeat: no-repeat;
+              cursor: pointer;
+          }
         }
         .btn{
             width: px2rem(230px);
