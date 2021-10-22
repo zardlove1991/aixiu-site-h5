@@ -1,5 +1,5 @@
 <template>
-  <div class='news-topic'>
+  <div class='news-topic customer-bg-img'>
     <!-- 头部轮播 -->
     <HeaderMode1
       v-if='topicDisplayValue === 1'

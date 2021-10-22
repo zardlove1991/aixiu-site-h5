@@ -43,6 +43,18 @@ export default {
           this.limitObj = this.detailInfo.limit // 类型按钮
           const _topicDisplay = this.limitObj.topic_display
           this.topicDisplayValue = _topicDisplay.topic_display_value // 轮播的不同的状态
+
+          // 获取背景图
+          let bgImgUrl = ''
+          bgImgUrl = this.limitObj.page_set.page_bg_img.cover_img
+          if (bgImgUrl !== '') {
+            let bgImgObj = document.querySelector('.customer-bg-img')
+            bgImgObj.style.backgroundImage = `url(${bgImgUrl})`
+            bgImgObj.style.backgroundRepeat = 'no-repeat'
+            bgImgObj.style.backgroundPosition = 'center'
+            bgImgObj.style.backgroundSize = 'cover'
+          }
+          console.log('this.detailInfo', this.detailInfo)
         } catch (e) {
           Toast('加载失败')
         }
