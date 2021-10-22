@@ -1336,7 +1336,8 @@ export default {
       this.shareLotteryObj = data
       this.alertLottery = num
       // 显示出礼盒
-      this.showGiftBox(data)
+      this.lotteryObj = data
+      this.giftBoxType = true
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
