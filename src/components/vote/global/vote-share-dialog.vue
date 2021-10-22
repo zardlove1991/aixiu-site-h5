@@ -5,7 +5,7 @@
       <img :src="closeIcon" alt=""  @click='closeDialog' class='close-icon-wrap'>
     </div>
     <div class='dialog-title-1'>恭喜</div>
-    <div class='dialog-title-2'>获得{{voteRelation.raffle_num}}次抽奖机会</div>
+    <div class='dialog-title-2'>获得{{alertLottery}}次抽奖机会</div>
     <div class='reward-btn-wrap'>
       <div class='reward-btn' @click='goRaffle'>参与抽奖</div>
     </div>
@@ -25,6 +25,10 @@ export default {
     lotteryObj: {
       type: Object,
       default: () => {}
+    },
+    alertLottery: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
