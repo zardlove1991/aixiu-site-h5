@@ -371,13 +371,13 @@ export default {
           }
           // 关联抽奖
           let lottery = res.lottery
-          if (lottery.vote_relation.raffle_num !== 0) {
-            this.$emit('showRewardDialog', lottery)
-            return false
+          let alertLottery = res.alert_lottery
+          if (alertLottery > 0) {
+            this.$emit('showRewardDialog', lottery, alertLottery)
           }
+          this.$emit('updateCard')
 
           // 抽奖
-          // let lottery = res.lottery
           // if (lottery && lottery.lottery_id && lottery.remain_lottery_counts) {
           //   console.log('1-2', lottery)
           //   this.isShowLottery = true
@@ -400,7 +400,6 @@ export default {
         } catch (e) {
           console.log(e)
         }
-        // this.$emit('updateCard')
       })
     }
   }

@@ -305,6 +305,7 @@
     </lottery-tips>
     <!-- 分享成功弹窗 -->
     <VoteShareDialog
+      :alertLottery = 'alertLottery'
       :lotteryObj='shareLotteryObj'
       :show="isVoteShareDialog"
       @closeReward="isVoteShareDialog = false">
@@ -376,6 +377,7 @@ export default {
   },
   data () {
     return {
+      alertLottery: 0,
       isVoteShareDialog: false,
       shareLotteryObj: {},
       lotteryObj2: {},
@@ -543,6 +545,7 @@ export default {
       let _lottery = data
       let lotteryArr = []
       this.lotteryObj = _lottery
+      console.log('this.lotteryObj', this.lotteryObj)
       lotteryArr.push(_lottery.enroll.is_win)
       lotteryArr.push(_lottery.enroll.raffle_num)
       lotteryArr.push(_lottery.vote_relation.is_win)
@@ -570,6 +573,10 @@ export default {
         if (res.success == 1) {
           this.isLotteryShareReward = true
           this.lotteryObj2 = this.curVoteDatailObj.lottery
+
+          // 礼盒的次数加1
+          let raffleNum = this.lotteryObj.vote_relation.raffle_num
+          this.lotteryObj.vote_relation.raffle_num = raffleNum + 1
         }
       })
     },
@@ -1324,13 +1331,12 @@ export default {
         }
       }
     },
-    showRewardDialog (data) {
+    showRewardDialog (data, num) {
       this.isVoteShareDialog = true
       this.shareLotteryObj = data
+      this.alertLottery = num
       // 显示出礼盒
-      if (!this.giftBoxType) {
-        this.showGiftBox(data)
-      }
+      this.showGiftBox(data)
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
