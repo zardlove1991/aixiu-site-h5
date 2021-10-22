@@ -94,17 +94,18 @@
       :activityId='id' :collectInfo.sync='checkDraw' />
     <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
     <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
-    <!-- <Prizes :show.sync="tempShow" @close='tempShow = false'/> -->
+
+    <!-- <RecordDraws :show.sync="tempShow" @close='tempShow = false'/> -->
     </div>
 </template>
 
 <script>
 import prizeList from '@/components/lottery/global/dial-prize-list'
-import Address from '@/components/lottery/global/dial-address'
+// import Address from '@/components/lottery/global/dial-address'
 import DialDialogTitle from '@/components/lottery/global/dial-dialog-title'
 import DialDialog from '@/components/lottery/global/dial-dialog'
 import MoalImg from '@/components/lottery/global/dial-model-img'
-import RecordDraw from '@/components/lottery/global/dial-recordDraw'
+// import RecordDraw from '@/components/lottery/global/dial-recordDraw'
 import RecordLess from '@/components/lottery/global/dial-recordLess'
 // import Prize from '@/components/lottery/global/dial-prize'
 import PrizeAddress from '@/components/lottery/global/dial-prize-address'
@@ -131,8 +132,10 @@ import ActivityEnd from '@/components/lottery/global/activity-end' // 活动结�
 import Again from '@/components/lottery/global/again' // 再来一次弹框
 import Integral from '@/components/lottery/global/integral' // 积分弹框
 import Packet from '@/components/lottery/global/packet' // 红包弹框
-import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格
-import Prize from '@/components/lottery/global/prize'
+import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格弹框
+import Prize from '@/components/lottery/global/prize' // 线上实物弹框
+import Address from '@/components/lottery/global/address' // 收获地址弹框
+import RecordDraw from '@/components/lottery/global/recordDraw'
 import API from '@/api/module/examination'
 // import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -143,6 +146,8 @@ export default {
   name: '',
   components: {
     // Prizes,
+    // Addresss,
+    // RecordDraws,
 
     Wheel,
     ActivityRule,

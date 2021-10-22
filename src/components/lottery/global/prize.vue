@@ -66,9 +66,11 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import Address from '@/components/lottery/global/address'
 export default {
   name: '',
   components: {
+    Address
   },
   props: {
     show: {
