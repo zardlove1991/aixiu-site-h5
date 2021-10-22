@@ -226,6 +226,7 @@
       }"
       :textSetting="detailInfo.text_setting"
       @updateCard="updateCard"
+      @showRewardDialog='showRewardDialog'
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
@@ -302,6 +303,12 @@
       :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
     </lottery-tips>
+    <!-- 分享成功弹窗 -->
+    <VoteShareDialog
+      :lotteryObj='shareLotteryObj'
+      :show="isVoteShareDialog"
+      @closeReward="isVoteShareDialog = false">
+    </VoteShareDialog>
   </div>
 </template>
 
@@ -334,6 +341,7 @@ import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
 import LotteryTips from '@/components/vote/global/lottery-tips'
 import LotteryShareReward from '@/components/vote/global/lottery-share-reward.vue'
+import VoteShareDialog from '@/components/vote/global/vote-share-dialog.vue'
 
 export default {
   mixins: [mixins],
@@ -363,10 +371,13 @@ export default {
     AreaVote,
     ReportNumLimit,
     LotteryTips,
-    LotteryShareReward
+    LotteryShareReward,
+    VoteShareDialog
   },
   data () {
     return {
+      isVoteShareDialog: false,
+      shareLotteryObj: {},
       lotteryObj2: {},
       lotteryShareRewardType: false,
       isLotteryShareReward: false,
@@ -525,8 +536,11 @@ export default {
       }
 
       // 显示礼盒
+      this.showGiftBox(res.lottery)
+    },
+    showGiftBox (data) {
       // 判断显示gift box
-      let _lottery = res.lottery
+      let _lottery = data
       let lotteryArr = []
       this.lotteryObj = _lottery
       lotteryArr.push(_lottery.enroll.is_win)
@@ -1310,6 +1324,14 @@ export default {
         }
       }
     },
+    showRewardDialog (data) {
+      this.isVoteShareDialog = true
+      this.shareLotteryObj = data
+      // 显示出礼盒
+      if (!this.giftBoxType) {
+        this.showGiftBox(data)
+      }
+    },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
       let voteId = this.id
@@ -1431,7 +1453,7 @@ export default {
       return res
     },
     triggerWork (obj, index) {
-      console.log('obj', obj, 'index', index)
+      console.log('obj-999', obj, 'index', index)
       if (index !== null && index !== undefined) {
         this.activeIndex = index
       } else {
