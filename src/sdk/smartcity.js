@@ -7,6 +7,7 @@ let smartcity = {
     window.SmartCity.getUserInfo((res) => {
       let sdkInfo = {}
       if (res && res.userInfo) {
+        console.log('res===', res)
         sdkInfo.userName = res.userInfo.username
         const sign = getAppSign()
         console.log('特殊处理：', sign)

@@ -7,7 +7,7 @@
           isReportAuth === 1">
         <div class="report-top-wrap" v-if="isExamine === 0 && status !== statusCode.voteStatus">
           <div class="report-msg"><span class="tips">我也要参加</span></div>
-          <div class="report-btn" :class='{"is-forbid-click": isForbidClick}' @click="jumpPage('votesubmit')">立即报名</div>
+          <div class="report-btn" :class='{"is-forbid-click": isForbidClick}' @click="jumpPage('votesubmit', 'enroll')">立即报名</div>
         </div>
         <div class="report-top-wrap" v-if="isExamine === 1">
           <div class="report-msg" v-if="myWorkStatus === 3">
@@ -277,9 +277,14 @@
       :show="isReportNumLimit"
       @closeReportNumLimit='closeReportNumLimit'>
     </report-num-limit>
+    <!-- 分享抽奖之后的弹窗提示 -->
+    <lottery-share-reward
+      :lotteryObj='lotteryObj2'
+      :show="isLotteryShareReward"
+      @closeReward="isLotteryShareReward = false"></lottery-share-reward>
     <!-- 投票关联抽奖 -->
     <vote-reward
-      v-if='voteRewardType'
+      v-show='voteRewardType'
       :lotteryObj='lotteryObj'
       :show="isShowVoteReward"
       @closeReward="isShowVoteReward = false">
@@ -328,6 +333,7 @@ import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
 import LotteryTips from '@/components/vote/global/lottery-tips'
+import LotteryShareReward from '@/components/vote/global/lottery-share-reward.vue'
 
 export default {
   mixins: [mixins],
@@ -356,10 +362,14 @@ export default {
     VoteReward,
     AreaVote,
     ReportNumLimit,
-    LotteryTips
+    LotteryTips,
+    LotteryShareReward
   },
   data () {
     return {
+      lotteryObj2: {},
+      lotteryShareRewardType: false,
+      isLotteryShareReward: false,
       isShowCanvass: false,
       isForbidClick: false,
       lotteryTipsType: false,
@@ -445,8 +455,11 @@ export default {
     this.curVoteDatailObj = await this.syncGetVodeDetail()
     this.initData()
     let plat = getPlat()
+    console.log('plat', plat)
     if (plat === 'smartcity') {
+      console.log('99999')
       window.SmartCity.onShareSuccess((res) => {
+        console.log('9000')
         this.appShareCallBack()
       })
     }
@@ -526,11 +539,6 @@ export default {
       let isExistLottery = false
       isExistLottery = lotteryArr.some(item => item > 0)
       this.giftBoxType = isExistLottery
-
-      // API.getVodeDetail({
-      //   query: { id: this.id }
-      // }).then((res) => {
-      // })
     },
     showLotteryTips () {
       this.lotteryTipsType = false
@@ -539,11 +547,19 @@ export default {
         this.isLotteryTips = true
       })
     },
+    // clickMeFun () {
+    //   this.isLotteryShareReward = true
+    //   this.lotteryObj2 = this.curVoteDatailObj.lottery
+    //   console.log('123', this.lotteryObj2.vote_relation, this.curVoteDatailObj.lottery)
+    // },
     shareSuccess () {
+      console.log(777)
       // 分享的接口的调用
       API.shareOk({ query: {id: this.id} }).then(res => {
-        if (res.success === 1) {
-          Toast('分享成功')
+        // eslint-disable-next-line eqeqeq
+        if (res.success == 1) {
+          this.isLotteryShareReward = true
+          this.lotteryObj2 = this.curVoteDatailObj.lottery
         }
       })
     },
@@ -1361,9 +1377,11 @@ export default {
 
       // 是否提示活动报名数
       // 开启了限制且数量为0
-      if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
-        this.isReportNumLimit = true
-        return false
+      if (data === 'enroll') {
+        if (this.detailInfo.rule.is_works_upload_limit === 1 && this.detailInfo.remains_reports === 0) {
+          this.isReportNumLimit = true
+          return false
+        }
       }
 
       let params = {
@@ -1447,16 +1465,20 @@ export default {
       this.isShowWorkVote = false
     },
     appShareCallBack () {
-      if (this.shareConfigData.id && this.isOpenShare) {
-        this.setShare({
-          id: this.shareConfigData.id,
-          title: this.shareConfigData.title,
-          from: this.shareConfigData.from,
-          mark: this.shareConfigData.mark
-        }).then(
-          this.shareSuccess()
-        )
-      }
+      console.log(1)
+      this.shareSuccess()
+      // if (this.shareConfigData.id && this.isOpenShare) {
+      //   console.log(2)
+      //   this.setShare({
+      //     id: this.shareConfigData.id,
+      //     title: this.shareConfigData.title,
+      //     from: this.shareConfigData.from,
+      //     mark: this.shareConfigData.mark
+      //   }).then(() => {
+      //     console.log(3)
+      //     this.shareSuccess()
+      //   })
+      // }
     },
     toggleFullSceneType (key) {
       console.log(key, 'keykey')
