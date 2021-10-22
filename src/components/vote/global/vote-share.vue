@@ -372,10 +372,9 @@ export default {
           // 关联抽奖
           let lottery = res.lottery
           let alertLottery = res.alert_lottery
-          this.$emit('showRewardDialog', lottery, alertLottery)
-          // if (alertLottery > 0) {
-          //   this.$emit('showRewardDialog', lottery, alertLottery)
-          // }
+          if (alertLottery > 0) {
+            this.$emit('showRewardDialog', lottery, alertLottery)
+          }
           this.$emit('updateCard')
 
           // 抽奖
