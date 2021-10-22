@@ -291,7 +291,7 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if="giftBoxType" class="lottery_entrance">
+    <div v-show="giftBoxType" class="lottery_entrance">
       <div @click="showLotteryTips()">
         <img :src="imgs.giftBox" alt="" class='gift-box-img'>
       </div>
@@ -1339,9 +1339,12 @@ export default {
       this.shareLotteryObj = data
       this.alertLottery = num
       // 显示出礼盒
-      this.lotteryObj = {}
-      this.lotteryObj = data
-      this.giftBoxType = true
+      this.$nextTick(item => {
+        this.giftBoxType = true
+        this.lotteryObj = {}
+        this.lotteryObj = data
+      })
+
       console.log(1, this.lotteryObj)
       console.log(2, this.giftBoxType)
     },
