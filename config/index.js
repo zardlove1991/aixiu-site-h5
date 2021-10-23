@@ -13,6 +13,7 @@ module.exports = {
     proxyTable: {
       '/api': {
         target: 'http://xzh5-dev.aihoge.com/api', // 代理地址，这里设置的地址会代替axios中设置的baseURL [http://xzh5-dev.aihoge.com/api][http://axh5.aihoge.com/api]
+        // target: 'http://xzh5.aihoge.com/api', // 代理地址，这里设置的地址会代替axios中设置的baseURL [http://xzh5-dev.aihoge.com/api][http://axh5.aihoge.com/api]
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'
