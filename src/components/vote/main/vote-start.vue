@@ -226,6 +226,7 @@
       }"
       :textSetting="detailInfo.text_setting"
       @updateCard="updateCard"
+      @showRewardDialog='showRewardDialog'
       @success="dealSearch()"
       @close="closeWorkVote()"
     ></share-vote>
@@ -290,7 +291,7 @@
       @closeReward="isShowVoteReward = false">
     </vote-reward>
     <!-- gift box -->
-    <div v-if="giftBoxType" class="lottery_entrance">
+    <div v-show="giftBoxType" class="lottery_entrance">
       <div @click="showLotteryTips()">
         <img :src="imgs.giftBox" alt="" class='gift-box-img'>
       </div>
@@ -302,6 +303,13 @@
       :show="isLotteryTips"
       @closeLotteryTipsFun='closeLotteryTipsFun'>
     </lottery-tips>
+    <!-- 分享成功弹窗 -->
+    <VoteShareDialog
+      :alertLottery ='alertLottery'
+      :lotteryObj='shareLotteryObj'
+      :show="isVoteShareDialog"
+      @closeReward="isVoteShareDialog = false">
+    </VoteShareDialog>
   </div>
 </template>
 
@@ -334,6 +342,7 @@ import { mapActions, mapGetters } from 'vuex'
 import AreaVote from '@/components/vote/global/vote-area'
 import LotteryTips from '@/components/vote/global/lottery-tips'
 import LotteryShareReward from '@/components/vote/global/lottery-share-reward.vue'
+import VoteShareDialog from '@/components/vote/global/vote-share-dialog.vue'
 
 export default {
   mixins: [mixins],
@@ -363,10 +372,14 @@ export default {
     AreaVote,
     ReportNumLimit,
     LotteryTips,
-    LotteryShareReward
+    LotteryShareReward,
+    VoteShareDialog
   },
   data () {
     return {
+      alertLottery: 0,
+      isVoteShareDialog: false,
+      shareLotteryObj: {},
       lotteryObj2: {},
       lotteryShareRewardType: false,
       isLotteryShareReward: false,
@@ -461,6 +474,9 @@ export default {
       })
     }
     this.worksStatus()
+
+    // 存储当前活动的pathname
+    STORAGE.set('pathName', window.location.pathname)
   },
   beforeDestroy () {
     // 清除定时器
@@ -512,6 +528,7 @@ export default {
         if (isFirstUploadType) {
           if (isLotteryType === 1) {
             this.voteRewardType = false
+            this.lotteryObj = {}
             this.lotteryObj = res.lottery
             this.$nextTick(item => {
               this.voteRewardType = true
@@ -525,10 +542,15 @@ export default {
       }
 
       // 显示礼盒
+      this.showGiftBox(res.lottery)
+    },
+    showGiftBox (data) {
       // 判断显示gift box
-      let _lottery = res.lottery
+      let _lottery = data
       let lotteryArr = []
+      this.lotteryObj = {}
       this.lotteryObj = _lottery
+      console.log('this.lotteryObj', this.lotteryObj)
       lotteryArr.push(_lottery.enroll.is_win)
       lotteryArr.push(_lottery.enroll.raffle_num)
       lotteryArr.push(_lottery.vote_relation.is_win)
@@ -556,6 +578,10 @@ export default {
         if (res.success == 1) {
           this.isLotteryShareReward = true
           this.lotteryObj2 = this.curVoteDatailObj.lottery
+
+          // 礼盒的次数加1
+          let raffleNum = this.lotteryObj.vote_relation.raffle_num
+          this.lotteryObj.vote_relation.raffle_num = raffleNum + 1
         }
       })
     },
@@ -1310,6 +1336,17 @@ export default {
         }
       }
     },
+    showRewardDialog (data, num) {
+      this.isVoteShareDialog = true
+      this.shareLotteryObj = data
+      this.alertLottery = num
+      // 显示出礼盒
+      this.$nextTick(item => {
+        this.giftBoxType = true
+        this.lotteryObj = {}
+        this.lotteryObj = data
+      })
+    },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
       let voteId = this.id
@@ -1431,7 +1468,7 @@ export default {
       return res
     },
     triggerWork (obj, index) {
-      console.log('obj', obj, 'index', index)
+      console.log('obj-999', obj, 'index', index)
       if (index !== null && index !== undefined) {
         this.activeIndex = index
       } else {
