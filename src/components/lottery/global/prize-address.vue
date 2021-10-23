@@ -185,9 +185,13 @@ export default {
 <style lang="scss">
 .prize-address-model {
     .van-field{
+      border: none;
         .van-field__control{
             color: #fff4e3;
         }
+      &::after{
+        border-bottom: none
+      }
     }
 }
 </style>
@@ -504,13 +508,14 @@ export default {
             border-bottom: px2rem(1px) dashed #ffeccf;
             margin-left: auto;
             margin-right: auto;
-            margin-bottom: px2rem(39px);
+            // margin-bottom: px2rem(39px);
+            margin-bottom: px2rem(29px);
         }
         .name{
             .span{
                 width: px2rem(120px);
                 // width: px2rem(72px);
-                height: px2rem(24px);
+                // height: px2rem(24px);
                 opacity: 0.8;
                 font-size: px2rem(24px);
                 font-family: PingFangSC, PingFangSC-Regular;
@@ -521,7 +526,7 @@ export default {
                 margin-right: px2rem(16px);
             }
             // width: 154px;
-            height: px2rem(24px);
+            // height: px2rem(24px);
             opacity: 0.8;
             font-size: px2rem(24px);
             font-family: PingFangSC, PingFangSC-Regular;
@@ -529,7 +534,8 @@ export default {
             text-align: left;
             color: #fff4e3;
             // line-height: px2rem(24px);
-            margin-bottom: px2rem(20px);
+            // margin-bottom: px2rem(20px);
+            margin-bottom: px2rem(12px);
             padding-left: px2rem(39px);
         }
         .address-warp{
