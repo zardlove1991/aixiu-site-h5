@@ -123,6 +123,7 @@ export default {
 }
 </style>
 <style scoped lang="scss">
+
 @import "@/styles/index.scss";
 .command-dialog{
   position: fixed;

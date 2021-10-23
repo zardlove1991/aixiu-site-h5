@@ -25,8 +25,13 @@
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
+<<<<<<< HEAD
                 <!-- <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
                 <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div> -->
+=======
+                <!-- <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div> -->
+                <!-- <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div> -->
+>>>>>>> feature/k8s_refactor_luckyWheel
                 <div class="content-pre-userInfo">
                     <p>兑奖码：{{itemData.prize_info.code}} </p>
                     <!-- <p>兑奖码：KM13NJDJNCKK  </p> -->
@@ -483,6 +488,7 @@ export default {
               //     border: none;
               //     background-color: transparent;
 
+<<<<<<< HEAD
               // }
               // line-height: 24px;
           }
@@ -502,6 +508,29 @@ export default {
               background-repeat: no-repeat;
               cursor: pointer;
           }
+=======
+                // }
+                // line-height: 24px;
+            }
+            &:first-child{
+                // margin-top: px2rem(21px);
+                padding-top: px2rem(21px);
+                margin-bottom: px2rem(20px);
+            }
+            .edit {
+              width: px2rem(72px);
+            }
+            .righit-icon{
+                width: px2rem(22px);
+                height: px2rem(22px);
+                @include img-retina("~@/assets/lottery/icon-edit-hover.png",
+                "~@/assets/lottery/icon-edit-hover.png", 100%, 100%);
+                // @include img-retina("~@/assets/lottery/prizeRecord/icon-edit_1.png",
+                // "~@/assets/lottery/prizeRecord/icon-edit_1@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                cursor: pointer;
+            }
+>>>>>>> feature/k8s_refactor_luckyWheel
         }
         .btn{
             width: px2rem(230px);
