@@ -25,8 +25,8 @@
                     <div class="left-icon"></div>
                     <div class="right-icon"></div>
                 </div>
-                <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div>
-                <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div>
+                <!-- <div class="ticked-wrap" v-if="itemData.status_name === '已兑奖'"></div> -->
+                <!-- <div class="ticked-wrap ticked-wrap-overdue" v-else-if="itemData.status_name === '已过期'"></div> -->
                 <div class="content-pre-userInfo">
                     <p>兑奖码：{{itemData.prize_info.code}} </p>
                     <!-- <p>兑奖码：KM13NJDJNCKK  </p> -->
@@ -497,8 +497,10 @@ export default {
             .righit-icon{
                 width: px2rem(22px);
                 height: px2rem(22px);
-                @include img-retina("~@/assets/lottery/prizeRecord/icon-edit_1.png",
-                "~@/assets/lottery/prizeRecord/icon-edit_1@2x.png", 100%, 100%);
+                @include img-retina("~@/assets/lottery/icon-edit-hover.png",
+                "~@/assets/lottery/icon-edit-hover.png", 100%, 100%);
+                // @include img-retina("~@/assets/lottery/prizeRecord/icon-edit_1.png",
+                // "~@/assets/lottery/prizeRecord/icon-edit_1@2x.png", 100%, 100%);
                 background-repeat: no-repeat;
                 cursor: pointer;
             }

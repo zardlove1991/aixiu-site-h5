@@ -95,25 +95,15 @@
     <Again :show.sync="isAgainShow" v-if="isAgainShow" @close='isAgainShow = false' v-cloak/>
     <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
 
-    <!-- <RecordDraws :show.sync="tempShow" @close='tempShow = false'/> -->
+    <!-- <RecordLesss :show.sync="tempShow" @close='tempShow = false'/> -->
     </div>
 </template>
 
 <script>
-import prizeList from '@/components/lottery/global/dial-prize-list'
-// import Address from '@/components/lottery/global/dial-address'
 import DialDialogTitle from '@/components/lottery/global/dial-dialog-title'
 import DialDialog from '@/components/lottery/global/dial-dialog'
 import MoalImg from '@/components/lottery/global/dial-model-img'
-// import RecordDraw from '@/components/lottery/global/dial-recordDraw'
-import RecordLess from '@/components/lottery/global/dial-recordLess'
-// import Prize from '@/components/lottery/global/dial-prize'
-import PrizeAddress from '@/components/lottery/global/dial-prize-address'
-import ActivityPause from '@/components/lottery/global/dial-activity-pause'
 import DialogPage from '@/components/lottery/global/dial-dialog-page'
-import RecordInfo from '@/components/lottery/global/dial-record-info'
-import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
-import CardStock from '@/components/lottery/global/dial-card-stock'
 import MyModel from '@/components/lottery/global/live-model'
 
 import Wheel from '@/components/lottery/global/wheel' // 大转盘
@@ -135,7 +125,10 @@ import Packet from '@/components/lottery/global/packet' // 红包弹框
 import UndrawQualification from '@/components/lottery/global/undraw-qualification' // 无抽奖资格弹框
 import Prize from '@/components/lottery/global/prize' // 线上实物弹框
 import Address from '@/components/lottery/global/address' // 收获地址弹框
-import RecordDraw from '@/components/lottery/global/recordDraw'
+import RecordDraw from '@/components/lottery/global/recordDraw' // 积分抽奖弹框
+import ActivityPause from '@/components/lottery/global/activity-pause' // 活动暂停弹框
+import PrizeAddress from '@/components/lottery/global/prize-address' // 线上实物-有地址弹框
+import RecordLess from '@/components/lottery/global/recordLess' // 积分不足弹框
 import API from '@/api/module/examination'
 // import STORAGE from '@/utils/storage'
 import mixins from '@/mixins/index'
@@ -145,9 +138,6 @@ import { getDaysBetween, delUrlParams, setBrowserTitle, debounce, getPlat } from
 export default {
   name: '',
   components: {
-    // Prizes,
-    // Addresss,
-    // RecordDraws,
 
     Wheel,
     ActivityRule,
@@ -167,7 +157,7 @@ export default {
     Packet,
     UndrawQualification,
 
-    prizeList,
+    // prizeList,
     Address,
     DialDialogTitle,
     DialDialog,
@@ -178,9 +168,6 @@ export default {
     PrizeAddress,
     ActivityPause,
     DialogPage,
-    RecordInfo,
-    RecordTicketed,
-    CardStock,
     MyModel
   },
   props: {

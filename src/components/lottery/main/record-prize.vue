@@ -46,16 +46,6 @@
 
 <script>
 import API from '@/api/module/examination'
-// import CardIntegral from '@/components/lottery/global/dial-card-integral'
-// import CardIntegralPull from '@/components/lottery/global/dial-card-integralPull'
-// import CardStock from '@/components/lottery/global/dial-card-stock'
-// import CardOverdues from '@/components/lottery/global/dial-card-overdues'
-// import RecordUncode from '@/components/lottery/global/dial-record-uncode'
-// import RecordCode from '@/components/lottery/global/dial-record-code'
-// import RecordTicketed from '@/components/lottery/global/dial-record-ticketed'
-// import RecordInfo from '@/components/lottery/global/dial-record-info'
-// import CardPacket from '@/components/lottery/global/dial-card-packet'
-// import CardPacketPull from '@/components/lottery/global/dial-card-packetPull'
 import RecordUncode from '@/components/lottery/global/record-uncode'
 import RecordCode from '@/components/lottery/global/record-code'
 import CardOverdues from '@/components/lottery/global/card-overdues'

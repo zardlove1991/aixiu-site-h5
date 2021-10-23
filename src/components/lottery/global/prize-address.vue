@@ -1,18 +1,14 @@
 <template>
-    <div class='prize-verification-model' v-if="show">
-         <!-- <div class="model-bg-wrap">
+    <div class="prize-address-model" v-if="show">
+        <div class="prize-address-model-wrap">
             <div class="model-bg"></div>
-        </div> -->
-         <!-- <div class="model-bg"></div> -->
-         <div class="prize-verification-model-wrap">
-            <div class="model-bg"></div>
-            <div class="prize-verification-model-wrap-bg"></div>
-            <div class="prize-verification-header">
-                <div class="prize-verification-header-right" @click.stop="onClose">
-                    <i class="i-close"></i>
+            <div class="prize-address-model-wrap-bg"></div>
+            <div class="prize-address-header">
+                <div class="prize-address-header-right" @click.stop="onClose">
+                <i class="i-close"></i>
                 </div>
             </div>
-            <div class="container">
+             <div class="container">
                 <div class="title">中奖啦~</div>
                 <div class="prize-box">
                     <div class="bg"></div>
@@ -20,12 +16,14 @@
                         <div class="prize-header"></div>
                         <div class="prize-content">
                             <div class="circle">
-                                <!-- <van-image class="gift" :src="prizeData.images" /> -->
+                                <!-- <img class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg" alt=""> -->
                                 <img class="gift" :src="prizeData.images" alt="">
                             </div>
                             <div class="prize-bg">
+                                <!-- <span>一等奖</span> -->
                                 <span>{{prizeData.award_name || '--'}}</span>
                             </div>
+                            <!-- <div class="prize-name">简约日式实木落地镜</div> -->
                             <div class="prize-name">{{prizeData.award_content || '--'}}</div>
                             <div class="left-icon"></div>
                             <div class="right-icon"></div>
@@ -34,39 +32,56 @@
                     </div>
                 </div>
                 <div class="avatar-box">
+                    <!-- <div class="avatar" >
+                        <img class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg" alt="">
+                    </div> -->
                     <div class="avatar" v-if="prizeData.is_merchants.logo_url">
-                        <!-- <van-image class="img" :src="prizeData.is_merchants.logo_url" fit='cover'></van-image> -->
                         <img  class="img"  :src="prizeData.is_merchants.logo_url" alt="">
                     </div>
+                    <!-- <div class="avatar-name" >乐乐茶奶茶店</div> -->
                     <div class="avatar-name" v-if="prizeData.is_merchants.name">{{prizeData.is_merchants.name}}</div>
                 </div>
-                <div class="info">
-                    <p>兑奖码： {{prizeData && prizeData.code || '--'}}</p>
-                    <p>门店地址：{{prizeData &&prizeData.select_merchant.address || '--'}} </p>
-                    <p v-if="prizeData.select_merchant.start_time && prizeData.select_merchant.end_time">营业时间：{{prizeData.select_merchant.start_time}} - {{prizeData.select_merchant.end_time}} </p>
-                    <p v-else>营业时间：--</p>
-                    <p>兑奖时间：{{prizeData &&prizeData.award_time || '--'}}</p>
-                </div>
-                <van-button  block  class="btn" v-if="prizeData.cancel_code" @click="onCancelCode">中奖二维码</van-button>
                 <div class="container-bottom">
+                    <!-- <div class="qr-code" >
+                        <img class="gift" src="https://img01.yzcdn.cn/vant/cat.jpeg" alt="">
+                    </div> -->
                     <div class="qr-code" v-if="prizeData.qr_code">
-                        <!-- <van-image class="code" :src="prizeData.qr_code"></van-image> -->
-                        <img  class="code" :src="prizeData.qr_code" alt="" />
+                        <img class="code" :src="prizeData.qr_code" alt="">
                     </div>
-                    <!-- <div class="tips"> -->
-                        <p class="tips">兑奖提示：请指定时间和门店地址进行核销，超时即失效 </p>
-                        <!-- <p></p> -->
-                    <!-- </div> -->
+                    <div class="tips">
+                        <!-- <p>兑奖码：KM12HJSNS23</p> -->
+                        <p>兑奖码：{{prizeData.code}}</p>
+                        <p name="" id="" cols="30" rows="10" >中奖后，工作人员将在7到15个工作日内联系您</p>
+                    </div>
                 </div>
-            </div>
+                <div class="line"></div>
+                <form action="#">
+                    <p class="name">
+                        <input type="text" class="span" v-model="prizeData.address[0]" :readonly='edit'  placeholder="姓名"/>
+                        <input type="text" v-model="prizeData.address[1]" :readonly='edit' :maxlength="11" placeholder="手机号"/>
+                    </p>
+                    <div class="address-warp">
+                        <van-field type="textarea"  autosize class="p" v-model="prizeData.address[2]" :readonly='edit' placeholder="详细地址" />
+                        <!-- <input type="text" class="p" v-model="prizeData.address[2]" :readonly='edit' placeholder="收获地址"/> -->
+                        <div class="btn-icon" v-if="edit" @click="onEdit">
+                        <div class="icon"  ></div>
+                        </div>
+                        <div class="btn-icon" v-else @click="onSubmit" >
+                        <div class="icon" ></div>
+                        </div>
+                    </div>
+                </form>
+             </div>
             <div class="points"></div>
-            <div class="prize-verification-footer"></div>
+            <div class="prize-address-footer"></div>
         </div>
+
     </div>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
+import API from '@/api/module/examination'
 export default {
   name: '',
   components: {
@@ -76,6 +91,10 @@ export default {
       type: Boolean,
       default: false
     },
+    id: {
+      type: String,
+      require: true
+    },
     prize: {
       type: Object,
       require: true
@@ -83,7 +102,7 @@ export default {
   },
   data () {
     return {
-
+      edit: true
     }
   },
   computed: {
@@ -110,23 +129,71 @@ export default {
   },
   methods: {
     onClose () {
-    //   this.$emit('close')
-      this.$emit('update:show', false)
+      this.$emit('close')
     },
     ...mapMutations('lottery', {
       setIsModelShow: 'SET_IS_MODEL_SHOW'
     }),
-    onCancelCode () {
-      this.$emit('onLotteryCode', this.prizeData)
-      this.onClose()
+    onEdit () {
+      this.edit = !this.edit
+    },
+    async onSubmit () {
+      let err = ''
+      if (!this.prizeData.address[0]) {
+        err = '请填姓名'
+      } else if (!this.prizeData.address[1]) {
+        err = '请填写手机号'
+      } else if (!this.prizeData.address[2]) {
+        err = '请填写详细地址'
+      }
+      if (err) {
+        this.$toast.fail(err)
+        return false
+      }
+      if (this.prizeData.address[1]) {
+        let res = this.checkMobile(this.prizeData.address[1])
+        if (!res) {
+          this.$toast('手机号格式错误')
+          return false
+        }
+      }
+      const res = await API.getAddress({
+        query: { id: this.id },
+        data: {
+          code: this.prizeData.code,
+          name: this.prizeData.address[0],
+          mobile: this.prizeData.address[1],
+          address: this.prizeData.address[2]
+        }
+      })
+      console.log(res)
+      if (res.success === 1) this.$toast.success('编辑成功')
+      this.edit = true
+    },
+    // 手机校验
+    checkMobile (val) {
+      let reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
+      if (!reg.test(val)) {
+        return false
+      } else {
+        return true
+      }
     }
   }
 }
 </script>
-
+<style lang="scss">
+.prize-address-model {
+    .van-field{
+        .van-field__control{
+            color: #fff4e3;
+        }
+    }
+}
+</style>
 <style scoped lang="scss">
 @import "@/styles/index.scss";
-.prize-verification-model {
+.prize-address-model {
   position: fixed;
   left: 0;
   top: 0;
@@ -138,18 +205,17 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-y: scroll;
-  .prize-verification-model-wrap{
+  .prize-address-model-wrap{
     width: px2rem(600px);
-    height: px2rem(1002px);
+    height: px2rem(858px);
     opacity: 1;
     background: linear-gradient(181deg,#ff8f68 0%, #ff1a4a 80%, #ff093f 100%);
     border-radius: px2rem(16px);
     position: relative;
-    .prize-verification-model-wrap-bg{
+    .prize-address-model-wrap-bg{
       width: px2rem(600px);
       height: px2rem(202px);
-      @include img-retina("~@/assets/lottery/activityRule/propup3.png",
+     @include img-retina("~@/assets/lottery/activityRule/propup3.png",
       "~@/assets/lottery/activityRule/propup3@2x.png", 100%, 100%);
       background-repeat: no-repeat;
       border-top-right-radius: px2rem(16px);
@@ -157,21 +223,20 @@ export default {
       position: absolute;
       top: 0; left: 0;
     }
-    .prize-verification-header{
+    .prize-address-header{
         width: px2rem(600px);
-        height: px2rem(50px);
+        height: px2rem(52px);
         position: absolute;
         top: 0;
         left: 0;
         z-index: 10;
         border-top-right-radius: px2rem(16px);
         border-top-left-radius: px2rem(16px);
-        .prize-verification-header-right {
+        .prize-address-header-right {
             width: px2rem(50px);
-            height: px2rem(50px);
+            height: px2rem(52px);
             padding-right: px2rem(30px);
             padding-top: px2rem(30px);
-            margin-bottom: px2rem(2px);
             float: right;
             cursor: pointer;
             .i-close{
@@ -186,7 +251,7 @@ export default {
     }
     .container{
         width: 100%;
-        height: px2rem(950px);
+        height: px2rem(806px);
         position: absolute;
         top: px2rem(52px);
         z-index: 10;
@@ -207,7 +272,7 @@ export default {
             margin-left: auto;
             margin-right: auto;
             box-sizing: border-box;
-            margin-bottom: px2rem(40px);
+            margin-bottom: px2rem(60px);
             .bg{
                 width: px2rem(540px);
                 height: px2rem(20px);
@@ -229,9 +294,8 @@ export default {
                     width: 100%;
                     height: px2rem(254px);
                     background: #fff9ec;
-                    // padding-top: px2rem(29px);
-                    // padding-top: px2rem(15px);
                     position: relative;
+                    // margin-top:px2rem(6px);
                     .circle {
                         position: absolute;
                         top: px2rem(15px); left: px2rem(180px);
@@ -373,46 +437,13 @@ export default {
                 white-space: nowrap;
             }
         }
-        .info{
-            height: px2rem(164px);
-            opacity: 1;
-            font-size: px2rem(26px);
-            font-family: PingFangSC, PingFangSC-Regular;
-            font-weight: 400;
-            text-align: left;
-            color: #fff4e3;
-            line-height: px2rem(26px);
-            margin-left: px2rem(40px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-bottom: px2rem(40px);
-        }
-        .btn{
-            width: px2rem(300px);
-            height: px2rem(80px);
-            opacity: 1;
-            border-radius: px2rem(16px);
-            background: linear-gradient(0deg,#ffe2b7 1%, #fff5e2);
-            box-shadow: 0 px2rem(8px) 0px 0px #e5b56b;
-            margin: auto;
-            border: none;
-            margin-bottom: px2rem(40px);
-            font-size: px2rem(28px);
-            font-family: SourceHanSansCN, SourceHanSansCN-Medium;
-            font-weight: 500;
-            text-align: left;
-            color: #4f0f0f;
-        }
         .container-bottom{
             display: flex;
             width: 100%;
             height: px2rem(120px);
             margin-left: px2rem(40px);
-            padding-right: px2rem(60px);
-            margin-bottom: px2rem(42px);
-            align-items: center;
-            .qr-code {
+            margin-bottom: px2rem(40px);
+            .qr-code{
                 width: px2rem(120px);
                 height: px2rem(120px);
                 opacity: 1;
@@ -431,32 +462,112 @@ export default {
                 }
             }
             .tips{
-                // width: px2rem(360px);
-                width: 100%;
-                height: px2rem(66px);
+                // width: 100%;
+                // height: 100%;
+                margin-right: px2rem(46px);
+                padding-top: px2rem(7px);
+                width: px2rem(374px);
+                height: px2rem(72px);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                p{
+                    // width: px2rem(264px);
+                    // height: px2rem(24px);
+                    opacity: 0.8;
+                    font-size: px2rem(24px);
+                    font-family: PingFangSC, PingFangSC-Regular;
+                    font-weight: 400;
+                    text-align: left;
+                    color: #fff4e3;
+                    // line-height: px2rem(24px);
+                    // margin-bottom: px2rem(20px);
+                }
+                span{
+                    display: inline-block;
+                    width: px2rem(374px);
+                    height: px2rem(62px);
+                    opacity: 0.8;
+                    font-size: px2rem(24px);
+                    font-family: PingFangSC, PingFangSC-Regular;
+                    font-weight: 400;
+                    text-align: left;
+                    color: #fff4e3;
+                    line-height: px2rem(34px);
+                    // line-height: 200%;
+                }
+            }
+        }
+        .line{
+            width: px2rem(520px);
+            opacity: 0.4;
+            border-bottom: px2rem(1px) dashed #ffeccf;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: px2rem(39px);
+        }
+        .name{
+            .span{
+                width: px2rem(120px);
+                // width: px2rem(72px);
+                height: px2rem(24px);
+                opacity: 0.8;
                 font-size: px2rem(24px);
                 font-family: PingFangSC, PingFangSC-Regular;
                 font-weight: 400;
                 text-align: left;
-                color: rgba(255, 244, 227, .8);
+                color: #fff4e3;
                 // line-height: px2rem(24px);
-                // line-height: px2rem(48px);
-                white-space:wrap;
+                margin-right: px2rem(16px);
+            }
+            // width: 154px;
+            height: px2rem(24px);
+            opacity: 0.8;
+            font-size: px2rem(24px);
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            text-align: left;
+            color: #fff4e3;
+            // line-height: px2rem(24px);
+            margin-bottom: px2rem(20px);
+            padding-left: px2rem(39px);
+        }
+        .address-warp{
+            padding-left: px2rem(39px);
+            display: flex;
+            .p{
+                width: px2rem(426px);
+                // height: px2rem(62px);
+                height: auto;
+                opacity: 0.8;
+                font-size: px2rem(24px);
+                font-family: PingFangSC, PingFangSC-Regular;
+                font-weight: 400;
+                text-align: left;
+                color: #fff4e3 ;
+                // color: #4f0f0f;
+                line-height: px2rem(34px);
                 word-wrap:break-word;
-                // p{
-                //     font-size: px2rem(24px);
-                //     font-family: PingFangSC, PingFangSC-Regular;
-                //     font-weight: 400;
-                //     text-align: left;
-                //     white-space:wrap;
-                //     // line-height: px2rem(66px);
-                //     margin-bottom: px2rem(20px);
-                //     word-wrap:break-word;
-                // }
+                word-break:break-all;
+                // @include bg-color('bgColor');
+                margin-right: px2rem(72px);
+            }
+            .btn-icon {
+                width: px2rem(63px);
+            }
+            .icon{
+                width: px2rem(22px);
+                height: px2rem(22px);
+                opacity: 0.8;
+                @include img-retina("~@/assets/lottery/prize/icon-edit.png",
+                "~@/assets/lottery/prize/icon-edit@2x.png", 100%, 100%);
+                background-repeat: no-repeat;
+                cursor: pointer;
+                // background: #fef8e7;
             }
         }
     }
-    .prize-verification-footer{
+    .prize-address-footer{
         width: px2rem(600px);
         height: px2rem(240px);
         border-bottom-left-radius: px2rem(16px);
@@ -469,7 +580,7 @@ export default {
     }
     .points{
         position: absolute;
-        top: px2rem(444px);
+        top: px2rem(358px);
         left: px2rem(6px);
         width: px2rem(54px);
         height: px2rem(114px);
@@ -477,16 +588,16 @@ export default {
         "~@/assets/lottery/recordDraw/point_1@2x.png", 100%,100%);
         background-repeat: no-repeat;
     }
-  }
-  .model-bg{
-    width: px2rem(426px);
-    height: px2rem(225px);
-    @include img-retina("~@/assets/lottery/modelImg/model-bg.png",
-    "~@/assets/lottery/modelImg/model-bg.png", 100%, 100%);
-    background-repeat: no-repeat;
-    margin-top: px2rem(-154px);
-    margin-left: auto;
-    margin-right: auto;
+    .model-bg{
+        width: px2rem(426px);
+        height: px2rem(225px);
+        @include img-retina("~@/assets/lottery/modelImg/model-bg.png",
+        "~@/assets/lottery/modelImg/model-bg.png", 100%, 100%);
+        background-repeat: no-repeat;
+        margin-top: px2rem(-154px);
+        margin-left: auto;
+        margin-right: auto;
+    }
   }
 }
 </style>
