@@ -85,11 +85,14 @@
       <div @click='goCardStyle'>全部</div>
     </div>
     <div class='ctx-img-wrap'>
-      <img :src="firstWorksArr[0].material[0]" alt="">
-      <div class='ctx-img-info'>
-        <div>{{firstWorksArr[0].title}}</div>
-        <div>{{firstWorksArr[0].source}}</div>
+      <div class='ctx-img-m'>
+        <img :src="firstWorksArr[0].material[0]" alt="">
+        <div class='ctx-img-info'>
+          <div>{{firstWorksArr[0].title}}</div>
+          <div>{{firstWorksArr[0].source}}</div>
+        </div>
       </div>
+
       <template v-for='(item, index) in remainData'>
         <div :key='index'  v-if='index <= pointIndex'
           class='ctx-detail-wrap'>
@@ -161,7 +164,7 @@ export default {
       this.$router.push({name: 'mobile-equal-height'})
     },
     goCardStyle () {
-      this.$router.push({name: ''})
+      this.$router.push({name: 'mobile-card-list'})
     },
     initRender (data) {
       // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
@@ -169,8 +172,6 @@ export default {
       if (this.columnTypeValue !== 1) {
         this.columnTypeValue = data.limit.column_set.column_list[0].columnDisplay
       }
-
-      this.columnTypeValue = 3// 暂时写死
 
       // 默认获取第一个
       this.informationContentData = data.information_content_data
@@ -221,7 +222,6 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
-
   .standard-style{
     width: px2rem(710px);
     .base-box-style {
@@ -440,11 +440,12 @@ export default {
 }
 
 .card-font-img{
-  // border: 1px solid red;
   width: px2rem(730px);
   border-radius: px2rem(16px);
   box-shadow: 0px 4px 14px 2px rgba(0,0,0,0.04);
   padding: px2rem(20px) px2rem(30px);
+  margin: 0 auto;
+
   .card-font-header{
     height: px2rem(92px);
     display: flex;
@@ -469,9 +470,12 @@ export default {
   }
 }
 
-.ctx-img-wrap{
+.ctx-img-m{
   height: px2rem(302px);
   position: relative;
+}
+
+.ctx-img-wrap{
   .ctx-img-info{
     position: absolute;
     bottom: px2rem(20px);

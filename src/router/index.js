@@ -346,6 +346,18 @@ const routes = [{
   }
 },
 {
+  path: '/card-list',
+  name: 'mobile-card-list',
+  component: () => import('@/components/news-topic/comp/card-list.vue'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '卡片样式',
+    mod: 'news'
+  }
+},
+{
   path: '/drawlist',
   name: 'drawlist',
   component: getOtherComponent('list', 'draw'),
