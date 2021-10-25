@@ -320,7 +320,32 @@ const routes = [{
     title: '移动专题',
     mod: 'news'
   }
-}, {
+},
+{
+  path: '/mixin-list',
+  name: 'mobile-topic-mixinlist',
+  component: () => import('@/components/news-topic/comp/mixin-list.vue'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '标准列表',
+    mod: 'news'
+  }
+},
+{
+  path: '/equal-height-list',
+  name: 'mobile-equal-height',
+  component: () => import('@/components/news-topic/comp/equal-height-list.vue'),
+  props: (route) => ({
+    id: route.params.id
+  }),
+  meta: {
+    title: '等高样式',
+    mod: 'news'
+  }
+},
+{
   path: '/drawlist',
   name: 'drawlist',
   component: getOtherComponent('list', 'draw'),

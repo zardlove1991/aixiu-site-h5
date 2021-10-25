@@ -3,7 +3,6 @@ import HeaderMode2 from '../comp/HeaderMode2.vue'
 import HeaderMode3 from '../comp/HeaderMode3.vue'
 import CardBtnSwipe from '../comp/CardBtnSwipe.vue'
 import InfoList from '../comp/InfoList.vue'
-// import STORAGE from '@/utils/storage'
 import API from '@/api/module/examination'
 import { Indicator, Toast } from 'mint-ui'
 export default {
@@ -56,7 +55,7 @@ export default {
           }
           console.log('this.detailInfo', this.detailInfo)
         } catch (e) {
-          Toast('加载失败')
+          Toast('活动数据加载失败')
         }
       }).catch(() => {
         Indicator.close()

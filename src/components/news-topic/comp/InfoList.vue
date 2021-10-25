@@ -7,9 +7,7 @@
         <span></span>
         <span>{{title}}</span>
       </div>
-      <div>
-        <img :src="arrIcon" alt="" class='arr-img-wrap'>
-      </div>
+      <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
     <div v-for='(item, index) in worksList' :key='index'>
       <div v-if='item[0] !== undefined' class='column-1 base-box-style'>
@@ -17,13 +15,11 @@
           <div>{{item[0].title}}</div>
           <div>
             <span>{{item[0].source}}</span>
-            <span>2小时前</span>
-            <span>94评</span>
           </div>
         </div>
         <div class='column-right'>
           <img :src="mgURL" alt="">
-          <span>16:27</span>
+          <span>00:00</span>
         </div>
       </div>
       <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
@@ -34,8 +30,6 @@
         </div>
         <div class='coloumn-2-3'>
           <span>{{item[1].source}}</span>
-          <span>2小时前</span>
-          <span>94评</span>
         </div>
       </div>
       <div v-if='item[2] !== undefined' class='column-3 base-box-style'>
@@ -47,8 +41,6 @@
           <div>{{item[2].title}}</div>
           <div>
             <span>{{item[2].source}}</span>
-            <span>7小时前</span>
-            <span>94评</span>
           </div>
         </div>
       </div>
@@ -56,8 +48,6 @@
         <div>{{item[3].title}}</div>
         <div>
           <span>{{item[3].source}}</span>
-          <span>7小时前</span>
-          <span>94评</span>
         </div>
       </div>
     </div>
@@ -70,17 +60,17 @@
         <span></span>
         <span>{{title}}</span>
       </div>
-      <div>
-        <img :src="arrIcon" alt="" class='arr-img-wrap'>
-      </div>
+      <img :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
     </div>
     <div class='imgfont-list-wrap'>
-      <div v-for='(item, index) in infoList' :key='index' class='imgfont-info-list'>
+      <div v-for='(item, index) in worksList' :key='index' class='imgfont-info-list'>
         <div>
-          <img src="" alt="">
+          <img :src="item.material[0]" alt="">
         </div>
-        <div>苹果卡内基图书馆获美国建筑，奖馆内开设</div>
-        <div>网易新闻 2小时前</div>
+        <div>{{item.title}}</div>
+        <div>
+          <span>{{item.source}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -89,33 +79,34 @@
   <div v-if='columnTypeValue === 3' class='card-font-img'>
     <div class='card-font-header'>
       <div>
-        <img src="" alt="">
-        <div>媒体关注</div>
+        <img :src="columnPoster" alt="">
+        <div>{{title}}</div>
       </div>
-      <div>全部</div>
+      <div @click='goCardStyle'>全部</div>
     </div>
     <div class='ctx-img-wrap'>
-      <img src="" alt="">
+      <img :src="firstWorksArr[0].material[0]" alt="">
       <div class='ctx-img-info'>
-        <div>苹果卡内基图书馆获美国建筑奖馆内开设</div>
-        <div>网易新闻 2小时前</div>
+        <div>{{firstWorksArr[0].title}}</div>
+        <div>{{firstWorksArr[0].source}}</div>
       </div>
-      <div class='ctx-detail-wrap'>
-        <div>
-          <div>卡内基图书馆随后也正式更名为苹果卡内基图书馆</div>
-          <div>网易新闻 3小时前</div>
+      <template v-for='(item, index) in remainData'>
+        <div :key='index'  v-if='index <= pointIndex'
+          class='ctx-detail-wrap'>
+          <div>
+            <div>{{item.title}}</div>
+            <div>{{item.source}}</div>
+          </div>
+          <div>
+            <img :src="item.material[0]" alt="">
+          </div>
         </div>
-        <div>
-          <img src="" alt="">
-        </div>
-      </div>
-      <div class='ctx-more-num'>
-        <span>剩余3篇</span>
-        <span></span>
+      </template>
+      <div v-if='remainNum > 0' class='ctx-more-num' @click='showRemain'>
+        <span>剩余{{remainNum}}篇</span>
       </div>
     </div>
   </div>
-
 </div>
 </template>
 
@@ -140,6 +131,7 @@ export default {
     },
     changeChildListObj: {
       handler (newData, oldData) {
+        console.log('changeChildListObj', newData)
         this.reRenderList(newData)
       },
       deep: true
@@ -153,10 +145,24 @@ export default {
       columnTypeValue: 1,
       worksList: [],
       informationContentData: [],
-      title: ''
+      title: '',
+      columnPoster: '',
+      remainNum: 0,
+      firstWorksArr: [],
+      remainData: [],
+      pointIndex: 0
     }
   },
   methods: {
+    goMixinList () {
+      this.$router.push({name: 'mobile-topic-mixinlist'})
+    },
+    goEqualHeight () {
+      this.$router.push({name: 'mobile-equal-height'})
+    },
+    goCardStyle () {
+      this.$router.push({name: ''})
+    },
     initRender (data) {
       // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
       this.columnTypeValue = data.limit.column_set.all_column_display
@@ -164,16 +170,16 @@ export default {
         this.columnTypeValue = data.limit.column_set.column_list[0].columnDisplay
       }
 
-      console.log('this.columnTypeValue', this.columnTypeValue)
+      this.columnTypeValue = 3// 暂时写死
+
       // 默认获取第一个
       this.informationContentData = data.information_content_data
       this.worksList = []
       this.worksList = this.informationContentData[0].data
       this.title = this.informationContentData[0].title
+      this.columnPoster = this.informationContentData[0].poster
 
-      if (this.columnTypeValue === 1) {
-        this.blendData(this.informationContentData[0].data)
-      }
+      this.reRenderList(this.informationContentData[0])
     },
     blendData (data) {
       // 每4个元素组装成一个单位
@@ -186,11 +192,28 @@ export default {
           itemArr = []
         }
       }
-      console.log('this.worksList', this.worksList)
     },
     reRenderList (data) {
-      let _data = data.data
-      this.blendData(_data)
+      let _data = JSON.parse(JSON.stringify(data.data))
+      console.log('999', _data)
+      if (this.columnTypeValue === 1) {
+        this.blendData(_data)
+      } else if (this.columnTypeValue === 2) {
+        this.worksList = _data
+      } else if (this.columnTypeValue === 3) {
+        this.remainNum = _data.length - 2
+        this.firstWorksArr = []
+        this.firstWorksArr = _data.splice(0, 1)
+        this.remainData = []
+        this.remainData = _data
+      }
+    },
+    showRemain () {
+      if (this.pointIndex === 0) {
+        this.pointIndex = this.remainData.length
+      } else {
+        this.pointIndex = 0
+      }
     }
   }
 }
@@ -352,9 +375,8 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    // background: #fbfbfb;
-    width: px2rem(710px);
-    margin: px2rem(20px) 0;
+    width: px2rem(750px);
+    padding: px2rem(20px);
     &>div:nth-child(1){
       &>span:nth-child(1) {
         display: inline-block;
@@ -379,7 +401,7 @@ export default {
 .info-card-list{
   margin-bottom: px2rem(30px);
   margin-top: px2rem(30px);
-  padding: 0 px2rem(20px);
+  // padding: 0 px2rem(20px);
   // background: #fbfbfb;
   .img-font-wrap{
     background: #fbfbfb;
@@ -387,13 +409,18 @@ export default {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+      padding: 0 px2rem(20px);
+      &>div:nth-child(2n) {
+        margin-left: px2rem(10px);
+      }
     }
 
     .imgfont-info-list{
-      width: px2rem(370px);
+      width: px2rem(350px);
       background: #ffffff;
+
       &>div:nth-child(1) {
-        width: px2rem(370px);
+        width: px2rem(350px);
         height: px2rem(208px);
       }
 
@@ -413,8 +440,8 @@ export default {
 }
 
 .card-font-img{
-  margin: 0 px2rem(30px);
-  width: px2rem(690px);
+  // border: 1px solid red;
+  width: px2rem(730px);
   border-radius: px2rem(16px);
   box-shadow: 0px 4px 14px 2px rgba(0,0,0,0.04);
   padding: px2rem(20px) px2rem(30px);
@@ -447,19 +474,19 @@ export default {
   position: relative;
   .ctx-img-info{
     position: absolute;
-    bottom: px2rem(30px);
+    bottom: px2rem(20px);
     left: px2rem(30px);
     &>div:nth-child(1){
-      color: #ffffff;
-      mix-blend-mode: difference;
+      // color: #ffffff;
+      // mix-blend-mode: difference;
       font-size: px2rem(32px);
       font-weight: 500;
     }
 
     &>div:nth-child(2) {
-      color: #ffffff;
+      // color: #ffffff;
       font-size: px2rem(24px);
-      mix-blend-mode: difference;
+      // mix-blend-mode: difference;
     }
   }
 }
@@ -469,6 +496,7 @@ export default {
   flex-direction: row;
   border-bottom: 1px solid #eeeeee;
   padding-bottom: px2rem(20px);
+  margin-top: px2rem(20px);
   &>div:nth-child(1) {
     flex: 1;
     &>div:nth-child(1){
@@ -484,6 +512,9 @@ export default {
 
   &>div:nth-child(2) {
     width: px2rem(216px);
+    &>img{
+      border-radius: px2rem(8px);
+    }
   }
 }
 
@@ -491,7 +522,6 @@ export default {
   width: px2rem(17px);
   height: px2rem(30px);
 }
-
 .ctx-more-num{
   color: #D90000;
   padding: px2rem(20px) 0;

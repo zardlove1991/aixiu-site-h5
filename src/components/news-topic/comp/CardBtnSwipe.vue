@@ -151,6 +151,7 @@ export default {
       // eslint-disable-next-line no-return-assign
       this.columnList.map(item => item.isChecked = false)
       data.isChecked = true
+      console.log('---', data)
       this.$emit('changeList', data)
     }
   }
