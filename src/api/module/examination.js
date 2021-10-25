@@ -110,7 +110,8 @@ let enrollUrl = {
 // 资讯新闻
 let newsUrl = {
   getNewsDetail: 'client/news/{id}/', // 获取资讯新闻详情
-  getCityWeather: 'client/news/weather/{id}/' // 获取城市天气
+  getCityWeather: 'client/news/weather/{id}/', // 获取城市天气
+  getMobileNewsDetail: 'client/news/columns/{id}'
 }
 
 let drawUrl = {
@@ -214,6 +215,9 @@ export default {
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
   // getCollection: config => createLottery(configUrl.getCollection, 'POST', config, 'lottery'),
+  getMobileNewsDetail: config => createBase(configUrl.getMobileNewsDetail, 'GET', config, 'news'),
+  // 抽奖
+  // getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
 
   // 答题改造
   submitExam: config => createAPI(configUrl.submitExam, 'post', config, API_FLAG),
