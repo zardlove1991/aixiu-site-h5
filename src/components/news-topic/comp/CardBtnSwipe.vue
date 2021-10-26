@@ -136,6 +136,7 @@ export default {
   },
   data () {
     return {
+      columnTypeValue: 1,
       columnList: [],
       columnChangeStatus: 1, // 1单行 2多行
       topicDisplay: {},
@@ -148,10 +149,18 @@ export default {
   },
   methods: {
     choiceColumnList (data) {
-      // eslint-disable-next-line no-return-assign
-      this.columnList.map(item => item.isChecked = false)
+      // 判断类型
+      if (this.columnChangeStatus === 1) {
+        // eslint-disable-next-line no-return-assign
+        this.columnList.map(item => item.isChecked = false)
+      } else if (this.columnChangeStatus === 2) {
+        for (let i of this.columnList) {
+          for (let j of i) {
+            j.isChecked = false
+          }
+        }
+      }
       data.isChecked = true
-      console.log('---', data)
       this.$emit('changeList', data)
     }
   }
@@ -215,6 +224,7 @@ export default {
       display: flex;
       flex-direction: row;
       .single-card{
+        font-weight: 500;
         width: px2rem(210px);
         height: px2rem(64px);
         line-height: px2rem(64px);

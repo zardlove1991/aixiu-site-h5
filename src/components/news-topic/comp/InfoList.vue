@@ -9,7 +9,7 @@
       </div>
       <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
-    <div v-for='(item, index) in worksList' :key='index'>
+    <div v-for='(item, index) in worksList' :key='index' class='all-works-list'>
       <div v-if='item[0] !== undefined' class='column-1 base-box-style'>
         <div class='column-left'>
           <div>{{item[0].title}}</div>
@@ -18,24 +18,24 @@
           </div>
         </div>
         <div class='column-right'>
-          <img :src="mgURL" alt="">
-          <span>00:00</span>
+          <img :src="imgRender(item[0])" alt="">
+          <span v-if='item[0].type === "video"'>00:00</span>
         </div>
       </div>
       <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
         <div>{{item[1].title}}</div>
-        <div v-if='Array.isArray(item[1].material)' class='coloumn-2-2'>
-          <img v-for='(item, index) in item[1].material'
-            :key='index' :src="item" alt="" class='img-wrap'>
+        <div v-if='Array.isArray(item[1].imgList)' class='coloumn-2-2'>
+          <img v-for='(item, index) in item[1].imgList'
+            :key='index' :src="item.host + item.filename" alt="" class='img-wrap'>
         </div>
         <div class='coloumn-2-3'>
           <span>{{item[1].source}}</span>
         </div>
       </div>
       <div v-if='item[2] !== undefined' class='column-3 base-box-style'>
-        <div v-if='Array.isArray(item[2].material) && item[2].material.length !== 0' class='column-3-left'>
-          <img :src="item[2].material[0]" alt=""/>
-          <span>{{item[2].material.length}}图</span>
+        <div v-if='Array.isArray(item[2].imgList) && item[2].imgList.length !== 0' class='column-3-left'>
+          <img :src="item[2].imgList[0].host + item[2].imgList[0].filename" alt=""/>
+          <span>{{item[2].imgList.length}}图</span>
         </div>
         <div class='column-3-right'>
           <div>{{item[2].title}}</div>
@@ -65,7 +65,7 @@
     <div class='imgfont-list-wrap'>
       <div v-for='(item, index) in worksList' :key='index' class='imgfont-info-list'>
         <div>
-          <img :src="item.material[0]" alt="">
+          <img :src="item.imgList[0].host + item.imgList[0].filename" alt="">
         </div>
         <div>{{item.title}}</div>
         <div>
@@ -86,7 +86,7 @@
     </div>
     <div class='ctx-img-wrap'>
       <div class='ctx-img-m'>
-        <img :src="firstWorksArr[0].material[0]" alt="">
+        <img :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
           <div>{{firstWorksArr[0].source}}</div>
@@ -101,7 +101,7 @@
             <div>{{item.source}}</div>
           </div>
           <div>
-            <img :src="item.material[0]" alt="">
+            <img :src="item.imgList[0].host + item.imgList[0].filename" alt="">
           </div>
         </div>
       </template>
@@ -143,7 +143,7 @@ export default {
   data () {
     return {
       infoList: [],
-      mgURL: require('@/assets/news/normal-bg.png'),
+      mgURL: require('@/assets/news-topic/null-img.png'),
       arrIcon: require('@/assets/news-topic/arr.png'),
       columnTypeValue: 1,
       worksList: [],
@@ -157,6 +157,17 @@ export default {
     }
   },
   methods: {
+    imgRender (data) {
+      if (data.imgList !== undefined && data.imgList.length > 0) {
+        if (data.imgList[0].filename === '') {
+          return data.imgList[0].host
+        } else {
+          return data.imgList[0].host + data.imgList[0].filename
+        }
+      } else {
+        return this.mgURL
+      }
+    },
     goMixinList () {
       this.$router.push({name: 'mobile-topic-mixinlist'})
     },
@@ -184,19 +195,17 @@ export default {
     },
     blendData (data) {
       // 每4个元素组装成一个单位
-      let itemArr = []
       this.worksList = []
-      for (let i = 0; i < data.length; i++) {
-        itemArr.push(data[i])
-        if ((i + 1) % 4 === 0) {
-          this.worksList.push(itemArr)
-          itemArr = []
-        }
+      let loopNum = Math.ceil(data.length / 4)
+      for (let i = 0; i < loopNum; i++) {
+        this.worksList.push(data.splice(0, 4))
       }
+
+      console.log('this.worksList', this.worksList)
     },
     reRenderList (data) {
       let _data = JSON.parse(JSON.stringify(data.data))
-      console.log('999', _data)
+      console.log('this.columnTypeValue', this.columnTypeValue)
       if (this.columnTypeValue === 1) {
         this.blendData(_data)
       } else if (this.columnTypeValue === 2) {
@@ -222,8 +231,12 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .all-works-list{
+    margin-bottom: px2rem(30px);
+  }
   .standard-style{
     width: px2rem(710px);
+    margin: 0 auto;
     .base-box-style {
       padding: px2rem(24px);
       background: #ffffff;
@@ -375,8 +388,8 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: px2rem(750px);
-    padding: px2rem(20px);
+    width: px2rem(710px);
+    padding: px2rem(20px) 0;
     &>div:nth-child(1){
       &>span:nth-child(1) {
         display: inline-block;
