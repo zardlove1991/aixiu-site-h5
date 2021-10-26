@@ -64,9 +64,9 @@ let smartcity = {
         'depencelist': 'depencestart',
         'livelist': 'livestart'
       }
-      if (+res.status === 0 || +res.status === 1) {
+      if (+res.status === 1) {
         // 页面激活
-        console.log('页面隐藏/激活')
+        console.log('页面激活')
         if (map[currentRoute.name]) {
           let id = currentRoute.params.id
           console.log(map[currentRoute.name])
