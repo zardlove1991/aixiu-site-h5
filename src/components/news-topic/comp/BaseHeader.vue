@@ -7,7 +7,7 @@
       </van-swipe-item>
     </van-swipe>
     <div v-show = 'isShowTopicType' class='news-title'>
-      <div class='topic-tips'>专题</div>
+      <div class='topic-tips'>{{topicTitle}}</div>
       <div class='topix-descri'>{{title}}</div>
     </div>
     <slot name='circleCardBox'></slot>
@@ -28,7 +28,8 @@ export default {
     return {
       title: '',
       bannerList: [],
-      isShowTopicType: true
+      isShowTopicType: true,
+      topicTitle: '专题'
     }
   },
   mounted () {
@@ -36,8 +37,11 @@ export default {
     this.bannerList = this.infoDetail.limit.topic_display.topic_cover_img
     this.title = this.infoDetail.title
 
+    // 专题
+    this.topicTitle = this.infoDetail.limit.topic_display.topic_label_title
+
     // 专题显示
-    console.log('this.infoDetail.limit', this.infoDetail.limit)
+    console.log('专题 this.infoDetail.limit', this.infoDetail.limit)
     let isDisplayTitle = this.infoDetail.limit.base_info.is_display_title
     if (isDisplayTitle === 1) {
       this.isShowTopicType = true
