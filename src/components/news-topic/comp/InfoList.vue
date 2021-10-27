@@ -10,7 +10,9 @@
       <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
     <div v-for='(item, index) in worksList' :key='index' class='all-works-list'>
-      <div v-if='item[0] !== undefined' class='column-1 base-box-style'>
+      <div v-if='item[0] !== undefined'
+        @click='jumpLinkFun(item[0])'
+        class='column-1 base-box-style'>
         <div class='column-left'>
           <div>{{item[0].title}}</div>
           <div>
@@ -22,7 +24,9 @@
           <span v-if='item[0].type === "video"'>00:00</span>
         </div>
       </div>
-      <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
+      <div v-if='item[1] !== undefined'
+        @click='jumpLinkFun(item[1])'
+        class='column-2 base-box-style'>
         <div>{{item[1].title}}</div>
         <div v-if='Array.isArray(item[1].imgList)' class='coloumn-2-2'>
           <img v-for='(item, index) in item[1].imgList'
@@ -32,7 +36,9 @@
           <span>{{item[1].source}}</span>
         </div>
       </div>
-      <div v-if='item[2] !== undefined' class='column-3 base-box-style'>
+      <div v-if='item[2] !== undefined'
+        @click='jumpLinkFun(item[2])'
+        class='column-3 base-box-style'>
         <div v-if='Array.isArray(item[2].imgList) && item[2].imgList.length !== 0' class='column-3-left'>
           <img :src="item[2].imgList[0].host + item[2].imgList[0].filename" alt=""/>
           <span>{{item[2].imgList.length}}图</span>
@@ -44,7 +50,9 @@
           </div>
         </div>
       </div>
-      <div v-if='item[3] !== undefined' class='column-4 base-box-style'>
+      <div v-if='item[3] !== undefined'
+        @click='jumpLinkFun(item[3])'
+        class='column-4 base-box-style'>
         <div>{{item[3].title}}</div>
         <div>
           <span>{{item[3].source}}</span>
@@ -63,7 +71,8 @@
       <img :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
     </div>
     <div class='imgfont-list-wrap'>
-      <div v-for='(item, index) in worksList' :key='index' class='imgfont-info-list'>
+      <div v-for='(item, index) in worksList' :key='index'
+        @click='jumpLinkFun(item)' class='imgfont-info-list'>
         <div>
           <img :src="item.imgList[0].host + item.imgList[0].filename" alt="">
         </div>
@@ -85,7 +94,7 @@
       <div @click='goCardStyle'>全部</div>
     </div>
     <div class='ctx-img-wrap'>
-      <div class='ctx-img-m'>
+      <div class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
         <img :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
@@ -94,7 +103,7 @@
       </div>
 
       <template v-for='(item, index) in remainData'>
-        <div :key='index'  v-if='index <= pointIndex'
+        <div :key='index' @click='jumpLinkFun(item)'  v-if='index <= pointIndex'
           class='ctx-detail-wrap'>
           <div>
             <div>{{item.title}}</div>
@@ -114,6 +123,9 @@
 </template>
 
 <script>
+import { ImagePreview } from 'vant'
+import { getPlat } from '@/utils/utils'
+import { Toast } from 'mint-ui'
 export default {
   props: {
     infoDetail: {
@@ -154,10 +166,39 @@ export default {
       firstWorksArr: [],
       remainData: [],
       pointIndex: 0,
-      curOperatorObj: {}
+      curOperatorObj: {},
+      batchColumnDisplay: 1
     }
   },
   methods: {
+    jumpLinkFun (data) {
+      try {
+        if (data.link === '') {
+          if (data.imgList.length > 0) {
+            ImagePreview({
+              images: [data.imgList[0].host + data.imgList[0].filename],
+              closeable: true
+            })
+          }
+          return false
+        }
+        if (data.dataOrigin === 'local' || data.dataOrigin === 'custom') {
+          // 基础元数据
+          window.open(data.link, '_self')
+        } else if (data.dataOrigin === 'ctxLib') {
+          // 来自内容库
+          let plat = getPlat()
+          if (plat === 'smartcity') {
+            window.SmartCity.linkTo(data.link)
+          } else {
+            window.open(data.link, '_self')
+          }
+        }
+      } catch (e) {
+        Toast('地址无效，调转失败')
+        console.log('e', e)
+      }
+    },
     imgRender (data) {
       if (data.imgList !== undefined && data.imgList.length > 0) {
         if (data.imgList[0].filename === '') {
@@ -173,16 +214,23 @@ export default {
       this.$router.push({name: 'mobile-topic-mixinlist', query: {id: this.curOperatorObj.id}})
     },
     goEqualHeight () {
-      this.$router.push({name: 'mobile-equal-height', query: {}})
+      this.$router.push({name: 'mobile-equal-height', query: {id: this.curOperatorObj.id}})
     },
     goCardStyle () {
-      this.$router.push({name: 'mobile-card-list', query: {}})
+      this.$router.push({name: 'mobile-card-list', query: {id: this.curOperatorObj.id}})
     },
     initRender (data) {
+      let columnSet = data.limit.column_set
       // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
-      this.columnTypeValue = data.limit.column_set.all_column_display
-      if (this.columnTypeValue !== 1) {
-        this.columnTypeValue = data.limit.column_set.column_list[0].columnDisplay
+      this.batchColumnDisplay = columnSet.batch_column_display // 批量设置栏目样式 0 => [以单个设置为主] 1 => [以全局设置为主]
+      let allColumnDisplay = columnSet.all_column_display
+
+      if (this.batchColumnDisplay === 1) {
+        // 全局设置
+        this.columnTypeValue = allColumnDisplay
+      } else if (this.batchColumnDisplay === 0) {
+        // 单个设置【初始时先取第一个值】
+        this.columnTypeValue = columnSet.column_list[0].columnDisplay
       }
 
       // 默认获取第一个
@@ -201,16 +249,16 @@ export default {
       for (let i = 0; i < loopNum; i++) {
         this.worksList.push(data.splice(0, 4))
       }
-
-      console.log('this.worksList', this.worksList)
     },
     reRenderList (data) {
-      console.log('data', data)
+      // 判断布局是不是以单个计算
+      if (this.batchColumnDisplay === 0) {
+        this.columnTypeValue = data.columnDisplay
+      }
       // 设置title
       this.title = data.title
       this.curOperatorObj = data
       let _data = JSON.parse(JSON.stringify(data.data))
-      console.log('this.columnTypeValue', this.columnTypeValue)
       if (this.columnTypeValue === 1) {
         this.blendData(_data)
       } else if (this.columnTypeValue === 2) {
@@ -395,6 +443,7 @@ export default {
     align-items: center;
     width: px2rem(710px);
     padding: px2rem(20px) 0;
+    margin: 0 auto;
     &>div:nth-child(1){
       &>span:nth-child(1) {
         display: inline-block;

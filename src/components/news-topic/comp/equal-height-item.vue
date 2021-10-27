@@ -20,10 +20,14 @@
         </div>
       </div>
     </div>
+    <div class='return-home-page'>
+      <ReturnBtn></ReturnBtn>
+    </div>
   </div>
 </template>
 
 <script>
+import ReturnBtn from './return-btn.vue'
 export default {
   data () {
     return {
@@ -31,6 +35,9 @@ export default {
       arrIcon: '',
       worksList: []
     }
+  },
+  components: {
+    ReturnBtn
   },
   props: {
     itemObj: {
@@ -133,5 +140,11 @@ export default {
     width: px2rem(35px);
     height: px2rem(35px);
     margin-left: px2rem(10px);
+  }
+
+  .return-home-page{
+    position: fixed;
+    left: 0;
+    bottom: px2rem(100px);
   }
 </style>

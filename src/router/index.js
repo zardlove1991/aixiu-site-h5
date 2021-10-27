@@ -348,7 +348,7 @@ const routes = [{
   }
 },
 {
-  path: '/equal-height-list',
+  path: '/equal-height-list/:id',
   name: 'mobile-equal-height',
   component: () => import('@/components/news-topic/comp/equal-height-list.vue'),
   props: (route) => ({
@@ -360,7 +360,7 @@ const routes = [{
   }
 },
 {
-  path: '/card-list',
+  path: '/card-list/:id',
   name: 'mobile-card-list',
   component: () => import('@/components/news-topic/comp/card-list.vue'),
   props: (route) => ({
