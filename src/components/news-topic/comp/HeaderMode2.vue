@@ -29,7 +29,8 @@ export default {
     return {
       blockStr: '',
       baseInfo: {},
-      showTotalTitle: false
+      showTotalTitle: false,
+      allSummary: ''
     }
   },
   watch: {

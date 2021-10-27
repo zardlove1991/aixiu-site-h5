@@ -20,10 +20,14 @@ export default {
     MixinListItem
   },
   mounted () {
+    let curId = this.$route.query.id
     this.curDetailInfo = STORAGE.get('detailInfo')
     this.columnList = []
-    this.columnList = this.curDetailInfo.limit.column_set.column_list
-    console.log('detailInfo', this.curDetailInfo)
+    for (let i of this.curDetailInfo.limit.column_set.column_list) {
+      if (i.id === curId) {
+        this.columnList = [i]
+      }
+    }
   },
   methods: {
 

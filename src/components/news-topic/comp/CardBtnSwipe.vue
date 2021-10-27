@@ -1,7 +1,8 @@
 <template>
   <div class='card-btn-swipe' :class='{
     "display-value-1": topicDisplayValue == 1,
-    "display-value-2": topicDisplayValue == 2
+    "display-value-2": topicDisplayValue == 2,
+    "display-value-3": topicDisplayValue == 3
     }'>
     <!-- 单行 -->
     <template v-if='columnChangeStatus === 1'>
@@ -174,6 +175,10 @@ export default {
   }
   .display-value-2{
     margin-top: px2rem(230px) !important;
+  }
+
+  .display-value-3{
+    margin-top: px2rem(30px) !important;
   }
 
   .card-btn-swipe {

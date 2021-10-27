@@ -17,8 +17,8 @@
           </div>
         </div>
         <div class='column-right'>
-          <img :src="mgURL" alt="">
-          <span>16:27</span>
+          <img :src="imgRender(item[0])" alt="">
+          <span v-if='item[0].type === "video"'>00:00</span>
         </div>
       </div>
       <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
@@ -51,19 +51,26 @@
       </div>
     </div>
   </div>
+  <div class='return-home-page'>
+    <ReturnBtn></ReturnBtn>
+  </div>
 </div>
 </template>
 
 <script>
+import ReturnBtn from './return-btn.vue'
 export default {
   data () {
     return {
       worksList: [],
       title: '',
-      arrIcon: '',
-      mgURL: '',
+      mgURL: require('@/assets/news-topic/null-img.png'),
+      arrIcon: require('@/assets/news-topic/arr.png'),
       curItemObj: {}
     }
+  },
+  components: {
+    ReturnBtn
   },
   props: {
     itemObj: {
@@ -85,6 +92,17 @@ export default {
 
   },
   methods: {
+    imgRender (data) {
+      if (data.imgList !== undefined && data.imgList.length > 0) {
+        if (data.imgList[0].filename === '') {
+          return data.imgList[0].host
+        } else {
+          return data.imgList[0].host + data.imgList[0].filename
+        }
+      } else {
+        return this.mgURL
+      }
+    },
     initData (data) {
       this.title = data.title
       this.arrIcon = data.poster
@@ -291,5 +309,11 @@ export default {
       }
     }
   }
+}
+
+.return-home-page{
+  position: fixed;
+  left: 0;
+  bottom: px2rem(100px);
 }
 </style>

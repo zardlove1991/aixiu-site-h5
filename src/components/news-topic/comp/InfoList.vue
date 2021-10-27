@@ -153,7 +153,8 @@ export default {
       remainNum: 0,
       firstWorksArr: [],
       remainData: [],
-      pointIndex: 0
+      pointIndex: 0,
+      curOperatorObj: {}
     }
   },
   methods: {
@@ -169,13 +170,13 @@ export default {
       }
     },
     goMixinList () {
-      this.$router.push({name: 'mobile-topic-mixinlist'})
+      this.$router.push({name: 'mobile-topic-mixinlist', query: {id: this.curOperatorObj.id}})
     },
     goEqualHeight () {
-      this.$router.push({name: 'mobile-equal-height'})
+      this.$router.push({name: 'mobile-equal-height', query: {}})
     },
     goCardStyle () {
-      this.$router.push({name: 'mobile-card-list'})
+      this.$router.push({name: 'mobile-card-list', query: {}})
     },
     initRender (data) {
       // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
@@ -204,6 +205,10 @@ export default {
       console.log('this.worksList', this.worksList)
     },
     reRenderList (data) {
+      console.log('data', data)
+      // 设置title
+      this.title = data.title
+      this.curOperatorObj = data
       let _data = JSON.parse(JSON.stringify(data.data))
       console.log('this.columnTypeValue', this.columnTypeValue)
       if (this.columnTypeValue === 1) {

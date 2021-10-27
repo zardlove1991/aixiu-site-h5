@@ -20,7 +20,10 @@
       @changeList='changeList'>
     </CardBtnSwipe>
     <!-- 列表 -->
-    <InfoList :infoDetail='detailInfo' :changeChildListObj='changeChildListObj'></InfoList>
+    <InfoList
+      :infoDetail='detailInfo'
+      :changeChildListObj='changeChildListObj'>
+    </InfoList>
   </div>
 </template>
 
@@ -72,14 +75,20 @@ export default {
           const _topicDisplay = this.limitObj.topic_display
           this.topicDisplayValue = _topicDisplay.topic_display_value // 轮播的不同的状态
 
-          // 设置title
-          let topicLabelTitle = this.limitObj.topic_display.topic_label_title
-          if (topicLabelTitle !== '') {
-            setBrowserTitle(topicLabelTitle)
-          }
+          console.log('this.detailInfo', this.detailInfo)
 
-          console.log('this.limitObj', this.limitObj)
+          // 设置title
+          setBrowserTitle(this.detailInfo.title)
+
           // 字体的颜色
+          // let fontColorValue = this.detailInfo.limit.page_set.font_color
+          // if (fontColorValue === 1) {
+          //   // 黑色
+          //   document.querySelector('#app').setAttribute('style', 'color: #000000 !important')
+          // } else if (fontColorValue === 2) {
+          //   // 白色
+          //   document.querySelector('#app').setAttribute('style', 'color: #ffffff !important')
+          // }
 
           // 获取背景图
           let bgImgUrl = ''
