@@ -322,7 +322,7 @@ const routes = [{
   }
 },
 {
-  path: '/mixin-list',
+  path: '/mixin-list/:id',
   name: 'mobile-topic-mixinlist',
   component: () => import('@/components/news-topic/comp/mixin-list.vue'),
   props: (route) => ({

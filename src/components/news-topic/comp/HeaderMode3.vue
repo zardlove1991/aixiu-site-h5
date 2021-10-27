@@ -2,20 +2,21 @@
   <div class='header-mode-3'>
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
       <van-swipe-item v-for='(item, index) in imgArr' :key='index'>
-        <img :src="item" alt="">
+        <img :src="item.host  + item.filename" alt="">
       </van-swipe-item>
     </van-swipe>
-    <div class='title-name'>
-      <div class='topic-tips'>专题</div>
+    <div v-if='isShowTopicType' class='title-name'>
+      <div v-if='topicTitle !== ""' class='topic-tips'>{{topicTitle}}</div>
       <div>{{baseInfo.title}}</div>
     </div>
     <div class='topic-descri'>
       <span>{{blockStr}}...</span>
       <span class='all-title' @click='showBlockTitle'>全部</span>
-      <van-popup v-model="showTotalTitle">
-        <div class='title-total-wrap'>{{allSummary}}</div>
-      </van-popup>
     </div>
+
+    <van-popup v-model="showTotalTitle">
+      <div class='title-total-wrap'>{{allSummary}}</div>
+    </van-popup>
   </div>
 </template>
 
@@ -33,20 +34,32 @@ export default {
   },
   data () {
     return {
+      isShowTopicType: true,
       imgArr: [],
       blockStr: '',
       allSummary: '',
       btnTitle: '全部',
       baseInfo: {},
+      topicTitle: '专题',
       showTotalTitle: false
     }
   },
   watch: {
     infoDetail: {
       handler (newData, oldData) {
-        console.log('90909', newData)
         this.baseInfo = newData
-        this.imgArr = this.baseInfo.limit.topic_display.topic_cover_img
+        let _limit = this.baseInfo.limit
+        console.log('_limit.topic_display.topic_cover_img', _limit.topic_display.topic_cover_img)
+        this.imgArr = _limit.topic_display.topic_cover_img
+        // 专题
+        this.topicTitle = _limit.topic_display.topic_label_title
+        console.log('11', this.topicTitle)
+        let isDisplayTitle = _limit.base_info.is_display_title
+        if (isDisplayTitle === 1) {
+          this.isShowTopicType = true
+        } else {
+          this.isShowTopicType = false
+        }
       },
       deep: true,
       immediate: true
@@ -89,7 +102,8 @@ export default {
     align-items: center;
     margin-top: px2rem(20px);
     .topic-tips{
-      width: px2rem(72px);
+      display: inline-block;
+      padding: 0 px2rem(8px);
       height: px2rem(40px);
       border-radius: px2rem(6px);
       background: #D90000;
@@ -120,5 +134,12 @@ export default {
     font-weight: 400;
   }
 }
+
+  .title-total-wrap{
+    background: #ffffff;
+    width: 70vw;
+    border-radius: px2rem(10px);
+    padding: px2rem(30px);
+  }
 
 </style>

@@ -3,11 +3,11 @@
   <div class='swipe-wrap'>
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
       <van-swipe-item v-for='(item, index) in bannerList' :key='index'>
-        <img :src="item" alt="">
+        <img :src="item.host  + item.filename" alt="">
       </van-swipe-item>
     </van-swipe>
-    <div v-show = 'isShowTopicType' class='news-title'>
-      <div class='topic-tips'>{{topicTitle}}</div>
+    <div v-show='isShowTopicType' class='news-title'>
+      <div v-if='topicTitle !== ""' class='topic-tips'>{{topicTitle}}</div>
       <div class='topix-descri'>{{title}}</div>
     </div>
     <slot name='circleCardBox'></slot>
@@ -41,7 +41,6 @@ export default {
     this.topicTitle = this.infoDetail.limit.topic_display.topic_label_title
 
     // 专题显示
-    console.log('专题 this.infoDetail.limit', this.infoDetail.limit)
     let isDisplayTitle = this.infoDetail.limit.base_info.is_display_title
     if (isDisplayTitle === 1) {
       this.isShowTopicType = true
@@ -63,7 +62,8 @@ export default {
     bottom: px2rem(60px);
     padding: 0 px2rem(30px);
     .topic-tips{
-      width: px2rem(72px);
+      display: inline-block;
+      padding: 0 px2rem(6px);
       height: px2rem(40px);
       border-radius: px2rem(6px);
       background: #D90000;

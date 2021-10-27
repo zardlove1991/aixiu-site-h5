@@ -29,7 +29,7 @@ Vue.config.productionTip = false
 setPlatCssInclude()
 router.beforeEach((to, from, next) => {
   let name = to.name
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank', 'newstopic']
   if (allArr.includes(name) && !from.name) {
     // 第一次进入页面
     oauth((res) => {
