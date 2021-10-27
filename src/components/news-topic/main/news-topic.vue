@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { setBrowserTitle } from '@/utils/utils'
 import HeaderMode1 from '../comp/HeaderMode1.vue'
 import HeaderMode2 from '../comp/HeaderMode2.vue'
 import HeaderMode3 from '../comp/HeaderMode3.vue'
@@ -70,6 +71,15 @@ export default {
           this.limitObj = this.detailInfo.limit // 类型按钮
           const _topicDisplay = this.limitObj.topic_display
           this.topicDisplayValue = _topicDisplay.topic_display_value // 轮播的不同的状态
+
+          // 设置title
+          let topicLabelTitle = this.limitObj.topic_display.topic_label_title
+          if (topicLabelTitle !== '') {
+            setBrowserTitle(topicLabelTitle)
+          }
+
+          console.log('this.limitObj', this.limitObj)
+          // 字体的颜色
 
           // 获取背景图
           let bgImgUrl = ''
