@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { setBrowserTitle } from '@/utils/utils'
 import HeaderMode1 from '../comp/HeaderMode1.vue'
 import HeaderMode2 from '../comp/HeaderMode2.vue'
 import HeaderMode3 from '../comp/HeaderMode3.vue'
@@ -37,6 +36,7 @@ import InfoList from '../comp/InfoList.vue'
 import API from '@/api/module/examination'
 import { Indicator, Toast } from 'mint-ui'
 import STORAGE from '@/utils/storage'
+import { getPlat, setBrowserTitle } from '@/utils/utils'
 export default {
   props: {
     id: String
@@ -46,6 +46,7 @@ export default {
       detailInfo: {},
       topicDisplayValue: '',
       limitObj: {},
+      shareConfigData: {},
       topicDisplay: {},
       changeChildListObj: {}
     }
@@ -59,8 +60,17 @@ export default {
   },
   mounted () {
     this.initData()
+    let plat = getPlat()
+    if (plat === 'smartcity') {
+      window.SmartCity.onShareSuccess((res) => {
+        this.appShareCallBack()
+      })
+    }
   },
   methods: {
+    appShareCallBack () {
+
+    },
     changeList (data) {
       this.changeChildListObj = data
     },
@@ -74,8 +84,6 @@ export default {
           this.limitObj = this.detailInfo.limit // 类型按钮
           const _topicDisplay = this.limitObj.topic_display
           this.topicDisplayValue = _topicDisplay.topic_display_value // 轮播的不同的状态
-
-          console.log('this.detailInfo', this.detailInfo)
 
           // 设置title
           setBrowserTitle(this.detailInfo.title)
@@ -101,12 +109,27 @@ export default {
             bgImgObj.style.backgroundSize = 'cover'
           }
           STORAGE.set('detailInfo', this.detailInfo)
+
+          let _shareSettings = JSON.parse(this.detailInfo.share_settings)
+          // 设置分享
+          this.shareConfigData = {
+            id: this.detailInfo.id,
+            title: _shareSettings.title,
+            desc: _shareSettings.brief,
+            indexpic: _shareSettings.indexpic[0],
+            link: _shareSettings.link,
+            mark: this.detailInfo.mark
+          }
+          this.initPageShareInfo(this.shareConfigData, this.shareSuccessFun)
         } catch (e) {
           Toast('加载失败')
         }
       }).catch(() => {
         Indicator.close()
       })
+    },
+    shareSuccessFun () {
+
     }
   }
 }

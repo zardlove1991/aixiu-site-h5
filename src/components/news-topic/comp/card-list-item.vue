@@ -32,10 +32,14 @@
       </div>
     </div>
   </div>
+  <div class='return-home-page'>
+    <ReturnBtn></ReturnBtn>
+  </div>
 </div>
 </template>
 
 <script>
+import ReturnBtn from './return-btn.vue'
 export default {
   data () {
     return {
@@ -53,6 +57,9 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  components: {
+    ReturnBtn
   },
   watch: {
     itemObj: {
@@ -183,5 +190,11 @@ export default {
   padding: px2rem(20px) 0;
 }
 
+}
+
+.return-home-page{
+  position: fixed;
+  left: 0;
+  bottom: px2rem(100px);
 }
 </style>
