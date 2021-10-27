@@ -6,7 +6,7 @@
         <img :src="item" alt="">
       </van-swipe-item>
     </van-swipe>
-    <div class='news-title'>
+    <div v-show = 'isShowTopicType' class='news-title'>
       <div class='topic-tips'>专题</div>
       <div class='topix-descri'>{{title}}</div>
     </div>
@@ -27,13 +27,23 @@ export default {
   data () {
     return {
       title: '',
-      bannerList: []
+      bannerList: [],
+      isShowTopicType: true
     }
   },
   mounted () {
     this.bannerList = []
     this.bannerList = this.infoDetail.limit.topic_display.topic_cover_img
     this.title = this.infoDetail.title
+
+    // 专题显示
+    console.log('this.infoDetail.limit', this.infoDetail.limit)
+    let isDisplayTitle = this.infoDetail.limit.base_info.is_display_title
+    if (isDisplayTitle === 1) {
+      this.isShowTopicType = true
+    } else {
+      this.isShowTopicType = false
+    }
   }
 }
 </script>
