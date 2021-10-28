@@ -5,7 +5,8 @@
     <div class='img-font-header'>
       <div>
         <span></span>
-        <span>{{title}}</span>
+        <span class='header-title'>{{title}}</span>
+        <img v-if='isMobileHeaderIconType' :src="columnPoster" alt="" class='header-icon-img'>
       </div>
       <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
@@ -123,13 +124,13 @@
         </div>
       </template>
       <div v-if='remainNum > 0' class='ctx-more-num' @click='showRemain'>
-        <span>剩余{{remainNum}}篇</span>
+        <span>剩余{{remainNumTitle}}篇</span>
       </div>
     </div>
   </div>
 
   <!-- 视频弹层 -->
-  <van-popup v-model:show="videoShowType">
+  <van-popup v-model="videoShowType">
     <div class='video-popup-wrap'>
       <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
     </div>
@@ -175,6 +176,7 @@ export default {
   },
   data () {
     return {
+      remainNumTitle: 0,
       curVideoPoster: '',
       curVideoUrl: '',
       videoShowType: false,
@@ -191,7 +193,8 @@ export default {
       remainData: [],
       pointIndex: 0,
       curOperatorObj: {},
-      batchColumnDisplay: 1
+      batchColumnDisplay: 1,
+      isMobileHeaderIconType: 1
     }
   },
   methods: {
@@ -216,7 +219,6 @@ export default {
       }
     },
     preImg (data) {
-      console.log('pre', data)
       let _images = []
       for (let i of data.imgList) {
         _images.push(i.host + i.filename)
@@ -272,6 +274,14 @@ export default {
       this.$router.push({name: 'mobile-card-list', query: {id: this.curOperatorObj.id}})
     },
     initRender (data) {
+      // 判断是不是隐藏图标
+      console.log('111', data.limit)
+      let isMobileHeaderIcon = data.limit.column_set.is_mobile_header_icon
+      if (isMobileHeaderIcon === 1) {
+        this.isMobileHeaderIconType = true
+      } else if (isMobileHeaderIcon === 0) {
+        this.isMobileHeaderIconType = false
+      }
       let columnSet = data.limit.column_set
       // 如果全局选中使用全局的布局, 没有选中使用自己定义的布局
       this.batchColumnDisplay = columnSet.batch_column_display // 批量设置栏目样式 0 => [以单个设置为主] 1 => [以全局设置为主]
@@ -309,6 +319,9 @@ export default {
       }
       // 设置title
       this.title = data.title
+      this.columnPoster = data.poster
+      console.log('this.columnPoster', this.columnPoster)
+
       this.curOperatorObj = data
       let _data = JSON.parse(JSON.stringify(data.data))
       if (this.columnTypeValue === 1) {
@@ -317,6 +330,7 @@ export default {
         this.worksList = _data
       } else if (this.columnTypeValue === 3) {
         this.remainNum = _data.length - 2
+        this.remainNumTitle = this.remainNum
         this.firstWorksArr = []
         this.firstWorksArr = _data.splice(0, 1)
         this.remainData = []
@@ -326,8 +340,10 @@ export default {
     showRemain () {
       if (this.pointIndex === 0) {
         this.pointIndex = this.remainData.length
+        this.remainNumTitle = 0
       } else {
         this.pointIndex = 0
+        this.remainNumTitle = this.remainData.length - 1
       }
     }
   }
@@ -502,6 +518,8 @@ export default {
     padding: px2rem(20px) 0;
     margin: 0 auto;
     &>div:nth-child(1){
+      display: flex;
+      align-items: center;
       &>span:nth-child(1) {
         display: inline-block;
         width: px2rem(5px);
@@ -510,7 +528,7 @@ export default {
         background: #D90000;
         vertical-align: middle;
       }
-      &>span:nth-child(2) {
+      .header-title {
         display: inline-block;
         font-weight: 500;
         color: #333333;
@@ -520,6 +538,13 @@ export default {
         margin-left: px2rem(10px);
       }
     }
+  }
+
+  .header-icon-img{
+    width: px2rem(50px);
+    height: px2rem(50px);
+    border-radius: px2rem(25px);
+    margin-left: px2rem(10px);
   }
 
 .info-card-list{

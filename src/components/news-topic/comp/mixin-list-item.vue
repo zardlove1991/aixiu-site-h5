@@ -63,7 +63,7 @@
     <ReturnBtn></ReturnBtn>
   </div>
   <!-- 视频弹层 -->
-  <van-popup v-model:show="videoShowType">
+  <van-popup v-model="videoShowType">
     <div class='video-popup-wrap'>
       <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
     </div>
