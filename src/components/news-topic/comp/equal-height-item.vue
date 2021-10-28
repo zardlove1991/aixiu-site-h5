@@ -9,9 +9,12 @@
         <img :src="arrIcon" alt="" class='arr-img-wrap'>
       </div>
       <div class='imgfont-list-wrap'>
-        <div v-for='(item, index) in worksList' :key='index' class='imgfont-info-list'>
+        <div v-for='(item, index) in worksList' :key='index'
+          @click='jumpLinkFun(item)'
+          class='imgfont-info-list'>
           <div>
-            <img :src="item.material[0]" alt="">
+            <img @click.stop='showVideDialog(item)'
+              :src="imgRender(item)" alt="">
           </div>
           <div>{{item.title}}</div>
           <div>
@@ -23,21 +26,37 @@
     <div class='return-home-page'>
       <ReturnBtn></ReturnBtn>
     </div>
+
+    <!-- 视频弹层 -->
+    <van-popup v-model:show="videoShowType">
+      <div class='video-popup-wrap'>
+        <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
+      </div>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import myVideo from '@/components/depence/video.vue'
 import ReturnBtn from './return-btn.vue'
+import { Toast } from 'mint-ui'
+import { ImagePreview } from 'vant'
+import { getPlat, setBrowserTitle } from '@/utils/utils'
 export default {
   data () {
     return {
+      mgURL: require('@/assets/news-topic/null-img.png'),
       title: '',
       arrIcon: '',
-      worksList: []
+      worksList: [],
+      videoShowType: false,
+      curVideoPoster: '',
+      curVideoUrl: ''
     }
   },
   components: {
-    ReturnBtn
+    ReturnBtn,
+    myVideo
   },
   props: {
     itemObj: {
@@ -59,12 +78,80 @@ export default {
 
   },
   methods: {
+    showVideDialog (data) {
+      if (data.type === 'video') {
+        if (data.videoLink !== undefined && data.videoLink !== '') {
+          this.videoShowType = true
+          this.curVideoUrl = data.videoLink
+          // 默认获取第一张
+          if (data.imgList.length > 0) {
+            this.curVideoPoster = data.imgList[0].host + data.imgList[0].filename
+          } else {
+            this.curVideoPoster = ''
+          }
+          return false
+        } else {
+          // 视频类型没有视频可以查看图片
+          this.preImg(data)
+        }
+      } else {
+        this.preImg(data)
+      }
+    },
+    preImg (data) {
+      let _images = []
+      for (let i of data.imgList) {
+        _images.push(i.host + i.filename)
+      }
+      ImagePreview({
+        images: _images,
+        closeable: true
+      })
+    },
+    jumpLinkFun (data) {
+      try {
+        if (data.link === '') {
+          if (data.imgList.length > 0) {
+            this.preImg(data)
+          }
+          return false
+        }
+        if (data.dataOrigin === 'local' || data.dataOrigin === 'custom') {
+          // 基础元数据
+          window.open(data.link, '_self')
+        } else if (data.dataOrigin === 'ctxLib') {
+          // 来自内容库
+          let plat = getPlat()
+          if (plat === 'smartcity') {
+            window.SmartCity.linkTo(data.link)
+          } else {
+            window.open(data.link, '_self')
+          }
+        }
+      } catch (e) {
+        Toast('地址无效，调转失败')
+        console.log('e', e)
+      }
+    },
     initData (data) {
       this.title = data.title
       this.arrIcon = data.poster
-      // console.log('data', data)
       this.worksList = []
       this.worksList = data.data
+
+      // 设置title
+      setBrowserTitle(data.title)
+    },
+    imgRender (data) {
+      if (data.imgList !== undefined && data.imgList.length > 0) {
+        if (data.imgList[0].filename === '') {
+          return data.imgList[0].host
+        } else {
+          return data.imgList[0].host + data.imgList[0].filename
+        }
+      } else {
+        return this.mgURL
+      }
     }
   }
 }
@@ -72,6 +159,10 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .video-popup-wrap{
+    width: 80vw;
+    height: px2rem(400px);
+  }
   .equal-height-wrap{
     .img-font-wrap{
       background: #fbfbfb;

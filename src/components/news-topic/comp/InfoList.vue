@@ -19,7 +19,7 @@
             <span>{{item[0].source}}</span>
           </div>
         </div>
-        <div class='column-right'>
+        <div class='column-right' @click.stop='showVideDialog(item[0])'>
           <img :src="imgRender(item[0])" alt="">
           <span v-if='item[0].type === "video"'>00:00</span>
         </div>
@@ -28,7 +28,9 @@
         @click='jumpLinkFun(item[1])'
         class='column-2 base-box-style'>
         <div>{{item[1].title}}</div>
-        <div v-if='Array.isArray(item[1].imgList)' class='coloumn-2-2'>
+        <div v-if='Array.isArray(item[1].imgList)'
+          class='coloumn-2-2'
+          @click.stop='showVideDialog(item[1])'>
           <img v-for='(item, index) in item[1].imgList'
             :key='index' :src="item.host + item.filename" alt="" class='img-wrap'>
         </div>
@@ -40,7 +42,9 @@
         @click='jumpLinkFun(item[2])'
         class='column-3 base-box-style'>
         <div v-if='Array.isArray(item[2].imgList) && item[2].imgList.length !== 0' class='column-3-left'>
-          <img :src="item[2].imgList[0].host + item[2].imgList[0].filename" alt=""/>
+          <img
+            @click.stop='showVideDialog(item[2])'
+            :src="item[2].imgList[0].host + item[2].imgList[0].filename" alt=""/>
           <span>{{item[2].imgList.length}}图</span>
         </div>
         <div class='column-3-right'>
@@ -74,7 +78,9 @@
       <div v-for='(item, index) in worksList' :key='index'
         @click='jumpLinkFun(item)' class='imgfont-info-list'>
         <div>
-          <img :src="item.imgList[0].host + item.imgList[0].filename" alt="">
+          <img
+            @click.stop='showVideDialog(item)'
+            :src="item.imgList[0].host + item.imgList[0].filename" alt="">
         </div>
         <div>{{item.title}}</div>
         <div>
@@ -95,7 +101,8 @@
     </div>
     <div class='ctx-img-wrap'>
       <div class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
-        <img :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
+        <img @click.stop='showVideDialog(firstWorksArr[0])'
+          :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
           <div>{{firstWorksArr[0].source}}</div>
@@ -110,7 +117,8 @@
             <div>{{item.source}}</div>
           </div>
           <div>
-            <img :src="item.imgList[0].host + item.imgList[0].filename" alt="">
+            <img @click.stop='showVideDialog(item)'
+              :src="item.imgList[0].host + item.imgList[0].filename" alt="">
           </div>
         </div>
       </template>
@@ -119,14 +127,24 @@
       </div>
     </div>
   </div>
+
+  <!-- 视频弹层 -->
+  <van-popup v-model:show="videoShowType">
+    <div class='video-popup-wrap'>
+      <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
+    </div>
+  </van-popup>
 </div>
 </template>
 
 <script>
+import myVideo from '@/components/depence/video.vue'
 import { ImagePreview } from 'vant'
 import { getPlat } from '@/utils/utils'
 import { Toast } from 'mint-ui'
+import mixins from '@/mixins/index'
 export default {
+  mixins: [ mixins ],
   props: {
     infoDetail: {
       type: Object,
@@ -136,6 +154,9 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  components: {
+    myVideo
   },
   watch: {
     infoDetail: {
@@ -154,6 +175,9 @@ export default {
   },
   data () {
     return {
+      curVideoPoster: '',
+      curVideoUrl: '',
+      videoShowType: false,
       infoList: [],
       mgURL: require('@/assets/news-topic/null-img.png'),
       arrIcon: require('@/assets/news-topic/arr.png'),
@@ -171,14 +195,42 @@ export default {
     }
   },
   methods: {
+    showVideDialog (data) {
+      if (data.type === 'video') {
+        if (data.videoLink !== undefined && data.videoLink !== '') {
+          this.videoShowType = true
+          this.curVideoUrl = data.videoLink
+          // 默认获取第一张
+          if (data.imgList.length > 0) {
+            this.curVideoPoster = data.imgList[0].host + data.imgList[0].filename
+          } else {
+            this.curVideoPoster = ''
+          }
+          return false
+        } else {
+          // 视频类型没有视频可以查看图片
+          this.preImg(data)
+        }
+      } else {
+        this.preImg(data)
+      }
+    },
+    preImg (data) {
+      console.log('pre', data)
+      let _images = []
+      for (let i of data.imgList) {
+        _images.push(i.host + i.filename)
+      }
+      ImagePreview({
+        images: _images,
+        closeable: true
+      })
+    },
     jumpLinkFun (data) {
       try {
         if (data.link === '') {
           if (data.imgList.length > 0) {
-            ImagePreview({
-              images: [data.imgList[0].host + data.imgList[0].filename],
-              closeable: true
-            })
+            this.preImg(data)
           }
           return false
         }
@@ -284,6 +336,10 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .video-popup-wrap{
+    width: 80vw;
+    height: px2rem(400px);
+  }
   .all-works-list{
     margin-bottom: px2rem(30px);
   }
@@ -306,6 +362,7 @@ export default {
         &>div:nth-child(1) {
           font-size: px2rem(32px);
           color: #333333;
+          height: px2rem(108px);
         }
         &>div:nth-child(2) {
           font-size: px2rem(24px);

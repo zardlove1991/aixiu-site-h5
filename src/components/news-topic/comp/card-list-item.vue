@@ -8,22 +8,22 @@
       </div>
     </div>
     <div class='ctx-img-wrap'>
-      <div class='ctx-img-m'>
-        <img :src="firstWorksArr[0].material[0]" alt="">
+      <div class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
+        <img @click.stop='showVideDialog(firstWorksArr[0])' :src="firstWorksArr[0].material[0]" alt="">
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
           <div>{{firstWorksArr[0].source}}</div>
         </div>
       </div>
       <template v-for='(item, index) in remainData'>
-        <div :key='index'  v-if='index <= pointIndex'
+        <div :key='index' @click='jumpLinkFun(item)' v-if='index <= pointIndex'
           class='ctx-detail-wrap'>
           <div>
             <div>{{item.title}}</div>
             <div>{{item.source}}</div>
           </div>
           <div>
-            <img :src="item.material[0]" alt="">
+            <img @click.stop='showVideDialog(item)' :src="imgRender(item)" alt="">
           </div>
         </div>
       </template>
@@ -35,21 +35,35 @@
   <div class='return-home-page'>
     <ReturnBtn></ReturnBtn>
   </div>
+    <!-- 视频弹层 -->
+  <van-popup v-model:show="videoShowType">
+    <div class='video-popup-wrap'>
+      <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
+    </div>
+  </van-popup>
 </div>
 </template>
 
 <script>
+import myVideo from '@/components/depence/video.vue'
 import ReturnBtn from './return-btn.vue'
+import { Toast } from 'mint-ui'
+import { ImagePreview } from 'vant'
+import { getPlat, setBrowserTitle } from '@/utils/utils'
 export default {
   data () {
     return {
+      mgURL: require('@/assets/news-topic/null-img.png'),
       columnPoster: '',
       firstWorksArr: [],
       remainData: [],
       pointIndex: 0,
       remainNum: 0,
       curItemObj: {},
-      arrIcon: ''
+      arrIcon: '',
+      videoShowType: false,
+      curVideoPoster: '',
+      curVideoUrl: ''
     }
   },
   props: {
@@ -59,7 +73,8 @@ export default {
     }
   },
   components: {
-    ReturnBtn
+    ReturnBtn,
+    myVideo
   },
   watch: {
     itemObj: {
@@ -75,6 +90,61 @@ export default {
 
   },
   methods: {
+    showVideDialog (data) {
+      if (data.type === 'video') {
+        if (data.videoLink !== undefined && data.videoLink !== '') {
+          this.videoShowType = true
+          this.curVideoUrl = data.videoLink
+          // 默认获取第一张
+          if (data.imgList.length > 0) {
+            this.curVideoPoster = data.imgList[0].host + data.imgList[0].filename
+          } else {
+            this.curVideoPoster = ''
+          }
+          return false
+        } else {
+          // 视频类型没有视频可以查看图片
+          this.preImg(data)
+        }
+      } else {
+        this.preImg(data)
+      }
+    },
+    preImg (data) {
+      let _images = []
+      for (let i of data.imgList) {
+        _images.push(i.host + i.filename)
+      }
+      ImagePreview({
+        images: _images,
+        closeable: true
+      })
+    },
+    jumpLinkFun (data) {
+      try {
+        if (data.link === '') {
+          if (data.imgList.length > 0) {
+            this.preImg(data)
+          }
+          return false
+        }
+        if (data.dataOrigin === 'local' || data.dataOrigin === 'custom') {
+          // 基础元数据
+          window.open(data.link, '_self')
+        } else if (data.dataOrigin === 'ctxLib') {
+          // 来自内容库
+          let plat = getPlat()
+          if (plat === 'smartcity') {
+            window.SmartCity.linkTo(data.link)
+          } else {
+            window.open(data.link, '_self')
+          }
+        }
+      } catch (e) {
+        Toast('地址无效，调转失败')
+        console.log('e', e)
+      }
+    },
     showRemain () {
       if (this.pointIndex === 0) {
         this.pointIndex = this.remainData.length
@@ -93,6 +163,19 @@ export default {
       this.firstWorksArr = _data.splice(0, 1)
       this.remainData = []
       this.remainData = _data
+      // 设置title
+      setBrowserTitle(data.title)
+    },
+    imgRender (data) {
+      if (data.imgList !== undefined && data.imgList.length > 0) {
+        if (data.imgList[0].filename === '') {
+          return data.imgList[0].host
+        } else {
+          return data.imgList[0].host + data.imgList[0].filename
+        }
+      } else {
+        return this.mgURL
+      }
     }
   }
 }
@@ -197,4 +280,9 @@ export default {
   left: 0;
   bottom: px2rem(100px);
 }
+
+  .video-popup-wrap{
+    width: 80vw;
+    height: px2rem(400px);
+  }
 </style>

@@ -91,14 +91,14 @@ export default {
           setBrowserTitle(this.detailInfo.title)
 
           // 字体的颜色
-          // let fontColorValue = this.detailInfo.limit.page_set.font_color
-          // if (fontColorValue === 1) {
-          //   // 黑色
-          //   document.querySelector('#app').setAttribute('style', 'color: #000000 !important')
-          // } else if (fontColorValue === 2) {
-          //   // 白色
-          //   document.querySelector('#app').setAttribute('style', 'color: #ffffff !important')
-          // }
+          let fontColorValue = this.detailInfo.limit.page_set.font_color
+          if (fontColorValue === 1) {
+            // 黑色
+            document.querySelector('#app').setAttribute('style', 'color: #000000 !important')
+          } else if (fontColorValue === 2) {
+            // 白色
+            document.querySelector('#app').setAttribute('style', 'color: #ffffff !important')
+          }
 
           // 获取背景图
           let bgImgUrl = ''
