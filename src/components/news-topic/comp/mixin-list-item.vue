@@ -193,7 +193,6 @@ export default {
       for (let i = 0; i < loopNum; i++) {
         this.worksList.push(data.splice(0, 4))
       }
-
     }
   }
 }
