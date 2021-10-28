@@ -649,3 +649,44 @@ export const debounce = function (func, wait, immediate = true) {
     }
   }
 }
+
+export const getImage = function (image = {}, width, height) {
+  if (image instanceof Array && image.length === 0) {
+    return ''
+  } else if (typeof image === 'string' || image instanceof Object) {
+    let src = (typeof image === 'string') ? image : image.host + image.filename
+    src = src || ''
+    if (src) { // 替换域名
+      src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
+      src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
+      src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
+      src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
+    }
+    width = isNaN(width) ? 0 : width
+    height = isNaN(height) ? 0 : height
+    if (image.process || width || height) {
+      src += '?x-oss-process=image'
+    }
+    if (image.process && image.process.crop) { // 先裁切，再缩放
+      src += '/crop,' + image.process.crop
+    }
+    if (width > 0 && !height) { // 宽度优先，高度等比缩放
+      src += `/resize,w_${width}`
+    } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
+      src += `/resize,h_${height}`
+    } else if (width && height) { // 指定宽高
+      src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
+    } else if (image.process && image.process.resize) {
+      src += `/resize,${image.process.resize}`
+    }
+    const protocol = window.location.protocol
+    if (src) {
+      src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
+    }
+    // const protocol = window.location.protocol
+    // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
+    return src
+  } else {
+    return ''
+  }
+}

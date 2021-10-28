@@ -86,7 +86,7 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
-// 大转盘
+// 大转盘、盲盒
 let lotteryDailUrl = {
   getLotteryDetail: 'api/client/cj/{id}', // 转盘详情
   getDraw: 'api/client/cj/draw/{id}', // 开始抽奖
@@ -94,7 +94,10 @@ let lotteryDailUrl = {
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
   getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
-  getShare: 'api/client/cj/live/share/{id}' // 分享
+  getShare: 'api/client/cj/live/share/{id}', // 分享
+  getHelpCode: 'api/client/cj/help/code/{id}', // 助力邀请二维码
+  getHelpTip: 'api/client/cj/help/tip/{id}', // 开始助力
+  getInviteInfo: 'api/client/cj/invite/info/{id}' // H5盲盒邀请记录
   // getCollection: 'collection/form/record/cj/{id}' // 分享
 }
 
@@ -213,6 +216,9 @@ export default {
   getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
+  getHelpCode: config => createLottery(configUrl.getHelpCode, 'POST', config, 'lottery'),
+  getHelpTip: config => createLottery(configUrl.getHelpTip, 'POST', config, 'lottery'),
+  getInviteInfo: config => createLottery(configUrl.getInviteInfo, 'GET', config, 'lottery'),
   // getCollection: config => createLottery(configUrl.getCollection, 'POST', config, 'lottery'),
 
   // 答题改造
