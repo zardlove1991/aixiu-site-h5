@@ -842,8 +842,8 @@ export default {
     }
   }
 }
- .action {
+.action {
   height: px2rem(100px);
   line-height: px2rem(100px);
- }
+}
 </style>

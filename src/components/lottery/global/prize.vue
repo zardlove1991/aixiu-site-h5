@@ -56,7 +56,7 @@
                         <span>中奖后，工作人员将在7到15个工作 日内联系您</span>
                         <!-- <span v-if="prizeData.give_aways === 1">中奖后，工作人员将在{{prizeData.award_time}}个工作 日内联系您</span> -->
                     </div>
-            </div>
+                </div>
             </div>
              <div class="points"></div>
             <div class="prize-footer"></div>

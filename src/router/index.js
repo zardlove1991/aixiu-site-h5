@@ -391,7 +391,26 @@ const routes = [{
 
   }),
   meta: {
-    title: ''
+    title: '',
+    mark: 'raffle@rotor'
+  }
+},
+{
+  path: '/lottery/box/index/:id',
+  name: 'lotterybox',
+  component: getOtherComponent('bindBox-start', 'lottery-bindBox'),
+  props: (route) => ({
+    id: route.params.id,
+    from: route.query.from,
+    memberId: route.query.m,
+    nickName: route.query.n,
+    images: route.query.i,
+    source: route.query.s
+
+  }),
+  meta: {
+    title: '',
+    mark: 'raffle@box'
   }
 },
 {
@@ -403,6 +422,32 @@ const routes = [{
   }),
   meta: {
     title: '中奖记录'
+  }
+},
+{
+  path: '/lottery/box/record/:id',
+  name: 'lotteryboxRecord',
+  component: getOtherComponent('record-prize', 'lottery-bindBox'),
+  props: (route) => ({
+    id: route.params.id,
+    title: route.params.title
+  }),
+  meta: {
+    title: '',
+    mark: 'raffle@box'
+  }
+},
+{
+  path: '/lottery/box/invite/:id',
+  name: 'lotteryboxInvite',
+  component: getOtherComponent('invite-record', 'lottery-bindBox'),
+  props: (route) => ({
+    id: route.params.id,
+    title: route.params.title
+  }),
+  meta: {
+    title: '',
+    mark: 'raffle@box'
   }
 }
 ]
