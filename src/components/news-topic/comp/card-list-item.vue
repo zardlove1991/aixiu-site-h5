@@ -28,7 +28,7 @@
         </div>
       </template>
       <div v-if='remainNum > 0' class='ctx-more-num' @click='showRemain'>
-        <span>剩余{{remainNum}}篇</span>
+        <span>剩余{{remainNumTitle}}篇</span>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@
     <ReturnBtn></ReturnBtn>
   </div>
     <!-- 视频弹层 -->
-  <van-popup v-model:show="videoShowType">
+  <van-popup v-model="videoShowType">
     <div class='video-popup-wrap'>
       <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
     </div>
@@ -53,6 +53,7 @@ import { getPlat, setBrowserTitle } from '@/utils/utils'
 export default {
   data () {
     return {
+      remainNumTitle: 0,
       mgURL: require('@/assets/news-topic/null-img.png'),
       columnPoster: '',
       firstWorksArr: [],
@@ -148,8 +149,10 @@ export default {
     showRemain () {
       if (this.pointIndex === 0) {
         this.pointIndex = this.remainData.length
+        this.remainNumTitle = 0
       } else {
         this.pointIndex = 0
+        this.remainNumTitle = this.remainData.length - 1
       }
     },
     initData (value) {
@@ -159,6 +162,7 @@ export default {
 
       let _data = data.data
       this.remainNum = _data.length - 2
+      this.remainNumTitle = this.remainNum
       this.firstWorksArr = []
       this.firstWorksArr = _data.splice(0, 1)
       this.remainData = []
