@@ -11,7 +11,9 @@
         <div class="dropdown-item item0">
           <div class="classify-item"
             :class="currentId === item.id ? 'active' : ''"
-            @click.stop="toggleCheck(item)" v-for="(item, index) in classifyData" :key="index">{{item.name}}</div>
+            @click.stop="toggleCheck(item)"
+            v-for="(item, index) in classifyData"
+            :key="index">{{item.name}}</div>
         </div>
         <div class="dropdown-item item1" v-if="tmpObj[currentId] && tmpObj[currentId].length">
           <div>
@@ -148,8 +150,10 @@ export default {
       display: flex;
       justify-content: flex-start;
       border-radius: px2rem(8px);
+      white-space: nowrap;
       .dropdown-item {
         @include font-dpr(14px);
+        white-space: nowrap;
         &.item0 {
           @include bg-color('descColor');
           @include font-color('fontColor');
