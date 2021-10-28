@@ -37,7 +37,9 @@ import API from '@/api/module/examination'
 import { Indicator, Toast } from 'mint-ui'
 import STORAGE from '@/utils/storage'
 import { getPlat, setBrowserTitle } from '@/utils/utils'
+import mixins from '@/mixins/index'
 export default {
+  mixins: [mixins],
   props: {
     id: String
   },
@@ -122,6 +124,7 @@ export default {
           }
           this.initPageShareInfo(this.shareConfigData, this.shareSuccessFun)
         } catch (e) {
+          console.log('e', e)
           Toast('加载失败')
         }
       }).catch(() => {
