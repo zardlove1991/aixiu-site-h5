@@ -48,10 +48,18 @@
       }"
       :textSetting="detailInfo.text_setting"
       @updateCard="updateCard"
+      @showRewardDialog='showRewardDialog'
       @success="inintDetail()"
       @close="isShowWorkVote = false"
     ></share-vote>
     <canvass-vote :flag="showModel" :signUnit="signUnit" ref="canvass-vote-detail" />
+    <!-- 分享成功弹窗 -->
+    <VoteShareDialog
+      :alertLottery = 'alertLottery'
+      :lotteryObj='shareLotteryObj'
+      :show="isVoteShareDialog"
+      @closeReward="isVoteShareDialog = false">
+    </VoteShareDialog>
 </div>
 </template>
 
@@ -66,6 +74,7 @@ import STORAGE from '@/utils/storage'
 import { mapActions, mapGetters } from 'vuex'
 import { fullSceneMap } from '@/utils/config'
 import { setBrowserTitle } from '@/utils/utils'
+import VoteShareDialog from '@/components/vote/global/vote-share-dialog.vue'
 
 export default {
   components: {
@@ -73,10 +82,13 @@ export default {
     VoteAudio,
     CommonPageDetail,
     ShareVote,
-    CanvassVote
+    CanvassVote,
+    VoteShareDialog
   },
   data () {
     return {
+      isVoteShareDialog: false,
+      shareLotteryObj: {},
       showModel: this.flag,
       workDetail: {},
       isShowWorkVote: false,
@@ -97,7 +109,8 @@ export default {
       videoMode: '1',
       isCloseDialog: false, // 是否开启投票弹框
       darkMark: '1', // 1: 深色系 2: 浅色系
-      fullSceneMap
+      fullSceneMap,
+      alertLottery: 0
     }
   },
   created () {
@@ -257,6 +270,11 @@ export default {
         this.workDetail.remain_votes--
         this.workDetail.total_votes++
       }
+    },
+    showRewardDialog (data, num) {
+      this.isVoteShareDialog = true
+      this.shareLotteryObj = data
+      this.alertLottery = num
     },
     ...mapActions('vote', {
       setShareData: 'SET_SHARE_DATA',

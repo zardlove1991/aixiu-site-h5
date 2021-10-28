@@ -278,6 +278,9 @@ $time: 5s; //转动多少秒后停下的时间
         text-align: center;
         color: #d10000;
         line-height: px2rem(40px);
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
       }
       .img {
         // margin: 0.5rem auto;

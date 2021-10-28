@@ -305,7 +305,7 @@
     </lottery-tips>
     <!-- 分享成功弹窗 -->
     <VoteShareDialog
-      :alertLottery = 'alertLottery'
+      :alertLottery ='alertLottery'
       :lotteryObj='shareLotteryObj'
       :show="isVoteShareDialog"
       @closeReward="isVoteShareDialog = false">
@@ -474,6 +474,9 @@ export default {
       })
     }
     this.worksStatus()
+
+    // 存储当前活动的pathname
+    STORAGE.set('pathName', window.location.pathname)
   },
   beforeDestroy () {
     // 清除定时器
@@ -555,7 +558,6 @@ export default {
       let isExistLottery = false
       isExistLottery = lotteryArr.some(item => item > 0)
       this.giftBoxType = isExistLottery
-      console.log('888888---------', this.giftBoxType, lotteryArr)
     },
     showLotteryTips () {
       this.lotteryTipsType = false
@@ -1344,9 +1346,6 @@ export default {
         this.lotteryObj = {}
         this.lotteryObj = data
       })
-
-      console.log(1, this.lotteryObj)
-      console.log(2, this.giftBoxType)
     },
     getVoteWorks (name = '', isClassifySearch = false, type, isBottom = true, isFirst = false) {
       if (this.loading) return false
