@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
     return false
   }
   let name = to.name
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank', 'enrollist', 'votelist', 'lotteryDial']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'depencelist', 'VoteRank', 'enrollist', 'votelist', 'lotteryDial', 'newstopic']
   if (allArr.includes(name) && !from.name) {
     // 第一次进入页面
     oauth((res) => {

@@ -108,7 +108,8 @@ let enrollUrl = {
 // 资讯新闻
 let newsUrl = {
   getNewsDetail: 'client/news/{id}/', // 获取资讯新闻详情
-  getCityWeather: 'client/news/weather/{id}/' // 获取城市天气
+  getCityWeather: 'client/news/weather/{id}/', // 获取城市天气
+  getMobileNewsDetail: 'client/news/columns/{id}'
 }
 
 let drawUrl = {
@@ -198,6 +199,7 @@ export default {
   // 新闻
   getNewsDetail: config => createBase(configUrl.getNewsDetail, 'GET', config, 'news'),
   getCityWeather: config => createBase(configUrl.getCityWeather, 'GET', config, 'news'),
+  getMobileNewsDetail: config => createBase(configUrl.getMobileNewsDetail, 'GET', config, 'news'),
   // 抽奖
   getMyDrawList: config => createC4(configUrl.getMyDrawList, 'GET', config, API_FLAG),
   // 大转盘、九宫格、盲盒
