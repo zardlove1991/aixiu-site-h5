@@ -8,25 +8,25 @@
         <div class="logo"></div>
         <div class="record-prize-container">
             <div class="record-prize-content">
-                <h3>中奖记录</h3>
-                <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
-                <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-                    <van-list v-model="loading" :finished="finished" @load="onLoad"  :error.sync="error" >
-                        <van-cell
-                        v-for="item in list"
-                        :key="item.id"
-                        value="查看"
-                        class="list-wrap"
-                        >
-                        <div slot="title" class="title">{{ item.prize_content }}</div>
-                        <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
-                        <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 6}" >查看</div>
-                        </van-cell>
-                    </van-list>
-                </van-pull-refresh>
-                <div class="bg" :class="{ isShow:list.length===0}"></div>
-                <div class="tip" :class="{ isShow:list.length===0}">您还未中奖哦~</div>
-            </div>
+              <h3>中奖记录</h3>
+              <div class="container pl40 pr40" v-if="list" :class="{center:list.length===0}">
+                  <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+                      <van-list v-model="loading" :finished="finished" @load="onLoad"  :error.sync="error" >
+                          <van-cell
+                          v-for="item in list"
+                          :key="item.id"
+                          value="查看"
+                          class="list-wrap"
+                          >
+                          <div slot="title" class="title">{{ item.prize_content }}</div>
+                          <!-- <div slot="default" class="jump">{{ item.tip }}</div> -->
+                          <div slot="default" class="jump" @click="onLook(item)" :class="{'is-hide': item.prize_type === 6}" >查看</div>
+                          </van-cell>
+                      </van-list>
+                  </van-pull-refresh>
+                  <div class="bg" :class="{ isShow:list.length===0}"></div>
+                  <div class="tip" :class="{ isShow:list.length===0}">您还未中奖哦~</div>
+              </div>
             </div>
         </div>
     <CardIntegral :show.sync='isCardIntegralShow' v-if="isCardIntegralShow" @close='isCardIntegralShow = false' :data.sync="tempItem"/>
@@ -427,6 +427,9 @@ export default {
                 background-position-x: right;
                 background-repeat: no-repeat;
                 display: none;
+                &.isShow{
+                  display: block;
+                }
             }
             .tip {
                 width: px2rem(208px);
@@ -440,6 +443,9 @@ export default {
                 line-height: px2rem(32px);
                 z-index: 10;
                 display: none;
+                &.isShow{
+                  display: block;
+                }
             }
         }
     }
