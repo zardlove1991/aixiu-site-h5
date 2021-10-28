@@ -39,7 +39,7 @@
           <span>{{item.label}}：</span>
           <span class="header-txt">{{item.value}}</span>
         </div>
-        <div class="header first-header">
+        <div class="header first-header" v-if="isOpenClassify">
           <span>分类：</span>
           <span class="header-txt">{{selfData.type_name}}</span>
         </div>
