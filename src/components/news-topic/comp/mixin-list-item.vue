@@ -8,8 +8,10 @@
       </div>
       <img :src="arrIcon" alt=""  class='arr-img-wrap'>
     </div>
-    <div v-for='(item, index) in worksList' :key='index'>
-      <div v-if='item[0] !== undefined' class='column-1 base-box-style'>
+    <div v-for='(item, index) in worksList' :key='index' class='all-works-list'>
+      <div v-if='item[0] !== undefined'
+        @click='jumpLinkFun(item[0])'
+        class='column-1 base-box-style'>
         <div class='column-left'>
           <div>{{item[0].title}}</div>
           <div>
@@ -17,13 +19,17 @@
           </div>
         </div>
         <div class='column-right'>
-          <img :src="imgRender(item[0])" alt="">
+          <img :src="imgRender(item[0])" alt=""  @click.stop='showVideDialog(item[0])'>
           <span v-if='item[0].type === "video"'>00:00</span>
         </div>
       </div>
-      <div v-if='item[1] !== undefined' class='column-2 base-box-style'>
+      <div v-if='item[1] !== undefined'
+        @click='jumpLinkFun(item[1])'
+        class='column-2 base-box-style'>
         <div>{{item[1].title}}</div>
-        <div v-if='Array.isArray(item[1].material)' class='coloumn-2-2'>
+        <div v-if='Array.isArray(item[1].material)'
+          @click.stop='showVideDialog(item[1])'
+          class='coloumn-2-2'>
           <img v-for='(item, index) in item[1].material'
             :key='index' :src="item" alt="" class='img-wrap'>
         </div>
@@ -31,9 +37,11 @@
           <span>{{item[1].source}}</span>
         </div>
       </div>
-      <div v-if='item[2] !== undefined' class='column-3 base-box-style'>
+      <div v-if='item[2] !== undefined'
+        @click='jumpLinkFun(item[2])'
+        class='column-3 base-box-style'>
         <div v-if='Array.isArray(item[2].material) && item[2].material.length !== 0' class='column-3-left'>
-          <img :src="item[2].material[0]" alt=""/>
+          <img @click.stop='showVideDialog(item[2])' :src="item[2].material[0]" alt=""/>
           <span>{{item[2].material.length}}图</span>
         </div>
         <div class='column-3-right'>
@@ -43,7 +51,7 @@
           </div>
         </div>
       </div>
-      <div v-if='item[3] !== undefined' class='column-4 base-box-style'>
+      <div v-if='item[3] !== undefined'  @click='jumpLinkFun(item[3])' class='column-4 base-box-style'>
         <div>{{item[3].title}}</div>
         <div>
           <span>{{item[3].source}}</span>
@@ -54,23 +62,37 @@
   <div class='return-home-page'>
     <ReturnBtn></ReturnBtn>
   </div>
+  <!-- 视频弹层 -->
+  <van-popup v-model:show="videoShowType">
+    <div class='video-popup-wrap'>
+      <myVideo :poster="curVideoPoster" :src="curVideoUrl"></myVideo>
+    </div>
+  </van-popup>
 </div>
 </template>
 
 <script>
+import myVideo from '@/components/depence/video.vue'
 import ReturnBtn from './return-btn.vue'
+import { Toast } from 'mint-ui'
+import { ImagePreview } from 'vant'
+import { getPlat, setBrowserTitle } from '@/utils/utils'
 export default {
   data () {
     return {
+      videoShowType: false,
       worksList: [],
       title: '',
       mgURL: require('@/assets/news-topic/null-img.png'),
       arrIcon: require('@/assets/news-topic/arr.png'),
-      curItemObj: {}
+      curItemObj: {},
+      curVideoPoster: '',
+      curVideoUrl: ''
     }
   },
   components: {
-    ReturnBtn
+    ReturnBtn,
+    myVideo
   },
   props: {
     itemObj: {
@@ -92,6 +114,61 @@ export default {
 
   },
   methods: {
+    showVideDialog (data) {
+      if (data.type === 'video') {
+        if (data.videoLink !== undefined && data.videoLink !== '') {
+          this.videoShowType = true
+          this.curVideoUrl = data.videoLink
+          // 默认获取第一张
+          if (data.imgList.length > 0) {
+            this.curVideoPoster = data.imgList[0].host + data.imgList[0].filename
+          } else {
+            this.curVideoPoster = ''
+          }
+          return false
+        } else {
+          // 视频类型没有视频可以查看图片
+          this.preImg(data)
+        }
+      } else {
+        this.preImg(data)
+      }
+    },
+    preImg (data) {
+      let _images = []
+      for (let i of data.imgList) {
+        _images.push(i.host + i.filename)
+      }
+      ImagePreview({
+        images: _images,
+        closeable: true
+      })
+    },
+    jumpLinkFun (data) {
+      try {
+        if (data.link === '') {
+          if (data.imgList.length > 0) {
+            this.preImg(data)
+          }
+          return false
+        }
+        if (data.dataOrigin === 'local' || data.dataOrigin === 'custom') {
+          // 基础元数据
+          window.open(data.link, '_self')
+        } else if (data.dataOrigin === 'ctxLib') {
+          // 来自内容库
+          let plat = getPlat()
+          if (plat === 'smartcity') {
+            window.SmartCity.linkTo(data.link)
+          } else {
+            window.open(data.link, '_self')
+          }
+        }
+      } catch (e) {
+        Toast('地址无效，调转失败')
+        console.log('e', e)
+      }
+    },
     imgRender (data) {
       if (data.imgList !== undefined && data.imgList.length > 0) {
         if (data.imgList[0].filename === '') {
@@ -106,19 +183,17 @@ export default {
     initData (data) {
       this.title = data.title
       this.arrIcon = data.poster
+      // 设置title
+      setBrowserTitle(data.title)
       this.blendData(data.data)
     },
     blendData (data) {
       // 每4个元素组装成一个单位
-      let itemArr = []
-      this.worksList = []
-      for (let i = 0; i < data.length; i++) {
-        itemArr.push(data[i])
-        if ((i + 1) % 4 === 0) {
-          this.worksList.push(itemArr)
-          itemArr = []
-        }
+      let loopNum = Math.ceil(data.length / 4)
+      for (let i = 0; i < loopNum; i++) {
+        this.worksList.push(data.splice(0, 4))
       }
+
     }
   }
 }
@@ -310,6 +385,15 @@ export default {
     }
   }
 }
+
+  .all-works-list{
+    margin-bottom: px2rem(30px);
+  }
+
+  .video-popup-wrap{
+    width: 80vw;
+    height: px2rem(400px);
+  }
 
 .return-home-page{
   position: fixed;
