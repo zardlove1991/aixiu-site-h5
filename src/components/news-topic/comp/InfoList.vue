@@ -6,7 +6,7 @@
       <div>
         <span></span>
         <span class='header-title'>{{title}}</span>
-        <img v-if='isMobileHeaderIconType' :src="columnPoster" alt="" class='header-icon-img'>
+        <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
       </div>
       <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
@@ -541,9 +541,9 @@ export default {
   }
 
   .header-icon-img{
-    width: px2rem(50px);
-    height: px2rem(50px);
-    border-radius: px2rem(25px);
+    width: px2rem(40px);
+    height: px2rem(40px);
+    border-radius: px2rem(20px);
     margin-left: px2rem(10px);
   }
 
