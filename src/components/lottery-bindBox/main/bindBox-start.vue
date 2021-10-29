@@ -148,6 +148,7 @@
       <Help :show.sync="isHelpShow" v-if="isHelpShow"  @close='isHelpShow = false' :activityId='id' />
       <HelpFriends :show.sync="isHelpFirendsShow" v-if="isHelpFirendsShow"  @close='isHelpFirendsShow = false' :activityId='id' :firend='firend'/>
       <HelpSuccess :show.sync="isHelpSuccessShow" v-if="isHelpSuccessShow" @close='isHelpSuccessShow = false' :activityId='id' :firend='firend'/>
+      <UndrawQualification :show.sync="isUndrawQualificationShow" v-if="isUndrawQualificationShow" />
       <!-- <HelpSuccess :show.sync="tempShow" @close='tempShow = false' /> -->
     </div>
 </template>
@@ -512,6 +513,7 @@ export default {
     for (let i = 0; i < this.bindBoxArr.length; i++) {
       this.$set(this.anim1, i, true)
     }
+    console.log(this.$route.meta.mark, 'this.$route.meta.mark.this.$route.meta.mark.')
     try {
       this.initData()
       const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
@@ -535,7 +537,8 @@ export default {
       } else {
         this.isSourceshow = true
       }
-      if (this.$route.meta.mark.indexOf('rotor') === -1) {
+      // 防止大转盘 九宫格调用盲盒
+      if (this.$route.meta.mark !== this.detailInfo.mark) {
         this.isUndrawQualificationShow = true
         this.disableBtn = true
       }
