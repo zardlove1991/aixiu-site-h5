@@ -48,6 +48,13 @@ instance.interceptors.request.use((config) => {
     Toast('网络异常，请检查网络连接设置')
     return false
   }
+  let routeId = ''
+  if (window.$vue._route && window.$vue._route.params && window.$vue._route.params.id) {
+    routeId = window.$vue._route.params.id
+  }
+  if (routeId) {
+    config.headers['Limit'] = routeId
+  }
   config.headers['HTTP-X-H5-VERSION'] = apiConfig['HTTP-X-H5-VERSION']
   config.headers['X-CLIENT-VERSION'] = apiConfig['X-CLIENT-VERSION']
   config.headers['X-DEVICE-ID'] = apiConfig['X-DEVICE-ID']
@@ -63,14 +70,9 @@ instance.interceptors.request.use((config) => {
     let {id, expire, token, source, mobile, nick_name: nickName} = userInfo
     userStr = JSON.stringify({id, expire, token, source, mobile, nick_name: encodeURIComponent(nickName)})
   }
-  if (config.url.indexOf('setClick') < 0) {
-    // if (STORAGE.get('userinfo')) {
-    //   config.params.member = STORAGE.get('userinfo')
-    // }
-    config.headers['member'] = userStr
-    if (STORAGE.get('guid')) {
-      config.params.guid = STORAGE.get('guid')
-    }
+  config.headers['member'] = userStr
+  if (STORAGE.get('guid')) {
+    config.params.guid = STORAGE.get('guid')
   }
   logger({memberId: userInfo.id, action: 'ajax:' + config.url})
   return config
@@ -128,6 +130,9 @@ instance.interceptors.response.use((res, xhr) => {
   if (res.status === 204) {
     const url = encodeURI(window.location.href)
     window.location.href = `/nodata.html?origin=${url}`
+  }
+  if (curErrorCode === 'rate_limit_success') {
+    window.location.href = `/limit.html`
   }
   return data.response || data.result || data
 }, (error) => {
