@@ -39,6 +39,11 @@
           <span>{{item.label}}：</span>
           <span class="header-txt">{{item.value}}</span>
         </div>
+        <div class="header first-header" v-if="isOpenClassify">
+          <span>分类：</span>
+          <span class="header-txt">{{selfData.type_name}}</span>
+        </div>
+
         <!-- <div class="header first-header">
           <span>名称：</span>
           <span class="header-txt">{{selfData.name}}</span>
@@ -159,6 +164,7 @@ export default {
           return
         }
 
+        console.log('----res----', res)
         const extraArr = Object.entries(res.extra)
         const extraTitlesArr = Object.entries(res.extraTitles)
         this.columnList = []

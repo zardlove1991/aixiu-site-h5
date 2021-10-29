@@ -62,15 +62,20 @@ let smartcity = {
       let currentRoute = window.$vue.$router.currentRoute
       let map = {
         'depencelist': 'depencestart',
-        'livelist': 'livestart'
+        'livelist': 'livestart',
+        'depencestart': 'depencestart',
+        'livestart': 'livestart'
       }
-      if (+res.status === 0 || +res.status === 1) {
+      if (+res.status === 1) {
         // 页面激活
-        console.log('页面隐藏/激活')
+        console.log('页面激活')
         if (map[currentRoute.name]) {
           let id = currentRoute.params.id
-          console.log(map[currentRoute.name])
-          window.$vue.$router.replace({name: map[currentRoute.name], params: {id: id}})
+          let protocol = window.location.protocol
+          let host = window.location.host
+          let url = protocol + '//' + host + '/' + map[currentRoute.name] + '/' + id
+          window.location.href = url
+          // window.$vue.$router.replace({name: map[currentRoute.name], params: {id: id}})
         }
       }
       if (+res.status === 2) {
