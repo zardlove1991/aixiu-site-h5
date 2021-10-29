@@ -4,9 +4,9 @@
       <div class='img-font-header'>
         <div>
           <span></span>
-          <span>{{title}}</span>
+          <span class='header-title'>{{title}}</span>
         </div>
-        <img :src="arrIcon" alt="" class='arr-img-wrap'>
+        <img v-if='isMobileHeaderIconType && arrIcon !== ""' :src="arrIcon" alt="" class='arr-img-wrap'>
       </div>
       <div class='imgfont-list-wrap'>
         <div v-for='(item, index) in worksList' :key='index'
@@ -51,7 +51,8 @@ export default {
       worksList: [],
       videoShowType: false,
       curVideoPoster: '',
-      curVideoUrl: ''
+      curVideoUrl: '',
+      columnPoster: ''
     }
   },
   components: {
@@ -62,6 +63,10 @@ export default {
     itemObj: {
       type: Object,
       default: () => {}
+    },
+    isMobileHeaderIconType: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -75,7 +80,7 @@ export default {
     }
   },
   mounted () {
-
+    console.log('this.isMobileHeaderIconType', this.isMobileHeaderIconType)
   },
   methods: {
     showVideDialog (data) {
@@ -214,7 +219,8 @@ export default {
           background: #D90000;
           vertical-align: middle;
         }
-        &>span:nth-child(2) {
+
+        .header-title {
           display: inline-block;
           font-weight: 500;
           color: #333333;
@@ -237,5 +243,12 @@ export default {
     position: fixed;
     left: 0;
     bottom: px2rem(100px);
+  }
+
+  .header-icon-img{
+    width: px2rem(40px);
+    height: px2rem(40px);
+    border-radius: px2rem(20px);
+    margin-left: px2rem(10px);
   }
 </style>

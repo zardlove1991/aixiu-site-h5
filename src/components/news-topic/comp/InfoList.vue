@@ -96,7 +96,7 @@
   <div v-if='columnTypeValue === 3' class='card-font-img'>
     <div class='card-font-header'>
       <div>
-        <img :src="columnPoster" alt="">
+        <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="">
         <div>{{title}}</div>
       </div>
       <div @click='goCardStyle'>全部</div>
@@ -275,7 +275,6 @@ export default {
     },
     initRender (data) {
       // 判断是不是隐藏图标
-      console.log('111', data.limit)
       let isMobileHeaderIcon = data.limit.column_set.is_mobile_header_icon
       if (isMobileHeaderIcon === 1) {
         this.isMobileHeaderIconType = true

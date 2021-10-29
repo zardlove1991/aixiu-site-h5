@@ -3,7 +3,7 @@
   <div class='card-font-img'>
     <div class='card-font-header'>
       <div>
-        <img :src="columnPoster" alt="">
+        <img v-if='isMobileHeaderIconType && columnPoster!== ""' :src="columnPoster" alt="">
         <div>{{title}}</div>
       </div>
     </div>
@@ -85,6 +85,10 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    isMobileHeaderIconType: {
+      type: Boolean,
+      default: true
     }
   },
   mounted () {

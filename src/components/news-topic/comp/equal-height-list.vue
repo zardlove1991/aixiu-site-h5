@@ -1,7 +1,9 @@
 <template>
 <div class='equal-height-wrap'>
   <div v-for='(item, index) in columnList' :key='index'>
-    <EqualHeightItemVue :itemObj='item'></EqualHeightItemVue>
+    <EqualHeightItemVue :itemObj='item'
+      :isMobileHeaderIconType='isMobileHeaderIconType'>
+    </EqualHeightItemVue>
   </div>
 </div>
 </template>
@@ -27,6 +29,14 @@ export default {
       if (i.id === curId) {
         this.columnList = [i]
       }
+    }
+
+    // 判断是不是隐藏图标
+    let isMobileHeaderIcon = this.curDetailInfo.limit.column_set.is_mobile_header_icon
+    if (isMobileHeaderIcon === 1) {
+      this.isMobileHeaderIconType = true
+    } else if (isMobileHeaderIcon === 0) {
+      this.isMobileHeaderIconType = false
     }
   }
 }
