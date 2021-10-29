@@ -20,7 +20,7 @@ let baseUrl = {
   getWeixinInfo: 'h5/js/signature', // 调用微信jssdk获取签名校验
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
-  setClick: 'setClick', // click
+  setClick: 'api/public/statistics/setClick', // click
   setShare: 'setShare', // 分享活动时请求分享接口
   getCollection: 'collection/form/record/cj/{id}', // 分享
   getQrcode: 'qrcode/create' // 生成二维码图片
@@ -143,7 +143,7 @@ let configUrl = {
 
 export default {
   getVoteMember: config => createVote(configUrl.getVoteMember, 'get', config, API_FLAG),
-  setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
+  setClick: config => createBase(configUrl.setClick, 'GET', config, 'public'),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
   getZengChengUser: config => creataUser(configUrl.getZengChengUser, 'GET', config, API_FLAG),
