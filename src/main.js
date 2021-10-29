@@ -51,7 +51,7 @@ router.afterEach((route, from) => {
   let name = router.currentRoute.name
   let id = router.currentRoute.params.id
   let isFirst = false
-  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist']
+  let allArr = ['depencestart', 'votebegin', 'votedetail', 'enrollstart', 'livestart', 'newstart', 'drawlist', 'newstopic']
   if (allArr.includes(name) && !from.name) {
     isFirst = true
   }
