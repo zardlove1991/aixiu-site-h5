@@ -71,7 +71,8 @@
     <div class='img-font-header'>
       <div>
         <span></span>
-        <span>{{title}}</span>
+        <span class='header-title'>{{title}}</span>
+        <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
       </div>
       <img :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
     </div>
@@ -168,7 +169,6 @@ export default {
     },
     changeChildListObj: {
       handler (newData, oldData) {
-        console.log('changeChildListObj', newData)
         this.reRenderList(newData)
       },
       deep: true
