@@ -48,7 +48,8 @@
             </div> -->
           </div>
         </div>
-        <van-button class="invite-btn-on"  plain  block v-if="isInviteBtnhow" @click="isHelpShow = true"><span class="text">邀请好友助力</span></van-button>
+        <!-- v-if="isInviteBtnhow" -->
+        <van-button class="invite-btn-on"  plain  block  @click="isHelpShow = true"><span class="text">邀请好友助力</span></van-button>
         <!-- <div class="invite-btn-of" v-else></div> -->
         <!-- <van-button v-if="detailInfo.remain_counts > 0 && !disableBtn"
           class="bindBox-btn-on"  plain  @click="onDraw" block>
@@ -180,12 +181,9 @@ import HelpFriends from '@/components/lottery-bindBox/global/help-friends' // �
 import HelpSuccess from '@/components/lottery-bindBox/global/help-success' // 助力成功
 import API from '@/api/module/examination'
 import { getImage, debounce, getDaysBetween, getPlat, delUrlParams, setBrowserTitle } from '@/utils/utils'
-import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
-// import 'swiper/dist/css/swiper.css'
-import 'swiper/swiper-bundle.css'
+import mixins from '@/mixins/index'
+import SubjectMixin from '@/mixins/subject'
 import './slider_card'
-import {LuckyGrid} from 'vue-luck-draw'
-import BindBox from '../global/bind-box.vue'
 export default {
   name: '',
   components: {
@@ -214,11 +212,7 @@ export default {
     Address, // 收获地址弹框
     Help, // 助力弹窗
     HelpFriends, // 助力好友
-    HelpSuccess, // 助力成功
-    BindBox,
-    LuckyGrid,
-    SwiperSlide,
-    Swiper
+    HelpSuccess // 助力成功
   },
   props: {
     id: String,
@@ -228,6 +222,7 @@ export default {
     images: String,
     source: String
   },
+  mixins: [mixins, SubjectMixin],
   data () {
     return {
       tempShow: true,
@@ -324,32 +319,6 @@ export default {
       isHelpSuccessShow: false, // 控制助力成功状态
       isInviteBtnhow: false, // 控制邀请助力显隐状态
       isUndrawQualificationShow: false, // 控制无抽奖资格状态
-      swiperOption: {
-        // slidesPerView: 3,
-        // spaceBetween: 30,
-        // slidesPerGroup: 3,
-        // loop: true,
-        // loopFillGroupWithBlank: true,
-        // pagination: {
-        //   el: '.swiper-pagination',
-        //   clickable: true
-        // },
-        // navigation: {
-        //   nextEl: '.swiper-button-next',
-        //   prevEl: '.swiper-button-prev'
-        // }
-        slidesPerView: 3,
-        centeredSlides: true,
-        spaceBetween: 30,
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true
-        },
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev'
-        }
-      },
       disableBtn: false, // 抽奖按钮禁用时
       AgainData: {}, // 再来一次对象
       integralData: {}, // 积分中奖对象
@@ -1851,54 +1820,88 @@ h1 {
     50% { transform: scale(2); }
     100% { transform: scale(1); }
 }
-</style>
-<style lang="scss" scoped>
-// .fade-enter-active {
-//   animation: bounce-in .3s;
-// }
-// .fade-leave-active {
-//   animation: bounce-in .3s reverse;//reverse反向播放
-// }
-// @keyframes bounce-in {
-//   0% {
-//     transform: scale(0);/*初始0看不到*/
-//   }
-//   50% {
-//     transform: scale(1.5);/*放大*/
-//   }
-//   100% {
-//     transform: scale(1);/*还原*/
-//   }
-// }
-
-// .prize-box {
-//   @import '@/styles/index.scss';
-//   width: px2rem(535px);
-//   height: px2rem(540px);
-//   // width: 500px;
-//   display: flex;
-//   flex-wrap: wrap;
-//   margin: 0 auto;
-// }
-// .prize-cell {
-//   line-height: px2rem(120px);
-//   height: px2rem(120px);
-//   width: px2rem(120px);
-//   overflow: hidden;
-//   flex: 32%;
-//   // flex: 1;
-//   border: 2px solid transparent;
-// }
-// .begin {
-//   cursor: pointer;
-// }
-// .active {
-//   border-color: red;
-// }
-// .prize-cell img {
-//   // width: 100%;
-//   width: px2rem(120px);
-//   height: px2rem(120px);
-//   // height: auto;
-// }
+.suspend-model {
+    position: relative;
+    padding:px2rem(49px) px2rem(51px) px2rem(41px);
+    box-sizing: border-box;
+    .tip-title {
+      color: #333333;
+      font-size: px2rem(34px);
+      font-weight: 500;
+      margin-bottom: px2rem(47px);
+      text-align: center;
+    }
+    .tip-bg {
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/suspend@2x.png","~@/assets/common/suspend@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .app-bg{
+      width: px2rem(370px);
+      height: px2rem(224px);
+      margin:0  auto;
+      @include img-retina("~@/assets/common/Bitmap@2x.png","~@/assets/common/Bitmap@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tip,.desc{
+      line-height: 1;
+    }
+    .tip{
+      // font-weight: bold;
+      text-align: center;
+      margin-bottom:px2rem(80px);
+      @include font-dpr(15px);
+      color:#666666;
+      position: relative;
+      &.tip-center {
+        margin: px2rem(20px) 0;
+      }
+      .err-tip {
+        position: absolute;
+        top: px2rem(40px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: red;
+        font-size: px2rem(28px);
+      }
+    }
+    .desc{
+      @include font-dpr(14px);
+      @include font-color('tipColor');
+    }
+    .tip-btn {
+      width:px2rem(305px);
+      height:px2rem(90px);
+      line-height: px2rem(90px);
+      text-align: center;
+      color:#fff;
+      // background:linear-gradient(136deg,rgba(0,209,170,1) 0%,rgba(0,207,198,1) 100%);
+      @include bg-color('themeColor');
+      @include font-dpr(16px);
+      margin:0 auto;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -ms-border-radius: 5px;
+      -o-border-radius: 5px;
+    }
+    .tip-btn-top {
+      margin-top: px2rem(50px);
+    }
+    .close-icon {
+      position: absolute;
+      right: px2rem(20px);
+      top: px2rem(20px);
+      width: px2rem(30px);
+      height: px2rem(30px);
+      @include img-retina("~@/assets/common/close@2x.png","~@/assets/common/close@3x.png", 100%, 100%);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
 </style>

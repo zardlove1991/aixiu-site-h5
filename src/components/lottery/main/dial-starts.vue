@@ -24,7 +24,7 @@
              <div class="wheel-content">
                 <div class="wheel-chance">你有<span>{{detailInfo.remain_counts}}</span>次抽奖机会</div>
                 <Wheel :list="list" class="wheel"/>
-                <van-notice-bar :scrollable="true" class="wheel-notice-bar wheel-tips">
+                <van-notice-bar :scrollable="true" class="wheel-notice-bar wheel-tips" v-if="!isNoticeDataShow">
                     <ul class="wheel-tips-list">
                         <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
                             <img :src='itme.app_images' alt="" class="wheel-item-avatar"/>
@@ -276,14 +276,32 @@ export default {
       deep: true,
       immediate: true
     },
+    noticeData: {
+      handler: function (newValue, oldValue) {
+        this.noticeData = newValue
+        if (this.noticeData.length > 0) {
+          this.$nextTick(() => {
+            this.isNoticeDataShow = false
+          })
+          console.log(this.noticeData.length > 0, 'this.noticeData.length > 0this.noticeData.length > 0')
+        } else {
+          this.isNoticeDataShow = true
+        }
+        // console.log('%cdetailInfo：', 'color: red;font-size:14px;', newValue.remain_counts)
+      },
+      deep: true,
+      immediate: true
+    },
     // 显隐中奖名单
     isNoticeDataShow (newValue, oldValue) {
-      // this.isNoticeDataShow = newValue
-      if (this.noticeData.length > 0) {
-        this.isNoticeDataShow = false
-      } else {
-        this.isNoticeDataShow = true
-      }
+      this.isNoticeDataShow = newValue
+      this.$nextTick(() => {
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
+        } else {
+          this.isNoticeDataShow = true
+        }
+      })
     },
     // 实物线下
     isPrizeVerificationcShow (val) {
@@ -481,6 +499,9 @@ export default {
         if (this.detailInfo.no_draw_senior) {
           this.disableBtn = true
           this.isUndrawQualificationShow = true
+        }
+        if (this.detailInfo.remain_counts < 0) {
+          this.detailInfo.remain_counts = 0
         }
       } catch (error) {
         console.log(error)
