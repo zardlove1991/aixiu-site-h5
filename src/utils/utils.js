@@ -58,8 +58,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
       STORAGE.set('detailInfo', info)
     })
@@ -91,8 +91,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
       STORAGE.set('detailInfo', info)
     })
@@ -109,8 +109,8 @@ export const setTheme = (id, name, isFirst) => {
     API.getNewsDetail({ query: { id } }).then(res => {
       let info = res
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
     })
   } else if (name.indexOf('lottery') !== -1) {
@@ -139,8 +139,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
     })
   }
@@ -246,22 +246,14 @@ export const isPC = () => {
   return flag
 }
 
-export const setClick = (id, title, mark) => {
-  let datas = {
-    param: {
-      data: [{
-        id,
-        mark,
-        title,
-        member_id: STORAGE.get('userinfo').id,
-        start_time: parseInt((new Date().getTime()) / 1000),
-        from: null,
-        hash: randomNum(13)
-      }]
+export const setClick = (id, mark) => {
+  let param = { id, mark }
+  setTimeout(() => {
+    let userinfo = STORAGE.get('userinfo')
+    if (userinfo) {
+      API.setClick({ params: param }).then(() => {})
     }
-  }
-  API.setClick({ params: datas }).then(() => {})
-  // console.log('关闭setClick：', datas)
+  }, 3000)
 }
 
 /*
