@@ -15,6 +15,7 @@
           <div>
             <img @click.stop='showVideDialog(item)'
               :src="imgRender(item)" alt="">
+            <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
           </div>
           <div>{{item.title}}</div>
           <div>
@@ -189,6 +190,7 @@ export default {
         &>div:nth-child(1) {
           width: px2rem(350px);
           height: px2rem(208px);
+          position: relative;
         }
 
         &>div:nth-child(2) {
@@ -250,5 +252,21 @@ export default {
     height: px2rem(40px);
     border-radius: px2rem(20px);
     margin-left: px2rem(10px);
+  }
+
+   .img-num-title{
+    position: absolute;
+    bottom: px2rem(19px);
+    right: px2rem(19px);
+    display: inline-block;
+    width: px2rem(76px);
+    height: px2rem(34px);
+    line-height: px2rem(34px);
+    border-radius: px2rem(17px);
+    text-align: center;
+    position: absolute;
+    color: #ffffff;
+    background: rgba(0, 0 , 0, .7);
+    font-size: px2rem(22px);
   }
 </style>

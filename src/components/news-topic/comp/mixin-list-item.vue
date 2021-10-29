@@ -22,6 +22,7 @@
         <div class='column-right'>
           <img :src="imgRender(item[0])" alt=""  @click.stop='showVideDialog(item[0])'>
           <span v-if='item[0].type === "video"'>00:00</span>
+          <span v-if='item[0].type !== "video" && item[0].imgList.length > 0'>{{item[0].imgList.length}}图</span>
         </div>
       </div>
       <div v-if='item[1] !== undefined'
