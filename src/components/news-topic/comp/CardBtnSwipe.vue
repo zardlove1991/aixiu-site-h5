@@ -205,6 +205,9 @@ export default {
       background: #f2f2f2;
       color: #333333;
       font-size: px2rem(28px);
+      white-space:nowrap;/* 规定文本是否折行 */
+      overflow: hidden;/* 规定超出内容宽度的元素隐藏 */
+      text-overflow: ellipsis;
     }
 
     .choiced-btn{

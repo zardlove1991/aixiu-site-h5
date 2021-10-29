@@ -23,6 +23,7 @@
         <div class='column-right' @click.stop='showVideDialog(item[0])'>
           <img :src="imgRender(item[0])" alt="">
           <span v-if='item[0].type === "video"'>00:00</span>
+          <span v-if='item[0].type !== "video" && item[0].imgList.length > 0'>{{item[0].imgList.length}}图</span>
         </div>
       </div>
       <div v-if='item[1] !== undefined'
@@ -82,7 +83,8 @@
         <div>
           <img
             @click.stop='showVideDialog(item)'
-            :src="item.imgList[0].host + item.imgList[0].filename" alt="">
+            :src="imgRender(item)" alt="">
+          <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
         </div>
         <div>{{item.title}}</div>
         <div>
@@ -120,7 +122,8 @@
           </div>
           <div>
             <img @click.stop='showVideDialog(item)'
-              :src="item.imgList[0].host + item.imgList[0].filename" alt="">
+              :src="imgRender(item)" alt="">
+            <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
           </div>
         </div>
       </template>
@@ -570,6 +573,7 @@ export default {
       &>div:nth-child(1) {
         width: px2rem(350px);
         height: px2rem(208px);
+        position: relative;
       }
 
       &>div:nth-child(2) {
@@ -585,6 +589,22 @@ export default {
       }
     }
   }
+}
+
+ .img-num-title{
+  position: absolute;
+  bottom: px2rem(19px);
+  right: px2rem(19px);
+  display: inline-block;
+  width: px2rem(76px);
+  height: px2rem(34px);
+  line-height: px2rem(34px);
+  border-radius: px2rem(17px);
+  text-align: center;
+  position: absolute;
+  color: #ffffff;
+  background: rgba(0, 0 , 0, .7);
+  font-size: px2rem(22px);
 }
 
 .card-font-img{
@@ -664,6 +684,7 @@ export default {
 
   &>div:nth-child(2) {
     width: px2rem(216px);
+    position: relative;
     &>img{
       border-radius: px2rem(8px);
     }

@@ -24,6 +24,7 @@
           </div>
           <div>
             <img @click.stop='showVideDialog(item)' :src="imgRender(item)" alt="">
+            <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
           </div>
         </div>
       </template>
@@ -191,6 +192,22 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+
+ .img-num-title{
+  position: absolute;
+  bottom: px2rem(19px);
+  right: px2rem(19px);
+  display: inline-block;
+  width: px2rem(76px);
+  height: px2rem(34px);
+  line-height: px2rem(34px);
+  border-radius: px2rem(17px);
+  text-align: center;
+  position: absolute;
+  color: #ffffff;
+  background: rgba(0, 0 , 0, .7);
+  font-size: px2rem(22px);
+}
 .card-list-item-wrap{
   position: relative;
   .card-font-img{
@@ -269,6 +286,7 @@ export default {
   }
 
   &>div:nth-child(2) {
+    position: relative;
     width: px2rem(216px);
     &>img{
       border-radius: px2rem(8px);
