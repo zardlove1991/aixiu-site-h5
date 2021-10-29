@@ -6,7 +6,8 @@
         <span></span>
         <span>{{title}}</span>
       </div>
-      <img :src="arrIcon" alt=""  class='arr-img-wrap'>
+      <img v-if='isMobileHeaderIconType && arrIcon !== ""'
+        :src="arrIcon" alt=""  class='arr-img-wrap'/>
     </div>
     <div v-for='(item, index) in worksList' :key='index' class='all-works-list'>
       <div v-if='item[0] !== undefined'
@@ -98,6 +99,10 @@ export default {
     itemObj: {
       type: Object,
       default: () => {}
+    },
+    isMobileHeaderIconType: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {

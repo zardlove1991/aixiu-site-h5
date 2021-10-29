@@ -113,12 +113,13 @@ export default {
           STORAGE.set('detailInfo', this.detailInfo)
 
           let _shareSettings = JSON.parse(this.detailInfo.share_settings)
+          console.log('_shareSettings.indexpic', _shareSettings.indexpic)
           // 设置分享
           this.shareConfigData = {
             id: this.detailInfo.id,
             title: _shareSettings.title,
             desc: _shareSettings.brief,
-            indexpic: _shareSettings.indexpic[0],
+            indexpic: 'http://' + _shareSettings.indexpic[0],
             link: _shareSettings.link,
             mark: this.detailInfo.mark
           }
