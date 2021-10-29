@@ -265,13 +265,13 @@ export default {
       }
     },
     goMixinList () {
-      this.$router.push({name: 'mobile-topic-mixinlist', query: {id: this.curOperatorObj.id}})
+      this.$router.push({name: 'newstopic-mixin-list', query: {id: this.curOperatorObj.id}})
     },
     goEqualHeight () {
-      this.$router.push({name: 'mobile-equal-height', query: {id: this.curOperatorObj.id}})
+      this.$router.push({name: 'newstopic-equal-list', query: {id: this.curOperatorObj.id}})
     },
     goCardStyle () {
-      this.$router.push({name: 'mobile-card-list', query: {id: this.curOperatorObj.id}})
+      this.$router.push({name: 'newstopic-card-list', query: {id: this.curOperatorObj.id}})
     },
     initRender (data) {
       // 判断是不是隐藏图标

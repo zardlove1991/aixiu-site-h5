@@ -322,38 +322,38 @@ const routes = [{
   }
 },
 {
-  path: '/mixin-list/:id',
-  name: 'mobile-topic-mixinlist',
+  path: '/newstopic-mixin-list/:id',
+  name: 'newstopic-mixin-list',
   component: () => import('@/components/news-topic/comp/mixin-list.vue'),
   props: (route) => ({
     id: route.params.id
   }),
   meta: {
-    title: '标准列表',
+    title: '移动专题',
     mod: 'news'
   }
 },
 {
-  path: '/equal-height-list/:id',
-  name: 'mobile-equal-height',
+  path: '/newstopic-equal-list/:id',
+  name: 'newstopic-equal-list',
   component: () => import('@/components/news-topic/comp/equal-height-list.vue'),
   props: (route) => ({
     id: route.params.id
   }),
   meta: {
-    title: '等高样式',
+    title: '移动专题',
     mod: 'news'
   }
 },
 {
-  path: '/card-list/:id',
-  name: 'mobile-card-list',
+  path: '/newstopic-card-list/:id',
+  name: 'newstopic-card-list',
   component: () => import('@/components/news-topic/comp/card-list.vue'),
   props: (route) => ({
     id: route.params.id
   }),
   meta: {
-    title: '卡片样式',
+    title: '移动专题',
     mod: 'news'
   }
 },
