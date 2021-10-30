@@ -73,7 +73,7 @@ let smartcity = {
           let id = currentRoute.params.id
           let protocol = window.location.protocol
           let host = window.location.host
-          let url = protocol + '//' + host + '/' +  map[currentRoute.name] + '/' + id
+          let url = protocol + '//' + host + '/' + map[currentRoute.name] + '/' + id
           window.location.href = url
           // window.$vue.$router.replace({name: map[currentRoute.name], params: {id: id}})
         }
