@@ -1,5 +1,5 @@
 <template>
-  <div :class="['form-submit-wrap', darkMark === '2' ? 'light' : '']">
+  <div class='vote-submit-wrap' :class="['form-submit-wrap', darkMark === '2' ? 'light' : '']">
     <form>
       <div v-if="fullSceneType && fullSceneType.length" class="form-item">
         <div class="form-title">作品类型</div>
@@ -718,6 +718,11 @@ export default {
 
 <style lang="scss">
   @import "@/styles/index.scss";
+  .vote-submit-wrap{
+    height: 100vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .font-ctx-wrap{
     background:#FFFFFF;
     width: 100%;
