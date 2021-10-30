@@ -86,6 +86,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       },
       {
+        from: path.resolve(__dirname, '../limit.html'),
+        to: config.build.assetsRoot,
+        ignore: ['.*']
+      },
+      {
         from: path.resolve(__dirname, '../MP_verify_imN7jJVkGvIAuEvy.txt'),
         to: config.build.assetsRoot,
         ignore: ['.*']

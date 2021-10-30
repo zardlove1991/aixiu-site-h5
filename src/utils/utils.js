@@ -58,8 +58,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
       STORAGE.set('detailInfo', info)
     })
@@ -91,8 +91,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
       STORAGE.set('detailInfo', info)
     })
@@ -100,8 +100,8 @@ export const setTheme = (id, name, isFirst) => {
     API.getNewsDetail({ query: { id } }).then(res => {
       let info = res
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
     })
   } else if (name.indexOf('lottery') !== -1) {
@@ -130,8 +130,8 @@ export const setTheme = (id, name, isFirst) => {
         }
       }
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
     })
   }
@@ -237,22 +237,14 @@ export const isPC = () => {
   return flag
 }
 
-export const setClick = (id, title, mark) => {
-  let datas = {
-    param: {
-      data: [{
-        id,
-        mark,
-        title,
-        member_id: STORAGE.get('userinfo').id,
-        start_time: parseInt((new Date().getTime()) / 1000),
-        from: null,
-        hash: randomNum(13)
-      }]
+export const setClick = (id, mark) => {
+  let param = { id, mark }
+  setTimeout(() => {
+    let userinfo = STORAGE.get('userinfo')
+    if (userinfo) {
+      API.setClick({ params: param }).then(() => {})
     }
-  }
-  API.setClick({ params: datas }).then(() => {})
-  // console.log('关闭setClick：', datas)
+  }, 3000)
 }
 
 /*
@@ -647,5 +639,46 @@ export const debounce = function (func, wait, immediate = true) {
       clearTimeout(timer)
       timer = later()
     }
+  }
+}
+
+export const getImage = function (image = {}, width, height) {
+  if (image instanceof Array && image.length === 0) {
+    return ''
+  } else if (typeof image === 'string' || image instanceof Object) {
+    let src = (typeof image === 'string') ? image : image.host + image.filename
+    src = src || ''
+    if (src) { // 替换域名
+      src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
+      src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
+      src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
+      src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
+    }
+    width = isNaN(width) ? 0 : width
+    height = isNaN(height) ? 0 : height
+    if (image.process || width || height) {
+      src += '?x-oss-process=image'
+    }
+    if (image.process && image.process.crop) { // 先裁切，再缩放
+      src += '/crop,' + image.process.crop
+    }
+    if (width > 0 && !height) { // 宽度优先，高度等比缩放
+      src += `/resize,w_${width}`
+    } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
+      src += `/resize,h_${height}`
+    } else if (width && height) { // 指定宽高
+      src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
+    } else if (image.process && image.process.resize) {
+      src += `/resize,${image.process.resize}`
+    }
+    const protocol = window.location.protocol
+    if (src) {
+      src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
+    }
+    // const protocol = window.location.protocol
+    // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
+    return src
+  } else {
+    return ''
   }
 }

@@ -20,7 +20,7 @@ let baseUrl = {
   getWeixinInfo: 'h5/js/signature', // 调用微信jssdk获取签名校验
   getCaptchaCode: 'captcha/code', // 图片二维码
   getMobileSend: '/mobile/verify/send', // 获取手机code
-  setClick: 'setClick', // click
+  setClick: 'api/public/statistics/setClick', // click
   setShare: 'setShare', // 分享活动时请求分享接口
   getCollection: 'collection/form/record/cj/{id}', // 分享
   getQrcode: 'qrcode/create' // 生成二维码图片
@@ -86,7 +86,7 @@ let voteUrl = {
   shareLottery: 'instant_lottery/activity/{id}/share/', // 投票增加抽奖机会
   getUserLotteryList: 'instant_lottery/activity/{id}/result/' // 获取用户抽奖记录
 }
-// 大转盘
+// 大转盘、盲盒
 let lotteryDailUrl = {
   getLotteryDetail: 'api/client/cj/{id}', // 转盘详情
   getDraw: 'api/client/cj/draw/{id}', // 开始抽奖
@@ -94,7 +94,10 @@ let lotteryDailUrl = {
   getMyPrizeRecord: 'api/client/cj/my/prize/info/{id}', // 我的抽奖纪录
   getPrizeRecord: 'api/client/cj/prize/info/{id}', // 中奖名单
   getAddress: 'api/client/cj/prize/address/{id}', // 线上实物发货地址
-  getShare: 'api/client/cj/live/share/{id}' // 分享
+  getShare: 'api/client/cj/live/share/{id}', // 分享
+  getHelpCode: 'api/client/cj/help/code/{id}', // 助力邀请二维码
+  getHelpTip: 'api/client/cj/help/tip/{id}', // 开始助力
+  getInviteInfo: 'api/client/cj/invite/info/{id}' // H5盲盒邀请记录
   // getCollection: 'collection/form/record/cj/{id}' // 分享
 }
 
@@ -140,7 +143,7 @@ let configUrl = {
 
 export default {
   getVoteMember: config => createVote(configUrl.getVoteMember, 'get', config, API_FLAG),
-  setClick: config => createSumbit(configUrl.setClick, 'GET', config, API_FLAG),
+  setClick: config => createBase(configUrl.setClick, 'GET', config, 'public'),
   sumbitUV: config => createSumbit(configUrl.sumbitUV, 'POST', config, API_FLAG),
   getSmartCityUser: config => creataUser(configUrl.getSmartCityUser, 'POST', config, API_FLAG),
   getZengChengUser: config => creataUser(configUrl.getZengChengUser, 'GET', config, API_FLAG),
@@ -213,6 +216,9 @@ export default {
   getPrizeRecord: config => createLottery(configUrl.getPrizeRecord, 'GET', config, 'lottery'),
   getAddress: config => createLottery(configUrl.getAddress, 'POST', config, 'lottery'),
   getShare: config => createLottery(configUrl.getShare, 'POST', config, 'lottery'),
+  getHelpCode: config => createLottery(configUrl.getHelpCode, 'POST', config, 'lottery'),
+  getHelpTip: config => createLottery(configUrl.getHelpTip, 'POST', config, 'lottery'),
+  getInviteInfo: config => createLottery(configUrl.getInviteInfo, 'GET', config, 'lottery'),
   // getCollection: config => createLottery(configUrl.getCollection, 'POST', config, 'lottery'),
 
   // 答题改造

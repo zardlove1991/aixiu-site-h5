@@ -24,7 +24,7 @@
              <div class="wheel-content">
                 <div class="wheel-chance">你有<span>{{detailInfo.remain_counts}}</span>次抽奖机会</div>
                 <Wheel :list="list" class="wheel"/>
-                <van-notice-bar :scrollable="true" class="wheel-notice-bar wheel-tips">
+                <van-notice-bar :scrollable="true" class="wheel-notice-bar wheel-tips" v-if="!isNoticeDataShow">
                     <ul class="wheel-tips-list">
                         <li class="wheel-tips-item" v-for="(itme, index) in noticeData" :key="index">
                             <img :src='itme.app_images' alt="" class="wheel-item-avatar"/>
@@ -276,14 +276,32 @@ export default {
       deep: true,
       immediate: true
     },
+    noticeData: {
+      handler: function (newValue, oldValue) {
+        this.noticeData = newValue
+        if (this.noticeData.length > 0) {
+          this.$nextTick(() => {
+            this.isNoticeDataShow = false
+          })
+          console.log(this.noticeData.length > 0, 'this.noticeData.length > 0this.noticeData.length > 0')
+        } else {
+          this.isNoticeDataShow = true
+        }
+        // console.log('%cdetailInfo：', 'color: red;font-size:14px;', newValue.remain_counts)
+      },
+      deep: true,
+      immediate: true
+    },
     // 显隐中奖名单
     isNoticeDataShow (newValue, oldValue) {
-      // this.isNoticeDataShow = newValue
-      if (this.noticeData.length > 0) {
-        this.isNoticeDataShow = false
-      } else {
-        this.isNoticeDataShow = true
-      }
+      this.isNoticeDataShow = newValue
+      this.$nextTick(() => {
+        if (this.noticeData.length > 0) {
+          this.isNoticeDataShow = false
+        } else {
+          this.isNoticeDataShow = true
+        }
+      })
     },
     // 实物线下
     isPrizeVerificationcShow (val) {
@@ -408,6 +426,12 @@ export default {
     if (this.noticeData.length > 0) {
       this.isNoticeDataShow = false
     }
+    // 防止盲盒、九宫格调用大转盘
+    if (this.$route.meta.mark !== this.detailInfo.mark) {
+      this.isUndrawQualificationShow = true
+      this.disableBtn = true
+    }
+    console.log(this.$route, 'this.$routethis.$routethis.$route')
   },
   beforeDestroy () {
     // 清除定时器
@@ -477,8 +501,51 @@ export default {
           this.disableBtn = true
           this.isUndrawQualificationShow = true
         }
+        if (this.detailInfo.remain_counts < 0) {
+          this.detailInfo.remain_counts = 0
+        }
       } catch (error) {
         console.log(error)
+      }
+    },
+    getImage (image = {}, width, height) {
+      if (image instanceof Array && image.length === 0) {
+        return ''
+      } else if (typeof image === 'string' || image instanceof Object) {
+        let src = (typeof image === 'string') ? image : image.host + image.filename
+        src = src || ''
+        if (src) { // 替换域名
+          src = src.replace('pimg.aihoge.com', 'xzimg.hoge.cn')
+          src = src.replace('pimg.xiuzan.com', 'pimg-ax.aihoge.com')
+          src = src.replace('pimg.v2.xiuzan.com', 'pimg-ax.aihoge.com')
+          src = src.replace('pimg.v2.aihoge.com', 'pimg-ax.aihoge.com')
+        }
+        width = isNaN(width) ? 0 : width
+        height = isNaN(height) ? 0 : height
+        if (image.process || width || height) {
+          src += '?x-oss-process=image'
+        }
+        if (image.process && image.process.crop) { // 先裁切，再缩放
+          src += '/crop,' + image.process.crop
+        }
+        if (width > 0 && !height) { // 宽度优先，高度等比缩放
+          src += `/resize,w_${width}`
+        } else if (height > 0 && !width) { // 高度优先，宽度等比缩放
+          src += `/resize,h_${height}`
+        } else if (width && height) { // 指定宽高
+          src += `/resize,m_mfit,h_${height},w_${width}/crop,x_0,y_0,w_${width},h_${height}`
+        } else if (image.process && image.process.resize) {
+          src += `/resize,${image.process.resize}`
+        }
+        const protocol = window.location.protocol
+        if (src) {
+          src = src.startsWith('//') ? protocol + src : src.replace(/^https?/, protocol.split(':')[0])
+        }
+        // const protocol = window.location.protocol
+        // const handelSrc = src.replace(/^https?/, protocol.split(':')[0])
+        return src
+      } else {
+        return ''
       }
     },
     // 中奖通知

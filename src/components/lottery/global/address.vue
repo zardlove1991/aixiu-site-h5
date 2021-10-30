@@ -1,59 +1,59 @@
 <template>
-     <div class='address-dialog' v-if="show"  v-fixed>
-         <div class="address-wrap" >
-            <div class="address-header-bg"></div>
-            <div class="address-header">
-                <div class="title">
-                    <div class="tille-name">收货地址</div>
-                </div>
-                <div class="address-header-right" @click.stop="onClose">
-                  <i class="i-close"></i>
-                </div>
+  <div class='address-dialog' v-if="show"  v-fixed>
+    <div class="address-wrap" >
+      <div class="address-header-bg"></div>
+      <div class="address-header">
+        <div class="title">
+            <div class="tille-name">收货地址</div>
+        </div>
+        <div class="address-header-right" @click.stop="onClose">
+          <i class="i-close"></i>
+        </div>
+      </div>
+      <div class="container" >
+        <p class="tips">请务必填写以下信息，奖品才能送到您手中</p>
+        <van-form
+            @submit="onSubmit"
+            @failed="onFailed"
+            :show-error="false"
+            :show-error-message="false"
+            :validate-first="true"
+            class="form"
+            >
+            <van-field
+                v-model="user.name"
+                name="真实姓名"
+                placeholder="真实姓名"
+                :rules="formRules.name"
+                class="form-input"
+            />
+            <van-field
+                v-model="user.mobile"
+                name="手机号"
+                placeholder="手机号"
+                :rules="formRules.mobile"
+                :maxlength="11"
+                class="form-input"
+            />
+            <van-field
+                type="textarea"
+                v-model="user.address"
+                name="详细地址"
+                placeholder="详细地址"
+                :rules="formRules.address"
+                class="address"
+                autosize
+            />
+            <div class="form-sub">
+                <van-button round block  native-type="submit" class="form-btn"
+                >确认</van-button
+                >
             </div>
-            <div class="container" >
-                <p class="tips">请务必填写以下信息，奖品才能送到您手中</p>
-                <van-form
-                    @submit="onSubmit"
-                    @failed="onFailed"
-                    :show-error="false"
-                    :show-error-message="false"
-                    :validate-first="true"
-                    class="form"
-                    >
-                    <van-field
-                        v-model="user.name"
-                        name="真实姓名"
-                        placeholder="真实姓名"
-                        :rules="formRules.name"
-                        class="form-input"
-                    />
-                    <van-field
-                        v-model="user.mobile"
-                        name="手机号"
-                        placeholder="手机号"
-                        :rules="formRules.mobile"
-                        :maxlength="11"
-                        class="form-input"
-                    />
-                    <van-field
-                        type="textarea"
-                        v-model="user.address"
-                        name="详细地址"
-                        placeholder="详细地址"
-                        :rules="formRules.address"
-                        class="address"
-                        autosize
-                    />
-                    <div class="form-sub">
-                        <van-button round block  native-type="submit" class="form-btn"
-                        >确认</van-button
-                        >
-                    </div>
-                </van-form>
-            </div>
-            <div class="address-footer"></div>
-         </div>
+        </van-form>
+      </div>
+      <div class="address-footer"></div>
     </div>
+</div>
 </template>
 
 <script>
