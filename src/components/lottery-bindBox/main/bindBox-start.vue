@@ -1311,7 +1311,7 @@ export default {
     margin-bottom:px2rem(44px);
     // overflow-y: scroll;
     // @include img-retina("~@/assets/lottery-bindBox/bind-box-bg.png","~@/assets/lottery-bindBox/bind-box-bg.png",100%,100%);
-    @include img-retina("~@/assets/lottery-bindBox/bind-box-bg@2x.png","~@/assets/lottery-bindBox/bind-box-bg@2x.png",100%,100%);
+    @include img-retina("~@/assets/lottery-bindBox/bind-box-bg@3x.png","~@/assets/lottery-bindBox/bind-box-bg@3x.png",100%,100%);
     .bindBox-chance{
       height: px2rem(26px);
       opacity: 0.9;
