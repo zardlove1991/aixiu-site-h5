@@ -106,6 +106,9 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else if (name.indexOf('lottery') !== -1) {
     console.log('抽奖setTheme')
+    if (isFirst && window.$vue._route.meta.mark && window.$vue._route.params.id) {
+      setClick(window.$vue._route.params.id, window.$vue._route.meta.mark)
+    }
   } else {
     // 测评
     console.log('isFirst', isFirst)

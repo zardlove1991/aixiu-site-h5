@@ -509,13 +509,39 @@ export default {
   },
   async mounted () {
     // console.log(this.rankpic, 'rankpic')
+    this.initData()
     // 盲盒列表显示
     for (let i = 0; i < this.bindBoxArr.length; i++) {
       this.$set(this.anim1, i, true)
     }
-    console.log(this.$route.meta.mark, 'this.$route.meta.mark.this.$route.meta.mark.')
+    // let box = this.$route.path.split('/')[2]
+    // let id = this.$route.path.split('/')[4]
+    // // console.log(this.$route.path.split('/'), 'this.$route.path.split('/')')
+    // // console.log(box.indexOf(this.detailInfo.mark) !== -1, 'box.indexOf(this.detailInfo.mark) !== -1')
+    // // 防止大转盘 九宫格调用盲盒
+    // if (!box.indexOf(this.detailInfo.mark) !== -1) {
+    //   console.log('11111111111111')
+    //   console.log(this.detailInfo.mark === 'raffle@rotor')
+    //   // if (this.detailInfo.mark === 'raffle@rotor') {
+    //   //   console.log('22222222222222222')
+    //   //   // this.$router.push({
+    //   //   //   name: 'lotteryrotor',
+    //   //   //   params: {
+    //   //   //     id: id
+    //   //   //   }
+    //   //   // })
+    //   // }
+    //   // if ('rotor'.indexOf(this.detailInfo.mark) !== -1) {
+    //   //   console.log('1111111111111')
+    //   //   this.$router.push({
+    //   //     name: 'lotteryrotor',
+    //   //     params: {
+    //   //       id: id
+    //   //     }
+    //   //   })
+    //   // }
+    // }
     try {
-      this.initData()
       const res = await API.getPrizeRecord({ query: { id: this.id }, params: { page: 1, count: 100 } })
       this.noticeData = res.data
       // setTimeout(() => {
@@ -537,11 +563,10 @@ export default {
       } else {
         this.isSourceshow = true
       }
-      // 防止大转盘 九宫格调用盲盒
-      if (this.$route.meta.mark !== this.detailInfo.mark) {
-        this.isUndrawQualificationShow = true
-        this.disableBtn = true
-      }
+      // if (this.$route.meta.mark !== this.detailInfo.mark) {
+      //   this.isUndrawQualificationShow = true
+      //   this.disableBtn = true
+      // }
       if (this.noticeData.length > 0) {
         this.isNoticeDataShow = false
       }
