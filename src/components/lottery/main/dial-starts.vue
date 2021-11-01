@@ -426,11 +426,11 @@ export default {
     if (this.noticeData.length > 0) {
       this.isNoticeDataShow = false
     }
-    // 防止盲盒、九宫格调用大转盘
-    if (this.$route.meta.mark !== this.detailInfo.mark) {
-      this.isUndrawQualificationShow = true
-      this.disableBtn = true
-    }
+    // // 防止盲盒、九宫格调用大转盘
+    // if (this.$route.meta.mark !== this.detailInfo.mark) {
+    //   this.isUndrawQualificationShow = true
+    //   this.disableBtn = true
+    // }
     console.log(this.$route, 'this.$routethis.$routethis.$route')
   },
   beforeDestroy () {

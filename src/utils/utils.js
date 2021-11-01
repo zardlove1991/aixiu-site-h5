@@ -104,8 +104,23 @@ export const setTheme = (id, name, isFirst) => {
         setClick(id, mark)
       }
     })
+  } else if (name.indexOf('newstopic') !== -1) {
+    API.getMobileNewsDetail({ query: { id } }).then(res => {
+      let info = res.response
+      // STORAGE.set('mobile_news', info)
+      if (isFirst && info && info.id) {
+        // let { id, title, mark } = info
+        // setClick(id, title, mark)
+        let { id, mark } = info
+        console.log(mark, 'markmarkmark')
+        setClick(id, mark)
+      }
+    })
   } else if (name.indexOf('lottery') !== -1) {
     console.log('抽奖setTheme')
+    if (isFirst && window.$vue._route.meta.mark && window.$vue._route.params.id) {
+      setClick(window.$vue._route.params.id, window.$vue._route.meta.mark)
+    }
   } else {
     // 测评
     console.log('isFirst', isFirst)
