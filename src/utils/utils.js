@@ -259,7 +259,7 @@ export const setClick = (id, mark) => {
     if (userinfo) {
       API.setClick({ params: param }).then(() => {})
     }
-  }, 3000)
+  }, 1000)
 }
 
 /*
