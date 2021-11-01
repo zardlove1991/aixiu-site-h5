@@ -118,8 +118,10 @@ export const setTheme = (id, name, isFirst) => {
       let info = res
       // STORAGE.set('mobile_news', info)
       if (isFirst && info && info.id) {
-        let { id, title, mark } = info
-        setClick(id, title, mark)
+        // let { id, title, mark } = info
+        // setClick(id, title, mark)
+        let { id, mark } = info
+        setClick(id, mark)
       }
     })
   } else if (name.indexOf('lottery') !== -1) {
