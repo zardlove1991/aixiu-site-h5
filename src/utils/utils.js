@@ -96,14 +96,6 @@ export const setTheme = (id, name, isFirst) => {
       }
       STORAGE.set('detailInfo', info)
     })
-  } else if (name.indexOf('news') !== -1) {
-    API.getNewsDetail({ query: { id } }).then(res => {
-      let info = res
-      if (isFirst && info && info.id) {
-        let { id, mark } = info
-        setClick(id, mark)
-      }
-    })
   } else if (name.indexOf('newstopic') !== -1) {
     API.getMobileNewsDetail({ query: { id } }).then(res => {
       let info = res.response
@@ -113,6 +105,14 @@ export const setTheme = (id, name, isFirst) => {
         // setClick(id, title, mark)
         let { id, mark } = info
         console.log(mark, 'markmarkmark')
+        setClick(id, mark)
+      }
+    })
+  } else if (name.indexOf('news') !== -1) {
+    API.getNewsDetail({ query: { id } }).then(res => {
+      let info = res
+      if (isFirst && info && info.id) {
+        let { id, mark } = info
         setClick(id, mark)
       }
     })
