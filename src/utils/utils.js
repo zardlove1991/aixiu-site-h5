@@ -115,12 +115,13 @@ export const setTheme = (id, name, isFirst) => {
     })
   } else if (name.indexOf('newstopic') !== -1) {
     API.getMobileNewsDetail({ query: { id } }).then(res => {
-      let info = res
+      let info = res.response
       // STORAGE.set('mobile_news', info)
       if (isFirst && info && info.id) {
         // let { id, title, mark } = info
         // setClick(id, title, mark)
         let { id, mark } = info
+        console.log(mark, 'markmarkmark')
         setClick(id, mark)
       }
     })
