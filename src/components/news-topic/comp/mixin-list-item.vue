@@ -29,11 +29,13 @@
         @click='jumpLinkFun(item[1])'
         class='column-2 base-box-style'>
         <div>{{item[1].title}}</div>
-        <div v-if='Array.isArray(item[1].material)'
+        <div v-if='Array.isArray(item[1].imgList)'
           @click.stop='showVideDialog(item[1])'
           class='coloumn-2-2'>
-          <img v-for='(item, index) in item[1].material'
-            :key='index' :src="item" alt="" class='img-wrap'>
+          <template v-for='(item, index) in item[1].imgList'>
+            <img v-if='index <= 2'
+            :key='index' :src="item.host + item.filename" alt="" class='img-wrap'>
+          </template>
         </div>
         <div class='coloumn-2-3'>
           <span>{{item[1].source}}</span>
@@ -42,9 +44,10 @@
       <div v-if='item[2] !== undefined'
         @click='jumpLinkFun(item[2])'
         class='column-3 base-box-style'>
-        <div v-if='Array.isArray(item[2].material) && item[2].material.length !== 0' class='column-3-left'>
-          <img @click.stop='showVideDialog(item[2])' :src="item[2].material[0]" alt=""/>
-          <span>{{item[2].material.length}}图</span>
+        <div v-if='Array.isArray(item[2].imgList) && item[2].imgList.length !== 0' class='column-3-left'>
+          <img @click.stop='showVideDialog(item[2])'
+          :src="item[2].imgList[0].host + item[2].imgList[0].filename" alt=""/>
+          <span>{{item[2].imgList.length}}图</span>
         </div>
         <div class='column-3-right'>
           <div>{{item[2].title}}</div>

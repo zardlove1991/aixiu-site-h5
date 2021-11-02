@@ -33,8 +33,9 @@
         <div v-if='Array.isArray(item[1].imgList)'
           class='coloumn-2-2'
           @click.stop='showVideDialog(item[1])'>
-          <img v-for='(item, index) in item[1].imgList'
-            :key='index' :src="item.host + item.filename" alt="" class='img-wrap'>
+          <template v-for='(item, index) in item[1].imgList'>
+            <img v-if='index <= 2' :key='index' :src="item.host + item.filename" alt="" class='img-wrap'>
+          </template>
         </div>
         <div class='coloumn-2-3'>
           <span>{{item[1].source}}</span>
@@ -98,14 +99,14 @@
   <div v-if='columnTypeValue === 3' class='card-font-img'>
     <div class='card-font-header'>
       <div>
-        <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="">
+        <img v-if='isMobileHeaderIconType && columnPoster !== ""'  :src="columnPoster" alt="">
         <div>{{title}}</div>
       </div>
       <div v-if='firstWorksArr.length > 0' @click='goCardStyle'>全部</div>
     </div>
     <div class='ctx-img-wrap'>
       <div v-if='firstWorksArr.length > 0' class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
-        <img @click.stop='showVideDialog(firstWorksArr[0])'
+        <img @click.stop='showVideDialog(firstWorksArr[0])' class='img-0-style'
           :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
@@ -121,7 +122,7 @@
             <div>{{item.source}}</div>
           </div>
           <div>
-            <img @click.stop='showVideDialog(item)'
+            <img @click.stop='showVideDialog(item)' class='img-1-style'
               :src="imgRender(item)" alt="">
             <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
           </div>
@@ -354,6 +355,15 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  .img-0-style{
+
+  }
+
+  .img-1-style{
+    width: px2rem(216px);
+    height: px2rem(162px);
+  }
+
   .video-popup-wrap{
     width: 80vw;
     height: px2rem(400px);

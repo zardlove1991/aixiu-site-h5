@@ -3,13 +3,15 @@
   <div class='card-font-img'>
     <div class='card-font-header'>
       <div>
-        <img v-if='isMobileHeaderIconType && columnPoster!== ""' :src="columnPoster" alt="">
+        <img v-if='isMobileHeaderIconType && columnPoster!== ""'
+          :src="columnPoster" alt=""/>
         <div>{{title}}</div>
       </div>
     </div>
     <div class='ctx-img-wrap'>
-      <div class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
-        <img @click.stop='showVideDialog(firstWorksArr[0])' :src="firstWorksArr[0].material[0]" alt="">
+      <div v-if='firstWorksArr.length > 0' class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
+        <img @click.stop='showVideDialog(firstWorksArr[0])'
+          :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="" class='img-0-style'/>
         <div class='ctx-img-info'>
           <div>{{firstWorksArr[0].title}}</div>
           <div>{{firstWorksArr[0].source}}</div>
@@ -23,7 +25,7 @@
             <div>{{item.source}}</div>
           </div>
           <div>
-            <img @click.stop='showVideDialog(item)' :src="imgRender(item)" alt="">
+            <img @click.stop='showVideDialog(item)' :src="imgRender(item)" alt="" class='img-1-style'>
             <span v-if='item.imgList.length > 0' class='img-num-title'>{{item.imgList.length}}图</span>
           </div>
         </div>
@@ -72,6 +74,10 @@ export default {
     itemObj: {
       type: Object,
       default: () => {}
+    },
+    isMobileHeaderIconType: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -86,10 +92,6 @@ export default {
       },
       deep: true,
       immediate: true
-    },
-    isMobileHeaderIconType: {
-      type: Boolean,
-      default: true
     }
   },
   mounted () {
@@ -192,6 +194,15 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+
+  .img-0-style{
+
+  }
+
+  .img-1-style{
+    width: px2rem(216px);
+    height: px2rem(162px);
+  }
 
  .img-num-title{
   position: absolute;
