@@ -8,7 +8,7 @@
         <span class='header-title'>{{title}}</span>
         <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
       </div>
-      <img @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
+      <img v-if='worksList.length > 0' @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
     <div v-for='(item, index) in worksList' :key='index' class='all-works-list'>
       <div v-if='item[0] !== undefined'
@@ -75,7 +75,7 @@
         <span class='header-title'>{{title}}</span>
         <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
       </div>
-      <img :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
+      <img v-if='worksList.length > 0' :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
     </div>
     <div class='imgfont-list-wrap'>
       <div v-for='(item, index) in worksList' :key='index'
@@ -101,10 +101,10 @@
         <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="">
         <div>{{title}}</div>
       </div>
-      <div @click='goCardStyle'>全部</div>
+      <div v-if='firstWorksArr.length > 0' @click='goCardStyle'>全部</div>
     </div>
     <div class='ctx-img-wrap'>
-      <div class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
+      <div v-if='firstWorksArr.length > 0' class='ctx-img-m'  @click='jumpLinkFun(firstWorksArr[0])'>
         <img @click.stop='showVideDialog(firstWorksArr[0])'
           :src="firstWorksArr[0].imgList[0].host + firstWorksArr[0].imgList[0].filename" alt="">
         <div class='ctx-img-info'>
