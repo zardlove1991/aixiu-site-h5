@@ -170,6 +170,17 @@ export default {
 
 <style lang='scss' scoped>
   @import "@/styles/index.scss";
+  *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  *::-webkit-scrollbar:horizontal {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
   .display-value-1{
     margin-top: px2rem(120px) !important;
   }

@@ -4,9 +4,9 @@
   <div v-if='columnTypeValue === 1' class='standard-style'>
     <div class='img-font-header'>
       <div>
-        <span></span>
-        <span class='header-title'>{{title}}</span>
         <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
+        <span v-if='!isMobileHeaderIconType' class='vertical-box-wrap'></span>
+        <span class='header-title'>{{title}}</span>
       </div>
       <img v-if='worksList.length > 0' @click='goMixinList' :src="arrIcon" alt="" class='arr-img-wrap'>
     </div>
@@ -72,9 +72,9 @@
   <div v-if='columnTypeValue === 2' class='img-font-wrap'>
     <div class='img-font-header'>
       <div>
-        <span></span>
-        <span class='header-title'>{{title}}</span>
         <img v-if='isMobileHeaderIconType && columnPoster !== ""' :src="columnPoster" alt="" class='header-icon-img'>
+        <span v-if='!isMobileHeaderIconType' class='vertical-box-wrap'></span>
+        <span class='header-title'>{{title}}</span>
       </div>
       <img v-if='worksList.length > 0' :src="arrIcon" @click='goEqualHeight' alt="" class='arr-img-wrap'>
     </div>
@@ -100,6 +100,7 @@
     <div class='card-font-header'>
       <div>
         <img v-if='isMobileHeaderIconType && columnPoster !== ""'  :src="columnPoster" alt="">
+        <span v-if='!isMobileHeaderIconType' class='vertical-box-wrap'></span>
         <div>{{title}}</div>
       </div>
       <div v-if='firstWorksArr.length > 0' @click='goCardStyle'>全部</div>
@@ -522,6 +523,16 @@ export default {
     }
   }
 
+  .vertical-box-wrap {
+    display: inline-block;
+    width: px2rem(5px);
+    height: px2rem(32px);
+    border-radius: px2rem(6px);
+    background: #D90000;
+    vertical-align: middle;
+    margin-right: px2rem(20px);
+  }
+
   .img-font-header{
     display: flex;
     justify-content: space-between;
@@ -532,14 +543,6 @@ export default {
     &>div:nth-child(1){
       display: flex;
       align-items: center;
-      &>span:nth-child(1) {
-        display: inline-block;
-        width: px2rem(5px);
-        height: px2rem(32px);
-        border-radius: px2rem(6px);
-        background: #D90000;
-        vertical-align: middle;
-      }
       .header-title {
         display: inline-block;
         font-weight: 500;
@@ -547,7 +550,6 @@ export default {
         font-size: px2rem(32px);
         line-height: px2rem(48px);
         vertical-align: middle;
-        margin-left: px2rem(10px);
       }
     }
   }
@@ -631,6 +633,7 @@ export default {
     align-items: center;
     &>div:nth-of-type(1) {
       display: flex;
+      align-items: center;
       flex-direction: row;
       font-size: px2rem(32px);
       font-weight: 500;
